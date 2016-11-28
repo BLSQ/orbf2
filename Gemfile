@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 
+ruby "2.3.0"
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.0.0', '>= 5.0.0.1'
@@ -33,6 +34,12 @@ gem 'jbuilder', '~> 2.5'
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platform: :mri
+  gem "database_cleaner"
+  gem "factory_girl_rails", " 4.0"
+  gem "rspec-its"
+  gem "rspec-rails",        "~> 3.0"
+  gem "rest-client-logger"
+
 end
 
 group :development do
@@ -42,6 +49,16 @@ group :development do
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
+  gem 'rack-mini-profiler'
+  gem 'memory_profiler'
+  gem 'flamegraph'
+  gem 'stackprof'
+end
+
+group :test do
+  gem "simplecov", require: false
+  gem "codeclimate-test-reporter", "~> 1.0.0"
+  gem "webmock"
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
