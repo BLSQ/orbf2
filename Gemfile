@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-ruby "2.3.0"
+ruby "2.3.1"
 
 gem "dhis2", github: "BLSQ/dhis2"
 
@@ -13,6 +13,8 @@ gem "coffee-rails", "~> 4.2"
 gem "jquery-rails"
 gem "turbolinks", "~> 5"
 gem "jbuilder", "~> 2.5"
+gem 'devise'
+
 
 group :development, :test do
   gem "byebug", platform: :mri
@@ -20,6 +22,7 @@ group :development, :test do
   gem "factory_girl_rails", " 4.0"
   gem "rspec-its"
   gem "rspec-rails", "~> 3.0"
+  gem "shoulda-matchers",   require: false
   gem "rest-client-logger"
 end
 
