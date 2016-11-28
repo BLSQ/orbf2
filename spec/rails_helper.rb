@@ -1,11 +1,11 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
-ENV["RAILS_ENV"] ||= 'test'
-require 'spec_helper'
+ENV["RAILS_ENV"] ||= "test"
+require "spec_helper"
 require File.expand_path("../../config/environment", __FILE__)
-require 'rspec/rails'
+require "rspec/rails"
 # Add additional requires below this line. Rails is not loaded until this point!
 
-require 'shoulda/matchers' # -> https://github.com/thoughtbot/shoulda-matchers
+require "shoulda/matchers" # -> https://github.com/thoughtbot/shoulda-matchers
 # require 'draper/test/rspec_integration' # Enable RSpec tests for decorators
 # require 'capybara/rspec' # Capybara tests for functional and integration tests
 
