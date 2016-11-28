@@ -50,7 +50,12 @@ GEM
       activerecord (>= 3.2, < 6.0)
       rake (>= 10.4, < 12.0)
     arel (7.1.4)
+    autoprefixer-rails (6.5.1.1)
+      execjs
     bcrypt (3.1.11)
+    bootstrap-sass (3.3.7)
+      autoprefixer-rails (>= 5.2.1)
+      sass (>= 3.3.4)
     builder (3.2.2)
     byebug (9.0.6)
     codeclimate-test-reporter (1.0.3)
@@ -86,6 +91,8 @@ GEM
       railties (>= 3.0.0)
     ffi (1.9.14)
     flamegraph (0.9.5)
+    font-awesome-sass (4.7.0)
+      sass (>= 3.2)
     globalid (0.3.7)
       activesupport (>= 4.1.0)
     hashdiff (0.3.0)
@@ -244,6 +251,7 @@ PLATFORMS
 
 DEPENDENCIES
   annotate
+  bootstrap-sass (~> 3.3.6)
   byebug
   codeclimate-test-reporter (~> 1.0.0)
   coffee-rails (~> 4.2)
@@ -252,6 +260,7 @@ DEPENDENCIES
   dhis2!
   factory_girl_rails (= 4.0)
   flamegraph
+  font-awesome-sass (~> 4.7.0)
   jbuilder (~> 2.5)
   jquery-rails
   listen (~> 3.0.5)
