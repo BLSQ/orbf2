@@ -1,3 +1,10 @@
+GIT
+  remote: git://github.com/BLSQ/dhis2.git
+  revision: 50fdac74110318422b84fb57064d450235deee6d
+  specs:
+    dhis2 (2.2.1)
+      rest-client
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -223,6 +230,7 @@ DEPENDENCIES
   codeclimate-test-reporter (~> 1.0.0)
   coffee-rails (~> 4.2)
   database_cleaner
+  dhis2!
   factory_girl_rails (= 4.0)
   flamegraph
   jbuilder (~> 2.5)
