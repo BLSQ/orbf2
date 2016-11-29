@@ -4,5 +4,6 @@ Rails.application.routes.draw do
    root to: "setup#index"
    devise_scope :user do
     get '/users/sign_out' => 'devise/sessions#destroy'
+      resource :setup
   end
 end
