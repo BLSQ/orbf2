@@ -25,10 +25,14 @@ class User < ApplicationRecord
 
   validates :email,
             format: { with:    /\A.*@bluesquare.org\z/,
-                      message: "only allows letters" },
+                      message: "Sorry, restricted signup" },
             if:     :env_dev?
 
   belongs_to :project, optional: true
+
+  def invalid_project?
+    project.nil? || project.invalid?
+  end
 
   def env_dev?
     Rails.env.dev?

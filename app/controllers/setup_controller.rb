@@ -4,7 +4,10 @@ class SetupController < PrivateController
 
   def index
     @steps = calculate_highlighted [
-      Step.new(name: "Dhis2 connection", status: :todo, kind: :dhis2),
+      Step.new(name:   "Dhis2 connection",
+               status: current_user.invalid_project? ? :todo : :done,
+               kind:   :dhis2,
+               model:  current_user.project || Project.new),
       Step.new(name: "Entities", status: :todo, kind: :entities),
       Step.new(name: "Entity group", status: :todo, kind: :groups),
       Step.new(name: "Package of Activities", status: :todo, kind: :packages),
@@ -18,7 +21,7 @@ class SetupController < PrivateController
   def calculate_highlighted(steps)
     first_todo_step = steps.find { |step| step.status == :todo }
     steps.each do |step|
-      step.highlighted = step.status == :todo && step != first_todo_step
+      step.highlighted = step == first_todo_step
     end
     steps
   end

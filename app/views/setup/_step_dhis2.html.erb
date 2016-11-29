@@ -1,4 +1,4 @@
-<%= simple_form_for(current_user.project || Project.new,  url: setup_projects_path, method: :post) do |f| %>
+<%= simple_form_for(step.model,  url: setup_projects_path, method: :post) do |f| %>
   <%= f.input :name %>
   <%= f.input :dhis2_url, placeholder: "eg : https://play.dhis2.org/demo" %>
   <%= f.input :user, input_html: { autocomplete: "off" }  %>
