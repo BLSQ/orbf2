@@ -23,5 +23,14 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
 
+  validates :email,
+            format: { with:    /\A.*@bluesquare.org\z/,
+                      message: "only allows letters" },
+            if:     :env_dev?
+
   belongs_to :project, optional: true
+
+  def env_dev?
+    Rails.env.dev?
+  end
 end
