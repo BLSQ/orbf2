@@ -6,7 +6,7 @@ class Project < ApplicationRecord
   validates :password, presence: true
 
   def verify_connection
-    return { status: :ko, message: errors.full_messages? } if invalid?
+    return { status: :ko, message: errors.full_messages.join(",") } if invalid?
     infos = dhis2_connection.system_infos.get
     return { status: :ok, message: infos }
   rescue => e
