@@ -4,5 +4,5 @@
   <%= f.input :user, input_html: { autocomplete: "off" }  %>
   <%= f.input :password, input_html: { autocomplete: "off" } %>
   <%= f.input :bypass_ssl, label: "Check this to bypass SSL verification for self-signed certificate. Note that this might allow man-in-the middle attack!" %>
-  <%= f.button :submit %>
+  <%= f.button :submit, class: "btn btn-success" %>
 <% end %>
