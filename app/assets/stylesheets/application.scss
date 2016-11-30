@@ -16,7 +16,11 @@
 @import "bootstrap";
 @import "font-awesome-sprockets";
 @import "font-awesome";
-@import "bootstrap/theme";
+//@import "bootstrap/theme";
+@import "jquery-ui/core";
+@import "jquery-ui/menu";
+@import "jquery-ui/theme";
+@import "jquery-ui/autocomplete";
 
 body.private {
   padding-top: 70px;

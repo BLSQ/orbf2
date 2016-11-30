@@ -1,0 +1,10 @@
+<% if current_user.project %>
+  <%= simple_form_for(step.model,  url: setup_projects_path, method: :post) do |f| %>
+  <%= f.input :external_reference, as: :hidden, input_html: { id: "external_reference" } %>
+  <%= f.input :name,
+              input_html: { data: { autocomplete: organisation_unit_group_setup_project_autocomplete_index_path(current_user.project), id_element: "#external_reference"},
+                            class: "form-control", placeholder: "Type some letters to start searching..." } %>
+
+  <%= f.button :submit, class: "btn btn-success" %>
+  <% end %>
+<% end %>
