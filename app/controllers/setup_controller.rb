@@ -8,7 +8,7 @@ class SetupController < PrivateController
                status: current_user.invalid_project? ? :todo : :done,
                kind:   :dhis2,
                model:  current_user.project || Project.new),
-      Step.new(name: "Entities", status: :todo, kind: :entities, model: EntityGroup.new(name: 'Rural')),
+      Step.new(name: "Entities", status: :todo, kind: :entities, model: EntityGroup.new(name: 'Public... oRVt7g429ZO', external_reference: 'oRVt7g429ZO')),
       Step.new(name: "Entity group", status: :todo, kind: :groups),
       Step.new(name: "Package of Activities", status: :todo, kind: :packages),
       Step.new(name: "Rules", status: :todo, kind: :rules),
