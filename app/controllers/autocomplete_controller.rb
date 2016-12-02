@@ -13,10 +13,12 @@ class AutocompleteController < PrivateController
     end
 
     dhis2 = current_user.project.dhis2_connection
-    total = dhis2.organisation_units.list.pager.total
     @items = dhis2.send(item_name)
                   .list(filter: filter,
                         fields: "id,name,displayName,organisationUnits~size~rename(orgunitscount)")
+    render json: @items if @items.empty?
+    total = dhis2.organisation_units.list.pager.total
+
     @items = @items.map do |item|
       organisation_units = dhis2.organisation_units
                                 .list(
