@@ -1,6 +1,6 @@
 <% if current_user.project %>
 <div id="orgunitgroup_message"></div>
-<%= simple_form_for(step.model,  url: setup_projects_path, method: :post) do |f| %>
+<%= simple_form_for(step.model,  url: setup_project_main_entity_group_path(current_user.project), method: :post) do |f| %>
 <%= f.input :external_reference, as: :hidden, input_html: { id: "external_reference" } %>
 <%= f.input :name, input_html: { data: { id_element: '#external_reference', autocomplete: organisation_unit_group_setup_project_autocomplete_index_path(current_user.project)}, class: "form-control", placeholder: "Type some letters to start searching...", id: "organisation_unit_group" } %>
 
