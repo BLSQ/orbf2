@@ -7,15 +7,15 @@ class AutocompleteController < PrivateController
 
   def autocomplete_for(item_name)
     if params.key?(:term)
-      term = "name:ilike:#{params[:term]}"
+      filter = "name:ilike:#{params[:term]}"
     elsif params.key?(:id)
-      term = "id:eq:#{params[:id]}"
+      filter = "id:eq:#{params[:id]}"
     end
 
     dhis2 = current_user.project.dhis2_connection
     total = dhis2.organisation_units.list.pager.total
     @items = dhis2.send(item_name)
-                  .list(filter: term,
+                  .list(filter: filter,
                         fields: "id,name,displayName,organisationUnits~size~rename(orgunitscount)")
     @items = @items.map do |item|
       organisation_units = dhis2.organisation_units
