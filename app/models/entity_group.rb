@@ -1,4 +1,5 @@
-class EntityGroup
-  include ActiveModel::Model
-  attr_accessor(:name, :external_reference)
+class EntityGroup < ApplicationRecord
+  belongs_to :project
+  validates :external_reference, presence: true
+  validates :name, presence: true
 end

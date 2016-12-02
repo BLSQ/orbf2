@@ -5,6 +5,8 @@ class Project < ApplicationRecord
   validates :user, presence: true
   validates :password, presence: true
 
+  has_one :entity_group
+
   def verify_connection
     return { status: :ko, message: errors.full_messages.join(",") } if invalid?
     infos = dhis2_connection.system_infos.get

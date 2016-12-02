@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-  get 'group/create'
 
   devise_for :users
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
@@ -7,7 +6,8 @@ Rails.application.routes.draw do
   devise_scope :user do
     get "/users/sign_out" => "devise/sessions#destroy"
     resource :setup do
-      resources :projects do
+      resources :projects, only: [:create] do
+        resource :main_entity_group, only: [:create, :update]
         resources :autocomplete, only: [] do
           collection do
             get :organisation_unit_group
