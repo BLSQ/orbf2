@@ -16,18 +16,17 @@ RSpec.describe ProjectsController, type: :controller do
       sign_in user
     end
 
-    DHIS2_URL = "https://sample.local"
-
+    DHIS2_URL = "https://sample.local".freeze
 
     it "should allow project creation when valid infos is passed" do
       stub_dhis2_system_info_success(DHIS2_URL)
 
-      post :create, project: {
+      post :create, params: { project: {
         name: "project_name",
         dhis2_url: DHIS2_URL,
         user: "username",
         password: "password", bypass_ssl: false
-      }
+      } }
       expect(response).to redirect_to("/")
       expect(flash[:notice]).to eq "Great your dhis2 connection looks valid !"
       user.reload

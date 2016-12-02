@@ -19,7 +19,10 @@ class AutocompleteController < PrivateController
                         fields: "id,name,displayName,organisationUnits~size~rename(orgunitscount)")
     @items = @items.map do |item|
       organisation_units = dhis2.organisation_units
-                                .list(filter: "organisationUnitGroups.id:eq:#{item.id}", page_size: 5).map { |orgunit| { name: orgunit.display_name } }
+                                .list(
+                                  filter:    "organisationUnitGroups.id:eq:#{item.id}",
+                                  page_size: 5
+                                ).map { |orgunit| { name: orgunit.display_name } }
       {
         value:                    item.display_name,
         id:                       item.id,
