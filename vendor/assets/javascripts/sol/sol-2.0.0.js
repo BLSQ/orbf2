@@ -54,7 +54,7 @@
             texts : {
                 noItemsAvailable: 'No entries found',
                 selectAll: 'Select all',
-                selectNone: 'Select none',
+                selectNone: 'Deselect all',
                 quickDelete: '&times;',
                 searchplaceholder: 'Click here to search'
             },
@@ -96,6 +96,7 @@
             multiple: undefined,
             showSelectAll: false,
             showSelectionBelowList: false,
+            selectionDestination: '',
             allowNullSelection: false,
             scrollTarget: undefined,
             maxHeight: undefined,
@@ -130,6 +131,8 @@
                 .removeAttr('name')
                 .data('sol-name', originalName)
                 .hide();
+
+            $(".sol-current-selection").detach().appendTo('#'+this.config.selectionDestination);
 
             return this;
         },
@@ -207,8 +210,8 @@
 
                 // buttons for (de-)select all
                 if (this.config.showSelectAll) {
-                    var $deselectAllButton = $('<a href="#" class="sol-deselect-all"/>').html(this.config.texts.selectNone).click(function () { self.deselectAll(); }),
-                        $selectAllButton = $('<a href="#" class="sol-select-all"/>').html(this.config.texts.selectAll).click(function () { self.selectAll(); });
+                    var $deselectAllButton = $('<a href="#" class="sol-deselect-all"/>').html(this.config.texts.selectNone).click(function (ev) { ev.preventDefault(); self.deselectAll(); }),
+                        $selectAllButton = $('<a href="#" class="sol-select-all"/>').html(this.config.texts.selectAll).click(function (ev) { ev.preventDefault(); self.selectAll(); });
 
                     this.$actionButtons = $('<div class="sol-action-buttons"/>').append($selectAllButton).append($deselectAllButton).append('<div class="sol-clearfix"/>');
                     this.$selectionContainer.prepend(this.$actionButtons);
