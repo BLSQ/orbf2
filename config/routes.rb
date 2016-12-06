@@ -8,6 +8,7 @@ Rails.application.routes.draw do
     resource :setup do
       resources :projects, only: [:create] do
         resource :main_entity_group, only: [:create, :update]
+        resource :packages
         resources :autocomplete, only: [] do
           collection do
             get :organisation_unit_group

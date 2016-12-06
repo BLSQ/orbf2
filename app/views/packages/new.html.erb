@@ -1,0 +1,39 @@
+<%= simple_form_for(package,  url: setup_project_packages_path(current_user.project), method: :post) do |f| %>
+  <%= f.input :name %>
+  <div class="row"><div class="col-md-6"><select id="my-select" class="form-control" name="character" multiple="multiple">
+    <option value="Peter">Data Element 1</option>
+    <option value="Lois">Data Element 2</option>
+    <option value="Chris">Data Element 3</option>
+    <option value="Meg">Data Element 4</option>
+    <option value="Stewie">Data Element 5</option>
+    <option value="Cleveland">Cleveland Brown</option>
+    <option value="Joe">Joe Swanson</option>
+    <option value="Quagmire">Glenn Quagmire</option>
+    <option value="Evil Monkey">Evil Monkey</option>
+    <option value="Herbert">John Herbert</option>
+</select></div><div class="col-md-6" id="my-sol-current-selection"></div></div>
+  <%= f.input :data_element_group_ext_ref %>
+  <%= f.input :frequency %>
+  <%= f.button :submit, class: "btn btn-success" %>
+<% end %>
+<script type="text/javascript">
+    $(function() {
+        // initialize sol
+        $('#my-select').searchableOptionList({
+        showSelectAll: true,
+        allowNullSelection: false,
+        maxHeight: '250px',
+        selectionDestination:'my-sol-current-selection',
+        texts: {
+            //noItemsAvailable: 'Go on, nothing to see here',
+            //selectAll: 'Get em all',
+            //selectNone: 'Nah',
+            quickDelete: '<i class="fa fa-trash text-danger" aria-hidden="true"></i>',
+            searchplaceholder: 'Lookup the data elements here...'
+        }
+
+      });
+      //$(".sol-current-selection").detach().appendTo('#my-sol-current-selection');
+      //$("#sol-current-selection").appendTo('#my-sol-current-selection')
+    });
+</script>

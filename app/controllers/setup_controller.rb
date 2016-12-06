@@ -12,8 +12,8 @@ class SetupController < PrivateController
                status: current_user.project.entity_group.present? ? :done : :todo,
                kind:   :entities,
                model:  current_user.project.nil? ? nil : current_user.project.entity_group || current_user.project.build_entity_group),
-      Step.new(name: "Entity group", status: :todo, kind: :groups),
-      Step.new(name: "Package of Activities", status: :todo, kind: :packages),
+      # Step.new(name: "Entity group", status: :todo, kind: :groups),
+      Step.new(name: "Package of Activities", status: :todo, kind: :packages, model: current_user.project.nil? ? nil : current_user.project.packages),
       Step.new(name: "Rules", status: :todo, kind: :rules),
       Step.new(name: "Tarification plan", status: :todo, kind: :tarifications)
     ]
