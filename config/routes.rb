@@ -12,6 +12,7 @@ Rails.application.routes.draw do
         resources :autocomplete, only: [] do
           collection do
             get :organisation_unit_group
+            get :data_elements
           end
         end
       end

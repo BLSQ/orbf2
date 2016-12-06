@@ -3,6 +3,10 @@ class AutocompleteController < PrivateController
     autocomplete_for(:organisation_unit_groups)
   end
 
+  def data_elements
+    autocomplete_for_data_elements
+  end
+
   private
 
   def autocomplete_for(item_name)
@@ -34,5 +38,19 @@ class AutocompleteController < PrivateController
       }
     end
     render json: @items
+  end
+
+  def autocomplete_for_data_elements
+    dhis2 = current_user.project.dhis2_connection
+    dataelements = dhis2.data_elements
+                        .list(fields: "id,displayName")
+                        .map do |dataelement|
+                          {
+                            type:  "option",
+                            value: dataelement.id,
+                            label: dataelement.display_name
+                          }
+                        end
+    render json: dataelements
   end
 end

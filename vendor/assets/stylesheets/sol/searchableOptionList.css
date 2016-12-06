@@ -134,6 +134,7 @@
 .sol-label-text {
     padding-left: 20px;
     line-height: 1.2em;
+		font-weight: normal !important;
 }
 
 .sol-checkbox, .sol-radio {
