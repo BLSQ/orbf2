@@ -132,7 +132,9 @@
                 .data('sol-name', originalName)
                 .hide();
 
-            $(".sol-current-selection").detach().appendTo('#'+this.config.selectionDestination);
+              this.$showSelectionContainer.detach().appendTo('#'+this.config.selectionDestination);
+        
+
 
             return this;
         },
