@@ -10,7 +10,15 @@
   </div>
     <div class="col-md-6" id="data_elements_selection"></div>
 </div>
-
+<div class="row">
+    <div class="col-md-6">
+      <div class="form-group">
+        <label class="control-label">Org. Units Groups</label>
+        <select id="org_units_groups_selector" data-placeholder="Lookup the organisation units groups here..." data-selection = "org_units_groups_selection" data-url = "<%= organisation_unit_group_setup_project_autocomplete_index_path(current_user.project, sibling_id:true) %>" class="form-control sol-powered" name="character" multiple="multiple"></select>
+    </div>
+  </div>
+    <div class="col-md-6" id="org_units_groups_selection"></div>
+</div>
 <%= f.input :frequency, collection: Package::FREQUENCIES, as: :select %>
 <%= f.button :submit, class: "btn btn-success" %>
 <% end %>
