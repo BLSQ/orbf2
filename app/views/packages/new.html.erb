@@ -2,30 +2,11 @@
 <%= f.input :name %>
 <div class="row">
     <div class="col-md-6">
-        <select id="my-select" class="form-control" name="character" multiple="multiple"></select>
+        <select id="data_elements_selector" data-placeholder="Lookup the data elements here..." data-selection = "data_elements_selection" data-url = "<%= data_elements_setup_project_autocomplete_index_path(current_user.project) %>" class="form-control" name="character" multiple="multiple"></select>
     </div>
-    <div class="col-md-6" id="my-sol-current-selection"></div>
+    <div class="col-md-6" id="data_elements_selection"></div>
 </div>
 <%= f.input :data_element_group_ext_ref %>
 <%= f.input :frequency %>
 <%= f.button :submit, class: "btn btn-success" %>
 <% end %>
-<script type="text/javascript">
-    $(function () {
-        // initialize sol
-        $('#my-select').searchableOptionList({
-            data: '<%= data_elements_setup_project_autocomplete_index_path(current_user.project) %>',
-            showSelectAll: true,
-            allowNullSelection: false,
-            maxHeight: '250px',
-            selectionDestination: 'my-sol-current-selection',
-            texts: {
-                //noItemsAvailable: 'Go on, nothing to see here', selectAll: 'Get em all', selectNone: 'Nah',
-                quickDelete: '<i class="fa fa-trash text-danger" aria-hidden="true"></i>',
-                searchplaceholder: 'Lookup the data elements here...'
-            }
-
-        });
-        //$(".sol-current-selection").detach().appendTo('#my-sol-current-selection'); $("#sol-current-selection").appendTo('#my-sol-current-selection')
-    });
-</script>

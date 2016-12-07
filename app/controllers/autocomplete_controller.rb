@@ -1,15 +1,5 @@
 class AutocompleteController < PrivateController
   def organisation_unit_group
-    autocomplete_for(:organisation_unit_groups)
-  end
-
-  def data_elements
-    autocomplete_for_data_elements
-  end
-
-  private
-
-  def autocomplete_for(item_name)
     if params.key?(:term)
       filter = "name:ilike:#{params[:term]}"
     elsif params.key?(:id)
@@ -17,10 +7,10 @@ class AutocompleteController < PrivateController
     end
 
     dhis2 = current_user.project.dhis2_connection
-    @items = dhis2.send(item_name)
+    @items = dhis2.organisation_unit_groups
                   .list(filter: filter,
                         fields: "id,name,displayName,organisationUnits~size~rename(orgunitscount)")
-    render json: @items if @items.empty?
+    render json: @items && return if @items.empty?
     total = dhis2.organisation_units.list.pager.total
 
     @items = @items.map do |item|
@@ -40,10 +30,10 @@ class AutocompleteController < PrivateController
     render json: @items
   end
 
-  def autocomplete_for_data_elements
+  def data_elements
     dhis2 = current_user.project.dhis2_connection
     dataelements = dhis2.data_elements
-                        .list(fields: "id,displayName")
+                        .list(fields: "id,displayName", page_size: 20_000)
                         .map do |dataelement|
                           {
                             type:  "option",
