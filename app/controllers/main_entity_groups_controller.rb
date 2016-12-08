@@ -8,7 +8,7 @@ class MainEntityGroupsController < PrivateController
     create_or_update
 
     if current_project.entity_group.save
-      flash[:notice] = "Main entity group set !"
+      flash[:success] = "Main entity group set !"
     else
       flash[:alert] = current_project.entity_group.errors.full_messages.join(", ")
     end

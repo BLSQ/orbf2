@@ -14,18 +14,8 @@ class PackagesController < PrivateController
       return
     end
 
-    deg = [
-      { name:          package.name,
-        short_name:    package.name[0..49],
-        code:          package.name[0..49],
-        display_name:  package.name,
-        data_elements: params[:data_elements].map do |element_id|
-          { id: element_id }
-        end }
-    ]
-    dhis2 = current_user.project.dhis2_connection
-    dhis2.data_element_groups.create(deg)
-    created_ged = dhis2.data_element_groups.find_by(name: params[:package][:name])
+    created_ged = package.create_data_element_group(params[:data_elements])
+
     if created_ged
       package.data_element_group_ext_ref = created_ged.id
       if package.save
