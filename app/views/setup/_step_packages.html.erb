@@ -1,6 +1,9 @@
 <% if current_user.project %>
   <% if step.model && !step.model.empty? %>
+  <table class="table">
+    <tr><th>Package</th></tr>
     <%= render partial: "package", collection: step.model %>
+  </table>
   <% else %>
     <%= link_to 'Let\'s create your first package of activities', new_setup_project_packages_path(current_user.project)  %>
   <% end %>

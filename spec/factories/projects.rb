@@ -1,3 +1,18 @@
+# == Schema Information
+#
+# Table name: projects
+#
+#  id         :integer          not null, primary key
+#  name       :string           not null
+#  dhis2_url  :string           not null
+#  user       :string
+#  password   :string
+#  bypass_ssl :boolean          default(FALSE)
+#  boolean    :boolean          default(FALSE)
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+
 # Read about factories at https://github.com/thoughtbot/factory_girl
 
 FactoryGirl.define do

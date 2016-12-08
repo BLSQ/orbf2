@@ -1,3 +1,18 @@
+# == Schema Information
+#
+# Table name: projects
+#
+#  id         :integer          not null, primary key
+#  name       :string           not null
+#  dhis2_url  :string           not null
+#  user       :string
+#  password   :string
+#  bypass_ssl :boolean          default(FALSE)
+#  boolean    :boolean          default(FALSE)
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+
 require "rails_helper"
 
 RSpec.describe Project, type: :model do
