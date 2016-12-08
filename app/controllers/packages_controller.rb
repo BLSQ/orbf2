@@ -29,7 +29,7 @@ class PackagesController < PrivateController
     if created_ged
       package.data_element_group_ext_ref = created_ged.id
       if package.save
-        flash[:notice] = "Package of Activities created success"
+        flash[:success] = "Package of Activities created success"
         redirect_to(root_path)
       else
         flash[:failure] = "Error creating Package of Activities"
