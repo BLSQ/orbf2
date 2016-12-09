@@ -1,8 +1,14 @@
 class AutocompleteController < PrivateController
   def organisation_unit_group
-    organisation_unit_group_by_term_or_id if params.key?(:term) || params.key?(:id)
-    organisation_unit_group_by_used_or_sibling_id if params.key?(:sibling_id)
+    if params.key?(:term) || params.key?(:id)
+      organisation_unit_group_by_term_or_id
+    elsif params.key?(:siblings)
+      organisation_unit_group_by_used_or_sibling_id
+    else
+      render_sol_items([])
+    end
   end
+
 
   def data_elements
     dhis2 = current_user.project.dhis2_connection
@@ -46,25 +52,16 @@ def organisation_unit_group_by_term_or_id
 end
 
 def organisation_unit_group_by_used_or_sibling_id
-  dhis2 = current_user.project.dhis2_connection
-  units = dhis2.organisation_units.list(page_size: 50_000, fields: "id,name,organisationUnitGroups")
-  main_group_id = current_user.project.entity_group.external_reference
-  group_ids = units.select { |unit| unit.organisation_unit_groups.any? { |g| g["id"] == main_group_id } }
-                   .map(&:organisation_unit_groups)
-                   .flatten.map { |g| g["id"] }.uniq
-
-  group_ids -= [main_group_id]
-  groups = dhis2.organisation_unit_groups.find(group_ids).uniq
-  render_sol_items(groups)
+  render_sol_items( current_user.project.entity_group.find_sibling_organisation_unit_groups)
 end
 
 def render_sol_items(items)
-  items = items.map do |item|
+  @items = items.map do |item|
     {
       type:  "option",
       value: item.id,
       label: item.display_name
     }
   end
-  render json: items
+  render json: @items
 end

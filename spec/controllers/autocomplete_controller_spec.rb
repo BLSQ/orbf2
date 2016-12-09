@@ -8,7 +8,15 @@ RSpec.describe AutocompleteController, type: :controller do
     end
   end
 
-  describe "When authenticated #orgunitgroup" do
+  let(:project) do
+    project = create :project
+    user.project = project
+    user.save!
+    user.reload
+    project
+  end
+
+  describe "When authenticated #data_ements" do
     include_context "basic_context"
     include WebmockDhis2Helpers
 
@@ -16,12 +24,20 @@ RSpec.describe AutocompleteController, type: :controller do
       sign_in user
     end
 
-    let(:project) do
-      project = create :project
-      user.project = project
-      user.save!
-      user.reload
-      project
+    it "should return all data_ements" do
+      stub_request(:get, "#{project.dhis2_url}/api/dataElements?fields=id,displayName&pageSize=20000")
+        .to_return(status: 200, body: fixture_content(:dhis2, "all_data_elements.json"))
+
+      get :data_elements, params: { project_id: project.id }
+    end
+  end
+
+  describe "When authenticated #orgunitgroup" do
+    include_context "basic_context"
+    include WebmockDhis2Helpers
+
+    before(:each) do
+      sign_in user
     end
 
     let(:expected_group) do
@@ -38,6 +54,37 @@ RSpec.describe AutocompleteController, type: :controller do
         organisation_units_total: 1332,
         value:                    "Clinic"
       }
+    end
+
+    it "should autocomplete by sibling_id" do
+      project.create_entity_group(name: "Public Facilities", external_reference: "f25dqv3Y7Z0")
+
+      stub_request(:get, "#{project.dhis2_url}/api/organisationUnits?"\
+        "fields=id,name,organisationUnitGroups&pageSize=50000")
+        .to_return(
+          status: 200,
+          body:   fixture_content(:dhis2, "all_organisation_units_with_groups.json")
+        )
+
+      stub_request(:get, "#{project.dhis2_url}/api/organisationUnitGroups?fields=:all&"\
+        "filter=id:in:%5BRXL3lPSK8oG,oRVt7g429ZO,tDZVQ1WtwpA,EYbopBOJWsW,uYxK4wmcPqA,CXw2yu5fodb,gzcv65VyaGq,w1Atoz18PCL%5D"\
+        "&pageSize=8")
+        .to_return(status: 200, body: fixture_content(:dhis2, "sibling_org_unit_groups.json"))
+
+      get :organisation_unit_group, params: { project_id: project.id, siblings: "true" }
+
+      expect(assigns(:items)).to eq(
+        [
+          { type: "option", value: "CXw2yu5fodb", label: "CHC" },
+          { type: "option", value: "gzcv65VyaGq", label: "Chiefdom" },
+          { type: "option", value: "uYxK4wmcPqA", label: "CHP" },
+          { type: "option", value: "RXL3lPSK8oG", label: "Clinic" },
+          { type: "option", value: "w1Atoz18PCL", label: "District" },
+          { type: "option", value: "tDZVQ1WtwpA", label: "Hospital" },
+          { type: "option", value: "EYbopBOJWsW", label: "MCHP" },
+          { type: "option", value: "oRVt7g429ZO", label: "Public facilities" }
+        ]
+      )
     end
 
     it "should autocomplete org unit groups by name" do
