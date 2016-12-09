@@ -21,6 +21,8 @@ class Package < ApplicationRecord
   # validates :states, presence: true
   validates :frequency, presence: true, inclusion: { in: FREQUENCIES }
 
+  accepts_nested_attributes_for :states
+
   def create_data_element_group(data_element_ids)
     deg = [
       { name:          name,

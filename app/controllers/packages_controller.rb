@@ -8,6 +8,11 @@ class PackagesController < PrivateController
 
   def create
     @package = current_user.project.packages.build(params_package)
+
+    state_ids = params_package[:state_ids].reject(&:empty?)
+
+    package.states = State.find(state_ids)
+
     if package.invalid?
       flash[:failure] = "Package not valid..."
       render "new"
@@ -16,14 +21,12 @@ class PackagesController < PrivateController
 
     created_ged = package.create_data_element_group(params[:data_elements])
     entity_groups = package.create_package_entity_groups(params[:package][:entity_groups])
-    states = hashed_states(params[:package][:states])
 
     if created_ged
       package.data_element_group_ext_ref = created_ged.id
       if package.save
 
         package.package_entity_groups.create(entity_groups)
-        package.package_states.create(states)
 
         flash[:success] = "Package of Activities created success"
         redirect_to(root_path)
@@ -40,14 +43,7 @@ class PackagesController < PrivateController
   private
 
   def params_package
-    params.require(:package).permit(:name, :frequency)
+    params.require(:package).permit(:name, :frequency, state_ids: [])
   end
 
-  def hashed_states(states)
-    states.map do |state|
-      {
-        state_id: state
-      }
-    end
-  end
 end

@@ -10,6 +10,18 @@ RSpec.describe PackagesController, type: :controller do
 
   describe "When authenticated #index" do
     include_context "basic_context"
+    let!(:states) {
+      states = [
+        { name: "Claimed" },
+        { name: "Verified" },
+        { name: "Validated" }
+      ]
+
+      states.each do |state|
+        State.find_or_create_by!(state)
+      end
+      states
+    }
     before(:each) do
       sign_in user
     end
@@ -33,16 +45,8 @@ RSpec.describe PackagesController, type: :controller do
       project
 
 
-      states = [
-        { name: "Claimed" },
-        { name: "Verified" },
-        { name: "Validated" }
-      ]
 
-      states.each do |state|
-        State.find_or_create_by(state)
-      end
-
+      state_ids = State.all.map(&:id).map(&:to_s)
 
       stub_request(:post, "#{project.dhis2_url}/api/metadata")
         .with(body: "{\"dataElementGroups\":[{\"name\":\"azeaze\",\"shortName\":\"azeaze\",\"code\":\"azeaze\",\"dataElements\":[{\"id\":\"FTRrcoaog83\"}]}]}")
@@ -54,11 +58,12 @@ RSpec.describe PackagesController, type: :controller do
       stub_request(:get, "#{project.dhis2_url}/api/organisationUnitGroups?fields=:all&filter=id:in:%5Bentityid1%5D&pageSize=1")
         .to_return(status: 200, body: fixture_content(:dhis2, "organisationUnitGroups-byid.json"))
 
+
       post :create, params: {
         "project_id"    => project.id,
         "package"       => {
           "name"          => "azeaze",
-          "states"        => State.all.map(&:id),
+          "state_ids"     => state_ids,
           "frequency"     => "monthly",
           "entity_groups" => ["entityid1"]
         },
