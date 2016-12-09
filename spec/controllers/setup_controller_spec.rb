@@ -33,6 +33,10 @@ RSpec.describe SetupController, type: :controller do
       assigns(:setup)
     end
 
+    def dump_steps_for_debugs
+      puts setup.steps.map(&:inspect)
+    end
+
     it "should display main entity group when Dhis2 is complete" do
       project
       get :index
@@ -49,7 +53,6 @@ RSpec.describe SetupController, type: :controller do
       get :index
       expect(response).to have_http_status(:success)
       expect(setup.steps.size).to eq 5
-      puts setup.steps.map(&:inspect)
       expect(setup.steps[0..1].all?(&:done?)).to eq true
       expect(setup.steps[2..5].all?(&:todo?)).to eq true
     end
@@ -70,7 +73,6 @@ RSpec.describe SetupController, type: :controller do
       get :index
       expect(response).to have_http_status(:success)
       expect(setup.steps.size).to eq 5
-      puts setup.steps.map(&:inspect)
       expect(setup.steps[0..2].all?(&:done?)).to eq true
       expect(setup.steps[3..5].all?(&:todo?)).to eq true
     end
