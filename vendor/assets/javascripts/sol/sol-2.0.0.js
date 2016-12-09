@@ -96,7 +96,7 @@
             multiple: undefined,
             showSelectAll: false,
             showSelectionBelowList: false,
-            selectionDestination: '',
+            selectionDestination: undefined,
             allowNullSelection: false,
             scrollTarget: undefined,
             maxHeight: undefined,
@@ -133,8 +133,6 @@
                 .hide();
 
               this.$showSelectionContainer.detach().appendTo('#'+this.config.selectionDestination);
-        
-
 
             return this;
         },
@@ -781,6 +779,7 @@
         selectAll: function () {
             if (this.config.showSelectAll && this.config.multiple) {
                 var $changedInputs = this.$selectionContainer
+                    .find('.sol-option').not('.sol-filtered-search')
                     .find('input[type="checkbox"]:not([disabled], :checked)')
                     .prop('checked', true)
                     .trigger('change', true);
@@ -796,6 +795,7 @@
         deselectAll: function () {
             if (this.config.showSelectAll && this.config.multiple) {
                 var $changedInputs = this.$selectionContainer
+                    .find('.sol-option').not('.sol-filtered-search')
                     .find('input[type="checkbox"]:not([disabled]):checked')
                     .prop('checked', false)
                     .trigger('change', true);
