@@ -38,11 +38,12 @@ class Package < ApplicationRecord
 
   def create_package_entity_groups(entity_group_ids)
     dhis2 = project.dhis2_connection
-    dhis2.organisation_unit_groups.list(filter:    "id:in:[#{entity_group_ids.flatten.join(',')}]",
-                                        page_size: entity_group_ids.size).map do |ettgp|
+    organisation_unit_groups = dhis2.organisation_unit_groups.find(entity_group_ids)
+
+    organisation_unit_groups.map do |organisation_unit_group|
       {
-        name:                            ettgp.display_name,
-        organisation_unit_group_ext_ref: ettgp.id
+        name:                            organisation_unit_group.display_name,
+        organisation_unit_group_ext_ref: organisation_unit_group.id
       }
     end
   end
