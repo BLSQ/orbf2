@@ -15,10 +15,16 @@ class PackagesController < PrivateController
     end
 
     created_ged = package.create_data_element_group(params[:data_elements])
+    entity_groups = package.create_package_entity_groups(params[:package][:entity_groups])
+    states = hashed_states(params[:package][:states])
 
     if created_ged
       package.data_element_group_ext_ref = created_ged.id
       if package.save
+
+        package.package_entity_groups.create(entity_groups)
+        package.package_states.create(states)
+
         flash[:success] = "Package of Activities created success"
         redirect_to(root_path)
       else
@@ -35,5 +41,13 @@ class PackagesController < PrivateController
 
   def params_package
     params.require(:package).permit(:name, :frequency)
+  end
+
+  def hashed_states(states)
+    states.map do |state|
+      {
+        state_id: state
+      }
+    end
   end
 end

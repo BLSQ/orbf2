@@ -14,6 +14,7 @@
 class Package < ApplicationRecord
   FREQUENCIES = %w(monthly quarterly).freeze
   belongs_to :project
+  has_many :package_entity_groups
   has_many :package_states
   has_many :states, through: :package_states
   validates :name, presence: true, length: { maximum: 230 }
@@ -33,5 +34,16 @@ class Package < ApplicationRecord
     dhis2 = project.dhis2_connection
     dhis2.data_element_groups.create(deg)
     dhis2.data_element_groups.find_by(name: name)
+  end
+
+  def create_package_entity_groups(entity_group_ids)
+    dhis2 = project.dhis2_connection
+    dhis2.organisation_unit_groups.list(filter:    "id:in:[#{entity_group_ids.flatten.join(',')}]",
+                                        page_size: entity_group_ids.size).map do |ettgp|
+      {
+        name:                            ettgp.display_name,
+        organisation_unit_group_ext_ref: ettgp.id
+      }
+    end
   end
 end
