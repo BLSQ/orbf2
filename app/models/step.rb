@@ -9,5 +9,4 @@ class Step
   def done?
     status == :done
   end
-
 end
