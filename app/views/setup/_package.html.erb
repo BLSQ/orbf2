@@ -1,0 +1,9 @@
+<tr>
+    <td><%= package.name %></td>
+    <td>
+        <small><%= package.package_entity_groups.map{ |entitygroup|  %Q(#{entitygroup.name}) }.join(', ') %></small>
+    </td>
+    <td>
+        <small><%= package.states.map{ |state|  %Q(#{state.name}) }.join(', ') %></small>
+    </td>
+</tr>

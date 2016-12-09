@@ -10,16 +10,48 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161202094112) do
+ActiveRecord::Schema.define(version: 20161208132525) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "entity_groups", force: :cascade do |t|
-    t.string  "name"
-    t.string  "external_reference"
-    t.integer "project_id"
+    t.string   "name"
+    t.string   "external_reference"
+    t.integer  "project_id"
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
     t.index ["project_id"], name: "index_entity_groups_on_project_id", using: :btree
+  end
+
+  create_table "package_entity_groups", force: :cascade do |t|
+    t.string   "name"
+    t.integer  "package_id"
+    t.string   "organisation_unit_group_ext_ref"
+    t.datetime "created_at",                      null: false
+    t.datetime "updated_at",                      null: false
+    t.index ["package_id"], name: "index_package_entity_groups_on_package_id", using: :btree
+  end
+
+  create_table "package_states", force: :cascade do |t|
+    t.integer  "package_id"
+    t.integer  "state_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["package_id", "state_id"], name: "index_package_states_on_package_id_and_state_id", unique: true, using: :btree
+    t.index ["package_id"], name: "index_package_states_on_package_id", using: :btree
+    t.index ["state_id", "package_id"], name: "index_package_states_on_state_id_and_package_id", unique: true, using: :btree
+    t.index ["state_id"], name: "index_package_states_on_state_id", using: :btree
+  end
+
+  create_table "packages", force: :cascade do |t|
+    t.string   "name",                       null: false
+    t.string   "data_element_group_ext_ref", null: false
+    t.string   "frequency",                  null: false
+    t.integer  "project_id"
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+    t.index ["project_id"], name: "index_packages_on_project_id", using: :btree
   end
 
   create_table "projects", force: :cascade do |t|
@@ -31,6 +63,13 @@ ActiveRecord::Schema.define(version: 20161202094112) do
     t.boolean  "boolean",    default: false
     t.datetime "created_at",                 null: false
     t.datetime "updated_at",                 null: false
+  end
+
+  create_table "states", force: :cascade do |t|
+    t.string   "name",       null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_states_on_name", unique: true, using: :btree
   end
 
   create_table "users", force: :cascade do |t|
@@ -53,5 +92,9 @@ ActiveRecord::Schema.define(version: 20161202094112) do
   end
 
   add_foreign_key "entity_groups", "projects"
+  add_foreign_key "package_entity_groups", "packages"
+  add_foreign_key "package_states", "packages"
+  add_foreign_key "package_states", "states"
+  add_foreign_key "packages", "projects"
   add_foreign_key "users", "projects"
 end
