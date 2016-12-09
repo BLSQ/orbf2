@@ -1,12 +1,13 @@
 # == Schema Information
 #
-# Table name: package_states
+# Table name: package_entity_groups
 #
-#  id         :integer          not null, primary key
-#  package_id :integer
-#  state_id   :integer
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id                              :integer          not null, primary key
+#  name                            :string
+#  package_id                      :integer
+#  organisation_unit_group_ext_ref :string
+#  created_at                      :datetime         not null
+#  updated_at                      :datetime         not null
 #
 
 class PackageEntityGroup < ApplicationRecord

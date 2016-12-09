@@ -49,7 +49,7 @@ RSpec.describe MainEntityGroupsController, type: :controller do
       post :create, params: valid_attributes
 
       expect(response).to redirect_to("/")
-      expect(flash[:notice]).to eq("Main entity group set !")
+      expect(flash[:success]).to eq("Main entity group set !")
       group_entry = EntityGroup.all.last
       expect(group_entry.external_reference).to eq("external_reference")
       expect(group_entry.name).to eq("entity_group_name")
@@ -62,7 +62,7 @@ RSpec.describe MainEntityGroupsController, type: :controller do
                                                      name:               "new_entity_group_name"
                                                    })
       expect(response).to redirect_to("/")
-      expect(flash[:notice]).to eq("Main entity group set !")
+      expect(flash[:success]).to eq("Main entity group set !")
 
       group_entry = EntityGroup.all.last
       expect(group_entry.external_reference).to eq("new_external_reference")
