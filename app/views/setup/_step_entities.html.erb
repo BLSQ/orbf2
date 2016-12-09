@@ -1,4 +1,4 @@
-<% if current_user.project %>
+<% if step.model%>
 <div id="orgunitgroup_message"></div>
 <%= simple_form_for(step.model,  url: setup_project_main_entity_group_path(current_user.project), method: :post) do |f| %>
 <%= f.input :external_reference, as: :hidden, input_html: { id: "external_reference" } %>
