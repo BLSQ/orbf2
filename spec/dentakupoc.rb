@@ -79,6 +79,10 @@ Struct.new("Package", :id, :name, :rules, :invoice_details, :to_sum) do
     return activity_and_values_quantity if name.downcase.include?("quantité")
     return activity_and_values_quality if name.downcase.include?("qualité")
   end
+
+  def to_h
+    super.to_h.except(:rules,:to_sum).merge!("rules" => rules.map(&:to_h), "to_sum" => to_sum.to_h)
+  end
 end
 
 Struct.new("TarificationService", :none) do
@@ -105,6 +109,10 @@ Struct.new("Rule", :name, :formulas) do
     formulas.each { |formula| facts[formula.code] = formula.expression }
     facts[:actictity_rule_name] = "'#{name}'"
     facts
+  end
+
+  def to_h
+    super.to_h.except(:formulas).merge!("formulas" => formulas.map(&:to_h))
   end
 end
 
@@ -244,7 +252,7 @@ def generate_invoice(entity, date)
       )
 
     ],
-    [:attributed_points, :max_points, :percentage],
+    [:attributed_points, :max_points, :quality_technical_score_value, :actictity_name],
 
     Struct::Rule.new(
       "QUALITY score",
@@ -355,9 +363,6 @@ def generate_invoice(entity, date)
 
   package_facts_and_rules = {}
   package_results.each do |package_result|
-    official_keys = package_result.package.to_sum.formulas.map(&:code)
-    official_vars = package_result.solution.slice(official_keys)
-    puts "official_vars #{package_result.solution.keys} #{official_keys}"
     package_facts_and_rules = package_facts_and_rules.merge(package_result.solution)
   end
   package_facts_and_rules = package_facts_and_rules.merge(project.payment_rule.to_facts)
