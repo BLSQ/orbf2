@@ -171,68 +171,91 @@ end
 def generate_invoice(entity, date)
   tarification_service = Struct::TarificationService.new(:unused)
 
-  activity_quantity_rule = Struct::Rule.new(
-    "Quantité PHU",
-    [
-      Struct::Formula.new(
-        :difference_percentage,
-        "if (verified != 0.0, (ABS(declared - verified) / verified ) * 100.0, 0.0)",
-        "Pourcentage difference entre déclaré & vérifié"
-      ),
-      Struct::Formula.new(
-        :quantity,
-        "IF(difference_percentage < 5, verified , 0.0)",
-        "Quantity for PBF payment"
-      ),
-      Struct::Formula.new(
-        :amount,
-        "quantity * tarif",
-        "Total payment"
-      )
-    ]
-  )
   package_quantity_pma = Struct::Package.new(
     1,
     "Quantité PMA",
-    [activity_quantity_rule],
-    [:declared, :verified, :difference_percentage, :quantity, :tarif, :amount, :actictity_name],
-    Struct::Formula.new(
-      :amount,
-      "SUM(%{amount})",
-      "Amount PBF"
-    )
-  )
-
-  activity_quality_rule = Struct::Rule.new(
-    "Quantité assessment",
     [
-      Struct::Formula.new(
-        :attributed_points,
-        "declared",
-        "Attrib. Points"
-      ),
-      Struct::Formula.new(
-        :max_points,
-        "tarif",
-        "Max Points"
-      ),
-      Struct::Formula.new(
-        :percentage,
-        "(attributed_points / max_points) * 100.0",
-        "Quality score"
+      Struct::Rule.new(
+        "Quantité PHU",
+        [
+          Struct::Formula.new(
+            :difference_percentage,
+            "if (verified != 0.0, (ABS(declared - verified) / verified ) * 100.0, 0.0)",
+            "Pourcentage difference entre déclaré & vérifié"
+          ),
+          Struct::Formula.new(
+            :quantity,
+            "IF(difference_percentage < 5, verified , 0.0)",
+            "Quantity for PBF payment"
+          ),
+          Struct::Formula.new(
+            :amount,
+            "quantity * tarif",
+            "Total payment"
+          )
+        ]
       )
-    ]
+    ],
+    [:declared, :verified, :difference_percentage, :quantity, :tarif, :amount, :actictity_name],
+    Struct::Rule.new(
+      "Quantité PHU",
+      [
+        Struct::Formula.new(
+          :amount,
+          "SUM(%{amount_values})",
+          "Amount PBF"
+        )
+      ]
+    )
   )
 
   package_quality = Struct::Package.new(
     2,
     "Qualité",
-    [activity_quality_rule],
+    [
+      Struct::Rule.new(
+        "Quantité assessment",
+        [
+          Struct::Formula.new(
+            :attributed_points,
+            "declared",
+            "Attrib. Points"
+          ),
+          Struct::Formula.new(
+            :max_points,
+            "tarif",
+            "Max Points"
+          ),
+          Struct::Formula.new(
+            :percentage,
+            "(attributed_points / max_points) * 100.0",
+            "Quality score"
+          )
+        ]
+      )
+
+    ],
     [:attributed_points, :max_points, :percentage],
-    Struct::Formula.new(
-      :percentage,
-      "SUM(%{attributed_points})/SUM(%{max_points}) * 100.0",
-      "Quality score"
+
+    Struct::Rule.new(
+      "QUALITY score",
+      [
+        Struct::Formula.new(
+          :attributed_points,
+          "SUM(%{attributed_points_values})",
+          "Quality score"
+        ),
+        Struct::Formula.new(
+          :max_points,
+          "SUM(%{max_points_values})",
+          "Quality score"
+        ),
+        Struct::Formula.new(
+          :percentage,
+          "SUM(%{attributed_points_values})/SUM(%{max_points_values}) * 100.0",
+          "Quality score"
+        )
+      ]
     )
   )
 
@@ -266,7 +289,7 @@ def generate_invoice(entity, date)
     variables = {
     }
     results.first.solution.keys.each do |k|
-      variables[k] = results.map do |r|
+      variables["#{k}_values".to_sym] = results.map do |r|
         begin
           BigDecimal.new(r.solution[k])
           "%.10f" % r.solution[k]
@@ -276,12 +299,19 @@ def generate_invoice(entity, date)
       end.join(" , ")
     end
 
-    facts_and_rules = {
-      total: package.to_sum.expression % variables
-    }
+    facts_and_rules = {}
+    begin
+      package.to_sum.formulas.each do |formula|
+        facts_and_rules[formula.code] = formula.expression % variables
+      end
+    rescue KeyError => e
+      puts "problem with expression #{e.message}"
+      puts "package.to_sum.formulas.first.expression #{package.to_sum.formulas.first.expression} vs #{JSON.pretty_generate(variables)}"
+      raise e
+    end
     solution_package = solve!("sum activities for #{package.name}", calculator, facts_and_rules, false)
-
-    puts "Total  :  #{package.name} %.2f " % solution_package[:total]
+    package_line = package.invoice_details.map { |item| d_to_s(solution_package[item]) }
+    puts "Totals :  #{package_line.join("\t")}"
   end
 end
 
