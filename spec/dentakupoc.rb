@@ -126,6 +126,9 @@ end
 
 
 Struct.new("Project", :name, :packages, :payment_rule) do
+  def to_h
+    super.to_h.except(:payment_rule,:packages).merge!("packages" => packages.map(&:to_h), "payment_rule" => payment_rule.to_h)
+  end
 end
 
 def new_calculator
@@ -185,9 +188,7 @@ def solve!(message, calculator, facts_and_rules, debug = false)
   solution
 end
 
-def generate_invoice(entity, date)
-  tarification_service = Struct::TarificationService.new(:unused)
-
+def find_project
   package_quantity_pma = Struct::Package.new(
     1,
     "Quantité PMA",
@@ -213,7 +214,7 @@ def generate_invoice(entity, date)
         ]
       )
     ],
-    [:declared, :verified, :difference_percentage, :quantity, :tarif, :amount, :actictity_name],
+    [:declared, :verified, :difference_percentage, :quantity, :tarif, :amount, :actictity_name, :quantity_total],
     Struct::Rule.new(
       "Quantité PHU",
       [
@@ -231,7 +232,7 @@ def generate_invoice(entity, date)
     "Qualité",
     [
       Struct::Rule.new(
-        "Quantité assessment",
+        "Qualité assessment",
         [
           Struct::Formula.new(
             :attributed_points,
@@ -303,10 +304,18 @@ def generate_invoice(entity, date)
     )
 
   )
+  puts JSON.pretty_generate(project.to_h)
 
-  puts JSON.pretty_generate([package_quantity_pma.to_h, package_quality.to_h])
+  return project
+end
+
+def generate_invoice(entity, date)
+  tarification_service = Struct::TarificationService.new(:unused)
+
+  project = find_project
+
   calculator = new_calculator
-  solutions = invoice_details_per_package = packages.map do |package|
+  solutions = project.packages.map do |package|
     package.activity_and_values(date).map do |activity, values|
       # from code
       activity_tarification_facts = {
@@ -325,6 +334,7 @@ def generate_invoice(entity, date)
   end
   #  puts JSON.pretty_generate(solutions)
   package_results = solutions.flatten.group_by(&:package).map do |package, results|
+    puts "************ Package #{package.name} "
     results.each do |result|
       line = package.invoice_details.map { |item| d_to_s(result.solution[item]) }
       puts line.join("\t")
@@ -366,14 +376,14 @@ def generate_invoice(entity, date)
     package_facts_and_rules = package_facts_and_rules.merge(package_result.solution)
   end
   package_facts_and_rules = package_facts_and_rules.merge(project.payment_rule.to_facts)
-  puts package_facts_and_rules
   project_solution = solve!("payment rule", calculator, package_facts_and_rules, false)
   package_line = project.payment_rule.formulas.map { |formula| [formula.code, d_to_s(project_solution[formula.code])].join(" : ") }
+  puts "************ payments "
   puts package_line.join("\n")
 end
 
 def d_to_s(decimal)
-  return "%.0f" % decimal if decimal.is_a? Numeric
+  return "%.2f" % decimal if decimal.is_a? Numeric
   decimal
 end
 
