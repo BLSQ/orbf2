@@ -19,11 +19,46 @@ end
 Struct.new("Activity", :id, :name) do
 end
 Struct.new("Package", :id, :name, :rules) do
+  def activity_and_values(_date)
+    # build from data element group and analytics api
+    activity_and_values_quantity = [
+      [Struct::Activity.new(1, "Number of new outpatient consultations for curative care consultations"),
+       Struct::Values.new(nil, 655.0, 655.0, 0.0)],
+      [Struct::Activity.new(2, "Number of pregnant women having their first antenatal care visit in the first trimester"),
+       Struct::Values.new(nil, 0.0, 0.0, 0.0)],
+      [Struct::Activity.new(3, "Number of pregnant women with fourth or last antenatal care visit in last month of pregnancy"),
+       Struct::Values.new(nil, 2.0, 0.0, 0.0)],
+      [Struct::Activity.new(4, "Number of new outpatient consultations for curative care consultations"),
+       Struct::Values.new(nil, 7.0, 7.0, 0.0)],
+      [Struct::Activity.new(5, "Number of women delivering in health facilities"),
+       Struct::Values.new(nil, 6.0, 6.0, 0.0)],
+      [Struct::Activity.new(6, "Number of women with newborns with a postnatal care visit between 24 hours and 1 week of delivery"),
+       Struct::Values.new(nil, 0.0, 0.0, 0.0)],
+      [Struct::Activity.new(7, "Number of patients referred who arrive at the District/local hospital"),
+       Struct::Values.new(nil, 96.0, 96.0, 0.0)],
+      [Struct::Activity.new(8, "Number of new and follow up users of short-term modern contraceptive methods"),
+       Struct::Values.new(nil, 0.0, 0.0, 0.0)],
+      [Struct::Activity.new(9, "Number of children under 1 year fully immunized"),
+       Struct::Values.new(nil, 13.0, 13.0, 0.0)],
+      [Struct::Activity.new(10, "Number of malnourished children detected and ?treated?"),
+       Struct::Values.new(nil, 1.0, 1.0, 0.0)],
+      [Struct::Activity.new(11, "Number of notified HIV-Positive tuberculosis patients completed treatment and/or cured"),
+       Struct::Values.new(nil, 0.0, 0.0, 0.0)],
+      [Struct::Activity.new(12, "Number of HIV+ TB patients initiated and currently on ART"),
+       Struct::Values.new(nil, 1.0, 1.0, 0.0)],
+      [Struct::Activity.new(13, "Number of children born to HIV-Positive women who receive a confirmatory HIV test at 18 months after birth"),
+       Struct::Values.new(nil, 1.0, 1.0, 0.0)],
+      [Struct::Activity.new(14, "Number of children (0-14 years) with HIV infection initiated and currently on ART"),
+       Struct::Values.new(nil, 1.0, 1.0, 0.0)]
+    ]
+
+    return activity_and_values_quantity if name.downcase.include?("quantité")
+  end
 end
 
 Struct.new("TarificationService", :none) do
   def tarif(_entity, _date, activity)
-    tarifs = [4.0, 115.0, 82.0, 206.0]
+    tarifs = [4.0, 115.0, 82.0, 206.0, 123, 41.0, 12.0, 240.0, 103.0, 200.0, 370.0, 40.0, 103.0, 60.0]
     tarifs[activity.id - 1]
   end
 end
@@ -35,6 +70,7 @@ Struct.new("Rule", :name, :formulas) do
   def to_facts
     facts = {}
     formulas.each { |formula| facts[formula.code] = formula.expression }
+    facts[:actictity_rule_name] = "'#{name}'"
     facts
   end
 end
@@ -59,16 +95,15 @@ end
 entity = Struct::Entity.new(1, "Phu Bahoma", %w(phu clinic))
 
 class ::BigDecimal
-  def encode_json(opts = nil)
+  def encode_json(_opts = nil)
     "%.10f" % self
   end
 end
 class ::Float
-  def encode_json(opts = nil)
+  def encode_json(_opts = nil)
     "%.10f" % self
   end
 end
-
 
 def solve!(message, calculator, facts_and_rules, debug = false)
   puts "********** #{message} #{Time.new}" if debug
@@ -85,7 +120,7 @@ end
 def generate_invoice(entity, date)
   tarification_service = Struct::TarificationService.new(:unused)
 
-  activity_rule = Struct::Rule.new(
+  activity_quantity_rule = Struct::Rule.new(
     "Quantité PHU",
     [
       Struct::Formula.new(
@@ -95,7 +130,7 @@ def generate_invoice(entity, date)
       ),
       Struct::Formula.new(
         :quantity,
-        "IF(difference_percentage < 5, verified * tarif , 0.0)",
+        "IF(difference_percentage < 5, verified , 0.0)",
         "Quantity for PBF payment"
       ),
       Struct::Formula.new(
@@ -105,48 +140,48 @@ def generate_invoice(entity, date)
       )
     ]
   )
-  package = Struct::Package.new(1, "Quantité PMA", [activity_rule])
+  package_quantity_pma = Struct::Package.new(1, "Quantité PMA", [activity_quantity_rule])
 
-  # build from data element group and analytics api
-  values_and_activities = [
-    [Struct::Activity.new(1, "Number of new outpatient consultations for curative care consultations"),
-     Struct::Values.new(nil, 655.0, 655.0, 0.0)],
-    [Struct::Activity.new(2, "Number of pregnant women having their first antenatal care visit in the first trimester"),
-     Struct::Values.new(nil, 0.0, 0.0, 0.0)],
-    [Struct::Activity.new(3, "Number of pregnant women with fourth or last antenatal care visit in last month of pregnancy"),
-     Struct::Values.new(nil, 2.0, 0.0, 0.0)],
-    [Struct::Activity.new(4, "Number of new outpatient consultations for curative care consultations"),
-     Struct::Values.new(nil, 7.0, 7.0, 0.0)]
+  package_quantity_pca = Struct::Package.new(2, "Quantité PCA", [activity_quantity_rule])
 
-  ]
+  packages = [package_quantity_pma, package_quantity_pca]
 
   invoice_details = [:declared, :verified, :difference_percentage, :quantity, :tarif, :amount, :actictity_name]
-  total_amount = 0.0
-  values_and_activities.each do |activity, values|
+  to_sum = [:amount]
+
+  puts invoice_details.join("\t")
+
+  packages.each do |package|
+    totals = {}
     calculator = new_calculator
-    # from code
-    activity_tarification_facts = {
-      tarif: tarification_service.tarif(entity, date, activity)
-    }
-    facts_and_rules = {}
-                      .merge(activity_rule.to_facts)
-                      .merge(actictity_name: "'#{activity.name}'")
-                      .merge(activity_tarification_facts)
-                      .merge(values.to_facts)
+    package.activity_and_values(date).each do |activity, values|
+      # from code
+      activity_tarification_facts = {
+        tarif: tarification_service.tarif(entity, date, activity)
+      }
+      facts_and_rules = {}
+                        .merge(package.rules.first.to_facts)
+                        .merge(actictity_name: "'#{activity.name}'")
+                        .merge(activity_tarification_facts)
+                        .merge(values.to_facts)
 
-    solution = solve!(activity.name.to_s, calculator, facts_and_rules)
+      solution = solve!(activity.name.to_s, calculator, facts_and_rules)
 
-    details_values = invoice_details.map { |k| d_to_s(solution[k])}
+      details_values = invoice_details.map { |k| d_to_s(solution[k]) }
 
-    puts details_values.join("\t")
-    total_amount += solution[:amount]
+      puts details_values.join("\t\t")
+      to_sum.each do |to_sum_up|
+        totals[to_sum_up] ||= 0.0
+        totals[to_sum_up] += solution[to_sum_up]
+      end
+    end
+    puts "TOTAL #{totals}"
   end
-  puts "TOTAL #{total_amount}"
 end
 
 def d_to_s(decimal)
   return "%.0f" % decimal if decimal.is_a? Numeric
-  return decimal
+  decimal
 end
 
 entity = Struct::Entity.new(1, "Maqokho HC", ["Hospital"])
