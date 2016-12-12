@@ -270,7 +270,7 @@ DEPENDENCIES
   codeclimate-test-reporter (~> 1.0.0)
   coffee-rails (~> 4.2)
   database_cleaner
-  dentaku (~> 2.0.9)
+  dentaku
   devise (~> 4.2.0)
   dhis2!
   factory_girl_rails (= 4.0)
