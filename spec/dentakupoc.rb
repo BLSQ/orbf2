@@ -18,7 +18,7 @@ Struct.new("Entity", :id, :name, :groups) do
 end
 Struct.new("Activity", :id, :name) do
 end
-Struct.new("Package", :id, :name, :rules) do
+Struct.new("Package", :id, :name, :rules, :invoice_details, :to_sum) do
   def activity_and_values(_date)
     # build from data element group and analytics api
     activity_and_values_quantity = [
@@ -52,14 +52,47 @@ Struct.new("Package", :id, :name, :rules) do
        Struct::Values.new(nil, 1.0, 1.0, 0.0)]
     ]
 
+    activity_and_values_quality = [
+      [Struct::Activity.new(100, "General Management"),
+       Struct::Values.new(nil, 19.0, 0.0, 0.0)],
+      [Struct::Activity.new(101, "Environmental Health"),
+       Struct::Values.new(nil, 23.0, 0.0, 0.0)],
+      [Struct::Activity.new(102, "General consultations"),
+       Struct::Values.new(nil, 25, 0.0, 0.0)],
+      [Struct::Activity.new(103, "Child Survival"),
+       Struct::Values.new(nil, 30, 0.0, 0.0)],
+      [Struct::Activity.new(104, "Family Planning"),
+       Struct::Values.new(nil, 9, 0.0, 0.0)],
+      [Struct::Activity.new(105, "Maternal Health"),
+       Struct::Values.new(nil, 45, 0.0, 0.0)],
+      [Struct::Activity.new(106, "STI, HIV and TB"),
+       Struct::Values.new(nil, 22, 0.0, 0.0)],
+      [Struct::Activity.new(107, "Essential drugs Management"),
+       Struct::Values.new(nil, 20, 0.0, 0.0)],
+      [Struct::Activity.new(108, "Priority Drugs and supplies"),
+       Struct::Values.new(nil, 20, 0.0, 0.0)],
+      [Struct::Activity.new(109, "Community based services"),
+       Struct::Values.new(nil, 12, 0.0, 0.0)]
+
+    ]
+
     return activity_and_values_quantity if name.downcase.include?("quantité")
+    return activity_and_values_quality if name.downcase.include?("qualité")
   end
 end
 
 Struct.new("TarificationService", :none) do
   def tarif(_entity, _date, activity)
-    tarifs = [4.0, 115.0, 82.0, 206.0, 123, 41.0, 12.0, 240.0, 103.0, 200.0, 370.0, 40.0, 103.0, 60.0]
-    tarifs[activity.id - 1]
+    if activity.id < 100
+      # quantité PMA
+      tarifs = [4.0, 115.0, 82.0, 206.0, 123, 41.0, 12.0, 240.0, 103.0, 200.0, 370.0, 40.0, 103.0, 60.0]
+      return tarifs[activity.id - 1]
+    end
+    if activity.id < 200
+      # qualité
+      tarifs = [24, 23, 25, 42, 17, 54, 28, 20, 23, 15]
+      return tarifs[activity.id - 100]
+    end
   end
 end
 
@@ -75,6 +108,9 @@ Struct.new("Rule", :name, :formulas) do
   end
 end
 
+Struct.new("Result", :package, :activity, :solution) do
+end
+
 def new_calculator
   score_table = lambda do |*args|
     target = args.shift
@@ -83,12 +119,21 @@ def new_calculator
     end.last
   end
 
+  avg_function = lambda do |*args|
+    args.inject(0.0) { |sum, el| sum + el } / args.size
+  end
+  sum_function = lambda do |*args|
+    args.inject(0.0) { |sum, x| sum + x }
+  end
+
   between = ->(lower, score, greater) { lower <= score && score <= greater }
 
   calculator = Dentaku::Calculator.new
   calculator.add_function(:between, :logical, between)
   calculator.add_function(:abs, :number, ->(number) { number.abs })
   calculator.add_function(:score_table, :numeric, score_table)
+  calculator.add_function(:avg, :numeric, avg_function)
+  calculator.add_function(:sum, :numeric, sum_function)
   calculator
 end
 
@@ -109,7 +154,13 @@ def solve!(message, calculator, facts_and_rules, debug = false)
   puts "********** #{message} #{Time.new}" if debug
   puts JSON.pretty_generate(facts_and_rules)  if debug
   start_time = Time.new
-  solution = calculator.solve!(facts_and_rules)
+  begin
+    solution = calculator.solve!(facts_and_rules)
+  rescue => e
+    puts facts_and_rules
+    puts e.message
+    raise e
+  end
   end_time = Time.new
   solution[:elapsed_time] = (end_time - start_time)
   puts " #{Time.new} => #{solution[:amount]}"  if debug
@@ -140,21 +191,56 @@ def generate_invoice(entity, date)
       )
     ]
   )
-  package_quantity_pma = Struct::Package.new(1, "Quantité PMA", [activity_quantity_rule])
+  package_quantity_pma = Struct::Package.new(
+    1,
+    "Quantité PMA",
+    [activity_quantity_rule],
+    [:declared, :verified, :difference_percentage, :quantity, :tarif, :amount, :actictity_name],
+    Struct::Formula.new(
+      :amount,
+      "SUM(%{amount})",
+      "Amount PBF"
+    )
+  )
 
-  package_quantity_pca = Struct::Package.new(2, "Quantité PCA", [activity_quantity_rule])
+  activity_quality_rule = Struct::Rule.new(
+    "Quantité assessment",
+    [
+      Struct::Formula.new(
+        :attributed_points,
+        "declared",
+        "Attrib. Points"
+      ),
+      Struct::Formula.new(
+        :max_points,
+        "tarif",
+        "Max Points"
+      ),
+      Struct::Formula.new(
+        :percentage,
+        "(attributed_points / max_points) * 100.0",
+        "Quality score"
+      )
+    ]
+  )
 
-  packages = [package_quantity_pma, package_quantity_pca]
+  package_quality = Struct::Package.new(
+    2,
+    "Qualité",
+    [activity_quality_rule],
+    [:attributed_points, :max_points, :percentage],
+    Struct::Formula.new(
+      :percentage,
+      "SUM(%{attributed_points})/SUM(%{max_points}) * 100.0",
+      "Quality score"
+    )
+  )
 
-  invoice_details = [:declared, :verified, :difference_percentage, :quantity, :tarif, :amount, :actictity_name]
-  to_sum = [:amount]
+  packages = [package_quantity_pma, package_quality]
 
-  puts invoice_details.join("\t")
-
-  packages.each do |package|
-    totals = {}
-    calculator = new_calculator
-    package.activity_and_values(date).each do |activity, values|
+  calculator = new_calculator
+  solutions = invoice_details_per_package = packages.map do |package|
+    package.activity_and_values(date).map do |activity, values|
       # from code
       activity_tarification_facts = {
         tarif: tarification_service.tarif(entity, date, activity)
@@ -167,15 +253,35 @@ def generate_invoice(entity, date)
 
       solution = solve!(activity.name.to_s, calculator, facts_and_rules)
 
-      details_values = invoice_details.map { |k| d_to_s(solution[k]) }
-
-      puts details_values.join("\t\t")
-      to_sum.each do |to_sum_up|
-        totals[to_sum_up] ||= 0.0
-        totals[to_sum_up] += solution[to_sum_up]
-      end
+      Struct::Result.new(package, activity, solution)
     end
-    puts "TOTAL #{totals}"
+  end
+  #  puts JSON.pretty_generate(solutions)
+  solutions.flatten.group_by(&:package).each do |package, results|
+    results.each do |result|
+      line = package.invoice_details.map { |item| d_to_s(result.solution[item]) }
+      puts line.join("\t")
+    end
+
+    variables = {
+    }
+    results.first.solution.keys.each do |k|
+      variables[k] = results.map do |r|
+        begin
+          BigDecimal.new(r.solution[k])
+          "%.10f" % r.solution[k]
+        rescue
+          nil
+        end
+      end.join(" , ")
+    end
+
+    facts_and_rules = {
+      total: package.to_sum.expression % variables
+    }
+    solution_package = solve!("sum activities for #{package.name}", calculator, facts_and_rules, false)
+
+    puts "Total  :  #{package.name} %.2f " % solution_package[:total]
   end
 end
 
