@@ -1,4 +1,4 @@
-require "spec_helper"
+require "rails_helper"
 require "dentaku"
 require "dentaku/calculator"
 
@@ -108,7 +108,16 @@ Struct.new("Rule", :name, :formulas) do
   end
 end
 
-Struct.new("Result", :package, :activity, :solution) do
+Struct.new("ActivityResult", :package, :activity, :solution) do
+end
+Struct.new("PackageResult", :package, :solution) do
+  def to_s
+    "#{package.name} #{solution}"
+  end
+end
+
+
+Struct.new("Project", :name, :packages, :payment_rule) do
 end
 
 def new_calculator
@@ -201,7 +210,7 @@ def generate_invoice(entity, date)
       "Quantité PHU",
       [
         Struct::Formula.new(
-          :amount,
+          :quantity_total,
           "SUM(%{amount_values})",
           "Amount PBF"
         )
@@ -251,7 +260,7 @@ def generate_invoice(entity, date)
           "Quality score"
         ),
         Struct::Formula.new(
-          :percentage,
+          :quality_technical_score_value,
           "SUM(%{attributed_points_values})/SUM(%{max_points_values}) * 100.0",
           "Quality score"
         )
@@ -261,6 +270,33 @@ def generate_invoice(entity, date)
 
   packages = [package_quantity_pma, package_quality]
 
+  project = Struct::Project.new(
+    "LESOTHO",
+    packages,
+    Struct::Rule.new(
+      "Payment rule",
+      [
+        Struct::Formula.new(
+          :quality_bonus_percentage_value,
+          "IF(quality_technical_score_value > 50, (0.35 * quality_technical_score_value) + (0.30 * 10.0), 0.0) /*todo replace with survey score*/",
+          "Quality bonus percentage"
+        ),
+        Struct::Formula.new(
+          :quality_bonus_value,
+          "quantity_total * quality_bonus_percentage_value",
+          "Bonus qualité "
+        ),
+        Struct::Formula.new(
+          :quaterly_payment,
+          "quantity_total + quality_bonus_value",
+          "Quarterly Payment"
+        )
+      ]
+    )
+
+  )
+
+  puts JSON.pretty_generate([package_quantity_pma.to_h, package_quality.to_h])
   calculator = new_calculator
   solutions = invoice_details_per_package = packages.map do |package|
     package.activity_and_values(date).map do |activity, values|
@@ -276,11 +312,11 @@ def generate_invoice(entity, date)
 
       solution = solve!(activity.name.to_s, calculator, facts_and_rules)
 
-      Struct::Result.new(package, activity, solution)
+      Struct::ActivityResult.new(package, activity, solution)
     end
   end
   #  puts JSON.pretty_generate(solutions)
-  solutions.flatten.group_by(&:package).each do |package, results|
+  package_results = solutions.flatten.group_by(&:package).map do |package, results|
     results.each do |result|
       line = package.invoice_details.map { |item| d_to_s(result.solution[item]) }
       puts line.join("\t")
@@ -312,7 +348,23 @@ def generate_invoice(entity, date)
     solution_package = solve!("sum activities for #{package.name}", calculator, facts_and_rules, false)
     package_line = package.invoice_details.map { |item| d_to_s(solution_package[item]) }
     puts "Totals :  #{package_line.join("\t")}"
+
+    Struct::PackageResult.new(package, solution_package)
   end
+
+
+  package_facts_and_rules = {}
+  package_results.each do |package_result|
+    official_keys = package_result.package.to_sum.formulas.map(&:code)
+    official_vars = package_result.solution.slice(official_keys)
+    puts "official_vars #{package_result.solution.keys} #{official_keys}"
+    package_facts_and_rules = package_facts_and_rules.merge(package_result.solution)
+  end
+  package_facts_and_rules = package_facts_and_rules.merge(project.payment_rule.to_facts)
+  puts package_facts_and_rules
+  project_solution = solve!("payment rule", calculator, package_facts_and_rules, false)
+  package_line = project.payment_rule.formulas.map { |formula| [formula.code, d_to_s(project_solution[formula.code])].join(" : ") }
+  puts package_line.join("\n")
 end
 
 def d_to_s(decimal)
