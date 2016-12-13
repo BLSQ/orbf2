@@ -4,7 +4,7 @@ require "dentaku/calculator"
 
 puts "************************************ activity value to amount"
 
-Struct.new("Values", :activity, :declared, :verified, :validated) do
+Struct.new("Values", :declared, :verified, :validated) do
   def to_facts
     {
       declared:  declared,
@@ -18,97 +18,117 @@ Struct.new("Entity", :id, :name, :groups) do
 end
 Struct.new("Activity", :id, :name) do
 end
-Struct.new("Package", :id, :name, :entity_groups, :rules, :invoice_details, :to_sum) do
+Struct.new("Package", :id, :name, :entity_groups, :rules, :invoice_details) do
   def apply_for(entity)
     entity_groups.any? { |group| entity.groups.include?(group) }
+  end
+
+  def new_values(declared = 0.0, verified = 0.0, validated = 0.0)
+    Struct::Values.new(declared, verified, validated)
+  end
+
+  def for_quarter(value)
+    quarter = []
+    quarter << value
+    quarter << value
+    quarter << value
+    quarter
+  end
+
+  def package_rule
+    rules.find { |r| r.type == :package }
+  end
+
+  def activity_rule
+    rules.find { |r| r.type == :activity }
   end
 
   def activity_and_values(_date)
     # build from data element group and analytics api
     activity_and_values_quantity_pma = [ # PMA
       [Struct::Activity.new(1, "Number of new outpatient consultations for curative care consultations"),
-       Struct::Values.new(nil, 655.0, 655.0, 0.0)],
+       [new_values(655.0, 655.0), new_values(652.0, 652.0), new_values(654.0, 654.0)]],
       [Struct::Activity.new(2, "Number of pregnant women having their first antenatal care visit in the first trimester"),
-       Struct::Values.new(nil, 0.0, 0.0, 0.0)],
+       [new_values(0.0, 0.0), new_values(1.0, 1.0), new_values(0.0, 1.0)]],
       [Struct::Activity.new(3, "Number of pregnant women with fourth or last antenatal care visit in last month of pregnancy"),
-       Struct::Values.new(nil, 2.0, 0.0, 0.0)],
+       [new_values(2.0, 0.0), new_values(2.0, 0.0), new_values(2.0, 0.0)]],
       [Struct::Activity.new(4, "Number of new outpatient consultations for curative care consultations"),
-       Struct::Values.new(nil, 7.0, 7.0, 0.0)],
+       [new_values(7.0, 7.0), new_values(7.0, 7.0), new_values(7.0, 7.0)]],
       [Struct::Activity.new(5, "Number of women delivering in health facilities"),
-       Struct::Values.new(nil, 6.0, 6.0, 0.0)],
+       [new_values(6.0, 6.0), new_values(6.0, 6.0), new_values(6.0, 6.0)]],
       [Struct::Activity.new(6, "Number of women with newborns with a postnatal care visit between 24 hours and 1 week of delivery"),
-       Struct::Values.new(nil, 0.0, 0.0, 0.0)],
+       for_quarter(new_values(0.0, 0.0))],
       [Struct::Activity.new(7, "Number of patients referred who arrive at the District/local hospital"),
-       Struct::Values.new(nil, 96.0, 96.0, 0.0)],
+       for_quarter(new_values(96.0, 96.0))],
       [Struct::Activity.new(8, "Number of new and follow up users of short-term modern contraceptive methods"),
-       Struct::Values.new(nil, 0.0, 0.0, 0.0)],
+       for_quarter(new_values(0.0, 0.0))],
       [Struct::Activity.new(9, "Number of children under 1 year fully immunized"),
-       Struct::Values.new(nil, 13.0, 13.0, 0.0)],
+       for_quarter(new_values(13.0, 13.0))],
       [Struct::Activity.new(10, "Number of malnourished children detected and ?treated?"),
-       Struct::Values.new(nil, 1.0, 1.0, 0.0)],
+       for_quarter(new_values(1.0, 1.0))],
       [Struct::Activity.new(11, "Number of notified HIV-Positive tuberculosis patients completed treatment and/or cured"),
-       Struct::Values.new(nil, 0.0, 0.0, 0.0)],
+       for_quarter(new_values(0.0, 0.0))],
       [Struct::Activity.new(12, "Number of HIV+ TB patients initiated and currently on ART"),
-       Struct::Values.new(nil, 1.0, 1.0, 0.0)],
+       for_quarter(new_values(1.0, 1.0))],
       [Struct::Activity.new(13, "Number of children born to HIV-Positive women who receive a confirmatory HIV test at 18 months after birth"),
-       Struct::Values.new(nil, 1.0, 1.0, 0.0)],
+       for_quarter(new_values(1.0, 1.0))],
       [Struct::Activity.new(14, "Number of children (0-14 years) with HIV infection initiated and currently on ART"),
-       Struct::Values.new(nil, 1.0, 1.0, 0.0)]
+       for_quarter(new_values(1.0, 1.0))]
     ]
 
     # PCA
     activity_and_values_quantity_pca = [
       [Struct::Activity.new(51, "Contre référence de l'hopital arrivée au CS"),
-       Struct::Values.new(nil, 144, 136, 0.0)],
+       for_quarter(new_values(144, 136, 0.0))],
       [Struct::Activity.new(52, "Femmes enceintes dépistées séropositive et mise sous traitement ARV (tri prophylaxie/trithérapie)"),
-       Struct::Values.new(nil, 0, 0, 0.0)],
+       for_quarter(new_values(0, 0, 0.0))],
       [Struct::Activity.new(53, "Clients sous traitement ARV suivi pendant les 6 premiers mois"),
-       Struct::Values.new(nil, 5, 5, 0.0)],
+       for_quarter(new_values(5, 5, 0.0))],
       [Struct::Activity.new(54, "Enfants éligibles au traitement ARV et qui ont été initié au traitement ARV au cours du mois"),
-       Struct::Values.new(nil, 0, 0, 0.0)],
+       for_quarter(new_values(0, 0, 0.0))],
       [Struct::Activity.new(55, "Accouchement dystocique effectué chez une parturiente référée des Centres de Santé"),
-       Struct::Values.new(nil, 46, 46, 0.0)],
+       for_quarter(new_values(46, 46, 0.0))],
       [Struct::Activity.new(56, "Césarienne"),
-       Struct::Values.new(nil, 45, 45, 0.0)],
+       for_quarter(new_values(45, 45, 0.0))],
       [Struct::Activity.new(57, "Intervention Chirurgicale en service de Gynécologie Obstétrique et Chirurgie"),
-       Struct::Values.new(nil, 47, 47, 0.0)],
+       for_quarter(new_values(47, 47, 0.0))],
       [Struct::Activity.new(58, "Depistage des cas TBC positifs"),
-       Struct::Values.new(nil, 2, 2, 0.0)],
+       for_quarter(new_values(2, 2, 0.0))],
       [Struct::Activity.new(59, "Nombre de cas TBC traites et gueris"),
-       Struct::Values.new(nil, 3, 3, 0.0)],
+       for_quarter(new_values(3, 3, 0.0))],
       [Struct::Activity.new(60, "IST diagnostiqués et traités"),
-       Struct::Values.new(nil, 2, 2, 0.0)],
+       for_quarter(new_values(2, 2, 0.0))],
       [Struct::Activity.new(61, "Diagnostic et traitement des cas de paludisme simple chez les enfants"),
-       Struct::Values.new(nil, 18, 18, 0.0)],
+       for_quarter(new_values(18, 18, 0.0))],
       [Struct::Activity.new(62, "Diagnostic et traitement des cas de paludisme grave chez les enfants"),
-       Struct::Values.new(nil, 33, 33, 0.0)],
+       for_quarter(new_values(33, 33, 0.0))],
       [Struct::Activity.new(63, "Diagnostic et traitement des cas de paludisme simple chez les femmes enceintes"),
-       Struct::Values.new(nil, 0, 0, 0.0)],
+       for_quarter(new_values(0, 0, 0.0))],
       [Struct::Activity.new(64, "Diagnostic et traitement des cas de paludisme grave chez les femmes enceintes"),
-       Struct::Values.new(nil, 0, 0, 0.0)]
+       for_quarter(new_values(0, 0, 0.0))]
     ]
 
     activity_and_values_quality = [
       [Struct::Activity.new(100, "General Management"),
-       Struct::Values.new(nil, 19.0, 0.0, 0.0)],
+       [new_values(19.0)]],
       [Struct::Activity.new(101, "Environmental Health"),
-       Struct::Values.new(nil, 23.0, 0.0, 0.0)],
+       [new_values(23.0)]],
       [Struct::Activity.new(102, "General consultations"),
-       Struct::Values.new(nil, 25, 0.0, 0.0)],
+       [new_values(25)]],
       [Struct::Activity.new(103, "Child Survival"),
-       Struct::Values.new(nil, 30, 0.0, 0.0)],
+       [new_values(30)]],
       [Struct::Activity.new(104, "Family Planning"),
-       Struct::Values.new(nil, 9, 0.0, 0.0)],
+       [new_values(9)]],
       [Struct::Activity.new(105, "Maternal Health"),
-       Struct::Values.new(nil, 45, 0.0, 0.0)],
+       [new_values(45)]],
       [Struct::Activity.new(106, "STI, HIV and TB"),
-       Struct::Values.new(nil, 22, 0.0, 0.0)],
+       [new_values(22)]],
       [Struct::Activity.new(107, "Essential drugs Management"),
-       Struct::Values.new(nil, 20, 0.0, 0.0)],
+       [new_values(20)]],
       [Struct::Activity.new(108, "Priority Drugs and supplies"),
-       Struct::Values.new(nil, 20, 0.0, 0.0)],
+       [new_values(20)]],
       [Struct::Activity.new(109, "Community based services"),
-       Struct::Values.new(nil, 12, 0.0, 0.0)]
+       [new_values(12)]]
 
     ]
 
@@ -119,7 +139,7 @@ Struct.new("Package", :id, :name, :entity_groups, :rules, :invoice_details, :to_
   end
 
   def to_h
-    super.to_h.except(:rules, :to_sum).merge!("rules" => rules.map(&:to_h), "to_sum" => to_sum.to_h)
+    super.to_h.except(:rules).merge!("rules" => rules.map(&:to_h))
   end
 end
 
@@ -147,7 +167,7 @@ end
 Struct.new("Formula", :code, :expression, :label) do
 end
 
-Struct.new("Rule", :name, :formulas) do
+Struct.new("Rule", :name, :type, :formulas) do
   def to_facts
     facts = {}
     formulas.each { |formula| facts[formula.code] = formula.expression }
@@ -239,6 +259,7 @@ def find_project
     [
       Struct::Rule.new(
         "Quantité PMA",
+        :activity,
         [
           Struct::Formula.new(
             :difference_percentage,
@@ -256,19 +277,23 @@ def find_project
             "Total payment"
           )
         ]
+      ),
+      Struct::Rule.new(
+        "Quantité PMA",
+        :package,
+        [
+          Struct::Formula.new(
+            :quantity_total,
+            "SUM(%{amount_values})",
+            "Amount PBF"
+          )
+        ]
       )
     ],
-    [:declared, :verified, :difference_percentage, :quantity, :tarif, :amount, :actictity_name, :quantity_total],
-    Struct::Rule.new(
-      "Quantité PMA",
-      [
-        Struct::Formula.new(
-          :quantity_total,
-          "SUM(%{amount_values})",
-          "Amount PBF"
-        )
-      ]
-    )
+    [:declared, :verified,
+     :difference_percentage, :quantity,
+     :tarif, :amount,
+     :actictity_name, :quantity_total]
   )
 
   package_quantity_pca = Struct::Package.new(
@@ -278,6 +303,7 @@ def find_project
     [
       Struct::Rule.new(
         "Quantité PCA",
+        :activity,
         [
           Struct::Formula.new(
             :difference_percentage,
@@ -295,28 +321,31 @@ def find_project
             "Total payment"
           )
         ]
+      ),
+      Struct::Rule.new(
+        "Quantité PHU",
+        :package,
+        [
+          Struct::Formula.new(
+            :quantity_total,
+            "SUM(%{amount_values})",
+            "Amount PBF"
+          )
+        ]
       )
     ],
-    [:declared, :verified, :difference_percentage, :quantity, :tarif, :amount, :actictity_name, :quantity_total],
-    Struct::Rule.new(
-      "Quantité PHU",
-      [
-        Struct::Formula.new(
-          :quantity_total,
-          "SUM(%{amount_values})",
-          "Amount PBF"
-        )
-      ]
-    )
+    [:declared, :verified, :difference_percentage, :quantity, :tarif, :amount, :actictity_name, :quantity_total]
+
   )
 
   package_quality = Struct::Package.new(
     2,
     "Qualité",
-    ["hospital_group_id", "fosa_group_id"],
+    %w(hospital_group_id fosa_group_id),
     [
       Struct::Rule.new(
         "Qualité assessment",
+        :activity,
         [
           Struct::Formula.new(
             :attributed_points,
@@ -334,31 +363,31 @@ def find_project
             "Quality score"
           )
         ]
+      ),
+      Struct::Rule.new(
+        "QUALITY score",
+        :package,
+        [
+          Struct::Formula.new(
+            :attributed_points,
+            "SUM(%{attributed_points_values})",
+            "Quality score"
+          ),
+          Struct::Formula.new(
+            :max_points,
+            "SUM(%{max_points_values})",
+            "Quality score"
+          ),
+          Struct::Formula.new(
+            :quality_technical_score_value,
+            "SUM(%{attributed_points_values})/SUM(%{max_points_values}) * 100.0",
+            "Quality score"
+          )
+        ]
       )
-
     ],
-    [:attributed_points, :max_points, :quality_technical_score_value, :actictity_name],
+    [:attributed_points, :max_points, :quality_technical_score_value, :actictity_name]
 
-    Struct::Rule.new(
-      "QUALITY score",
-      [
-        Struct::Formula.new(
-          :attributed_points,
-          "SUM(%{attributed_points_values})",
-          "Quality score"
-        ),
-        Struct::Formula.new(
-          :max_points,
-          "SUM(%{max_points_values})",
-          "Quality score"
-        ),
-        Struct::Formula.new(
-          :quality_technical_score_value,
-          "SUM(%{attributed_points_values})/SUM(%{max_points_values}) * 100.0",
-          "Quality score"
-        )
-      ]
-    )
   )
 
   packages = [package_quantity_pma, package_quantity_pca, package_quality]
@@ -368,6 +397,7 @@ def find_project
     packages,
     Struct::Rule.new(
       "Payment rule",
+      :payment,
       [
         Struct::Formula.new(
           :quality_bonus_percentage_value,
@@ -389,7 +419,6 @@ def find_project
 
   )
 
-
   project
 end
 
@@ -403,10 +432,10 @@ def calculate_activity_results(project, entity, date, tarification_service, calc
       }
 
       facts_and_rules = {}
-                        .merge(package.rules.first.to_facts)
+                        .merge(package.activity_rule.to_facts)
                         .merge(actictity_name: "'#{activity.name.tr("'", ' ')}'")
                         .merge(activity_tarification_facts)
-                        .merge(values.to_facts)
+                        .merge(values.first.to_facts)
 
       solution = solve!(activity.name.to_s, calculator, facts_and_rules)
 
@@ -424,7 +453,7 @@ def calculate_package_results(activity_results, calculator)
     end
 
     facts_and_rules = {}
-    package.to_sum.formulas.each do |formula|
+    package.package_rule.formulas.each do |formula|
       facts_and_rules[formula.code] = string_template(formula, variables)
     end
     solution_package = solve!("sum activities for #{package.name}", calculator, facts_and_rules)
@@ -485,9 +514,11 @@ def dump_invoice(entity, project, activity_results, package_results, payments)
   if activity_results
     activity_results.flatten.group_by(&:package).map do |package, results|
       puts "************ Package #{package.name} "
+      puts package.invoice_details.join("\t")
       results.each do |result|
         line = package.invoice_details.map { |item| d_to_s(result.solution[item]) }
-        puts line.join("\t")
+        # line << result.solution.to_json
+        puts line.join("\t\t")
       end
       next unless package_results
       package_line = package.invoice_details.map do |item|
