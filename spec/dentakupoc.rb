@@ -388,7 +388,7 @@ def find_project
     )
 
   )
-  #puts JSON.pretty_generate(project.to_h)
+
 
   project
 end
@@ -512,6 +512,8 @@ def d_to_s(decimal)
   return "%.2f" % decimal if decimal.is_a? Numeric
   decimal
 end
+
+puts JSON.pretty_generate(find_project.to_h)
 
 entity = Struct::Entity.new(1, "Maqokho HC", ["hospital_group_id"])
 
