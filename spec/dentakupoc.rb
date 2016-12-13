@@ -81,7 +81,7 @@ Struct.new("Package", :id, :name, :rules, :invoice_details, :to_sum) do
   end
 
   def to_h
-    super.to_h.except(:rules,:to_sum).merge!("rules" => rules.map(&:to_h), "to_sum" => to_sum.to_h)
+    super.to_h.except(:rules, :to_sum).merge!("rules" => rules.map(&:to_h), "to_sum" => to_sum.to_h)
   end
 end
 
@@ -124,10 +124,9 @@ Struct.new("PackageResult", :package, :solution) do
   end
 end
 
-
 Struct.new("Project", :name, :packages, :payment_rule) do
   def to_h
-    super.to_h.except(:payment_rule,:packages).merge!("packages" => packages.map(&:to_h), "payment_rule" => payment_rule.to_h)
+    super.to_h.except(:payment_rule, :packages).merge!("packages" => packages.map(&:to_h), "payment_rule" => payment_rule.to_h)
   end
 end
 
@@ -306,16 +305,11 @@ def find_project
   )
   puts JSON.pretty_generate(project.to_h)
 
-  return project
+  project
 end
 
-def generate_invoice(entity, date)
-  tarification_service = Struct::TarificationService.new(:unused)
-
-  project = find_project
-
-  calculator = new_calculator
-  solutions = project.packages.map do |package|
+def calculate_activity_results(project, entity, date, tarification_service, calculator)
+  project.packages.map do |package|
     package.activity_and_values(date).map do |activity, values|
       # from code
       activity_tarification_facts = {
@@ -332,52 +326,81 @@ def generate_invoice(entity, date)
       Struct::ActivityResult.new(package, activity, solution)
     end
   end
-  #  puts JSON.pretty_generate(solutions)
-  package_results = solutions.flatten.group_by(&:package).map do |package, results|
-    puts "************ Package #{package.name} "
-    results.each do |result|
-      line = package.invoice_details.map { |item| d_to_s(result.solution[item]) }
-      puts line.join("\t")
-    end
+end
 
+def calculate_package_results(activity_results, calculator)
+  activity_results.flatten.group_by(&:package).map do |package, results|
     variables = {
     }
     results.first.solution.keys.each do |k|
-      variables["#{k}_values".to_sym] = results.map do |r|
-        begin
-          BigDecimal.new(r.solution[k])
-          "%.10f" % r.solution[k]
-        rescue
-          nil
-        end
-      end.join(" , ")
+      variables["#{k}_values".to_sym] = solution_to_array(results, k).join(" , ")
     end
 
     facts_and_rules = {}
-    begin
-      package.to_sum.formulas.each do |formula|
-        facts_and_rules[formula.code] = formula.expression % variables
-      end
-    rescue KeyError => e
-      puts "problem with expression #{e.message}"
-      puts "package.to_sum.formulas.first.expression #{package.to_sum.formulas.first.expression} vs #{JSON.pretty_generate(variables)}"
-      raise e
+    package.to_sum.formulas.each do |formula|
+      facts_and_rules[formula.code] = string_template(formula, variables)
     end
-    solution_package = solve!("sum activities for #{package.name}", calculator, facts_and_rules, false)
-    package_line = package.invoice_details.map { |item| d_to_s(solution_package[item]) }
-    puts "Totals :  #{package_line.join("\t")}"
+    solution_package = solve!("sum activities for #{package.name}", calculator, facts_and_rules)
 
     Struct::PackageResult.new(package, solution_package)
   end
+end
 
+def solution_to_array(results, k)
+  results.map do |r|
+    begin
+      BigDecimal.new(r.solution[k])
+      "%.10f" % r.solution[k]
+    rescue
+      nil
+    end
+  end
+end
 
+def string_template(formula, variables)
+  return formula.expression % variables
+rescue KeyError => e
+  puts "problem with expression #{e.message} : #{formula.code} : #{formula.expression} #{JSON.pretty_generate(variables)}"
+  raise e
+end
+
+def calculate_payments(project, package_results, calculator)
   package_facts_and_rules = {}
   package_results.each do |package_result|
     package_facts_and_rules = package_facts_and_rules.merge(package_result.solution)
   end
   package_facts_and_rules = package_facts_and_rules.merge(project.payment_rule.to_facts)
   project_solution = solve!("payment rule", calculator, package_facts_and_rules, false)
-  package_line = project.payment_rule.formulas.map { |formula| [formula.code, d_to_s(project_solution[formula.code])].join(" : ") }
+  project_solution
+end
+
+def generate_invoice(entity, date)
+  tarification_service = Struct::TarificationService.new(:unused)
+
+  project = find_project
+  calculator = new_calculator
+
+  activity_results = calculate_activity_results(project, entity, date, tarification_service, calculator)
+  package_results = calculate_package_results(activity_results, calculator)
+  payments = calculate_payments(project, package_results, calculator)
+
+  dump_invoice(project, activity_results, package_results, payments)
+end
+
+def dump_invoice(project, activity_results, package_results, payments)
+  activity_results.flatten.group_by(&:package).map do |package, results|
+    puts "************ Package #{package.name} "
+    results.each do |result|
+      line = package.invoice_details.map { |item| d_to_s(result.solution[item]) }
+      puts line.join("\t")
+    end
+    package_line = package.invoice_details.map { |item| d_to_s(package_results.find { |pr| pr.package == package }.solution[item]) }
+    puts "Totals :  #{package_line.join("\t")}"
+  end
+
+  package_line = project.payment_rule.formulas.map do |formula|
+    [formula.code, d_to_s(payments[formula.code])].join(" : ")
+  end
   puts "************ payments "
   puts package_line.join("\n")
 end
