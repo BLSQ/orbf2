@@ -18,10 +18,14 @@ Struct.new("Entity", :id, :name, :groups) do
 end
 Struct.new("Activity", :id, :name) do
 end
-Struct.new("Package", :id, :name, :rules, :invoice_details, :to_sum) do
+Struct.new("Package", :id, :name, :entity_groups, :rules, :invoice_details, :to_sum) do
+  def apply_for(entity)
+    entity_groups.any? { |group| entity.groups.include?(group) }
+  end
+
   def activity_and_values(_date)
     # build from data element group and analytics api
-    activity_and_values_quantity = [
+    activity_and_values_quantity_pma = [ # PMA
       [Struct::Activity.new(1, "Number of new outpatient consultations for curative care consultations"),
        Struct::Values.new(nil, 655.0, 655.0, 0.0)],
       [Struct::Activity.new(2, "Number of pregnant women having their first antenatal care visit in the first trimester"),
@@ -52,6 +56,38 @@ Struct.new("Package", :id, :name, :rules, :invoice_details, :to_sum) do
        Struct::Values.new(nil, 1.0, 1.0, 0.0)]
     ]
 
+    # PCA
+    activity_and_values_quantity_pca = [
+      [Struct::Activity.new(51, "Contre référence de l'hopital arrivée au CS"),
+       Struct::Values.new(nil, 144, 136, 0.0)],
+      [Struct::Activity.new(52, "Femmes enceintes dépistées séropositive et mise sous traitement ARV (tri prophylaxie/trithérapie)"),
+       Struct::Values.new(nil, 0, 0, 0.0)],
+      [Struct::Activity.new(53, "Clients sous traitement ARV suivi pendant les 6 premiers mois"),
+       Struct::Values.new(nil, 5, 5, 0.0)],
+      [Struct::Activity.new(54, "Enfants éligibles au traitement ARV et qui ont été initié au traitement ARV au cours du mois"),
+       Struct::Values.new(nil, 0, 0, 0.0)],
+      [Struct::Activity.new(55, "Accouchement dystocique effectué chez une parturiente référée des Centres de Santé"),
+       Struct::Values.new(nil, 46, 46, 0.0)],
+      [Struct::Activity.new(56, "Césarienne"),
+       Struct::Values.new(nil, 45, 45, 0.0)],
+      [Struct::Activity.new(57, "Intervention Chirurgicale en service de Gynécologie Obstétrique et Chirurgie"),
+       Struct::Values.new(nil, 47, 47, 0.0)],
+      [Struct::Activity.new(58, "Depistage des cas TBC positifs"),
+       Struct::Values.new(nil, 2, 2, 0.0)],
+      [Struct::Activity.new(59, "Nombre de cas TBC traites et gueris"),
+       Struct::Values.new(nil, 3, 3, 0.0)],
+      [Struct::Activity.new(60, "IST diagnostiqués et traités"),
+       Struct::Values.new(nil, 2, 2, 0.0)],
+      [Struct::Activity.new(61, "Diagnostic et traitement des cas de paludisme simple chez les enfants"),
+       Struct::Values.new(nil, 18, 18, 0.0)],
+      [Struct::Activity.new(62, "Diagnostic et traitement des cas de paludisme grave chez les enfants"),
+       Struct::Values.new(nil, 33, 33, 0.0)],
+      [Struct::Activity.new(63, "Diagnostic et traitement des cas de paludisme simple chez les femmes enceintes"),
+       Struct::Values.new(nil, 0, 0, 0.0)],
+      [Struct::Activity.new(64, "Diagnostic et traitement des cas de paludisme grave chez les femmes enceintes"),
+       Struct::Values.new(nil, 0, 0, 0.0)]
+    ]
+
     activity_and_values_quality = [
       [Struct::Activity.new(100, "General Management"),
        Struct::Values.new(nil, 19.0, 0.0, 0.0)],
@@ -76,8 +112,10 @@ Struct.new("Package", :id, :name, :rules, :invoice_details, :to_sum) do
 
     ]
 
-    return activity_and_values_quantity if name.downcase.include?("quantité")
+    return activity_and_values_quantity_pca if name.downcase.include?("quantité pca")
+    return activity_and_values_quantity_pma if name.downcase.include?("quantité pma")
     return activity_and_values_quality if name.downcase.include?("qualité")
+    raise "no data for #{name}"
   end
 
   def to_h
@@ -86,17 +124,23 @@ Struct.new("Package", :id, :name, :rules, :invoice_details, :to_sum) do
 end
 
 Struct.new("TarificationService", :none) do
-  def tarif(_entity, _date, activity)
-    if activity.id < 100
+  def tarif(entity, date, activity)
+    tarif = nil
+    if activity.id < 50
       # quantité PMA
       tarifs = [4.0, 115.0, 82.0, 206.0, 123, 41.0, 12.0, 240.0, 103.0, 200.0, 370.0, 40.0, 103.0, 60.0]
-      return tarifs[activity.id - 1]
-    end
-    if activity.id < 200
+      tarif = tarifs[activity.id - 1]
+    elsif activity.id < 100
+      # quantité PCA
+      tarifs = [15_000, 17_500, 12_250, 19_250, 35_000, 0, 65_000, 22_750, 26_250, 5000, 330, 5572, 655, 50_075]
+      tarif = tarifs[activity.id - 51]
+    elsif activity.id < 200
       # qualité
       tarifs = [24, 23, 25, 42, 17, 54, 28, 20, 23, 15]
-      return tarifs[activity.id - 100]
+      tarif = tarifs[activity.id - 100]
     end
+    raise "no tarif for #{entity}, #{date} #{activity.name} #{activity.id}" unless tarif
+    tarif
   end
 end
 
@@ -107,7 +151,7 @@ Struct.new("Rule", :name, :formulas) do
   def to_facts
     facts = {}
     formulas.each { |formula| facts[formula.code] = formula.expression }
-    facts[:actictity_rule_name] = "'#{name}'"
+    facts[:actictity_rule_name] = "'#{name.tr("'", ' ')}'"
     facts
   end
 
@@ -176,7 +220,7 @@ def solve!(message, calculator, facts_and_rules, debug = false)
   begin
     solution = calculator.solve!(facts_and_rules)
   rescue => e
-    puts facts_and_rules
+    puts JSON.pretty_generate(facts_and_rules)
     puts e.message
     raise e
   end
@@ -191,9 +235,49 @@ def find_project
   package_quantity_pma = Struct::Package.new(
     1,
     "Quantité PMA",
+    ["fosa_group_id"],
     [
       Struct::Rule.new(
-        "Quantité PHU",
+        "Quantité PMA",
+        [
+          Struct::Formula.new(
+            :difference_percentage,
+            "if (verified != 0.0, (ABS(declared - verified) / verified ) * 100.0, 0.0)",
+            "Pourcentage difference entre déclaré & vérifié"
+          ),
+          Struct::Formula.new(
+            :quantity,
+            "IF(difference_percentage < 5, verified , 0.0)",
+            "Quantity for PBF payment"
+          ),
+          Struct::Formula.new(
+            :amount,
+            "quantity * tarif",
+            "Total payment"
+          )
+        ]
+      )
+    ],
+    [:declared, :verified, :difference_percentage, :quantity, :tarif, :amount, :actictity_name, :quantity_total],
+    Struct::Rule.new(
+      "Quantité PMA",
+      [
+        Struct::Formula.new(
+          :quantity_total,
+          "SUM(%{amount_values})",
+          "Amount PBF"
+        )
+      ]
+    )
+  )
+
+  package_quantity_pca = Struct::Package.new(
+    1,
+    "Quantité PCA",
+    ["hospital_group_id"],
+    [
+      Struct::Rule.new(
+        "Quantité PCA",
         [
           Struct::Formula.new(
             :difference_percentage,
@@ -229,6 +313,7 @@ def find_project
   package_quality = Struct::Package.new(
     2,
     "Qualité",
+    ["hospital_group_id", "fosa_group_id"],
     [
       Struct::Rule.new(
         "Qualité assessment",
@@ -245,7 +330,7 @@ def find_project
           ),
           Struct::Formula.new(
             :percentage,
-            "(attributed_points / max_points) * 100.0",
+            "if (max_points != 0.0, (attributed_points / max_points) * 100.0, 0.0)",
             "Quality score"
           )
         ]
@@ -276,7 +361,7 @@ def find_project
     )
   )
 
-  packages = [package_quantity_pma, package_quality]
+  packages = [package_quantity_pma, package_quantity_pca, package_quality]
 
   project = Struct::Project.new(
     "LESOTHO",
@@ -303,21 +388,23 @@ def find_project
     )
 
   )
-  puts JSON.pretty_generate(project.to_h)
+  #puts JSON.pretty_generate(project.to_h)
 
   project
 end
 
 def calculate_activity_results(project, entity, date, tarification_service, calculator)
-  project.packages.map do |package|
+  selected_packages = project.packages.select { |package| package.apply_for(entity) }
+  raise "No package for #{entity.name} #{entity.groups} vs supported groups #{project.packages.flat_map(&:entity_groups).uniq}" if selected_packages.empty?
+  selected_packages.map do |package|
     package.activity_and_values(date).map do |activity, values|
-      # from code
       activity_tarification_facts = {
         tarif: tarification_service.tarif(entity, date, activity)
       }
+
       facts_and_rules = {}
                         .merge(package.rules.first.to_facts)
-                        .merge(actictity_name: "'#{activity.name}'")
+                        .merge(actictity_name: "'#{activity.name.tr("'", ' ')}'")
                         .merge(activity_tarification_facts)
                         .merge(values.to_facts)
 
@@ -380,29 +467,45 @@ def generate_invoice(entity, date)
   project = find_project
   calculator = new_calculator
 
+  begin
   activity_results = calculate_activity_results(project, entity, date, tarification_service, calculator)
+  raise "should have at least one activity_results" if activity_results.empty?
   package_results = calculate_package_results(activity_results, calculator)
+  raise "should have at least one package_results" if package_results.empty?
   payments = calculate_payments(project, package_results, calculator)
-
-  dump_invoice(project, activity_results, package_results, payments)
+  dump_invoice(entity, project, activity_results, package_results, payments)
+rescue => e
+  dump_invoice(entity, project, activity_results, package_results, payments)
+  raise e
+end
 end
 
-def dump_invoice(project, activity_results, package_results, payments)
-  activity_results.flatten.group_by(&:package).map do |package, results|
-    puts "************ Package #{package.name} "
-    results.each do |result|
-      line = package.invoice_details.map { |item| d_to_s(result.solution[item]) }
-      puts line.join("\t")
+def dump_invoice(entity, project, activity_results, package_results, payments)
+  puts "-------********* #{entity.name} ************------------"
+  if activity_results
+    activity_results.flatten.group_by(&:package).map do |package, results|
+      puts "************ Package #{package.name} "
+      results.each do |result|
+        line = package.invoice_details.map { |item| d_to_s(result.solution[item]) }
+        puts line.join("\t")
+      end
+      next unless package_results
+      package_line = package.invoice_details.map do |item|
+        package_result = package_results.find { |pr| pr.package == package }
+        d_to_s(package_result.solution[item])
+      end
+      puts "Totals :  #{package_line.join("\t")}"
     end
-    package_line = package.invoice_details.map { |item| d_to_s(package_results.find { |pr| pr.package == package }.solution[item]) }
-    puts "Totals :  #{package_line.join("\t")}"
   end
 
-  package_line = project.payment_rule.formulas.map do |formula|
-    [formula.code, d_to_s(payments[formula.code])].join(" : ")
+  if payments
+    package_line = project.payment_rule.formulas.map do |formula|
+      [formula.code, d_to_s(payments[formula.code])].join(" : ")
+    end
+    puts "************ payments "
+    puts package_line.join("\n")
   end
-  puts "************ payments "
-  puts package_line.join("\n")
+  puts
 end
 
 def d_to_s(decimal)
@@ -410,6 +513,10 @@ def d_to_s(decimal)
   decimal
 end
 
-entity = Struct::Entity.new(1, "Maqokho HC", ["Hospital"])
+entity = Struct::Entity.new(1, "Maqokho HC", ["hospital_group_id"])
+
+generate_invoice(entity, Date.new)
+
+entity = Struct::Entity.new(1, "fosa", ["fosa_group_id"])
 
 generate_invoice(entity, Date.new)
