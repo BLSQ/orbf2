@@ -23,6 +23,25 @@ class Package < ApplicationRecord
 
   accepts_nested_attributes_for :states
 
+  attr_accessor :rules, :invoice_details
+
+
+  def apply_for(entity)
+    package_entity_groups.any? { |group| entity.groups.include?(group.organisation_unit_group_ext_ref) }
+  end
+
+  def for_frequency(frequency_to_apply)
+    frequency_to_apply == frequency
+  end
+
+  def package_rule
+    rules.find { |r| r.type == :package }
+  end
+
+  def activity_rule
+    rules.find { |r| r.type == :activity }
+  end
+
   def create_data_element_group(data_element_ids)
     deg = [
       { name:          name,
