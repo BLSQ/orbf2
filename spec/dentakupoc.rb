@@ -416,7 +416,7 @@ def find_project(_date)
             "Max Points"
           ),
           Struct::Formula.new(
-            :percentage,
+            :quality_technical_score_value,
             "if (max_points != 0.0, (attributed_points / max_points) * 100.0, 0.0)",
             "Quality score"
           )
@@ -444,7 +444,7 @@ def find_project(_date)
         ]
       )
     ],
-    [:attributed_points, :max_points, :percentage, :quality_technical_score_value, :actictity_name]
+    [:attributed_points, :max_points, :quality_technical_score_value, :actictity_name]
 
   )
 
