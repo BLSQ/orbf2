@@ -4,7 +4,7 @@ require "dentaku/calculator"
 
 puts "************************************ activity value to amount"
 
-Struct.new("Values", :declared, :verified, :validated) do
+Struct.new("Values", :declared, :verified, :validated, :date) do
   def to_facts
     {
       declared:  declared,
@@ -18,21 +18,13 @@ Struct.new("Entity", :id, :name, :groups) do
 end
 Struct.new("Activity", :id, :name) do
 end
-Struct.new("Package", :id, :name, :entity_groups, :rules, :invoice_details) do
+Struct.new("Package", :id, :name, :frequency, :entity_groups, :rules, :invoice_details) do
   def apply_for(entity)
     entity_groups.any? { |group| entity.groups.include?(group) }
   end
 
-  def new_values(declared = 0.0, verified = 0.0, validated = 0.0)
-    Struct::Values.new(declared, verified, validated)
-  end
-
-  def for_quarter(value)
-    quarter = []
-    quarter << value
-    quarter << value
-    quarter << value
-    quarter
+  def for_frequency(frequency_to_apply)
+    frequency_to_apply == frequency
   end
 
   def package_rule
@@ -43,7 +35,99 @@ Struct.new("Package", :id, :name, :entity_groups, :rules, :invoice_details) do
     rules.find { |r| r.type == :activity }
   end
 
-  def activity_and_values(_date)
+  def to_h
+    super.to_h.except(:rules).merge!("rules" => rules.map(&:to_h))
+  end
+end
+
+Struct.new("TarificationService", :none) do
+  def tarif(entity, date, activity)
+    tarif = nil
+    if activity.id < 50
+      # quantité PMA
+      tarifs = [4.0, 115.0, 82.0, 206.0, 123, 41.0, 12.0, 240.0, 103.0, 200.0, 370.0, 40.0, 103.0, 60.0]
+      tarif = tarifs[activity.id - 1]
+    elsif activity.id < 100
+      # quantité PCA
+      tarifs = [15_000, 17_500, 12_250, 19_250, 35_000, 0, 65_000, 22_750, 26_250, 5000, 330, 5572, 655, 50_075]
+      tarif = tarifs[activity.id - 51]
+    elsif activity.id < 200
+      # qualité
+      tarifs = [24, 23, 25, 42, 17, 54, 28, 20, 23, 15]
+      tarif = tarifs[activity.id - 100]
+    end
+    raise "no tarif for #{entity}, #{date} #{activity.name} #{activity.id}" unless tarif
+    tarif
+  end
+end
+
+Struct.new("Formula", :code, :expression, :label) do
+end
+
+Struct.new("Rule", :name, :type, :formulas) do
+  def to_facts
+    facts = {}
+    formulas.each { |formula| facts[formula.code] = formula.expression }
+    facts[:actictity_rule_name] = "'#{name.tr("'", ' ')}'"
+    facts
+  end
+
+  def to_h
+    super.to_h.except(:formulas).merge!("formulas" => formulas.map(&:to_h))
+  end
+end
+
+Struct.new("ActivityResult", :package, :activity, :solution, :date) do
+  def to_s
+    "#{package.name} #{activity.name} #{date} #{solution}"
+  end
+end
+Struct.new("PackageResult", :package, :solution) do
+  def to_s
+    "#{package.name} #{solution}"
+  end
+end
+
+Struct.new("MonthlyInvoice", :date, :entity, :project, :activity_results, :package_results, :payments) do
+  def dump_invoice
+    puts "-------********* #{entity.name} #{date}************------------"
+    if activity_results
+      activity_results.flatten.group_by(&:package).map do |package, results|
+        puts "************ Package #{package.name} "
+        puts package.invoice_details.join("\t")
+        results.each do |result|
+          line = package.invoice_details.map { |item| d_to_s(result.solution[item]) }
+          # line << result.solution.to_json
+          puts line.join("\t\t")
+        end
+        next unless package_results
+        package_line = package.invoice_details.map do |item|
+          package_result = package_results.find { |pr| pr.package == package }
+          d_to_s(package_result.solution[item])
+        end
+        puts "Totals :  #{package_line.join("\t")}"
+      end
+    end
+
+    if payments && !payments.empty?
+      package_line = project.payment_rule.formulas.map do |formula|
+        [formula.code, d_to_s(payments[formula.code])].join(" : ")
+      end
+      puts "************ payments "
+      puts package_line.join("\n")
+    end
+    puts
+  end
+end
+
+Struct.new("Project", :name, :packages, :payment_rule) do
+  def to_h
+    super.to_h.except(:payment_rule, :packages).merge!("packages" => packages.map(&:to_h), "payment_rule" => payment_rule.to_h)
+  end
+end
+
+class AnalyticsService
+  def activity_and_values(package, date)
     # build from data element group and analytics api
     activity_and_values_quantity_pma = [ # PMA
       [Struct::Activity.new(1, "Number of new outpatient consultations for curative care consultations"),
@@ -110,87 +194,58 @@ Struct.new("Package", :id, :name, :entity_groups, :rules, :invoice_details) do
 
     activity_and_values_quality = [
       [Struct::Activity.new(100, "General Management"),
-       [new_values(19.0)]],
+       new_values(19.0)],
       [Struct::Activity.new(101, "Environmental Health"),
-       [new_values(23.0)]],
+       new_values(23.0)],
       [Struct::Activity.new(102, "General consultations"),
-       [new_values(25)]],
+       new_values(25)],
       [Struct::Activity.new(103, "Child Survival"),
-       [new_values(30)]],
+       new_values(30)],
       [Struct::Activity.new(104, "Family Planning"),
-       [new_values(9)]],
+       new_values(9)],
       [Struct::Activity.new(105, "Maternal Health"),
-       [new_values(45)]],
+       new_values(45)],
       [Struct::Activity.new(106, "STI, HIV and TB"),
-       [new_values(22)]],
+       new_values(22)],
       [Struct::Activity.new(107, "Essential drugs Management"),
-       [new_values(20)]],
+       new_values(20)],
       [Struct::Activity.new(108, "Priority Drugs and supplies"),
-       [new_values(20)]],
+       new_values(20)],
       [Struct::Activity.new(109, "Community based services"),
-       [new_values(12)]]
+       new_values(12)]
 
     ]
 
-    return activity_and_values_quantity_pca if name.downcase.include?("quantité pca")
-    return activity_and_values_quantity_pma if name.downcase.include?("quantité pma")
-    return activity_and_values_quality if name.downcase.include?("qualité")
-    raise "no data for #{name}"
+    return limit_values_to_date(activity_and_values_quantity_pca, date) if package.name.downcase.include?("quantité pca")
+    return limit_values_to_date(activity_and_values_quantity_pma, date) if package.name.downcase.include?("quantité pma")
+    return activity_and_values_quality if package.name.downcase.include?("qualité")
+    raise "no data for #{name} and #{date}"
   end
 
-  def to_h
-    super.to_h.except(:rules).merge!("rules" => rules.map(&:to_h))
-  end
-end
+  private
 
-Struct.new("TarificationService", :none) do
-  def tarif(entity, date, activity)
-    tarif = nil
-    if activity.id < 50
-      # quantité PMA
-      tarifs = [4.0, 115.0, 82.0, 206.0, 123, 41.0, 12.0, 240.0, 103.0, 200.0, 370.0, 40.0, 103.0, 60.0]
-      tarif = tarifs[activity.id - 1]
-    elsif activity.id < 100
-      # quantité PCA
-      tarifs = [15_000, 17_500, 12_250, 19_250, 35_000, 0, 65_000, 22_750, 26_250, 5000, 330, 5572, 655, 50_075]
-      tarif = tarifs[activity.id - 51]
-    elsif activity.id < 200
-      # qualité
-      tarifs = [24, 23, 25, 42, 17, 54, 28, 20, 23, 15]
-      tarif = tarifs[activity.id - 100]
+  def new_values(declared = 0.0, verified = 0.0, validated = 0.0)
+    Struct::Values.new(declared, verified, validated)
+  end
+
+  def for_quarter(value)
+    quarter = []
+    quarter << new_values(value.declared, value.verified, value.validated)
+    quarter << new_values(value.declared + 2, value.declared + 1, value.validated)
+    quarter << new_values(value.declared, value.declared, value.validated)
+    quarter
+  end
+
+  def limit_values_to_date(activity_and_values, date)
+    current_quarter_end = Date.today.to_date.end_of_month
+    quarter_dates = [current_quarter_end - 2.months, current_quarter_end - 1.month, current_quarter_end]
+    index_to_keep = quarter_dates.index(date)
+    raise "no data for #{date} vs #{quarter_dates}" unless index_to_keep
+    filtered = activity_and_values.map do |activity, values|
+      values[index_to_keep].date = date.to_date.end_of_month
+      [activity, values[index_to_keep]]
     end
-    raise "no tarif for #{entity}, #{date} #{activity.name} #{activity.id}" unless tarif
-    tarif
-  end
-end
-
-Struct.new("Formula", :code, :expression, :label) do
-end
-
-Struct.new("Rule", :name, :type, :formulas) do
-  def to_facts
-    facts = {}
-    formulas.each { |formula| facts[formula.code] = formula.expression }
-    facts[:actictity_rule_name] = "'#{name.tr("'", ' ')}'"
-    facts
-  end
-
-  def to_h
-    super.to_h.except(:formulas).merge!("formulas" => formulas.map(&:to_h))
-  end
-end
-
-Struct.new("ActivityResult", :package, :activity, :solution) do
-end
-Struct.new("PackageResult", :package, :solution) do
-  def to_s
-    "#{package.name} #{solution}"
-  end
-end
-
-Struct.new("Project", :name, :packages, :payment_rule) do
-  def to_h
-    super.to_h.except(:payment_rule, :packages).merge!("packages" => packages.map(&:to_h), "payment_rule" => payment_rule.to_h)
+    filtered
   end
 end
 
@@ -251,10 +306,11 @@ def solve!(message, calculator, facts_and_rules, debug = false)
   solution
 end
 
-def find_project
+def find_project(_date)
   package_quantity_pma = Struct::Package.new(
     1,
     "Quantité PMA",
+    "monthly",
     ["fosa_group_id"],
     [
       Struct::Rule.new(
@@ -299,6 +355,7 @@ def find_project
   package_quantity_pca = Struct::Package.new(
     1,
     "Quantité PCA",
+    "monthly",
     ["hospital_group_id"],
     [
       Struct::Rule.new(
@@ -341,6 +398,7 @@ def find_project
   package_quality = Struct::Package.new(
     2,
     "Qualité",
+    "quaterly",
     %w(hospital_group_id fosa_group_id),
     [
       Struct::Rule.new(
@@ -386,7 +444,7 @@ def find_project
         ]
       )
     ],
-    [:attributed_points, :max_points, :quality_technical_score_value, :actictity_name]
+    [:attributed_points, :max_points, :percentage, :quality_technical_score_value, :actictity_name]
 
   )
 
@@ -422,26 +480,32 @@ def find_project
   project
 end
 
-def calculate_activity_results(project, entity, date, tarification_service, calculator)
-  selected_packages = project.packages.select { |package| package.apply_for(entity) }
+def calculate_activity_results(analytics_service, project, entity, date, frequency, tarification_service, calculator)
+  selected_packages = project.packages.select do |package|
+    package.apply_for(entity) && package.for_frequency(frequency)
+  end
   raise "No package for #{entity.name} #{entity.groups} vs supported groups #{project.packages.flat_map(&:entity_groups).uniq}" if selected_packages.empty?
   selected_packages.map do |package|
-    package.activity_and_values(date).map do |activity, values|
-      activity_tarification_facts = {
-        tarif: tarification_service.tarif(entity, date, activity)
-      }
-
-      facts_and_rules = {}
-                        .merge(package.activity_rule.to_facts)
-                        .merge(actictity_name: "'#{activity.name.tr("'", ' ')}'")
-                        .merge(activity_tarification_facts)
-                        .merge(values.first.to_facts)
-
-      solution = solve!(activity.name.to_s, calculator, facts_and_rules)
-
-      Struct::ActivityResult.new(package, activity, solution)
+    analytics_service.activity_and_values(package, date).map do |activity, values|
+      calculate_activity_results_monthly(entity, date, frequency, tarification_service, calculator, package, activity, values)
     end
   end
+end
+
+def calculate_activity_results_monthly(entity, date, _frequency, tarification_service, calculator, package, activity, values)
+  activity_tarification_facts = {
+    tarif: tarification_service.tarif(entity, date, activity)
+  }
+
+  facts_and_rules = {}
+                    .merge(package.activity_rule.to_facts)
+                    .merge(actictity_name: "'#{activity.name.tr("'", ' ')}'")
+                    .merge(activity_tarification_facts)
+                    .merge(values.to_facts)
+
+  solution = solve!(activity.name.to_s, calculator, facts_and_rules)
+
+  Struct::ActivityResult.new(package, activity, solution, date)
 end
 
 def calculate_package_results(activity_results, calculator)
@@ -490,53 +554,97 @@ def calculate_payments(project, package_results, calculator)
   project_solution
 end
 
-def generate_invoice(entity, date)
+def generate_monthly_entity_invoice(entity, analytics_service, date)
   tarification_service = Struct::TarificationService.new(:unused)
-
-  project = find_project
+  date = date.to_date.end_of_month
+  project = find_project(date)
   calculator = new_calculator
 
   begin
-  activity_results = calculate_activity_results(project, entity, date, tarification_service, calculator)
-  raise "should have at least one activity_results" if activity_results.empty?
-  package_results = calculate_package_results(activity_results, calculator)
-  raise "should have at least one package_results" if package_results.empty?
-  payments = calculate_payments(project, package_results, calculator)
-  dump_invoice(entity, project, activity_results, package_results, payments)
-rescue => e
-  dump_invoice(entity, project, activity_results, package_results, payments)
-  raise e
-end
+    activity_results = calculate_activity_results(
+      analytics_service,
+      project,
+      entity,
+      date,
+      "monthly",
+      tarification_service,
+      calculator
+    )
+    raise "should have at least one activity_results" if activity_results.empty?
+    package_results = calculate_package_results(activity_results, calculator)
+    raise "should have at least one package_results" if package_results.empty?
+    # No payments in monthly ?
+    return Struct::MonthlyInvoice.new(date, entity, project, activity_results, package_results, {})
+  rescue => e
+    Struct::MonthlyInvoice.new(date, entity, project, activity_results, package_results, {}).dump_invoice
+    raise e
+  end
 end
 
-def dump_invoice(entity, project, activity_results, package_results, payments)
-  puts "-------********* #{entity.name} ************------------"
-  if activity_results
-    activity_results.flatten.group_by(&:package).map do |package, results|
-      puts "************ Package #{package.name} "
-      puts package.invoice_details.join("\t")
-      results.each do |result|
-        line = package.invoice_details.map { |item| d_to_s(result.solution[item]) }
-        # line << result.solution.to_json
-        puts line.join("\t\t")
-      end
-      next unless package_results
-      package_line = package.invoice_details.map do |item|
-        package_result = package_results.find { |pr| pr.package == package }
-        d_to_s(package_result.solution[item])
-      end
-      puts "Totals :  #{package_line.join("\t")}"
-    end
+def generate_quaterly_entity_invoice(entity, analytics_service, date)
+  tarification_service = Struct::TarificationService.new(:unused)
+  current_quarter_end = date.to_date.end_of_month
+  quarter_dates = [current_quarter_end - 2.months, current_quarter_end - 1.month, current_quarter_end]
+  calculator = new_calculator
+
+  quarter_details_results = {}
+  quaterly_package_results = {}
+  quarter_dates.map do |month|
+    project = find_project(month)
+    activity_monthly_results = calculate_activity_results(
+      analytics_service,
+      project,
+      entity,
+      month,
+      "monthly",
+      tarification_service,
+      calculator
+    )
+    quarter_details_results[month] = activity_monthly_results
+    quaterly_package_results[month] = calculate_package_results(activity_monthly_results, calculator)
   end
 
-  if payments
-    package_line = project.payment_rule.formulas.map do |formula|
-      [formula.code, d_to_s(payments[formula.code])].join(" : ")
+  quarter_entity_results = calculate_package_results(quarter_details_results.values.flatten, calculator)
+  quarter_details_results.values.flatten.group_by(&:package).each do |package, results|
+    puts "#{package.name}"
+    headers = results.group_by(&:activity).map do |activity, activity_results|
+      activity_results.map(&:date)
     end
-    puts "************ payments "
-    puts package_line.join("\n")
+    headers = [headers.first]
+    headers << "total"
+    headers << "Activity"
+    puts headers.join("\t")
+    results.group_by(&:activity).each do |activity, activity_results|
+      amounts_quarter = activity_results.map(&:solution).map {|s| s[:amount]}
+      amounts_quarter << amounts_quarter.sum
+      puts "#{amounts_quarter.join("\t\t")}\t#{activity.name}"
+    end
   end
-  puts
+  totals = quaterly_package_results.values.flatten.map{|qr| qr.solution[:quantity_total]}
+  totals << quarter_entity_results.first.solution[:quantity_total]
+  puts "#{totals.join("\t\t")}"
+
+  begin
+    project = find_project(current_quarter_end)
+    activity_results = calculate_activity_results(
+      analytics_service,
+      project,
+      entity,
+      current_quarter_end,
+      "quaterly",
+      tarification_service,
+      calculator
+    )
+
+    package_results = calculate_package_results(activity_results, calculator)
+    package_results.concat(quarter_entity_results)
+
+    raise "should have at least one package_results" if package_results.empty?
+    payments = calculate_payments(project, package_results, calculator)
+    Struct::MonthlyInvoice.new(date, entity, project, activity_results, package_results, payments).dump_invoice
+  rescue => e
+    raise e
+  end
 end
 
 def d_to_s(decimal)
@@ -544,12 +652,29 @@ def d_to_s(decimal)
   decimal
 end
 
-puts JSON.pretty_generate(find_project.to_h)
+puts JSON.pretty_generate(find_project(Date.today).to_h)
 
-entity = Struct::Entity.new(1, "Maqokho HC", ["hospital_group_id"])
+entities = [
+  Struct::Entity.new(1, "Maqokho HC", ["hospital_group_id"]),
+  Struct::Entity.new(1, "fosa", ["fosa_group_id"])
+]
+analytics_service = AnalyticsService.new
 
-generate_invoice(entity, Date.new)
+entities.each do |entity|
+  puts "*****************"
+  puts "** Monthly ******"
+  puts "*****************"
+  monthly_invoice = generate_monthly_entity_invoice(entity, analytics_service, Date.today - 2.months)
+  monthly_invoice.dump_invoice
 
-entity = Struct::Entity.new(1, "fosa", ["fosa_group_id"])
+  monthly_invoice = generate_monthly_entity_invoice(entity, analytics_service, Date.today - 1.month)
+  monthly_invoice.dump_invoice
 
-generate_invoice(entity, Date.new)
+  monthly_invoice = generate_monthly_entity_invoice(entity, analytics_service, Date.today)
+  monthly_invoice.dump_invoice
+
+  puts "*****************"
+  puts "** Quaterly ****"
+  puts "*****************"
+  quaterly_invoice = generate_quaterly_entity_invoice(entity, analytics_service, Date.today)
+end
