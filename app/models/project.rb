@@ -23,6 +23,8 @@ class Project < ApplicationRecord
   has_one :entity_group
   has_many :packages
 
+  attr_accessor :payment_rule
+
   def verify_connection
     return { status: :ko, message: errors.full_messages.join(",") } if invalid?
     infos = dhis2_connection.system_infos.get

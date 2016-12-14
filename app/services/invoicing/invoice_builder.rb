@@ -1,11 +1,11 @@
 module Invoicing
   class InvoiceBuilder
-     def initialize
-       @solver = Rules::Solver.new
-     end
-     def solver
-       @solver
-     end
+    attr_reader :solver, :project_finder
+
+    def initialize(project_finder)
+      @solver = Rules::Solver.new
+      @project_finder = project_finder
+    end
 
     def calculate_activity_results(analytics_service, project, entity, date, frequency, tarification_service)
       selected_packages = project.packages.select do |package|
@@ -81,10 +81,10 @@ module Invoicing
       project_solution
     end
 
-    def generate_monthly_entity_invoice(entity, analytics_service, date)
+    def generate_monthly_entity_invoice(current_project, entity, analytics_service, date)
       tarification_service = Tarification::MockTarificationService.new
       date = date.to_date.end_of_month
-      project = find_project(date)
+      project = project_finder.find_project(current_project, date)
 
       begin
         activity_results = calculate_activity_results(
@@ -106,7 +106,7 @@ module Invoicing
       end
     end
 
-    def generate_quaterly_entity_invoice(entity, analytics_service, date)
+    def generate_quaterly_entity_invoice(current_project, entity, analytics_service, date)
       tarification_service = Tarification::MockTarificationService.new
       current_quarter_end = date.to_date.end_of_month
       quarter_dates = [current_quarter_end - 2.months, current_quarter_end - 1.month, current_quarter_end]
@@ -114,7 +114,7 @@ module Invoicing
       quarter_details_results = {}
       quaterly_package_results = {}
       quarter_dates.map do |month|
-        project = find_project(month)
+        project = project_finder.find_project(current_project, month)
         activity_monthly_results = calculate_activity_results(
           analytics_service,
           project,
@@ -148,7 +148,7 @@ module Invoicing
       puts totals.join("\t\t").to_s
 
       begin
-        project = find_project(current_quarter_end)
+        project = project_finder.find_project(current_project, current_quarter_end)
         activity_results = calculate_activity_results(
           analytics_service,
           project,
