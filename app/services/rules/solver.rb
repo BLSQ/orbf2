@@ -9,19 +9,19 @@ module Rules
 
     def solve!(message, facts_and_rules, debug = false)
       puts "********** #{message} #{Time.new}" if debug
-       puts JSON.pretty_generate(facts_and_rules)  if debug
+      puts JSON.pretty_generate(facts_and_rules) if debug
       start_time = Time.new.utc
       begin
         solution = calculator.solve!(facts_and_rules)
       rescue => e
         puts JSON.pretty_generate(facts_and_rules)
         puts e.message
-        # TODO log stacktrace
+        # TODO: log stacktrace
         raise SolvingError.new(facts_and_rules, e.message), "Failed to solve this problem #{message} : #{e.message}"
       end
       end_time = Time.new.utc
       solution[:elapsed_time] = (end_time - start_time)
-      puts " #{Time.new} => #{solution[:elapsed_time]}"  if debug
+      puts " #{Time.new} => #{solution[:elapsed_time]}" if debug
       puts JSON.pretty_generate([solution]) if debug
       solution
     end
@@ -32,6 +32,8 @@ module Rules
       formula.errors[:expression] << e.message
     rescue Dentaku::ParseError => e
       formula.errors[:expression] << e.message
+    rescue KeyError
+      formula.errors[:expression] << "#{e.message}. remove space or verify it ends with _values"
     end
 
     def validate_formulas(rule)
@@ -42,6 +44,8 @@ module Rules
       solve!("validate_all_formulas", facts, true)
     rescue Rules::SolvingError => e
       rule.errors[:formulas] << e.message
+    rescue KeyError => e
+      rule.errors[:formulas] << e.message
     end
 
     def self.escapeString(string)
@@ -51,7 +55,13 @@ module Rules
     private
 
     def mock_values(expression)
-      expression.gsub(/%{(.*)_values}/) { |_c| "1, 2" }
+      variable_names =  expression.scan(/%{(\s?[a-z_]+\s?)}/).flatten
+      variables = {}
+      variable_names.select {|name|name.ends_with?("_values")}.each do |variable_name|
+        raise "please don't add extra spaces in '%{#{variable_name}}'" if variable_name.include?(" ")
+        variables[variable_name.to_sym] = "1 , 2"
+      end
+      expression % variables
     end
 
     def calculator
