@@ -18,7 +18,11 @@ class SetupController < PrivateController
                      kind:   :packages,
                      model:  step1.todo? || step2.todo? ? nil : current_user.project.packages)
 
-    step4 =  Step.new(name: "Rules", status: :todo, kind: :rules)
+    step4 =  Step.new(name:   "Rules",
+                      status: :todo,
+                      kind:   :rules,
+                      model:  step3.todo? ? nil : current_user.project.packages)
+
     step5 =  Step.new(name: "Tarification plan", status: :todo, kind: :tarifications)
 
     @setup = Setup.new([step1, step2, step3, step4, step5])

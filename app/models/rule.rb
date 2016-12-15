@@ -1,19 +1,31 @@
+# == Schema Information
+#
+# Table name: rules
+#
+#  id         :integer          not null, primary key
+#  name       :string           not null
+#  kind       :string           not null
+#  package_id :integer
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
 
-class Rule
-  include ActiveModel::Model
+
+class Rule < ApplicationRecord
   RULE_TYPES = %w(activity package).freeze
+  belongs_to :package
+  has_many :formulas
 
-  attr_accessor :name, :type, :formulas
+  accepts_nested_attributes_for :formulas, reject_if: :all_blank, allow_destroy: true
 
-  validates :type, presence: true, inclusion: { in: RULE_TYPES }
+  validates :kind, presence: true, inclusion: { in: RULE_TYPES }
   validates :name, presence: true
-
   validate :formulas, :formulas_are_coherent
 
   def to_facts
     facts = {}
     formulas.each { |formula| facts[formula.code] = formula.expression }
-    facts[:actictity_rule_name] = Rules::Solver.escapeString(self.name)
+    facts[:actictity_rule_name] = Rules::Solver.escapeString(name)
     facts
   end
 
@@ -22,13 +34,13 @@ class Rule
   end
 
   def fake_facts
-    if type == "activity"
+    if kind == "activity"
       {
-        claimed: "1.0",
-        verified: "1.0",
-        declared: "1.0",
+        claimed:   "1.0",
+        verified:  "1.0",
+        declared:  "1.0",
         validated: "1.0",
-        tarif: "100"
+        tarif:     "100"
       }
     else
       {
@@ -36,5 +48,4 @@ class Rule
       }
     end
   end
-
 end

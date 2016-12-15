@@ -3,6 +3,7 @@ source "https://rubygems.org"
 ruby "2.3.1"
 
 gem "bootstrap-sass", "~> 3.3.6"
+gem "cocoon"
 gem "coffee-rails", "~> 4.2"
 gem "dentaku"
 gem "devise", "~> 4.2.0"

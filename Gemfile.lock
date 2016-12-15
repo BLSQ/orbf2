@@ -58,6 +58,7 @@ GEM
       sass (>= 3.3.4)
     builder (3.2.2)
     byebug (9.0.6)
+    cocoon (1.2.9)
     codeclimate-test-reporter (1.0.3)
       simplecov
     coffee-rails (4.2.1)
@@ -267,6 +268,7 @@ DEPENDENCIES
   annotate
   bootstrap-sass (~> 3.3.6)
   byebug
+  cocoon
   codeclimate-test-reporter (~> 1.0.0)
   coffee-rails (~> 4.2)
   database_cleaner

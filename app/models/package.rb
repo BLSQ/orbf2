@@ -17,13 +17,14 @@ class Package < ApplicationRecord
   has_many :package_entity_groups
   has_many :package_states
   has_many :states, through: :package_states
+  has_many :rules
   validates :name, presence: true, length: { maximum: 230 }
   # validates :states, presence: true
   validates :frequency, presence: true, inclusion: { in: FREQUENCIES }
 
   accepts_nested_attributes_for :states
 
-  attr_accessor :rules, :invoice_details
+  attr_accessor :invoice_details
 
 
   def apply_for(entity)
@@ -35,11 +36,11 @@ class Package < ApplicationRecord
   end
 
   def package_rule
-    rules.find { |r| r.type == :package }
+    rules.find { |r| r.kind == 'package' }
   end
 
   def activity_rule
-    rules.find { |r| r.type == :activity }
+    rules.find { |r| r.kind == 'activity' }
   end
 
   def create_data_element_group(data_element_ids)

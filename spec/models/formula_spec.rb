@@ -1,3 +1,16 @@
+# == Schema Information
+#
+# Table name: formulas
+#
+#  id          :integer          not null, primary key
+#  code        :string           not null
+#  description :string           not null
+#  expression  :text             not null
+#  rules_id    :integer
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#
+
 require "rails_helper"
 
 RSpec.describe Formula, type: :model do

@@ -1,7 +1,18 @@
-class Formula
-  include ActiveModel::Model
-  attr_accessor :code, :expression, :label
+# == Schema Information
+#
+# Table name: formulas
+#
+#  id          :integer          not null, primary key
+#  code        :string           not null
+#  description :string           not null
+#  expression  :text             not null
+#  rules_id    :integer
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#
 
+class Formula < ApplicationRecord
+  belongs_to :rule
   validates :code, presence: true, format: {
     with:    /\A[a-z_]+\z/,
     message: ": should only contains small letters and _ like 'quality_score' or 'total_amount'"
