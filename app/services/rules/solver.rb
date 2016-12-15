@@ -1,3 +1,5 @@
+require "dentaku"
+require "dentaku/calculator"
 
 module Rules
   class Solver

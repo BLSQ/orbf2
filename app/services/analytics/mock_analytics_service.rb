@@ -16,7 +16,7 @@ module Analytics
          [new_values(0.0, 0.0), new_values(1.0, 1.0), new_values(0.0, 1.0)]],
         [new_activity(3, "Number of pregnant women with fourth or last antenatal care visit in last month of pregnancy"),
          [new_values(2.0, 0.0), new_values(2.0, 0.0), new_values(2.0, 0.0)]],
-        [new_activity(4, "Number of new outpatient consultations for curative care consultations"),
+        [new_activity(4, "Number of new outpatient consultations for curative care consultations 2"),
          [new_values(7.0, 7.0), new_values(7.0, 7.0), new_values(7.0, 7.0)]],
         [new_activity(5, "Number of women delivering in health facilities"),
          [new_values(6.0, 6.0), new_values(6.0, 6.0), new_values(6.0, 6.0)]],

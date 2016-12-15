@@ -113,7 +113,7 @@ module Invoicing
 
       quarter_details_results = {}
       quaterly_package_results = {}
-      quarter_dates.map do |month|
+      quarter_dates.each do |month|
         project = project_finder.find_project(current_project, month)
         activity_monthly_results = calculate_activity_results(
           analytics_service,
@@ -128,19 +128,16 @@ module Invoicing
       end
 
       quarter_entity_results = calculate_package_results(quarter_details_results.values.flatten)
-      quarter_details_results.values.flatten.group_by(&:package).each do |package, results|
-        puts package.name.to_s
-        headers = results.group_by(&:activity).map do |_activity, activity_results|
-          activity_results.map(&:date)
-        end
-        headers = [headers.first]
+      quarter_details_results.values.flatten.group_by { |r| r.package.name }.each do |package_name, results|
+        puts package_name
+        headers = results.flat_map(&:date)[0..2]
         headers << "total"
         headers << "Activity"
         puts headers.join("\t")
-        results.group_by(&:activity).each do |activity, activity_results|
+        results.group_by{ |r| r.activity.name }.each do |activity_name, activity_results|
           amounts_quarter = activity_results.map(&:solution).map { |s| s[:amount] }
           amounts_quarter << amounts_quarter.sum
-          puts "#{amounts_quarter.join("\t\t")}\t#{activity.name}"
+          puts "#{amounts_quarter.join("\t\t")}\t#{activity_name}"
         end
       end
       totals = quaterly_package_results.values.flatten.map { |qr| qr.solution[:quantity_total] }

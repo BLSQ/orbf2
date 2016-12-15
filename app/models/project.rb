@@ -41,4 +41,17 @@ class Project < ApplicationRecord
       no_ssl_verification: bypass_ssl
     )
   end
+
+  def export_to_json
+    to_json(
+      except:  [:created_at, :updated_at, :password, :user],
+      include: {
+        packages: {
+          methods: [:rules],
+          except:  [:created_at, :updated_at]
+        }
+      },
+      methods: [:payment_rule]
+    )
+  end
 end

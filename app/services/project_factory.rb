@@ -1,7 +1,6 @@
 
 
 class ProjectFactory
-
   def build
     package_quantity_pma = new_package(
       "Quantité PMA",
@@ -171,5 +170,19 @@ class ProjectFactory
       )
 
     project
+  end
+
+  private
+
+  def new_formula(code, expression, label)
+    Formula.new(code: code, expression: expression, label: label)
+  end
+
+  def new_package(name, frequency, groups, rules, invoice_details)
+    p = Package.new(name: name, frequency: frequency)
+    p.package_entity_groups = groups.map { |g| PackageEntityGroup.new(name: g, organisation_unit_group_ext_ref: g) }
+    p.rules = rules
+    p.invoice_details = invoice_details
+    p
   end
 end
