@@ -26,6 +26,15 @@ module Rules
       solution
     end
 
+    def validate_expression(formula)
+      expression = formula.expression.gsub( /%{(.*)}/ ) {|c| "1, 2" }
+      @@calculator.dependencies(expression)
+    rescue  Dentaku::TokenizerError => e
+      formula.errors[:expression] << e.message
+    rescue Dentaku::ParseError => e
+      formula.errors[:expression] << e.message
+    end
+
     private
 
     def calculator
