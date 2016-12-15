@@ -3,39 +3,56 @@ require "dentaku/calculator"
 
 module Rules
   class Solver
-
     def initialize
       @@calculator ||= new_calculator
     end
 
     def solve!(message, facts_and_rules, debug = false)
       puts "********** #{message} #{Time.new}" if debug
-      puts JSON.pretty_generate(facts_and_rules)  if debug
-      start_time = Time.new
+       puts JSON.pretty_generate(facts_and_rules)  if debug
+      start_time = Time.new.utc
       begin
         solution = calculator.solve!(facts_and_rules)
       rescue => e
         puts JSON.pretty_generate(facts_and_rules)
         puts e.message
-        raise e
+        # TODO log stacktrace
+        raise SolvingError.new(facts_and_rules, e.message), "Failed to solve this problem #{message} : #{e.message}"
       end
-      end_time = Time.new
+      end_time = Time.new.utc
       solution[:elapsed_time] = (end_time - start_time)
-      puts " #{Time.new} => #{solution[:amount]}"  if debug
-      puts JSON.pretty_generate(solution) if debug
+      puts " #{Time.new} => #{solution[:elapsed_time]}"  if debug
+      puts JSON.pretty_generate([solution]) if debug
       solution
     end
 
     def validate_expression(formula)
-      expression = formula.expression.gsub( /%{(.*)}/ ) {|c| "1, 2" }
-      @@calculator.dependencies(expression)
-    rescue  Dentaku::TokenizerError => e
+      @@calculator.dependencies(mock_values(formula.expression))
+    rescue Dentaku::TokenizerError => e
       formula.errors[:expression] << e.message
     rescue Dentaku::ParseError => e
       formula.errors[:expression] << e.message
     end
 
+    def validate_formulas(rule)
+      facts = {}.merge(rule.fake_facts)
+      rule.formulas.each { |formula| facts[formula.code] = mock_values(formula.expression) }
+      facts[:actictity_rule_name] = Solver.escapeString(rule.name)
+
+      solve!("validate_all_formulas", facts, true)
+    rescue Rules::SolvingError => e
+      rule.errors[:formulas] << e.message
+    end
+
+    def self.escapeString(string)
+      "'#{string.tr("'", ' ')}'"
+    end
+
     private
+
+    def mock_values(expression)
+      expression.gsub(/%{(.*)_values}/) { |_c| "1, 2" }
+    end
 
     def calculator
       @@calculator
@@ -52,10 +69,10 @@ module Rules
       avg_function = lambda do |*args|
         args.inject(0.0) { |sum, el| sum + el } / args.size
       end
+
       sum_function = lambda do |*args|
         args.inject(0.0) { |sum, x| sum + x }
       end
-
       between = ->(lower, score, greater) { lower <= score && score <= greater }
 
       calculator = Dentaku::Calculator.new
@@ -66,6 +83,5 @@ module Rules
       calculator.add_function(:sum, :numeric, sum_function)
       calculator
    end
-
  end
 end

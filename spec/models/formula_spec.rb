@@ -1,6 +1,21 @@
 require "rails_helper"
 
 RSpec.describe Formula, type: :model do
+
+  describe "Code validation" do
+    it "should accept snake_case" do
+      formula = Formula.new(code: "snake_case", expression: "45")
+      formula.valid?
+      expect(formula.errors.full_messages).to eq([])
+    end
+
+    it "should reject upperCase" do
+      formula = Formula.new(code: "upperCase", expression: "45")
+      formula.valid?
+      expect(formula.errors.full_messages).to eq(["Code : should only contains small letters and _ like 'quality_score' or 'total_amount'"])
+    end
+  end
+
   describe "Expression validation" do
     it "should accept activity expression" do
       formula = Formula.new(code: "sample_expression", expression: "variable - 456")
@@ -24,6 +39,13 @@ RSpec.describe Formula, type: :model do
 
       formula.valid?
       expect(formula.errors[:expression]).to eq([])
+    end
+
+    it "should reject dangerous expression" do
+      formula = Formula.new(code: "sample_expression", expression: '`ls -als`')
+
+      formula.valid?
+      expect(formula.errors[:expression]).to eq(["parse error at: '`ls -als`'"])
     end
   end
 end

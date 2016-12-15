@@ -3,8 +3,8 @@ class Formula
   attr_accessor :code, :expression, :label
 
   validates :code, presence: true, format: {
-    with:    /[a-zA-Z_]+/,
-    message: "only letters and _ like 'quality_score' or 'total_amount'"
+    with:    /\A[a-z_]+\z/,
+    message: ": should only contains small letters and _ like 'quality_score' or 'total_amount'"
   }
 
   validate :expression, :expression_is_valid
@@ -12,5 +12,4 @@ class Formula
   def expression_is_valid
     Rules::Solver.new.validate_expression(self)
   end
-
 end
