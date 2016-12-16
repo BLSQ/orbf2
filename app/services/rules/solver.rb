@@ -17,7 +17,7 @@ module Rules
         puts JSON.pretty_generate(facts_and_rules)
         puts e.message
         # TODO: log stacktrace
-        raise SolvingError.new(facts_and_rules, e.message), "Failed to solve this problem #{message} : #{e.message}"
+        raise SolvingError.new(e.message, facts_and_rules), "Failed to solve this problem #{message} : #{e.message}"
       end
       end_time = Time.new.utc
       solution[:elapsed_time] = (end_time - start_time)
