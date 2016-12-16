@@ -2,6 +2,16 @@
 <h1><%=rule.package.name %> - <%= rule.kind %> rule</h1>
 
 <%= f.input :name %>
+
+<a class="btn pull-right" data-toggle="collapse" data-target="#cheat_sheet">
+  <%= icon("question-circle fa-5x") %>
+</a>
+<div id="cheat_sheet" class="collapse">
+  <%= render "cheat_sheet", rule: rule %>
+</div>
+
+
+
 <label class="control-label string"> Available variables names for expressions</label>
 <pre> <%= rule.available_variables.join("    ") %> </pre>
 
@@ -16,6 +26,10 @@
 <%= f.simple_fields_for :formulas do |formula| %>
   <%= render 'formula_fields', :f => formula %>
 <% end %>
+
 <div class="links">
 <%=  link_to_add_association "Add a formula", f, :formulas, class: "btn btn-primary pull-right" %>
+</div>
+<div id="cheat_sheet_expression" class="collapse">
+  <%= render "cheat_sheet_expression" %>
 </div>
