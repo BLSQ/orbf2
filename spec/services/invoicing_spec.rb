@@ -11,14 +11,14 @@ describe Invoicing::InvoiceBuilder do
     puts JSON.pretty_unparse(obj)
   end
 
-  it "should generate quaterly and monthly invoices" do
+  it "should generate quarterly and monthly invoices" do
     builder = Invoicing::InvoiceBuilder.new project_finder
     analytics_service.entities.each do |entity|
       [Date.today - 2.months, Date.today - 1.month, Date.today].each do |month|
         monthly_invoice = builder.generate_monthly_entity_invoice(project, entity, analytics_service, month)
         monthly_invoice.dump_invoice
       end
-      quaterly_invoice = builder.generate_quaterly_entity_invoice(project, entity, analytics_service, Date.today)
+      quarterly_invoice = builder.generate_quarterly_entity_invoice(project, entity, analytics_service, Date.today)
     end
   end
 end

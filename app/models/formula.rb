@@ -18,6 +18,7 @@ class Formula < ApplicationRecord
     message: ": should only contains small letters and _ like 'quality_score' or 'total_amount'"
   }
 
+  validates :description, presence: true
   validate :expression, :expression_is_valid
 
   def expression_is_valid

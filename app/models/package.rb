@@ -20,12 +20,14 @@ class Package < ApplicationRecord
   has_many :rules
   validates :name, presence: true, length: { maximum: 230 }
   # validates :states, presence: true
-  validates :frequency, presence: true, inclusion: { in: FREQUENCIES }
+  validates :frequency, presence: true, inclusion: {
+    in:      FREQUENCIES,
+    message: "%{value} is not a valid see #{FREQUENCIES.join(',')}"
+  }
 
   accepts_nested_attributes_for :states
 
   attr_accessor :invoice_details
-
 
   def apply_for(entity)
     package_entity_groups.any? { |group| entity.groups.include?(group.organisation_unit_group_ext_ref) }
@@ -36,11 +38,11 @@ class Package < ApplicationRecord
   end
 
   def package_rule
-    rules.find { |r| r.kind == 'package' }
+    rules.find { |r| r.kind == "package" }
   end
 
   def activity_rule
-    rules.find { |r| r.kind == 'activity' }
+    rules.find { |r| r.kind == "activity" }
   end
 
   def create_data_element_group(data_element_ids)

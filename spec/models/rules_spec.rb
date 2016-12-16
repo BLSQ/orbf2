@@ -1,76 +1,86 @@
 require "rails_helper"
 
-RSpec.describe Rule, type: :model do
+RSpec.describe Rule, kind: :model do
+  let(:quantity_package) { build(:package) }
+  let(:quality_package) { build(:package) }
   let(:valid_activity_quantity_rule) do
-    Rule.new(
-      name:     "Quantité PMA",
-      type:     "activity",
-      formulas: [
-        Formula.new(
-          code:       :difference_percentage,
-          expression: "if (verified != 0.0, (ABS(declared - verified) / verified ) * 100.0, 0.0)",
-          label:      "Pourcentage difference entre déclaré & vérifié"
-        ),
-        Formula.new(
-          code:       :quantity,
-          expression: "IF(difference_percentage < 5, verified , 0.0)",
-          label:      "Quantity for PBF payment"
-        ),
-        Formula.new(
-          code:       :amount,
-          expression: "quantity * tarif",
-          label:      "Total payment"
-        )
-      ]
+    rule = quantity_package.rules.build(
+      name: "Quantité PMA",
+      kind: "activity"
     )
+    rule.formulas.build(
+      rule:        rule,
+      code:        :difference_percentage,
+      expression:  "if (verified != 0.0, (ABS(declared - verified) / verified ) * 100.0, 0.0)",
+      description: "Pourcentage difference entre déclaré & vérifié"
+    )
+    rule.formulas.build(
+      rule:        rule,
+      code:        :quantity,
+      expression:  "IF(difference_percentage < 5, verified , 0.0)",
+      description: "Quantity for PBF payment"
+    )
+    rule.formulas.build(
+      rule:        rule,
+      code:        :amount,
+      expression:  "quantity * tarif",
+      description: "Total payment"
+    )
+    rule
   end
 
   let(:valid_package_quantity_rule) do
-    Rule.new(
-      name:     "Quantité PMA",
-      type:     "activity",
-      formulas: [
-        Formula.new(
-          code:       :difference_percentage,
-          expression: "if (verified != 0.0, (ABS(declared - verified) / verified ) * 100.0, 0.0)",
-          label:      "Pourcentage difference entre déclaré & vérifié"
-        ),
-        Formula.new(
-          code:       :quantity,
-          expression: "IF(difference_percentage < 5, verified , 0.0)",
-          label:      "Quantity for PBF payment"
-        ),
-        Formula.new(
-          code:       :amount,
-          expression: "quantity * tarif",
-          label:      "Total payment"
-        )
-      ]
+    rule = quantity_package.rules.build(
+      name: "Quantité PMA",
+      kind: "activity"
     )
+    rule.formulas.build(
+      rule:        rule,
+      code:        :difference_percentage,
+      expression:  "if (verified != 0.0, (ABS(declared - verified) / verified ) * 100.0, 0.0)",
+      description: "Pourcentage difference entre déclaré & vérifié"
+    )
+    rule.formulas.build(
+      rule:        rule,
+      code:        :quantity,
+      expression:  "IF(difference_percentage < 5, verified , 0.0)",
+      description: "Quantity for PBF payment"
+    )
+    rule.formulas.build(
+      rule:        rule,
+      code:        :amount,
+      expression:  "quantity * tarif",
+      description: "Total payment"
+    )
+
+    rule
   end
 
   let(:valid_package_quality_rule) do
-    Rule.new(
-      name:     "QUALITY score",
-      type:     "package",
-      formulas: [
-        Formula.new(
-          code:       :attributed_points,
-          expression: "SUM(%{attributed_points_values})",
-          label:      "Quality score"
-        ),
-        Formula.new(
-          code:       :max_points,
-          expression: "SUM(%{max_points_values})",
-          label:      "Quality score"
-        ),
-        Formula.new(
-          code:       :quality_technical_score_value,
-          expression: "SUM(%{attributed_points_values})/SUM(%{max_points_values}) * 100.0",
-          label:      "Quality score"
-        )
-      ]
+    rule = quality_package.rules.build(
+      name: "QUALITY score",
+      kind: "package"
     )
+
+    rule.formulas.build(
+      rule:        rule,
+      code:        :attributed_points,
+      expression:  "SUM(%{attributed_points_values})",
+      description: "Quality score"
+    )
+    rule.formulas.build(
+      rule:        rule,
+      code:        :max_points,
+      expression:  "SUM(%{max_points_values})",
+      description: "Quality score"
+    )
+    rule.formulas.build(
+      rule:        rule,
+      code:        :quality_technical_score_value,
+      expression:  "SUM(%{attributed_points_values})/SUM(%{max_points_values}) * 100.0",
+      description: "Quality score"
+    )
+    rule
   end
 
   describe "validation of formulas" do
@@ -92,22 +102,22 @@ RSpec.describe Rule, type: :model do
     let(:valid_activity_rule) do
       rule = Rule.new(
         name:     "Quantité PMA",
-        type:     "activity",
+        kind:     "activity",
         formulas: [
           Formula.new(
-            code:       :difference_percentage_bad_ref,
-            expression: "if (verified != 0.0, (ABS(declared - verified) / verified ) * 100.0, 0.0)",
-            label:      "Pourcentage difference entre déclaré & vérifié"
+            code:        :difference_percentage_bad_ref,
+            expression:  "if (verified != 0.0, (ABS(declared - verified) / verified ) * 100.0, 0.0)",
+            description: "Pourcentage difference entre déclaré & vérifié"
           ),
           Formula.new(
-            code:       :quantity,
-            expression: "IF(difference_percentage < 5, verified , 0.0)",
-            label:      "Quantity for PBF payment"
+            code:        :quantity,
+            expression:  "IF(difference_percentage < 5, verified , 0.0)",
+            description: "Quantity for PBF payment"
           ),
           Formula.new(
-            code:       :amount,
-            expression: "quantity * tarif",
-            label:      "Total payment"
+            code:        :amount,
+            expression:  "quantity * tarif",
+            description: "Total payment"
           )
         ]
       )

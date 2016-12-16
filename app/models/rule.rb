@@ -10,7 +10,6 @@
 #  updated_at :datetime         not null
 #
 
-
 class Rule < ApplicationRecord
   RULE_TYPES = %w(activity package).freeze
   belongs_to :package
@@ -18,7 +17,10 @@ class Rule < ApplicationRecord
 
   accepts_nested_attributes_for :formulas, reject_if: :all_blank, allow_destroy: true
 
-  validates :kind, presence: true, inclusion: { in: RULE_TYPES }
+  validates :kind, presence: true, inclusion: {
+    in:      RULE_TYPES,
+    message: "%{value} is not a valid see #{RULE_TYPES.join(',')}"
+  }
   validates :name, presence: true
   validate :formulas, :formulas_are_coherent
 
@@ -31,6 +33,14 @@ class Rule < ApplicationRecord
 
   def formulas_are_coherent
     Rules::Solver.new.validate_formulas(self)
+  end
+
+  def available_variables
+    var_names = []
+    if kind == "activity"
+      var_names << package.states.map(&:name).map(&:underscore) if package
+    end
+    var_names
   end
 
   def fake_facts

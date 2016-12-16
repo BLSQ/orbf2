@@ -1,7 +1,11 @@
 
 
 class ProjectFactory
-  def build
+  def build(project_props = { dhis2_url: "http://play.dhis2.org/demo", user: "admin", password: "district", bypass_ssl: false })
+    project = Project.new({
+      name: "LESOTHO"
+    }.merge(project_props))
+
     package_quantity_pma = new_package(
       "Quantité PMA",
       "monthly",
@@ -9,7 +13,7 @@ class ProjectFactory
       [
         Rule.new(
           name:     "Quantité PMA",
-          type:     :activity,
+          kind:     :activity,
           formulas: [
             new_formula(
               :difference_percentage,
@@ -30,7 +34,7 @@ class ProjectFactory
         ),
         Rule.new(
           name:     "Quantité PMA",
-          type:     :package,
+          kind:     :package,
           formulas: [
             new_formula(
               :quantity_total,
@@ -40,10 +44,10 @@ class ProjectFactory
           ]
         )
       ],
-      [:declared, :verified,
-       :difference_percentage, :quantity,
-       :tarif, :amount,
-       :actictity_name, :quantity_total]
+      %w(declared verified
+         difference_percentage quantity
+         tarif amount
+         actictity_name quantity_total)
     )
 
     package_quantity_pca = new_package(
@@ -53,7 +57,7 @@ class ProjectFactory
       [
         Rule.new(
           name:     "Quantité PCA",
-          type:     :activity,
+          kind:     :activity,
           formulas: [
             new_formula(
               :difference_percentage,
@@ -74,7 +78,7 @@ class ProjectFactory
         ),
         Rule.new(
           name:     "Quantité PHU",
-          type:     :package,
+          kind:     :package,
           formulas: [
             new_formula(
               :quantity_total,
@@ -84,18 +88,18 @@ class ProjectFactory
           ]
         )
       ],
-      [:declared, :verified, :difference_percentage, :quantity, :tarif, :amount, :actictity_name, :quantity_total]
+      %w(declared verified difference_percentage quantity tarif amount actictity_name quantity_total)
 
     )
 
     package_quality = new_package(
       "Qualité",
-      "quaterly",
+      "quarterly",
       %w(hospital_group_id fosa_group_id),
       [
         Rule.new(
           name:     "Qualité assessment",
-          type:     :activity,
+          kind:     :activity,
           formulas: [
             new_formula(
               :attributed_points,
@@ -116,7 +120,7 @@ class ProjectFactory
         ),
         Rule.new(
           name:     "QUALITY score",
-          type:     :package,
+          kind:     :package,
           formulas: [
             new_formula(
               :attributed_points,
@@ -136,20 +140,26 @@ class ProjectFactory
           ]
         )
       ],
-      [:attributed_points, :max_points, :quality_technical_score_value, :actictity_name]
+      %w(attributed_points max_points quality_technical_score_value actictity_name)
 
     )
 
     packages = [package_quantity_pma, package_quantity_pca, package_quality]
+    project.packages << packages
+    packages.each do |p|
+      p.project = project
+      p.rules.each do |rule|
+        rule.package = p
+        rule.formulas.each do |f|
+          f.rule = rule
+        end
+      end
+    end
 
-    project = Project.new(
-      name:     "LESOTHO",
-      packages: packages
-    )
     project.payment_rule =
       Rule.new(
         name:     "Payment rule",
-        type:     :payment,
+        kind:     :payment,
         formulas: [
           new_formula(
             :quality_bonus_percentage_value,
@@ -162,7 +172,7 @@ class ProjectFactory
             "Bonus qualité "
           ),
           new_formula(
-            :quaterly_payment,
+            :quarterly_payment,
             "quantity_total + quality_bonus_value",
             "Quarterly Payment"
           )
@@ -174,8 +184,8 @@ class ProjectFactory
 
   private
 
-  def new_formula(code, expression, label)
-    Formula.new(code: code, expression: expression, label: label)
+  def new_formula(code, expression, description)
+    Formula.new(code: code, expression: expression, description: description)
   end
 
   def new_package(name, frequency, groups, rules, invoice_details)
