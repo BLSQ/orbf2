@@ -80,6 +80,30 @@ RSpec.describe Rule, kind: :model do
       expression:  "SUM(%{attributed_points_values})/SUM(%{max_points_values}) * 100.0",
       description: "Quality score"
     )
+
+    rule_activity = quality_package.rules.build(
+      name: "Qualité assessment",
+      kind: "activity"
+    )
+    rule_activity.formulas.build(
+      rule:        rule_activity,
+      code:        :attributed_points,
+      expression:  "declared",
+      description: "Attrib. Points"
+    )
+    rule_activity.formulas.build(
+      rule:        rule_activity,
+      code:        :max_points,
+      expression:  "tarif",
+      description: "Max Points"
+    )
+    rule_activity.formulas.build(
+      rule:        rule_activity,
+      code:        :quality_technical_score_value,
+      expression:  "if (max_points != 0.0, (attributed_points / max_points) * 100.0, 0.0)",
+      description: "Quality score"
+    )
+
     rule
   end
 

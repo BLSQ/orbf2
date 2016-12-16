@@ -1,10 +1,5 @@
 <%= simple_form_for @rule, url: setup_project_package_rules_path do |f| %>
-<%= f.input :name %>
-<%= f.input :kind %>
-<%= f.simple_fields_for :formulas do |formula| %>
-<%= render 'formula_fields', :f => formula %>
-<% end %>
-<div class="links">
-<%=  link_to_add_association '<i class="fa fa-plus text-primary" aria-hidden="true"></i>'.html_safe, f, :formulas %></div>
-<%= f.button :submit, class: "btn btn-success" %>
+  <%= render partial: "form", locals: { f: f } %>
+  <br><br>
+  <%= f.button :submit, class: "btn btn-success" %>
 <% end %>

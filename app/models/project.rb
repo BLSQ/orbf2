@@ -54,4 +54,25 @@ class Project < ApplicationRecord
       methods: [:payment_rule]
     )
   end
+
+  def dump_validations
+    packages.each do |package|
+      next unless package.invalid?
+      puts package.errors.full_messages
+      package.rules.each do |rule|
+        next unless rule.invalid?
+        puts "------"
+        puts rule.to_json
+        puts rule.available_variables_for_values.to_json
+        puts rule.errors.full_messages
+        rule.formulas.each do |formula|
+          next unless formula.invalid?
+          puts "------* *** *"
+          puts formula.to_json
+          puts formula.errors.full_messages
+          puts rule.available_variables_for_values
+        end
+      end
+    end
+  end
 end

@@ -22,7 +22,12 @@ class Rule < ApplicationRecord
     message: "%{value} is not a valid see #{RULE_TYPES.join(',')}"
   }
   validates :name, presence: true
+  validates :formulas, length: { minimum: 1 }
   validate :formulas, :formulas_are_coherent
+
+  def activity_kind?
+    kind == "activity"
+  end
 
   def to_facts
     facts = {}
@@ -32,15 +37,27 @@ class Rule < ApplicationRecord
   end
 
   def formulas_are_coherent
-    Rules::Solver.new.validate_formulas(self)
+    Rules::Solver.new.validate_formulas(self) if name
   end
 
   def available_variables
     var_names = []
     if kind == "activity"
       var_names << package.states.map(&:name).map(&:underscore) if package
+      var_names << "tarif"
+      var_names << formulas.map(&:code)
+    else
+      var_names << available_variables_for_values.map { |code| "%{#{code}}" }
     end
-    var_names
+    var_names.flatten
+  end
+
+  def available_variables_for_values
+    var_names = []
+    if kind == "package" && package.activity_rule
+      var_names << package.activity_rule.formulas.map(&:code).map { |code| "#{code}_values" }
+    end
+    var_names.flatten
   end
 
   def fake_facts

@@ -9,7 +9,8 @@
     <td>
 
         <% if package.activity_rule.present? %>
-        <%= link_to package.activity_rule.name, edit_setup_project_package_rule_path(current_user.project, package, package.activity_rule)  %>
+        <%= link_to package.activity_rule.name, edit_setup_project_package_rule_path(current_user.project, package, package.activity_rule) , class: package.activity_rule.invalid? ? 'btn btn-danger' :''  %> <%= package.activity_rule.invalid? ? icon('exclamation-triangle text-danger fa-lg') :''%>
+
     <% else %>
         <%= link_to 'Create new rule', new_setup_project_package_rule_path(current_user.project, package) , class: 'btn btn-warning' %>
         <% end %>
@@ -18,7 +19,8 @@
     <td>
 
         <% if package.package_rule.present? %>
-        <%= link_to package.activity_rule.name, edit_setup_project_package_rule_path(current_user.project, package, package.package_rule)  %>
+        <%= link_to package.package_rule.name, edit_setup_project_package_rule_path(current_user.project, package, package.package_rule) , class: package.package_rule.invalid? ? 'btn btn-danger' :''  %> <%= package.package_rule.invalid? ? icon('exclamation-triangle text-danger fa-lg') :''%>
+
         <% elsif package.activity_rule.present? %>
         <%= link_to 'Create new rule', new_setup_project_package_rule_path(current_user.project, package)  , class: 'btn btn-warning' %>
         <% end %>

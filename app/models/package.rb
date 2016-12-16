@@ -29,6 +29,13 @@ class Package < ApplicationRecord
 
   attr_accessor :invoice_details
 
+  def missing_rules_kind
+    supported_rules_kind = ["activity", "package"];
+    supported_rules_kind.delete("activity") if activity_rule
+    supported_rules_kind.delete("package") if package_rule
+    supported_rules_kind
+  end
+
   def apply_for(entity)
     package_entity_groups.any? { |group| entity.groups.include?(group.organisation_unit_group_ext_ref) }
   end

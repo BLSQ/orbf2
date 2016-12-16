@@ -9,7 +9,7 @@ Rails.application.routes.draw do
       resources :projects, only: [:create] do
         resource :main_entity_group, only: [:create, :update]
         resources :packages, only: [:new, :create] do
-          resources :rules
+          resources :rules, only: [:new, :create, :update, :edit]
         end
         resources :autocomplete, only: [] do
           collection do

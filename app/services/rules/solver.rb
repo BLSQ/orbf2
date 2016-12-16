@@ -27,24 +27,28 @@ module Rules
     end
 
     def validate_expression(formula)
-      @@calculator.dependencies(mock_values(formula.expression))
+      @@calculator.dependencies(mock_values(formula.expression, formula.rule.available_variables_for_values))
     rescue Dentaku::TokenizerError => e
       formula.errors[:expression] << e.message
     rescue Dentaku::ParseError => e
       formula.errors[:expression] << e.message
-    rescue KeyError
-      formula.errors[:expression] << "#{e.message}. remove space or verify it ends with _values"
+    rescue KeyError => e
+      formula.errors[:expression] << "#{e.message}. Remove extra spaces or verify it's in the available variables"
+    rescue => e
+      formula.errors[:expression] << e.message
     end
 
     def validate_formulas(rule)
       facts = {}.merge(rule.fake_facts)
-      rule.formulas.each { |formula| facts[formula.code] = mock_values(formula.expression) }
+      rule.formulas.each { |formula| facts[formula.code] = mock_values(formula.expression, rule.available_variables_for_values) }
       facts[:actictity_rule_name] = Solver.escapeString(rule.name)
 
-      solve!("validate_all_formulas", facts, true)
+      solve!("validate_all_formulas", facts)
     rescue Rules::SolvingError => e
-      rule.errors[:formulas] << e.message
+      rule.errors[:formulas] << e.original_message
     rescue KeyError => e
+      rule.errors[:formulas] << "#{e.message}. Remove extra spaces or verify it's in the available variables"
+    rescue => e
       rule.errors[:formulas] << e.message
     end
 
@@ -54,14 +58,15 @@ module Rules
 
     private
 
-    def mock_values(expression)
-      variable_names =  expression.scan(/%{(\s?[a-z_]+\s?)}/).flatten
+    def mock_values(expression, available_variables_for_values)
       variables = {}
-      variable_names.select {|name|name.ends_with?("_values")}.each do |variable_name|
+      available_variables_for_values.select {|name|name.ends_with?("_values")}.each do |variable_name|
         raise "please don't add extra spaces in '%{#{variable_name}}'" if variable_name.include?(" ")
         variables[variable_name.to_sym] = "1 , 2"
       end
       expression % variables
+    rescue ArgumentError => e
+      raise e.message
     end
 
     def calculator

@@ -13,7 +13,7 @@ class ProjectFactory
       [
         Rule.new(
           name:     "Quantité PMA",
-          kind:     :activity,
+          kind:     "activity",
           formulas: [
             new_formula(
               :difference_percentage,
@@ -34,7 +34,7 @@ class ProjectFactory
         ),
         Rule.new(
           name:     "Quantité PMA",
-          kind:     :package,
+          kind:     "package",
           formulas: [
             new_formula(
               :quantity_total,
@@ -57,7 +57,7 @@ class ProjectFactory
       [
         Rule.new(
           name:     "Quantité PCA",
-          kind:     :activity,
+          kind:     "activity",
           formulas: [
             new_formula(
               :difference_percentage,
@@ -78,7 +78,7 @@ class ProjectFactory
         ),
         Rule.new(
           name:     "Quantité PHU",
-          kind:     :package,
+          kind:     "package",
           formulas: [
             new_formula(
               :quantity_total,
@@ -99,7 +99,7 @@ class ProjectFactory
       [
         Rule.new(
           name:     "Qualité assessment",
-          kind:     :activity,
+          kind:     "activity",
           formulas: [
             new_formula(
               :attributed_points,
@@ -120,7 +120,7 @@ class ProjectFactory
         ),
         Rule.new(
           name:     "QUALITY score",
-          kind:     :package,
+          kind:     "package",
           formulas: [
             new_formula(
               :attributed_points,
