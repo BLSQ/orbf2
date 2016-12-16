@@ -13,7 +13,7 @@
 class Rule < ApplicationRecord
   RULE_TYPES = %w(activity package).freeze
   belongs_to :package
-  has_many :formulas
+  has_many :formulas, dependent: :destroy, inverse_of: :rule
 
   accepts_nested_attributes_for :formulas, reject_if: :all_blank, allow_destroy: true
 

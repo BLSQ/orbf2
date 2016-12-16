@@ -12,7 +12,7 @@
 #
 
 class Formula < ApplicationRecord
-  belongs_to :rule, optional: true
+  belongs_to :rule, inverse_of: :formulas
   validates :code, presence: true, format: {
     with:    /\A[a-z_]+\z/,
     message: ": should only contains small letters and _ like 'quality_score' or 'total_amount'"
