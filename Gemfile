@@ -3,7 +3,9 @@ source "https://rubygems.org"
 ruby "2.3.1"
 
 gem "bootstrap-sass", "~> 3.3.6"
+gem "cocoon"
 gem "coffee-rails", "~> 4.2"
+gem "dentaku"
 gem "devise", "~> 4.2.0"
 gem "dhis2", github: "BLSQ/dhis2"
 gem "font-awesome-sass", "~> 4.7.0"
@@ -18,6 +20,7 @@ gem "sass-rails", "~> 5.0"
 gem "simple_form"
 gem "turbolinks", "~> 5"
 gem "uglifier", ">= 1.3.0"
+
 
 group :development, :test do
   gem "byebug", platform: :mri

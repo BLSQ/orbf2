@@ -58,6 +58,7 @@ GEM
       sass (>= 3.3.4)
     builder (3.2.2)
     byebug (9.0.6)
+    cocoon (1.2.9)
     codeclimate-test-reporter (1.0.3)
       simplecov
     coffee-rails (4.2.1)
@@ -72,6 +73,7 @@ GEM
       safe_yaml (~> 1.0.0)
     database_cleaner (1.5.3)
     debug_inspector (0.0.2)
+    dentaku (2.0.9)
     devise (4.2.0)
       bcrypt (~> 3.0)
       orm_adapter (~> 0.1)
@@ -266,9 +268,11 @@ DEPENDENCIES
   annotate
   bootstrap-sass (~> 3.3.6)
   byebug
+  cocoon
   codeclimate-test-reporter (~> 1.0.0)
   coffee-rails (~> 4.2)
   database_cleaner
+  dentaku
   devise (~> 4.2.0)
   dhis2!
   factory_girl_rails (= 4.0)

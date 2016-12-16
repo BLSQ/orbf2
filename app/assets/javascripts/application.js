@@ -17,4 +17,5 @@
 //= require autocomplete-rails
 // require turbolinks
 //= require bootstrap
+//= require cocoon
 //= require_tree .

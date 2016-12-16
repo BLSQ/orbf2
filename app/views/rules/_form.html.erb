@@ -1,0 +1,21 @@
+
+<h1><%=rule.package.name %> - <%= rule.kind %> rule</h1>
+
+<%= f.input :name %>
+<label class="control-label string"> Available variables names for expressions</label>
+<pre> <%= rule.available_variables.join("    ") %> </pre>
+
+<% unless rule.errors.full_messages.empty? %>
+<div class="alert alert-danger">
+  <% rule.errors.full_messages.each do |message| %>
+    <%= message%> <br>
+  <% end %>
+</div>
+<% end %>
+
+<%= f.simple_fields_for :formulas do |formula| %>
+  <%= render 'formula_fields', :f => formula %>
+<% end %>
+<div class="links">
+<%=  link_to_add_association "Add a formula", f, :formulas, class: "btn btn-primary pull-right" %>
+</div>
