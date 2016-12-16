@@ -47,8 +47,14 @@ class Project < ApplicationRecord
       except:  [:created_at, :updated_at, :password, :user],
       include: {
         packages: {
-          methods: [:rules],
-          except:  [:created_at, :updated_at]
+          except:  [:created_at, :updated_at],
+          include: {
+            rules: {
+              include: {
+                formulas: {}
+              }
+            }
+          }
         }
       },
       methods: [:payment_rule]
@@ -75,4 +81,16 @@ class Project < ApplicationRecord
       end
     end
   end
+
+  def dump_rules
+    packages.each do |package|
+      puts "**** #{package.name} #{package.frequency}"
+      package.rules.each do |rule|
+        puts "------ Rule #{rule.name} #{rule.kind}"
+        rule.formulas.each do |formula|
+          puts [formula.code, formula.description, formula.expression].join("\t")
+        end
+      end
+    end
+end
 end

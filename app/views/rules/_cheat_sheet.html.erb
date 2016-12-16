@@ -1,0 +1,93 @@
+
+<ul>
+<% if rule.package.frequency == "monthly" %>
+<h3>Here's an sample of <b>quantity</b> package usually monthly</h3>
+
+<h4>At <b>activity</b> level</h4>
+The activity rule take the states values (<code>claimed</code> and <code>verified</code>) then first calculate a <code>difference percentage</code>. We make sure the expression work even if the verified amount = 0
+<div>
+<pre>
+difference_percentage
+Pourcentage difference entre déclaré et vérifié
+if (verified != 0.0, (ABS(claimed - verified) / verified ) * 100.0, 0.0)
+</pre>
+
+then if this <code>difference percentage</code> is lower then 5 % it take the verified value as quantity or consider equal to zero.
+<pre>
+quantity
+Quantity for PBF payment
+IF(difference_percentage < 5, verified , 0.0)
+</pre>
+Finally the <code>amount</code> is calculated from the quantity and tarif (provided to the activity rules based on the date and entity)
+  <pre>
+amount
+Total payment
+quantity * tarif
+</pre>
+
+<h4>At <b>package</b> level</h4>
+We just want to sum all the <code>amount</code> per activity, the values are available in the <code>%{amount_values}</code> (note the %{} notation)
+<pre>
+quantity_total
+Amount PBF
+SUM(%{amount_values})
+</pre>
+
+That's it for the quality package !
+</div>
+<% else %>
+<div>
+<h3>Here's an sample of <b>quality</b> package usually quaterly</h3>
+
+<h4>At <b>activity</b> level</h4>
+
+<div>
+The state <code>claimed</code> is aliased to  <code>attributed_points</code> for clarity
+<pre>
+attributed_points
+Attrib. Points
+claimed
+</pre>
+
+the maximum attributable points <code>max_points</code> is just an alias of the tarif
+<pre>
+max_points
+Max Points
+tarif
+</pre>
+
+and finally the quality technical score percentage is calculated.
+<pre>
+quality_technical_score_value
+Quality score
+if (max_points != 0.0, (attributed_points / max_points) * 100.0, 0.0)
+</pre>
+
+
+<h4>At <b>package</b> level</h4>
+
+As we wan't a ponderated percentage, we reuse the attributed_points values from the activity level
+<pre>
+attributed_points
+Quality score
+SUM(%{attributed_points_values})
+</pre>
+
+As we wan't a ponderated percentage, we reuse the max_points values from the activity level
+<pre>
+max_points
+Quality score
+SUM(%{max_points_values})
+</pre>
+then finally calculate the score
+<pre>
+quality_technical_score_value
+Quality score
+SUM(attributed_points)/SUM(max_points) * 100.0
+</pre>
+</div>
+
+<%end%>
+
+
+</ul>

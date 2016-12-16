@@ -1,14 +1,20 @@
 
 <div class="nested-fields">
   <fieldset class="form-group">
-    <legend>Formula <%=f.object.code%></legend>
+    <legend>Formula <%=f.object.code%>    </legend>
 
     <div class="col-md-2"><%= f.input :code , placeholder: (f.object.rule && f.object.rule.activity_kind? ? "eg 'difference_percentage'" : "eg 'amount'") %></div>
     <div class="col-md-3"><%= f.input :description, placeholder: (f.object.rule && f.object.rule.activity_kind? ? "eg 'Pourcentage difference entre déclaré & vérifié'" : "eg 'Total Subsides Quantité'") %></div>
-    <div class="col-md-6"><%= f.input :expression,
+
+    <div class="col-md-6">  <%= f.input :expression,
                                         placeholder: (f.object.rule && f.object.rule.activity_kind? ? "eg 'if (verified != 0.0, (ABS(claimed - verified) / verified ) * 100.0, 0.0)'" : "eg 'SUM(%{amount_values})'"),
                                         input_html: {style: 'font-family: monospace '}
-                                        %></div>
+                                        %>
+                                      </div>
     <div class="col-md-1"><%= link_to_remove_association icon("trash text-danger fa-lg"), f , title: "This will delete the formula #{f.object.code} -#{f.object.description} " %></div>
+    <a class="btn pull-right" data-toggle="collapse" data-target="#cheat_sheet_expression">
+            <%= icon("question-circle fa-2x") %>
+          </a>
   </fieldset>
+
 </div>

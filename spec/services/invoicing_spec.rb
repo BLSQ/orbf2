@@ -9,6 +9,7 @@ describe Invoicing::InvoiceBuilder do
     json = project_finder.find_project(nil, Date.today).export_to_json
     obj = JSON.parse(json)
     puts JSON.pretty_unparse(obj)
+    project.dump_rules
   end
 
   it "should generate quarterly and monthly invoices" do
