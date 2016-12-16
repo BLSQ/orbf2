@@ -18,8 +18,11 @@ class SetupController < PrivateController
                      kind:   :packages,
                      model:  step1.todo? || step2.todo? ? nil : current_user.project.packages)
 
+    step4_todo = step3.todo? || current_user.project.packages.flat_map(&:rules).empty? ||
+                  current_user.project.packages.flat_map(&:rules).any? {|r| r.invalid? } ||
+                  current_user.project.packages.any? {|p| p.rules.size != 2 }
     step4 =  Step.new(name:   "Rules",
-                      status: step3.todo? || current_user.project.packages.flat_map(&:rules).empty? || current_user.project.packages.flat_map(&:rules).any? {|r| r.invalid? } ? :todo : :done,
+                      status: step4_todo ? :todo : :done,
                       kind:   :rules,
                       model:  step3.todo? ? nil : current_user.project.packages)
 
