@@ -2,10 +2,9 @@
 <ul>
 <% if rule.package.frequency == "monthly" %>
 <h3>Here's an sample of <b>quantity</b> package usually monthly</h3>
-
 <h4>At <b>activity</b> level</h4>
+<div class="<%= rule.activity_kind? ? 'highlightme': '' %>">
 The activity rule take the states values (<code>claimed</code> and <code>verified</code>) then first calculate a <code>difference percentage</code>. We make sure the expression work even if the verified amount = 0
-<div>
 <pre>
 difference_percentage
 Pourcentage difference entre déclaré et vérifié
@@ -24,8 +23,10 @@ amount
 Total payment
 quantity * tarif
 </pre>
+</div>
 
 <h4>At <b>package</b> level</h4>
+<div class="<%= rule.activity_kind? ? '': 'highlightme' %>">
 We just want to sum all the <code>amount</code> per activity, the values are available in the <code>%{amount_values}</code> (note the %{} notation)
 <pre>
 quantity_total
@@ -41,7 +42,7 @@ That's it for the quality package !
 
 <h4>At <b>activity</b> level</h4>
 
-<div>
+<div class="<%= rule.activity_kind? ? 'highlightme': '' %>">
 The state <code>claimed</code> is aliased to  <code>attributed_points</code> for clarity
 <pre>
 attributed_points
@@ -62,10 +63,11 @@ quality_technical_score_value
 Quality score
 if (max_points != 0.0, (attributed_points / max_points) * 100.0, 0.0)
 </pre>
-
+</div>
 
 <h4>At <b>package</b> level</h4>
 
+<div class="<%= rule.activity_kind? ? '': 'highlightme' %>">
 As we wan't a ponderated percentage, we reuse the attributed_points values from the activity level
 <pre>
 attributed_points
@@ -85,6 +87,7 @@ quality_technical_score_value
 Quality score
 SUM(attributed_points)/SUM(max_points) * 100.0
 </pre>
+</div>
 </div>
 
 <%end%>
