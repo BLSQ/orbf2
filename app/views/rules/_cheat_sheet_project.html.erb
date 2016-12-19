@@ -1,0 +1,18 @@
+<pre>
+  :quality_bonus_percentage_value,
+  "IF(quality_technical_score_value > 50, (0.35 * quality_technical_score_value) + (0.30 * 10.0), 0.0) /*todo replace with survey score*/",
+  "Quality bonus percentage"
+</pre>
+<pre>
+new_formula(
+  :quality_bonus_value,
+  "quantity_total * quality_bonus_percentage_value",
+  "Bonus qualité "
+</pre>
+
+<pre>
+new_formula(
+  :quarterly_payment,
+  "quantity_total + quality_bonus_value",
+  "Quarterly Payment"
+</pre>

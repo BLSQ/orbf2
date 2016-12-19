@@ -22,8 +22,15 @@ class Project < ApplicationRecord
 
   has_one :entity_group
   has_many :packages
+  has_many :rules
 
-  attr_accessor :payment_rule
+  def payment_rule
+    rules.find{|r| r.payment_kind?}
+  end
+
+  def missing_rules_kind
+    payment_rule ? [] : ["payment"]
+  end
 
   def verify_connection
     return { status: :ko, message: errors.full_messages.join(",") } if invalid?

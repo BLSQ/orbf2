@@ -11,6 +11,7 @@ Rails.application.routes.draw do
         resources :packages, only: [:new, :create] do
           resources :rules, only: [:new, :create, :update, :edit]
         end
+        resources :rules, only: [:new, :create, :update, :edit], controller: "project_rules"
         resources :autocomplete, only: [] do
           collection do
             get :organisation_unit_group

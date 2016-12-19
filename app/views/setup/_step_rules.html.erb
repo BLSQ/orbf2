@@ -13,4 +13,6 @@
           <%= render partial: "rule", collection: step.model, as: :package %>
       </body>
   </table>
+
+    <%= link_to 'Let\'s create your tarification rule', new_setup_project_rule_path(current_user.project)  %>
 <% end %>

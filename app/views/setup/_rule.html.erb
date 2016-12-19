@@ -18,7 +18,7 @@
     </td>
     <td>
 
-        <% if package.package_rule.present? %>
+        <% if package.package_rule %>
         <%= link_to package.package_rule.name, edit_setup_project_package_rule_path(current_user.project, package, package.package_rule) , class: package.package_rule.invalid? ? 'btn btn-danger' :''  %> <%= package.package_rule.invalid? ? icon('exclamation-triangle text-danger fa-lg') :''%>
 
         <% elsif package.activity_rule.present? %>

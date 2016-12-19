@@ -48,8 +48,8 @@ module Rules
       rule.errors[:formulas] << e.original_message
     rescue KeyError => e
       rule.errors[:formulas] << "#{e.message}. Remove extra spaces or verify it's in the available variables"
-    rescue => e
-      rule.errors[:formulas] << e.message
+  ##  rescue => e
+  ##    rule.errors[:formulas] << e.message
     end
 
     def self.escapeString(string)

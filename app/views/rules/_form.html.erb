@@ -1,5 +1,4 @@
-
-<h1><%=rule.package.name %> - <%= rule.kind %> rule</h1>
+<h1><%= rule_name(rule) %></h1>
 
 <%= f.input :name %>
 
@@ -7,7 +6,7 @@
   <%= icon("question-circle fa-5x") %>
 </a>
 <div id="cheat_sheet" class="collapse">
-  <%= render "cheat_sheet", rule: rule %>
+  <%= render "rules/cheat_sheet", rule: rule %>
 </div>
 
 
@@ -24,12 +23,12 @@
 <% end %>
 
 <%= f.simple_fields_for :formulas do |formula| %>
-  <%= render 'formula_fields', :f => formula %>
+  <%= render 'rules/formula_fields', :f => formula %>
 <% end %>
 
 <div class="links">
-<%=  link_to_add_association "Add a formula", f, :formulas, class: "btn btn-primary pull-right" %>
+<%=  link_to_add_association "Add a formula", f, :formulas, class: "btn btn-primary pull-right",  partial: "rules/formula_fields" %>
 </div>
 <div id="cheat_sheet_expression" class="collapse">
-  <%= render "cheat_sheet_expression" %>
+  <%= render "rules/cheat_sheet_expression" %>
 </div>
