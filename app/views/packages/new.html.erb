@@ -21,7 +21,7 @@
   </div>
     <div class="col-md-6" id="org_units_groups_selection"></div>
 </div>
-<%= f.association :states, collection: State.all, as: :check_boxes %>
+<%= f.association :states, collection: State.configurables(false), as: :check_boxes %>
 <%= f.input :frequency, collection: Package::FREQUENCIES, as: :select %>
 <%= f.button :submit, class: "btn btn-success" %>
 <% end %>

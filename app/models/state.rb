@@ -11,4 +11,8 @@
 
 class State < ApplicationRecord
   validates :name, presence: true
+
+  def self.configurables(conf = true)
+    where configurable: conf
+  end
 end
