@@ -1,6 +1,6 @@
 <h1>Configure Incentives</h1>
 <%= simple_form_for(incentive,  url: setup_project_incentives_path(current_user.project), method: :post) do |f| %>
-<%= f.input :state, collection: State.configurables %>
+<%= f.input :state, collection: State.configurables(true) %>
 <%= f.input :package, collection: @project.packages %>
 <div class="row">
     <div class="col-md-6">
