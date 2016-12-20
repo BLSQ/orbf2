@@ -4,7 +4,17 @@ class IncentiveConfig
 
   validates :package, presence: true
   validates :state, presence: true
-  validates :entity_groups, presence: true
+  # validates :entity_groups, presence: true
   validates :start_date, presence: true
   validates :end_date, presence: true
+
+  def initialize(attributes = {})
+    super
+    self.id = nil
+    self.entity_groups = attributes[:entity_groups] unless attributes.empty?
+  end
+
+  def persisted?
+    false
+  end
 end

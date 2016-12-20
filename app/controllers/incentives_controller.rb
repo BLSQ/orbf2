@@ -10,16 +10,19 @@ class IncentivesController < PrivateController
   def create
     @incentive = IncentiveConfig.new(incentive_params)
     @project = current_user.project
-    if @incentive.valid?
+    @incentive.package = @project.packages.find(@incentive.package) if @incentive.package.present?
 
-      @incentive.activity_incentives = @project.packages.find(@incentive.package).fetch_activities.map do |activity|
+    if @incentive.valid?
+puts @incentive.errors.full_messages
+      @incentive.activity_incentives = @incentive.package.fetch_activities.map do |activity|
         ActivityIncentive.new(
           activity: activity,
           value:    0.0
         )
       end
     else
-    raise @incentive.errors.full_messages
+      puts @incentive.errors.full_messages
+      # raise @incentive.errors.full_messages
       render "new"
     end
   end
@@ -30,8 +33,8 @@ class IncentivesController < PrivateController
     params.require(:incentive_config)
           .permit(:package,
                   :state,
-                  :entity_groups,
                   :start_date,
-                  :end_date)
+                  :end_date,
+                  entity_groups: [])
   end
 end
