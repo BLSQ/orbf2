@@ -12,8 +12,8 @@
 
 class Rule < ApplicationRecord
   RULE_TYPES = %w(payment activity package).freeze
-  belongs_to :package, optional: true
-  belongs_to :project, optional: true
+  belongs_to :package, optional: true, inverse_of: :rules
+  belongs_to :project, optional: true, inverse_of: :rules
 
   has_many :formulas, dependent: :destroy, inverse_of: :rule
 

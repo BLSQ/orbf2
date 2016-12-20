@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   devise_scope :user do
     get "/users/sign_out" => "devise/sessions#destroy"
     resource :setup do
+      resources :seeds, only: [:index] if Rails.env.development? || Rails.env.testing?
       resources :projects, only: [:create] do
         resource :main_entity_group, only: [:create, :update]
         resources :packages, only: [:new, :create] do

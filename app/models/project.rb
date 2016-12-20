@@ -20,12 +20,12 @@ class Project < ApplicationRecord
   validates :user, presence: true
   validates :password, presence: true
 
-  has_one :entity_group
-  has_many :packages
-  has_many :rules
+  has_one :entity_group, dependent: :destroy
+  has_many :packages, dependent: :destroy
+  has_many :rules, dependent: :destroy
 
   def payment_rule
-    rules.find{|r| r.payment_kind?}
+    rules.find(&:payment_kind?)
   end
 
   def missing_rules_kind
@@ -53,6 +53,11 @@ class Project < ApplicationRecord
     to_json(
       except:  [:created_at, :updated_at, :password, :user],
       include: {
+        rules:    {
+          include: {
+            formulas: {}
+          }
+        },
         packages: {
           except:  [:created_at, :updated_at],
           include: {
@@ -63,8 +68,7 @@ class Project < ApplicationRecord
             }
           }
         }
-      },
-      methods: [:payment_rule]
+      }
     )
   end
 

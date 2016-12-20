@@ -4,7 +4,7 @@ class ProjectRulesController < PrivateController
 
   def new
     if current_project.missing_rules_kind.empty?
-      flash[:alert] = "Sorry you can't create a new rule for the package, edit existing one."
+      flash[:alert] = "Sorry you can't create a new payment rule, edit existing one."
       redirect_to(root_path)
       return
     end
@@ -38,7 +38,7 @@ class ProjectRulesController < PrivateController
   end
 
   def update
-    @rule = current_package.rules.find(params[:id])
+    @rule = current_project.rules.find(params[:id])
     @rule.update_attributes(rule_params)
     puts @rule.valid?
     puts @rule.errors.full_messages
@@ -59,7 +59,6 @@ class ProjectRulesController < PrivateController
   def rule_params
     params.require(:rule)
           .permit(:name,
-                  :kind,
                   formulas_attributes: [
                     :id, :code, :description, :expression, :_destroy
                   ])

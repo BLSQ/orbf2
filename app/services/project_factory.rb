@@ -144,22 +144,12 @@ class ProjectFactory
 
     )
 
-    packages = [package_quantity_pma, package_quantity_pca, package_quality]
-    project.packages << packages
-    packages.each do |p|
-      p.project = project
-      p.rules.each do |rule|
-        rule.package = p
-        rule.formulas.each do |f|
-          f.rule = rule
-        end
-      end
-    end
+    project.packages = [package_quantity_pma, package_quantity_pca, package_quality]
 
-    project.payment_rule =
+    project.rules = [
       Rule.new(
         name:     "Payment rule",
-        kind:     :payment,
+        kind:     "payment",
         formulas: [
           new_formula(
             :quality_bonus_percentage_value,
@@ -178,6 +168,7 @@ class ProjectFactory
           )
         ]
       )
+    ]
 
     project
   end
@@ -189,7 +180,7 @@ class ProjectFactory
   end
 
   def new_package(name, frequency, groups, rules, invoice_details)
-    p = Package.new(name: name, frequency: frequency)
+    p = Package.new(name: name, frequency: frequency, data_element_group_ext_ref: "data_element_group_ext_ref")
     p.package_entity_groups = groups.map { |g| PackageEntityGroup.new(name: g, organisation_unit_group_ext_ref: g) }
     p.rules = rules
     p.invoice_details = invoice_details
