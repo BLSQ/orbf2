@@ -64,7 +64,9 @@ class Package < ApplicationRecord
     ]
     dhis2 = project.dhis2_connection
     dhis2.data_element_groups.create(deg)
-    dhis2.data_element_groups.find_by(name: name)
+    return dhis2.data_element_groups.find_by(name: name)
+  rescue RestClient::Exception => e
+    raise "Failed to create data element group #{deg} #{e.message} with #{project.dhis2_url}"
   end
 
   def create_package_entity_groups(entity_group_ids)
