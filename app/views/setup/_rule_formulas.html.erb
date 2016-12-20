@@ -1,0 +1,7 @@
+<small>
+    <ul>
+        <% formulas.each do |formula| %>
+        <li title="<%= formula.code %>=<%= formula.expression %>"><%= formula.description %></li>
+        <% end %>
+    </ul>
+</small>
