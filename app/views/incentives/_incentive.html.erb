@@ -5,5 +5,6 @@
     <td><div class="col-md-3 pull-right">
       <input class="form-control text-right input-sm" name="incentive_config[activity_incentives][<%= activity_incentive_counter %>][value]" placeholder="0" value="<%= activity_incentive.value %>"></div>
       <input class="form-control" name="incentive_config[activity_incentives][<%= activity_incentive_counter %>][activity][external_reference]" value="<%= activity_incentive.activity.external_reference %>" type="hidden">
+      <input class="form-control" name="incentive_config[activity_incentives][<%= activity_incentive_counter %>][activity][name]" value="<%= activity_incentive.activity.name %>" type="hidden">
     </td>
 </tr>
