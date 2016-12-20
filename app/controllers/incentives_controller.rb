@@ -4,7 +4,7 @@ class IncentivesController < PrivateController
 
   def new
     @incentive = IncentiveConfig.new
-    @incentive.state = State.configurables.first.id
+    @incentive.state = State.configurables(true).first.id
     @incentive.package = current_user.project.packages.first.id
     @incentive.start_date = Date.today.to_date.beginning_of_month
     @incentive.end_date = Date.today.to_date.end_of_month

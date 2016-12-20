@@ -12,7 +12,11 @@
 class State < ApplicationRecord
   validates :name, presence: true
 
-  def self.configurables(conf = true)
-    where configurable: conf
+  def self.configurables(conf = "")
+    if conf == ""
+      where('configurable= ? OR configurable= ?', true, false)
+    else
+      where configurable: conf
+    end
   end
 end
