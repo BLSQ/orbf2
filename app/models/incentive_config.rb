@@ -10,11 +10,7 @@ class IncentiveConfig
 
   def initialize(attributes = {})
     super
-    self.id = nil
-    self.entity_groups = attributes[:entity_groups] unless attributes.empty?
+    self.entity_groups = attributes[:entity_groups] unless attributes.nil?
   end
 
-  def persisted?
-    false
-  end
 end
