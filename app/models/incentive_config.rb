@@ -11,12 +11,12 @@ class IncentiveConfig
   def initialize(attributes = {})
     super
     self.entity_groups = attributes[:entity_groups] unless attributes.nil?
-    self.activity_incentives_attributes = attributes[:activity_incentives_attributes] if attributes && attributes[:activity_incentives_attributes]
+    self.activity_incentives = attributes[:activity_incentives] if attributes && attributes[:activity_incentives]
   end
 
-  def activity_incentives_attributes=(activity_incentives_attributes)
+  def activity_incentives_attributes=(activity_incentives)
     self.activity_incentives = []
-    activity_incentives_attributes.values.each do |att|
+    activity_incentives.values.each do |att|
       activity_incentives << ActivityIncentive.new(att)
     end
   end

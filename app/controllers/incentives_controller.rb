@@ -19,12 +19,43 @@ class IncentivesController < PrivateController
     @incentive.state = State.find(@incentive.state) if @incentive.state.present?
     @incentive.project = current_user.project
 
-    puts "I am going to check"
-
     if @incentive.valid?
       if @incentive.activity_incentives
         # save values and redirect_to setup... with a log of IncentiveConfigs
-        puts "I am valid"
+
+        groups = params[:incentive_config][:entity_groups].map(&:to_s).join(",")
+        data_elements = params[:incentive_config][:activity_incentives]
+
+        dhis2 = incentive.project.dhis2_connection
+
+        # get orgUnits of these groups
+        # https://play.dhis2.org/demo/api/organisationUnits.json?filter=organisationUnitGroups.id:in:[RXL3lPSK8oG]
+        org_units = dhis2.organisation_units.list(filter: "organisationUnitGroups.id:in:[#{groups}]")
+        # loop and set values for each
+
+        period = params[:incentive_config][:start_date].split("-")
+        period.pop
+        period = period.map(&:to_s).join("")
+
+        values = []
+        org_units.each do |_org_unit|
+          data_elements.each do |data_element|
+            de_values = {
+              value:        data_elements[data_element][:value],
+              period:       period,
+              org_unit:     _org_unit.id,
+              data_element: data_elements[data_element][:external_reference]
+            }
+            values.push de_values
+          end
+        end
+        status = dhis2.data_value_sets.create(values)
+        if status.raw_status["status"] == "SUCCESS"
+          ttl_affected = status.raw_status["import_count"]["imported"] + status.raw_status["import_count"]["updated"]
+          flash[:success] = "#{@incentive.state.name}-#{@incentive.package.name} created successfuly for #{ttl_affected} Org. Units"
+          redirect_to(root_path)
+        end
+
       else
 
         # get the de of my package
@@ -56,51 +87,8 @@ class IncentivesController < PrivateController
                   :package,
                   :start_date,
                   :end_date,
-                  entity_groups:                  [],
-                  activity_incentives_attributes: [:activity, :value, :name, :external_reference])
-  end
-
-  def create_data_elements(_de_titles)
-    dhis2 = incentive.project.dhis2_connection
-    data_elements = dhis2.data_elements.list(fields: "id,displayName,code", page_size: 20_000)
-    data_elements_by_code = data_elements.group_by { |de| de["code"] }
-    data_elements_for_state = incentive.activity_incentives.map do |ai|
-      {
-        name:         "RBF #{incentive.state.name} for #{ai.activity.name}",
-        display_name: "RBF #{incentive.state.name} for #{ai.activity.name}",
-        code:         "#{incentive.state.name.underscore}-#{ai.activity.external_reference}",
-        short_name:   "RBF #{incentive.state.name} for #{ai.activity.external_reference}"[0..49]
-      }
-    end
-
-    data_elements_for_state.each do |de_for_state|
-      existing_elements = data_elements_by_code[de_for_state[:code]]
-      de_for_state[:id] = existing_elements.first.id if existing_elements
-    end
-    to_create = data_elements_for_state.select { |e| e[:id].nil? }
-    unless to_create.empty?
-      dhis2_status = dhis2.data_elements.create(to_create)
-      puts "returned #{dhis2_status.to_json} when creating #{to_create} "
-
-      data_elements = dhis2.data_elements.list(fields: "id,displayName,code", page_size: 20_000)
-      data_elements_by_code = data_elements.group_by { |de| de["code"] }
-    end
-    data_elements_by_name = data_elements.group_by { |de| de["name"] }
-
-    data_elements_for_state.each do |de_for_state|
-      existing_elements = data_elements_by_code[de_for_state[:code]]
-      de_for_state[:id] = existing_elements.first.id if existing_elements
-    end
-
-    incentive.activity_incentives.each do |ai|
-      code = "#{incentive.state.name.underscore}-#{ai.activity.external_reference}" # TODO: find a better way instead of copy paste
-      name =   "RBF #{incentive.state.name} for #{ai.activity.name}"
-      existing = data_elements_by_code[code]
-      existing ||= data_elements_by_name[name]
-      raise "no dataelement for #{ai.to_json} and #{code}" unless existing
-      ai.data_element_ext_ref = existing.first["id"]
-    end
-    puts incentive.activity_incentives.to_json
+                  entity_groups:       [],
+                  activity_incentives: [:value, :name, :external_reference])
   end
 
   def get_data_elements_by_package(package_ext_ref)
