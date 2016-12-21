@@ -11,8 +11,10 @@
 #
 
 class Rule < ApplicationRecord
-  RULE_TYPES = %w(activity package).freeze
-  belongs_to :package
+  RULE_TYPES = %w(payment activity package).freeze
+  belongs_to :package, optional: true, inverse_of: :rules
+  belongs_to :project, optional: true, inverse_of: :rules
+
   has_many :formulas, dependent: :destroy, inverse_of: :rule
 
   accepts_nested_attributes_for :formulas, reject_if: :all_blank, allow_destroy: true
@@ -29,6 +31,14 @@ class Rule < ApplicationRecord
     kind == "activity"
   end
 
+  def package_kind?
+    kind == "package"
+  end
+
+  def payment_kind?
+    kind == "payment"
+  end
+
   def to_facts
     facts = {}
     formulas.each { |formula| facts[formula.code] = formula.expression }
@@ -42,12 +52,15 @@ class Rule < ApplicationRecord
 
   def available_variables
     var_names = []
-    if kind == "activity"
+    if activity_kind?
       var_names << package.states.map(&:name).map(&:underscore) if package
       var_names << "tarif"
       var_names << formulas.map(&:code)
-    else
+    elsif package_kind?
       var_names << available_variables_for_values.map { |code| "%{#{code}}" }
+    elsif payment_kind?
+      rules = project.packages.flat_map(&:rules).select(&:package_kind?)
+      var_names << rules.flat_map(&:formulas).map(&:code)
     end
     var_names.flatten
   end
@@ -61,7 +74,7 @@ class Rule < ApplicationRecord
   end
 
   def fake_facts
-    if kind == "activity"
+    if activity_kind?
       {
         claimed:   "1.0",
         verified:  "1.0",
@@ -69,10 +82,17 @@ class Rule < ApplicationRecord
         validated: "1.0",
         tarif:     "100"
       }
-    else
+    elsif package_kind?
       {
 
       }
+    elsif payment_kind?
+      facts = {}
+      rules = project.packages.flat_map(&:rules).select(&:package_kind?)
+      rules.flat_map(&:formulas).each do |formula|
+        facts[formula.code] = "1040.1"
+      end
+      facts
     end
   end
 end

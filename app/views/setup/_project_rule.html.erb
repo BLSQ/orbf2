@@ -1,0 +1,13 @@
+<tr>
+    <td><%= rule.name %></td>
+    <td>
+      <div class="col-md-8">
+          <%= render partial: "rule_formulas", locals: { formulas: rule.formulas }%>
+      </div>
+    </td>
+    <td>
+
+        <%= link_to rule.name, edit_setup_project_rule_path(current_user.project, rule) , class: rule.invalid? ? 'btn btn-danger' :''  %> <%= rule.invalid? ? icon('exclamation-triangle text-danger fa-lg') :''%>
+    </td>
+
+</tr>

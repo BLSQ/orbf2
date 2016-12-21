@@ -13,4 +13,21 @@
           <%= render partial: "rule", collection: step.model, as: :package %>
       </body>
   </table>
+<br>
+<%if current_user.project.payment_rule %>
+  <table class="table table-striped table-condensed">
+      <thead>
+          <tr>
+              <th>Payment rule</th>
+              <th>Available output</th>
+              <th>Name</th>
+          </tr>
+      </thead>
+      <body>
+          <%= render partial: "project_rule", locals: { rule: current_user.project.payment_rule }%>
+      </body>
+  </table>
+<% else %>
+    <%= link_to 'Let\'s create your final payment rule', new_setup_project_rule_path(current_user.project)  %>
+<% end %>
 <% end %>
