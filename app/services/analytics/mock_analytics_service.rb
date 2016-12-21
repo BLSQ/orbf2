@@ -108,15 +108,15 @@ module Analytics
       Activity.new(id: id, name: name)
     end
 
-    def new_values(declared = 0.0, verified = 0.0, validated = 0.0)
-      Analytics::Values.new(declared, verified, validated)
+    def new_values(claimed = 0.0, verified = 0.0, validated = 0.0)
+      Analytics::Values.new(claimed, verified, validated)
     end
 
     def for_quarter(value)
       quarter = []
-      quarter << new_values(value.declared, value.verified, value.validated)
-      quarter << new_values(value.declared + 2, value.declared + 1, value.validated)
-      quarter << new_values(value.declared, value.declared, value.validated)
+      quarter << new_values(value.claimed, value.verified, value.validated)
+      quarter << new_values(value.claimed + 2, value.claimed + 1, value.validated)
+      quarter << new_values(value.claimed, value.claimed, value.validated)
       quarter
     end
 

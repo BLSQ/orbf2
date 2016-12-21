@@ -17,7 +17,7 @@ class ProjectFactory
           formulas: [
             new_formula(
               :difference_percentage,
-              "if (verified != 0.0, (ABS(declared - verified) / verified ) * 100.0, 0.0)",
+              "if (verified != 0.0, (ABS(claimed - verified) / verified ) * 100.0, 0.0)",
               "Pourcentage difference entre déclaré & vérifié"
             ),
             new_formula(
@@ -44,7 +44,7 @@ class ProjectFactory
           ]
         )
       ],
-      %w(declared verified
+      %w(claimed verified
          difference_percentage quantity
          tarif amount
          actictity_name quantity_total)
@@ -61,7 +61,7 @@ class ProjectFactory
           formulas: [
             new_formula(
               :difference_percentage,
-              "if (verified != 0.0, (ABS(declared - verified) / verified ) * 100.0, 0.0)",
+              "if (verified != 0.0, (ABS(claimed - verified) / verified ) * 100.0, 0.0)",
               "Pourcentage difference entre déclaré & vérifié"
             ),
             new_formula(
@@ -88,7 +88,7 @@ class ProjectFactory
           ]
         )
       ],
-      %w(declared verified difference_percentage quantity tarif amount actictity_name quantity_total)
+      %w(claimed verified difference_percentage quantity tarif amount actictity_name quantity_total)
 
     )
 
@@ -103,7 +103,7 @@ class ProjectFactory
           formulas: [
             new_formula(
               :attributed_points,
-              "declared",
+              "claimed",
               "Attrib. Points"
             ),
             new_formula(
