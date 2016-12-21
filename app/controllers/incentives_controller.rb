@@ -18,24 +18,33 @@ class IncentivesController < PrivateController
     @incentive.package = @project.packages.find(@incentive.package) if @incentive.package.present?
     @incentive.state = State.find(@incentive.state) if @incentive.state.present?
     @incentive.project = current_user.project
+
+    puts "I am going to check"
+
     if @incentive.valid?
       if @incentive.activity_incentives
-        create_data_elements_for_incentive(@incentive)
-        render "new"
+        # save values and redirect_to setup... with a log of IncentiveConfigs
+        puts "I am valid"
       else
-        @incentive.activity_incentives = @incentive.package.fetch_activities.map do |activity|
+
+        # get the de of my package
+        package_des = get_data_elements_by_package(@incentive.package.data_element_group_ext_ref)
+        # create the data elements
+        state_created_des = create_data_elements_for_state(package_des, @incentive.state.name)
+        # create the deg and add data elements to the deg
+        state_created_deg = create_data_element_group_for_incentive(state_created_des, @incentive)
+        # load them for value config inputs
+        @incentive.activity_incentives = state_created_des.map do |de|
           ActivityIncentive.new(
-            name:               activity.name,
-            external_reference: activity.external_reference,
+            name:               de.name,
+            external_reference: de.id,
             value:              0.0
           )
         end
+        @incentive.state = @incentive.state.id
+        @incentive.package = @incentive.package.id
         render "new"
       end
-    else
-      # puts @incentive.errors.full_messages
-      # raise @incentive.errors.full_messages
-      render "new"
     end
   end
 
@@ -43,15 +52,15 @@ class IncentivesController < PrivateController
 
   def incentive_params
     params.require(:incentive_config)
-          .permit(:package,
-                  :state,
+          .permit(:state,
+                  :package,
                   :start_date,
                   :end_date,
                   entity_groups:                  [],
                   activity_incentives_attributes: [:activity, :value, :name, :external_reference])
   end
 
-  def create_data_elements_for_incentive(incentive)
+  def create_data_elements(_de_titles)
     dhis2 = incentive.project.dhis2_connection
     data_elements = dhis2.data_elements.list(fields: "id,displayName,code", page_size: 20_000)
     data_elements_by_code = data_elements.group_by { |de| de["code"] }
@@ -94,19 +103,51 @@ class IncentivesController < PrivateController
     puts incentive.activity_incentives.to_json
   end
 
-  def create_data_element_group_for_incentive(incentive)
-    deg_name = "#{incentive.state.name.underscore}-#{incentive.package.name}"
+  def get_data_elements_by_package(package_ext_ref)
+    # https://play.dhis2.org/demo/api/dataElements.json?filter=dataElementGroups.id:in:[HeAnxDMyrOd]
+    dhis2 = incentive.project.dhis2_connection
+    des = dhis2.data_elements.list(filter: "dataElementGroups.id:eq:#{package_ext_ref}")
+
+    des.map do |de|
+      {
+        id:   de.id,
+        name: de.display_name
+      }
+    end
+  end
+
+  def create_data_elements_for_state(package_des, state_label)
+    state_created_des = []
+    package_des.each do |de|
+      de_to_create = [{
+        code:         "#{state_label.underscore.capitalize}-#{de[:id]}"[0..49],
+        short_name:   "#{state_label.underscore.capitalize} for #{de[:name]}"[0..49],
+        name:         "#{state_label.underscore.capitalize} for #{de[:name]}",
+        display_name: "#{state_label.underscore.capitalize} for #{de[:name]}"
+      }]
+      dhis2 = incentive.project.dhis2_connection
+      dhis2.data_elements.create(de_to_create)
+      # query the created indic by name or by code if you want
+      state_created_de = dhis2.data_elements.find_by(name: "#{state_label.underscore.capitalize} for #{de[:name]}")
+      state_created_des.push state_created_de
+    end
+    # return the ids of the created DEs
+    state_created_des
+  end
+
+  def create_data_element_group_for_incentive(state_created_des, incentive)
+    deg_name = "#{incentive.state.name.underscore.capitalize}-#{incentive.package.name}"
     deg = [
       { name:          deg_name,
         short_name:    deg_name[0..49],
         code:          deg_name[0..49],
         display_name:  deg_name,
-        data_elements: data_element_ids.map do |data_element_id|
-          { id: data_element_id }
+        data_elements: state_created_des.map do |state_created_de|
+          { id: state_created_de.id }
         end }
     ]
-    dhis2 = project.dhis2_connection
+    dhis2 = incentive.project.dhis2_connection
     dhis2.data_element_groups.create(deg)
-    dhis2.data_element_groups.find_by(name: name)
+    dhis2.data_element_groups.find_by(name: deg_name)
   end
 end

@@ -1,6 +1,6 @@
 class IncentiveConfig
   include ActiveModel::Model
-  attr_accessor :id, :package, :state, :entity_groups, :activity_incentives, :start_date, :end_date, :project
+  attr_accessor :id, :state, :package, :entity_groups, :activity_incentives, :start_date, :end_date, :project
 
   validates :package, presence: true
   validates :state, presence: true
@@ -17,7 +17,7 @@ class IncentiveConfig
   def activity_incentives_attributes=(activity_incentives_attributes)
     self.activity_incentives = []
     activity_incentives_attributes.values.each do |att|
-      self.activity_incentives << ActivityIncentive.new(att)
+      activity_incentives << ActivityIncentive.new(att)
     end
   end
 end
