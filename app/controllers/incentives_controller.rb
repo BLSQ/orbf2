@@ -38,12 +38,12 @@ class IncentivesController < PrivateController
         period = period.map(&:to_s).join("")
 
         values = []
-        org_units.each do |_org_unit|
+        org_units.each do |org_unit|
           data_elements.each do |data_element|
             de_values = {
               value:        data_elements[data_element][:value],
               period:       period,
-              org_unit:     _org_unit.id,
+              org_unit:     org_unit.id,
               data_element: data_elements[data_element][:external_reference]
             }
             values.push de_values
