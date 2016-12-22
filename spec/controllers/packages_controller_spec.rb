@@ -10,18 +10,7 @@ RSpec.describe PackagesController, type: :controller do
 
   describe "When authenticated #index" do
     include_context "basic_context"
-    let!(:states) {
-      states = [
-        { name: "Claimed" },
-        { name: "Verified" },
-        { name: "Validated" }
-      ]
 
-      states.each do |state|
-        State.find_or_create_by!(state)
-      end
-      states
-    }
     before(:each) do
       sign_in user
     end
@@ -44,10 +33,8 @@ RSpec.describe PackagesController, type: :controller do
     it "should create a package based on params" do
       project
 
-
-
       state_ids = State.all.map(&:id).map(&:to_s)
-
+      expect(state_ids.size).to eql 3
       stub_request(:post, "#{project.dhis2_url}/api/metadata")
         .with(body: "{\"dataElementGroups\":[{\"name\":\"azeaze\",\"shortName\":\"azeaze\",\"code\":\"azeaze\",\"dataElements\":[{\"id\":\"FTRrcoaog83\"}]}]}")
         .to_return(status: 200, body: fixture_content(:dhis2, "organisationUnitGroups.json"))

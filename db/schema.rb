@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161219090021) do
+ActiveRecord::Schema.define(version: 20161219103620) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -81,7 +81,9 @@ ActiveRecord::Schema.define(version: 20161219090021) do
     t.integer  "package_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer  "project_id"
     t.index ["package_id"], name: "index_rules_on_package_id", using: :btree
+    t.index ["project_id"], name: "index_rules_on_project_id", using: :btree
   end
 
   create_table "states", force: :cascade do |t|
@@ -118,5 +120,6 @@ ActiveRecord::Schema.define(version: 20161219090021) do
   add_foreign_key "package_states", "states"
   add_foreign_key "packages", "projects"
   add_foreign_key "rules", "packages"
+  add_foreign_key "rules", "projects"
   add_foreign_key "users", "projects"
 end

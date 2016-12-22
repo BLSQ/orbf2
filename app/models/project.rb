@@ -20,10 +20,17 @@ class Project < ApplicationRecord
   validates :user, presence: true
   validates :password, presence: true
 
-  has_one :entity_group
-  has_many :packages
+  has_one :entity_group, dependent: :destroy
+  has_many :packages, dependent: :destroy
+  has_many :rules, dependent: :destroy
 
-  attr_accessor :payment_rule
+  def payment_rule
+    rules.find(&:payment_kind?)
+  end
+
+  def missing_rules_kind
+    payment_rule ? [] : ["payment"]
+  end
 
   def verify_connection
     return { status: :ko, message: errors.full_messages.join(",") } if invalid?
@@ -46,6 +53,11 @@ class Project < ApplicationRecord
     to_json(
       except:  [:created_at, :updated_at, :password, :user],
       include: {
+        rules:    {
+          include: {
+            formulas: {}
+          }
+        },
         packages: {
           except:  [:created_at, :updated_at],
           include: {
@@ -56,8 +68,7 @@ class Project < ApplicationRecord
             }
           }
         }
-      },
-      methods: [:payment_rule]
+      }
     )
   end
 

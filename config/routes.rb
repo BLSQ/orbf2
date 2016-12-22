@@ -5,12 +5,14 @@ Rails.application.routes.draw do
   devise_scope :user do
     get "/users/sign_out" => "devise/sessions#destroy"
     resource :setup do
+      resources :seeds, only: [:index] if Rails.env.development? || Rails.env.dev?
       resources :projects, only: [:create] do
         resource :main_entity_group, only: [:create, :update]
         resources :packages, only: [:new, :create] do
           resources :rules, only: [:new, :create, :update, :edit]
         end
         resources :incentives, only: [:new, :create, :update]
+        resources :rules, only: [:new, :create, :update, :edit], controller: "project_rules"
         resources :autocomplete, only: [] do
           collection do
             get :organisation_unit_group
