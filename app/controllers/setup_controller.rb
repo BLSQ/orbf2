@@ -19,14 +19,18 @@ class SetupController < PrivateController
                      model:  step1.todo? || step2.todo? ? nil : current_user.project.packages)
 
     step4_todo = step3.todo? || current_user.project.packages.flat_map(&:rules).empty? ||
-                  current_user.project.packages.flat_map(&:rules).any? {|r| r.invalid? } ||
-                  current_user.project.packages.any? {|p| p.rules.size != 2 }
+                 current_user.project.packages.flat_map(&:rules).any?(&:invalid?) ||
+                 current_user.project.packages.any? { |p| p.rules.size != 2 }
+
     step4 =  Step.new(name:   "Rules",
                       status: step4_todo ? :todo : :done,
                       kind:   :rules,
                       model:  step3.todo? ? nil : current_user.project.packages)
 
-    step5 =  Step.new(name: "Tarification plan", status: :todo, kind: :tarifications)
+    step5 =  Step.new(name:   "Incentive Configuration",
+                      status: :todo,
+                      kind:   :incentives,
+                      model:  step4.todo? ? IncentiveConfig.new : IncentiveConfig.new)
 
     @setup = Setup.new([step1, step2, step3, step4, step5])
   end

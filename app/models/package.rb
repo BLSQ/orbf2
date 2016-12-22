@@ -30,7 +30,7 @@ class Package < ApplicationRecord
   attr_accessor :invoice_details
 
   def missing_rules_kind
-    supported_rules_kind = ["activity", "package"];
+    supported_rules_kind = %w(activity package)
     supported_rules_kind.delete("activity") if activity_rule
     supported_rules_kind.delete("package") if package_rule
     supported_rules_kind
@@ -64,7 +64,9 @@ class Package < ApplicationRecord
     ]
     dhis2 = project.dhis2_connection
     dhis2.data_element_groups.create(deg)
-    dhis2.data_element_groups.find_by(name: name)
+    return dhis2.data_element_groups.find_by(name: name)
+  rescue RestClient::Exception => e
+    raise "Failed to create data element group #{deg} #{e.message} with #{project.dhis2_url}"
   end
 
   def create_package_entity_groups(entity_group_ids)
@@ -76,6 +78,17 @@ class Package < ApplicationRecord
         name:                            organisation_unit_group.display_name,
         organisation_unit_group_ext_ref: organisation_unit_group.id
       }
+    end
+  end
+
+  # will fetch the activities of a given package id (data_element_group_ext_ref)
+  def fetch_activities
+    dhis2 = project.dhis2_connection
+    activities = dhis2.data_elements.list(filter: "dataElementGroups.id:eq:#{data_element_group_ext_ref}").map do |dataelement|
+      Activity.new(
+        external_reference: dataelement.id,
+        name:               dataelement.display_name
+      )
     end
   end
 end

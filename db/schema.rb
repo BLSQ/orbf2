@@ -87,9 +87,10 @@ ActiveRecord::Schema.define(version: 20161219103620) do
   end
 
   create_table "states", force: :cascade do |t|
-    t.string   "name",       null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.string   "name",                         null: false
+    t.datetime "created_at",                   null: false
+    t.datetime "updated_at",                   null: false
+    t.boolean  "configurable", default: false, null: false
     t.index ["name"], name: "index_states_on_name", unique: true, using: :btree
   end
 

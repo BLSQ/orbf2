@@ -62,7 +62,7 @@ class Rule < ApplicationRecord
       rules = project.packages.flat_map(&:rules).select(&:package_kind?)
       var_names << rules.flat_map(&:formulas).map(&:code)
     end
-    var_names.flatten
+    var_names.flatten.uniq.reject(&:nil?).sort
   end
 
   def available_variables_for_values

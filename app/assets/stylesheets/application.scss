@@ -21,6 +21,7 @@
 @import "jquery-ui/theme";
 @import "jquery-ui/autocomplete";
 @import "sol/searchableOptionList";
+@import "bootstrap-datepicker";
 
 body.private {
   padding-top: 70px;
@@ -32,4 +33,8 @@ body.private {
 
 .highlightme {
   background-color: lightyellow;
+}
+
+.input-group .form-control {
+    z-index: 1 !important;
 }

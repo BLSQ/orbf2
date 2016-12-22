@@ -7,11 +7,15 @@
 #   Character.create(name: 'Luke', movie: movies.first)
 
 states = [
-  { name: "Claimed" },
-  { name: "Verified" },
-  { name: "Validated" }
+  { name: "Claimed", configurable: false },
+  { name: "Verified", configurable: false },
+  { name: "Validated", configurable: false },
+  { name: "Tarif", configurable: true },
+  { name: "Max. Score", configurable: true },
+  { name: "Budget", configurable: true }
 ]
 
 states.each do |state|
-  State.find_or_create_by(state)
+  state_record = State.find_or_create_by(name: state[:name])
+  state_record.update_attributes(state)
 end
