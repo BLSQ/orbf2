@@ -19,4 +19,8 @@ class State < ApplicationRecord
       where configurable: conf
     end
   end
+
+  def code
+    name.underscore
+  end
 end

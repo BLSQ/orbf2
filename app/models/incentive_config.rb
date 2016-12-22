@@ -1,6 +1,6 @@
 class IncentiveConfig
   include ActiveModel::Model
-  attr_accessor :id, :state, :package, :entity_groups, :activity_incentives, :start_date, :end_date, :project
+  attr_accessor :id, :state, :package, :entity_groups, :activity_incentives, :start_date, :end_date, :project, :entities
 
   validates :package, presence: true
   validates :state, presence: true

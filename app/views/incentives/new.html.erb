@@ -27,6 +27,8 @@
         <%= f.input_field :end_date, class: "form-control"  %>
     </div>
 </div>
+<%= f.submit 'Apply filters', name:  :apply_filters , class: "btn btn-success pull-right" %>
+
 
 <div>
     <table class="table table-striped table-condensed">
@@ -42,5 +44,16 @@
         </body>
     </table>
 </div>
-<%= f.button :submit, class: "btn btn-success" %>
+
+  <% if incentive.entities%>
+    <% if incentive.valid? %>
+      <%= f.submit 'Set values', name: :set_values ,  class: "btn btn-danger pull-right" %>
+    <%end%>
+    <div>
+      <h2>Sample affected entities ( <%= incentive.entities.pager.total %> ) </h2>
+      <%= render partial: "entity", collection: incentive.entities, as: :entity %>
+    </div>
+
+
+ <%end%>
 <% end %>
