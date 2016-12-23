@@ -5,7 +5,7 @@ class IncentiveConfig
   validates :package, presence: true
   validates :state, presence: true
   validate :validates_state_belong_to_package
-  # validates :entity_groups, presence: true
+  validates :entity_groups, length: { minimum: 1, message: "You need to select at least one group" }
   validates :start_date, presence: true
   validates :end_date, presence: true
 
@@ -78,11 +78,12 @@ class IncentiveConfig
   end
 
   def create_data_element_group(state_created_des)
-    deg_name = "#{state.code}-#{package.name}"
+    deg_code = "#{state.code}-#{package.name}"
+    deg_name = "#{state.name} for #{package.name}"
     deg = [
       { name:          deg_name,
         short_name:    deg_name[0..49],
-        code:          deg_name[0..49],
+        code:          deg_code,
         display_name:  deg_name,
         data_elements: state_created_des.map do |state_created_de|
           { id: state_created_de.id }
@@ -90,7 +91,7 @@ class IncentiveConfig
     ]
     dhis2 = project.dhis2_connection
     dhis2.data_element_groups.create(deg)
-    dhis2.data_element_groups.find_by(name: deg_name)
+    dhis2.data_element_groups.find_by(code: deg_code)
   end
 
   def set_data_elemets_values
@@ -112,5 +113,10 @@ class IncentiveConfig
     end
     dhis2 = project.dhis2_connection
     dhis2.data_value_sets.create(values)
+  end
+
+  def get_data_elemets_values
+    dhis2 = project.dhis2_connection
+    dhis2.data_value_sets.list("orgUnitGroup=oRVt7g429ZO&startDate=2018-01-01&endDate=2018-12-31&dataElementGroup=N91HZcAgkiK")
   end
 end

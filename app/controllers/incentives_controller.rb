@@ -22,14 +22,14 @@ class IncentivesController < PrivateController
     if @incentive.valid?
       dhis2 = incentive.project.dhis2_connection
 
-      if params[:incentive_config] && params[:incentive_config][:entity_groups]
+      if @incentive.entity_groups
 
         org_units = @incentive.project.dhis2_connection.organisation_units.list(filter: "organisationUnitGroups.id:in:[#{@incentive.entity_groups.join(',')}]", page_size: 15)
         @incentive.entities = org_units
       end
 
       if @incentive.activity_incentives && params[:set_values]
-      
+
         org_units = @incentive.project.dhis2_connection.organisation_units.list(filter: "organisationUnitGroups.id:in:[#{@incentive.entity_groups.join(',')}]", page_size: 50_000)
 
         status = @incentive.set_data_elemets_values
