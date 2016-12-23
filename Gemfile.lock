@@ -1,6 +1,7 @@
 GIT
   remote: git://github.com/BLSQ/dhis2.git
-  revision: d2bc25f04c6c37ef0de5756846593bc8ea05dd5b
+  revision: 3f525dad17ef159ab9e7dce9e6de59c1050e751e
+  branch: feature/add-datavalueset-by-orgunitgroup
   specs:
     dhis2 (2.2.1)
       rest-client

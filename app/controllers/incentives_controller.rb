@@ -6,8 +6,8 @@ class IncentivesController < PrivateController
     @incentive = IncentiveConfig.new
     @incentive.state_id = State.configurables(true).first.id
     @incentive.package_id = current_user.project.packages.first.id
-    @incentive.start_date = Date.today.to_date.beginning_of_month
-    @incentive.end_date = Date.today.to_date.end_of_month
+    @incentive.start_date = Date.today.to_date.beginning_of_month.strftime("%Y-%m")
+    @incentive.end_date = Date.today.to_date.end_of_month.strftime("%Y-%m")
     @project = current_user.project
     @incentive.project = @project
   end

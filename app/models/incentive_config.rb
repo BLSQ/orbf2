@@ -22,6 +22,14 @@ class IncentiveConfig
     end
   end
 
+  def start_date_fn
+    Date.parse("#{start_date}-01")
+  end
+
+  def end_date_fn
+    Date.parse("#{end_date}-01").end_of_month
+  end
+
   def validates_state_belong_to_package
     errors.add(:state_id, "#{state.name} is not associated to selected package. #{package.name} has #{package.states.map(&:name).join(', ')} states") unless package.states.include? state
   end
@@ -34,11 +42,20 @@ class IncentiveConfig
     # create the deg and add data elements to the deg
     state_created_deg = create_data_element_group(state_created_des)
     # load them for value config inputs
+
+    existing_values = get_data_elemets_values(state_created_deg)
+
+    existing_values_by_element_id = existing_values.table ? existing_values.values.group_by(&:data_element) : {}
+
     self.activity_incentives = state_created_des.map do |de|
+      values = existing_values_by_element_id[de.id]
+      value = if values
+                values.map(&:value).uniq.size == 1 ? values.first.value : nil
+              end
       ActivityIncentive.new(
         name:               de.name,
         external_reference: de.id,
-        value:              0.0
+        value:              value
       )
     end
   end
@@ -95,9 +112,7 @@ class IncentiveConfig
   end
 
   def set_data_elemets_values
-    period = start_date.split("-")
-    period.pop
-    period = period.map(&:to_s).join("")
+    period = start_date
 
     values = []
     entities.each do |org_unit|
@@ -115,8 +130,15 @@ class IncentiveConfig
     dhis2.data_value_sets.create(values)
   end
 
-  def get_data_elemets_values
+  def get_data_elemets_values(deg)
     dhis2 = project.dhis2_connection
-    dhis2.data_value_sets.list("orgUnitGroup=oRVt7g429ZO&startDate=2018-01-01&endDate=2018-12-31&dataElementGroup=N91HZcAgkiK")
+    # dhis2.data_value_sets.list("orgUnitGroup=oRVt7g429ZO&startDate=2018-01-01&endDate=2018-12-31&dataElementGroup=N91HZcAgkiK")
+    values = dhis2.data_value_sets.list(
+      organisation_unit_group: entity_groups.first,
+      data_element_groups:     [deg.id],
+      start_date:              start_date_fn,
+      end_date:                end_date_fn
+    )
+    values
   end
 end
