@@ -13,9 +13,9 @@
 
 class Package < ApplicationRecord
   FREQUENCIES = %w(monthly quarterly).freeze
-  belongs_to :project
-  has_many :package_entity_groups
-  has_many :package_states
+  belongs_to :project, inverse_of: :packages
+  has_many :package_entity_groups, dependent: :destroy
+  has_many :package_states, dependent: :destroy
   has_many :states, through: :package_states
   has_many :rules
   validates :name, presence: true, length: { maximum: 230 }

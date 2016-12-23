@@ -14,13 +14,13 @@ class State < ApplicationRecord
 
   def self.configurables(conf = "")
     if conf == ""
-      where('configurable= ? OR configurable= ?', true, false)
+      where("configurable= ? OR configurable= ?", true, false)
     else
       where configurable: conf
     end
   end
 
   def code
-    name.underscore
+    name.parameterize("_")
   end
 end
