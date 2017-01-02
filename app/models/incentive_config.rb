@@ -134,7 +134,6 @@ class IncentiveConfig
     values = dhis2.data_value_sets.list(values_query)
     values.table ? existing_values.values : []
   rescue RestClient::ExceptionWithResponse => e
-    puts "Failed to access data element values #{values_query.to_json} #{e.message} #{e.response.body} #{e.response.request.url.gsub(project.password, '[REDACTED]')}"
-    []
+    raise "Failed to access data element values #{values_query.to_json} #{e.message} #{e.response.body} #{e.response.request.url.gsub(project.password, '[REDACTED]')}"
   end
 end
