@@ -5,13 +5,17 @@ shared_context "basic_context" do
   end
   let!(:states) do
     states = [
-      { name: "Claimed" },
-      { name: "Verified" },
-      { name: "Validated" }
+      { name: "Claimed", configurable: false },
+      { name: "Verified", configurable: false },
+      { name: "Validated", configurable: false },
+      { name: "Tarif", configurable: true },
+      { name: "Max. Score", configurable: true },
+      { name: "Budget", configurable: true }
     ]
 
-    states.map do |state_params|
-      state = State.find_or_create_by!(state_params)
+    states.each do |state|
+      state_record = State.find_or_create_by(name: state[:name])
+      state_record.update_attributes(state)
     end
   end
 end

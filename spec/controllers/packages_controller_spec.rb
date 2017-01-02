@@ -33,7 +33,7 @@ RSpec.describe PackagesController, type: :controller do
     it "should create a package based on params" do
       project
 
-      state_ids = State.all.map(&:id).map(&:to_s)
+      state_ids = State.all.map(&:id).map(&:to_s).slice(0,3)
       expect(state_ids.size).to eql 3
       stub_request(:post, "#{project.dhis2_url}/api/metadata")
         .with(body: "{\"dataElementGroups\":[{\"name\":\"azeaze\",\"shortName\":\"azeaze\",\"code\":\"azeaze\",\"dataElements\":[{\"id\":\"FTRrcoaog83\"}]}]}")

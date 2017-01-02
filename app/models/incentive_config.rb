@@ -31,7 +31,7 @@ class IncentiveConfig
   end
 
   def validates_state_belong_to_package
-    errors.add(:state_id, "#{state.name} is not associated to selected package. #{package.name} has #{package.states.map(&:name).join(', ')} states") unless package.states.include? state
+    errors.add(:state_id, "#{state.name} is not associated to selected package. #{package.name} has #{package.states.select(&:configurable).map(&:name).join(', ')} states") unless package.states.include? state
   end
 
   def find_or_create_activity_incentives
