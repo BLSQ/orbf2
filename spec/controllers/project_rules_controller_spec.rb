@@ -24,7 +24,7 @@ RSpec.describe ProjectRulesController, type: :controller do
 
     def delete_existing_project_rules
       project.rules.destroy_all
-      expect(Rule.all.count).to eq(6)
+      expect(Rule.all.count).to eq(8)
     end
 
     describe "#new" do
@@ -98,7 +98,7 @@ RSpec.describe ProjectRulesController, type: :controller do
             ]
           }
         }
-        expect(Rule.all.count).to eq 7
+        expect(Rule.all.count).to eq 9
       end
 
       it "should not create an existing one" do
@@ -131,7 +131,7 @@ RSpec.describe ProjectRulesController, type: :controller do
           }
         }
 
-        expect(Rule.all.count).to eq 6
+        expect(Rule.all.count).to eq 8
       end
     end
   end

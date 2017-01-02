@@ -8,6 +8,7 @@
 #  package_id :integer
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  project_id :integer
 #
 
 class Rule < ApplicationRecord
@@ -53,10 +54,12 @@ class Rule < ApplicationRecord
   def available_variables
     var_names = []
     if activity_kind?
-      var_names << package.states.map(&:name).map(&:underscore) if package
-      var_names << "tarif"
+      var_names << package.states.select(&:activity_level).map(&:code) if package
+      var_names << ["tarif","max_score"]
       var_names << formulas.map(&:code)
     elsif package_kind?
+      var_names << package.states.select(&:package_level).map(&:code) if package
+      var_names << "budget"
       var_names << available_variables_for_values.map { |code| "%{#{code}}" }
     elsif payment_kind?
       rules = project.packages.flat_map(&:rules).select(&:package_kind?)
@@ -80,11 +83,12 @@ class Rule < ApplicationRecord
         verified:  "1.0",
         declared:  "1.0",
         validated: "1.0",
-        tarif:     "100"
+        tarif:     "100",
+        max_score: "100"
       }
     elsif package_kind?
       {
-
+        budget: "10000"
       }
     elsif payment_kind?
       facts = {}

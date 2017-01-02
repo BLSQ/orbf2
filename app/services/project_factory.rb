@@ -144,7 +144,66 @@ class ProjectFactory
 
     )
 
-    project.packages = [package_quantity_pma, package_quantity_pca, package_quality]
+    package_perfomance_admin = new_package(
+      "Performance administration",
+      "quarterly",
+      ["administrative_group_id"],
+      [
+        Rule.new(
+          name:     "Performance assessment",
+          kind:     "activity",
+          formulas: [
+            new_formula(
+              :attributed_points,
+              "claimed",
+              "Attrib. Points"
+            ),
+            new_formula(
+              :max_points,
+              "max_score",
+              "Max Points"
+            ),
+            new_formula(
+              :performance_score_value,
+              "if (max_points != 0.0, (attributed_points / max_points) * 100.0, 0.0)",
+              "Performance score"
+            )
+          ]
+        ),
+        Rule.new(
+          name:     "Performance score",
+          kind:     "package",
+          formulas: [
+            new_formula(
+              :attributed_points,
+              "SUM(%{attributed_points_values})",
+              "Attributed points"
+            ),
+            new_formula(
+              :max_points,
+              "SUM(%{max_points_values})",
+              "Max points"
+            ),
+            new_formula(
+              :performance_score_value,
+              "(attributed_points/max_points) * 100.0",
+              "Performance score"
+            ),
+            new_formula(
+              :performance_amount,
+              "(performance_score_value / 100.0) * budget",
+              "Performance amount"
+            )
+          ]
+        )
+      ],
+      %w(claimed verified
+         difference_percentage quantity
+         tarif amount
+         actictity_name quantity_total)
+    )
+
+    project.packages = [package_quantity_pma, package_quantity_pca, package_quality, package_perfomance_admin]
 
     project.rules = [
       Rule.new(

@@ -7,12 +7,12 @@
 #   Character.create(name: 'Luke', movie: movies.first)
 
 states = [
-  { name: "Claimed", configurable: false },
-  { name: "Verified", configurable: false },
-  { name: "Validated", configurable: false },
-  { name: "Tarif", configurable: true },
-  { name: "Max. Score", configurable: true },
-  { name: "Budget", configurable: true }
+  { name: "Claimed",    configurable: false,  level: "activity" },
+  { name: "Verified",   configurable: false,  level: "activity" },
+  { name: "Validated",  configurable: false,  level: "activity" },
+  { name: "Max. Score", configurable: true,   level: "activity" },
+  { name: "Tarif",      configurable: true,   level: "activity" },
+  { name: "Budget",     configurable: true,   level: "package"  }
 ]
 
 states.each do |state|
