@@ -22,11 +22,11 @@ class IncentiveConfig
     end
   end
 
-  def start_date_fn
+  def start_date_as_date
     Date.parse("#{start_date}-01")
   end
 
-  def end_date_fn
+  def end_date_as_date
     Date.parse("#{end_date}-01").end_of_month
   end
 
@@ -35,17 +35,12 @@ class IncentiveConfig
   end
 
   def find_or_create_activity_incentives
-    # get the de of my package
     package_des = get_data_elements_by_package
-    # create the data elements
     state_created_des = create_data_elements_for_state(package_des)
-    # create the deg and add data elements to the deg
     state_created_deg = create_data_element_group(state_created_des)
-    # load them for value config inputs
+    existing_values = get_data_elements_values(state_created_deg)
 
-    existing_values = get_data_elemets_values(state_created_deg)
-
-    existing_values_by_element_id = existing_values.table ? existing_values.values.group_by(&:data_element) : {}
+    existing_values_by_element_id = existing_values.group_by(&:data_element)
 
     self.activity_incentives = state_created_des.map do |de|
       values = existing_values_by_element_id[de.id]
@@ -77,21 +72,19 @@ class IncentiveConfig
     state_created_des = []
     dhis2 = project.dhis2_connection
     # default_combo_id = dhis2.category_combos.list(fields: "id", filter: "name=default").first.id
-    package_des.each do |de|
-      de_to_create = [{
-        code:         "#{state.code}-#{de[:id]}",
-        short_name:   "#{state.name} for #{de[:name]}"[0..49],
-        name:         "#{state.name} for #{de[:name]}",
-        display_name: "#{state.name} for #{de[:name]}"
-      }]
-
-      dhis2.data_elements.create(de_to_create)
-      # query the created indic by name or by code if you want
-      state_created_de = dhis2.data_elements.find_by(code: "#{state.code}-#{de[:id]}")
-      state_created_des.push state_created_de
+    dhis2.data_elements.create(
+      package_des.map do |de|
+        {
+          code:         "#{state.code}-#{de[:id]}",
+          short_name:   "#{state.name} for #{de[:name]}"[0..49],
+          name:         "#{state.name} for #{de[:name]}",
+          display_name: "#{state.name} for #{de[:name]}"
+        }
+      end
+    )
+    package_des.map do |de|
+      dhis2.data_elements.find_by(code: "#{state.code}-#{de[:id]}")
     end
-    # return the ids of the created DEs
-    state_created_des
   end
 
   def create_data_element_group(state_created_des)
@@ -130,15 +123,18 @@ class IncentiveConfig
     dhis2.data_value_sets.create(values)
   end
 
-  def get_data_elemets_values(deg)
+  def get_data_elements_values(deg)
     dhis2 = project.dhis2_connection
-    # dhis2.data_value_sets.list("orgUnitGroup=oRVt7g429ZO&startDate=2018-01-01&endDate=2018-12-31&dataElementGroup=N91HZcAgkiK")
-    values = dhis2.data_value_sets.list(
+    values_query = {
       organisation_unit_group: entity_groups.first,
       data_element_groups:     [deg.id],
-      start_date:              start_date_fn,
-      end_date:                end_date_fn
-    )
-    values
+      start_date:              start_date_as_date,
+      end_date:                end_date_as_date
+    }
+    values = dhis2.data_value_sets.list(values_query)
+    values.table ? existing_values.values : []
+  rescue RestClient::ExceptionWithResponse => e
+    puts "Failed to access data element values #{values_query.to_json} #{e.message} #{e.response.body} #{e.response.request.url.gsub(project.password, '[REDACTED]')}"
+    []
   end
 end
