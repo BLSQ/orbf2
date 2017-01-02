@@ -33,5 +33,11 @@ RSpec.describe IncentiveConfig, type: :model do
       incentives.valid?
       expect(incentives.errors.full_messages).to eq ["State Budget is not associated to selected package. Quantité PMA has Tarif states"]
     end
+
+    it "should reject when no entity groups specified" do
+      incentives.entity_groups = nil
+      incentives.valid?
+      expect(incentives.errors.full_messages).to eq ["Entity groups You need to select at least one group"]
+    end
   end
 end

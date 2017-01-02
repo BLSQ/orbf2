@@ -27,9 +27,67 @@ RSpec.describe ProjectRulesController, type: :controller do
       expect(Rule.all.count).to eq(6)
     end
 
+    describe "#new" do
+      it "should render new edit form" do
+        get :new, params: {
+          "project_id" => project.id
+        }
+        expect(response).to redirect_to("/")
+      end
+      it "should render new edit form" do
+        project.payment_rule.destroy
+        get :new, params: {
+          "project_id" => project.id
+        }
+      end
+    end
+
+    describe "#edit" do
+      it "should show and edit form" do
+        get :edit, params: {
+          "project_id" => project.id,
+          "id"         => project.payment_rule.id
+        }
+      end
+    end
+    describe "#update" do
+      it "should reject an existing one" do
+        post :update, params: {
+          "project_id" => project.id,
+          "id"         => project.payment_rule.id,
+          "rule"       => {
+            "name"                => "payment rule",
+            "formulas_attributes" => [
+              { "id"          => project.payment_rule.formulas.first.id,
+                "code"        => "value",
+                "description" => "description",
+                "expression"  => "unknown_expression_in_other_rules" }
+            ]
+          }
+        }
+      end
+      it "should update an existing one" do
+        formula = project.payment_rule.formulas.first
+        post :update, params: {
+          "project_id" => project.id,
+          "id"         => project.payment_rule.id,
+          "rule"       => {
+            "name"                => "payment rule",
+            "formulas_attributes" => [
+              { "id"          => formula.id,
+                "code"        => formula.code,
+                "description" => "description",
+                "expression"  => "#{formula.expression} * 2 " }
+            ]
+          }
+        }
+        expect(response).to redirect_to("/")
+      end
+    end
+
     describe "#create" do
       it "should create a payment rule" do
-            post :create, params: {
+        post :create, params: {
           "project_id" => project.id,
           "rule"       => {
             "name"                => "payment rule",
