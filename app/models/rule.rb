@@ -54,12 +54,10 @@ class Rule < ApplicationRecord
   def available_variables
     var_names = []
     if activity_kind?
-      var_names << package.states.select(&:activity_level).map(&:code) if package
-      var_names << ["tarif","max_score"]
+      var_names << package.states.select(&:activity_level?).map(&:code) if package
       var_names << formulas.map(&:code)
     elsif package_kind?
-      var_names << package.states.select(&:package_level).map(&:code) if package
-      var_names << "budget"
+      var_names << package.states.select(&:package_level?).map(&:code) if package
       var_names << available_variables_for_values.map { |code| "%{#{code}}" }
     elsif payment_kind?
       rules = project.packages.flat_map(&:rules).select(&:package_kind?)
