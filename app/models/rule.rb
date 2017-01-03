@@ -2,19 +2,21 @@
 #
 # Table name: rules
 #
-#  id         :integer          not null, primary key
-#  name       :string           not null
-#  kind       :string           not null
-#  package_id :integer
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  project_id :integer
+#  id              :integer          not null, primary key
+#  name            :string           not null
+#  kind            :string           not null
+#  package_id      :integer
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  project_id      :integer
+#  payment_rule_id :integer
 #
 
 class Rule < ApplicationRecord
   RULE_TYPES = %w(payment activity package).freeze
   belongs_to :package, optional: true, inverse_of: :rules
   belongs_to :project, optional: true, inverse_of: :rules
+  belongs_to :payment_rule, optional: true, inverse_of: :rule
 
   has_many :formulas, dependent: :destroy, inverse_of: :rule
 
@@ -60,7 +62,7 @@ class Rule < ApplicationRecord
       var_names << package.states.select(&:package_level?).map(&:code) if package
       var_names << available_variables_for_values.map { |code| "%{#{code}}" }
     elsif payment_kind?
-      rules = project.packages.flat_map(&:rules).select(&:package_kind?)
+      rules = payment_rule.project.packages.flat_map(&:rules).select(&:package_kind?)
       var_names << rules.flat_map(&:formulas).map(&:code)
     end
     var_names.flatten.uniq.reject(&:nil?).sort
@@ -90,7 +92,7 @@ class Rule < ApplicationRecord
       }
     elsif payment_kind?
       facts = {}
-      rules = project.packages.flat_map(&:rules).select(&:package_kind?)
+      rules = payment_rule.project.packages.flat_map(&:rules).select(&:package_kind?)
       rules.flat_map(&:formulas).each do |formula|
         facts[formula.code] = "1040.1"
       end

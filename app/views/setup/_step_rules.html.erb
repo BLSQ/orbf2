@@ -12,7 +12,7 @@
       </body>
   </table>
 <br>
-<%if current_user.project.payment_rule %>
+<%if @project.payment_rules %>
   <table class="table table-striped table-condensed">
       <thead>
           <tr>
@@ -22,10 +22,9 @@
           </tr>
       </thead>
       <body>
-          <%= render partial: "project_rule", locals: { rule: current_user.project.payment_rule }%>
+          <%= render partial: "project_rule", collection: @project.payment_rules %>
       </body>
   </table>
-<% else %>
-    <%= link_to 'Let\'s create your final payment rule', new_setup_project_rule_path(current_user.project)  %>
-<% end %>
+  <%= link_to 'Let\'s add final payment rule', new_setup_project_rule_path(@project) , class: 'btn btn-info pull-right'%>
+  <% end %>
 <% end %>

@@ -7,7 +7,7 @@
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #  configurable :boolean          default(FALSE), not null
-#  level        :string
+#  level        :string           default("activity"), not null
 #
 
 class State < ApplicationRecord

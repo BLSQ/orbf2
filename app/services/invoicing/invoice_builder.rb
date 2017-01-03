@@ -76,7 +76,7 @@ module Invoicing
       package_results.each do |package_result|
         package_facts_and_rules = package_facts_and_rules.merge(package_result.solution)
       end
-      package_facts_and_rules = package_facts_and_rules.merge(project.payment_rule.to_facts)
+      package_facts_and_rules = package_facts_and_rules.merge(project.payment_rules.first.rule.to_facts)
       project_solution = solver.solve!("payment rule", package_facts_and_rules, false)
       project_solution
     end

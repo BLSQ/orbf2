@@ -205,30 +205,31 @@ class ProjectFactory
 
     project.packages = [package_quantity_pma, package_quantity_pca, package_quality, package_perfomance_admin]
 
-    project.rules = [
-      Rule.new(
-        name:     "Payment rule",
-        kind:     "payment",
-        formulas: [
-          new_formula(
-            :quality_bonus_percentage_value,
-            "IF(quality_technical_score_value > 50, (0.35 * quality_technical_score_value) + (0.30 * 10.0), 0.0) /*todo replace with survey score*/",
-            "Quality bonus percentage"
-          ),
-          new_formula(
-            :quality_bonus_value,
-            "quantity_total * quality_bonus_percentage_value",
-            "Bonus qualité "
-          ),
-          new_formula(
-            :quarterly_payment,
-            "quantity_total + quality_bonus_value",
-            "Quarterly Payment"
-          )
+    project.payment_rules.build(
+      rule_attributes: {
+        name:                "Payment rule",
+        kind:                "payment",
+        formulas_attributes: [
+          {
+            code:        :quality_bonus_percentage_value,
+            expression:  "IF(quality_technical_score_value > 50, (0.35 * quality_technical_score_value) + (0.30 * 10.0), 0.0) /*todo replace with survey score*/",
+            description: "Quality bonus percentage"
+          },
+          {
+            code:        :quality_bonus_value,
+            expression:  "quantity_total * quality_bonus_percentage_value",
+            description: "Bonus qualité "
+          },
+          {
+            code:        :quarterly_payment,
+            expression:  "quantity_total + quality_bonus_value",
+            description: "Quarterly Payment"
+          }
         ]
-      )
-    ]
+      }
+    )
 
+    project.payment_rules.first.rule.payment_rule = project.payment_rules.first
     project
   end
 
