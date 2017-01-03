@@ -1,7 +1,4 @@
 <%= simple_form_for project_rule, url: setup_project_rules_path do |f| %>
-  <%= f.simple_fields_for :rule do |rule_form| %>
-    <%= render 'rules/form', f: rule_form, rule: project_rule.rule %>
-  <% end %>
-  <br><br>
-  <%= f.button :submit, class: "btn btn-success" %>
+
+    <%= render "form", f: f %>
 <% end %>

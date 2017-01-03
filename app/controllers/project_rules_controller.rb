@@ -51,9 +51,11 @@ class ProjectRulesController < PrivateController
   def rule_params
     params.require(:payment_rule)
           .permit(
+            package_ids: [],
             rule_attributes: [
               :id,
               :name,
+
               formulas_attributes: [:id, :code, :description, :expression, :_destroy]
             ]
           )
