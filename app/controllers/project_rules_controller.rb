@@ -2,10 +2,9 @@ class ProjectRulesController < PrivateController
   helper_method :project_rule
   attr_reader :project_rule
 
-
   def new
-    @project_rule = current_project.payment_rules.build(rule_attributes: {kind: "payment"})
-    @project_rule.rule.formulas.build()
+    @project_rule = current_project.payment_rules.build(rule_attributes: { kind: "payment" })
+    @project_rule.rule.formulas.build
   end
 
   def edit
@@ -18,7 +17,6 @@ class ProjectRulesController < PrivateController
     payment_rules_attributes = rule_params
     payment_rules_attributes[:rule_attributes][:kind] = "payment"
     @project_rule = current_project.payment_rules.build(payment_rules_attributes)
-
     puts @project_rule.valid?
     puts @project_rule.errors.full_messages
     if @project_rule.save
@@ -51,7 +49,7 @@ class ProjectRulesController < PrivateController
   def rule_params
     params.require(:payment_rule)
           .permit(
-            package_ids: [],
+            package_ids:     [],
             rule_attributes: [
               :id,
               :name,

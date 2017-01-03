@@ -62,7 +62,7 @@ class Rule < ApplicationRecord
       var_names << package.states.select(&:package_level?).map(&:code) if package
       var_names << available_variables_for_values.map { |code| "%{#{code}}" }
     elsif payment_kind?
-      rules = payment_rule.project.packages.flat_map(&:rules).select(&:package_kind?)
+      rules = payment_rule.packages.flat_map(&:rules).select(&:package_kind?)
       var_names << rules.flat_map(&:formulas).map(&:code)
     end
     var_names.flatten.uniq.reject(&:nil?).sort
@@ -92,7 +92,7 @@ class Rule < ApplicationRecord
       }
     elsif payment_kind?
       facts = {}
-      rules = payment_rule.project.packages.flat_map(&:rules).select(&:package_kind?)
+      rules = payment_rule.packages.flat_map(&:rules).select(&:package_kind?)
       rules.flat_map(&:formulas).each do |formula|
         facts[formula.code] = "1040.1"
       end

@@ -228,7 +228,10 @@ class ProjectFactory
         ]
       }
     )
-
+    [package_quantity_pma, package_quantity_pca, package_quality].each do |package|
+        project.payment_rules.first.package_payment_rules.build(package: package)
+        project.payment_rules.first.packages << package
+    end
     project.payment_rules.first.rule.payment_rule = project.payment_rules.first
     project
   end

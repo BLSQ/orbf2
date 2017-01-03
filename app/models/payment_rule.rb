@@ -14,8 +14,5 @@ class PaymentRule < ApplicationRecord
   has_many :package_payment_rules, dependent: :destroy
 
   has_many :packages, through: :package_payment_rules, source: :package
-
-
   accepts_nested_attributes_for :rule, allow_destroy: true
-  accepts_nested_attributes_for :package_payment_rules, reject_if: :all_blank, allow_destroy: true
 end

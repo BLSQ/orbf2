@@ -72,7 +72,10 @@ class Project < ApplicationRecord
 
   def dump_validations
     payment_rules.each do |payment_rule|
+      puts "payment_rule #{payment_rule.valid?} #{payment_rule.errors.full_messages}"
+      puts "payment_rule #{payment_rule.packages.first}"
       next unless payment_rule.rule.invalid?
+
       dump_validation_rule(payment_rule.rule)
     end
     packages.each do |package|

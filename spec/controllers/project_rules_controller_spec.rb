@@ -57,6 +57,7 @@ RSpec.describe ProjectRulesController, type: :controller do
           "project_id"   => project.id,
           "id"           => project.payment_rules.first.id,
           "payment_rule" => {
+            "package_ids"  => project.packages.map(&:id).join(','),
             "rule_attributes" => {
               "id"                  => project.payment_rules.first.rule.id,
               "name"                => "payment rule",
@@ -100,6 +101,7 @@ RSpec.describe ProjectRulesController, type: :controller do
         post :create, params: {
           "project_id"   => project.id,
           "payment_rule" => {
+            "package_ids"  => project.packages.map(&:id),
             "rule_attributes" => {
               "name"                => "payment rule",
               "formulas_attributes" => [
@@ -119,6 +121,7 @@ RSpec.describe ProjectRulesController, type: :controller do
         delete_existing_project_rules
         post :create, params: {
           "project_id"   => project.id,
+          "package_ids"  => project.packages.map(&:id),
           "payment_rule" => {
             "rule_attributes" => {
               "name"                => "payment rule",

@@ -91,4 +91,8 @@ class Package < ApplicationRecord
       )
     end
   end
+
+  def to_s
+    "Package-#{id}-#{name}"
+  end
 end
