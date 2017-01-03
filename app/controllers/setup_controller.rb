@@ -1,8 +1,10 @@
 class SetupController < PrivateController
   helper_method :setup
   attr_reader :setup
+
   helper_method :project
   attr_reader :project
+
   def index
     @project = Project.includes(
       packages:      {
@@ -16,7 +18,8 @@ class SetupController < PrivateController
           payment_rule: []
         ]
       ]
-    ).find(current_user.project.id)
+    ).find(current_user.project.id) if current_user.project
+
     step1 = Step.new(name:   "Dhis2 connection",
                      status: current_user.invalid_project? ? :todo : :done,
                      kind:   :dhis2,
