@@ -1,7 +1,7 @@
 class SeedsController < PrivateController
   def index
     current_user.project = ProjectFactory.new.build(
-      dhis2_url:  "http://127.0.0.1:8085/",
+      dhis2_url:  "https://play.dhis2.org/demo",
       user:       "admin",
       password:   "district",
       bypass_ssl: false
