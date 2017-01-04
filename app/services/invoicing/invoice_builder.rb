@@ -71,14 +71,24 @@ module Invoicing
       raise e
     end
 
-    def calculate_payments(project, package_results)
-      package_facts_and_rules = {}
-      package_results.each do |package_result|
-        package_facts_and_rules = package_facts_and_rules.merge(package_result.solution)
+    def calculate_payments(project, entity, all_package_results)
+      project.payment_rules.each do |payment_rule|
+        package_results = all_package_results.select {|pr|
+          payment_rule.packages.map(&:name).include?(pr.package.name)
+        }
+        puts "********* #{package_results} #{payment_rule.apply_for?(entity)} #{package_results.size} #{payment_rule.packages.size}"
+        next unless payment_rule.apply_for?(entity)
+        next unless package_results.size > payment_rule.packages.size
+
+
+        package_facts_and_rules = {}
+        package_results.each do |package_result|
+          package_facts_and_rules = package_facts_and_rules.merge(package_result.solution)
+        end
+        package_facts_and_rules = package_facts_and_rules.merge(payment_rule.rule.to_facts)
+
+        return solver.solve!("payment rule", package_facts_and_rules, false)
       end
-      package_facts_and_rules = package_facts_and_rules.merge(project.payment_rules.first.rule.to_facts)
-      project_solution = solver.solve!("payment rule", package_facts_and_rules, false)
-      project_solution
     end
 
     def generate_monthly_entity_invoice(current_project, entity, analytics_service, date)
@@ -159,7 +169,7 @@ module Invoicing
         package_results.concat(quarter_entity_results)
 
         raise "should have at least one package_results" if package_results.empty?
-        payments = calculate_payments(project, package_results)
+        payments = calculate_payments(project, entity, package_results)
         MonthlyInvoice.new(date, entity, project, activity_results, package_results, payments).dump_invoice
       rescue => e
         raise e

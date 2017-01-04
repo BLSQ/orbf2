@@ -37,7 +37,7 @@ class ProjectFactory
           kind:     "package",
           formulas: [
             new_formula(
-              :quantity_total,
+              :quantity_total_pma,
               "SUM(%{amount_values})",
               "Amount PBF"
             )
@@ -47,7 +47,7 @@ class ProjectFactory
       %w(claimed verified
          difference_percentage quantity
          tarif amount
-         actictity_name quantity_total)
+         activity_name quantity_total_pma)
     )
 
     package_quantity_pca = new_package(
@@ -81,14 +81,14 @@ class ProjectFactory
           kind:     "package",
           formulas: [
             new_formula(
-              :quantity_total,
+              :quantity_total_pca,
               "SUM(%{amount_values})",
               "Amount PBF"
             )
           ]
         )
       ],
-      %w(claimed verified difference_percentage quantity tarif amount actictity_name quantity_total)
+      %w(claimed verified difference_percentage quantity tarif amount activity_name quantity_total_pca)
 
     )
 
@@ -140,7 +140,7 @@ class ProjectFactory
           ]
         )
       ],
-      %w(attributed_points max_points quality_technical_score_value actictity_name)
+      %w(attributed_points max_points quality_technical_score_value activity_name)
 
     )
 
@@ -175,18 +175,18 @@ class ProjectFactory
           kind:     "package",
           formulas: [
             new_formula(
-              :attributed_points,
+              :attributed_points_perf,
               "SUM(%{attributed_points_values})",
               "Attributed points"
             ),
             new_formula(
-              :max_points,
+              :max_points_perf,
               "SUM(%{max_points_values})",
               "Max points"
             ),
             new_formula(
               :performance_score_value,
-              "(attributed_points/max_points) * 100.0",
+              "(attributed_points_perf/max_points_perf) * 100.0",
               "Performance score"
             ),
             new_formula(
@@ -200,14 +200,14 @@ class ProjectFactory
       %w(claimed verified
          difference_percentage quantity
          tarif amount
-         actictity_name quantity_total)
+         activity_name quantity_total)
     )
 
     project.packages = [package_quantity_pma, package_quantity_pca, package_quality, package_perfomance_admin]
 
-    project.payment_rules.build(
+    payment_pma = project.payment_rules.build(
       rule_attributes: {
-        name:                "Payment rule",
+        name:                "Payment rule pma",
         kind:                "payment",
         formulas_attributes: [
           {
@@ -217,22 +217,50 @@ class ProjectFactory
           },
           {
             code:        :quality_bonus_value,
-            expression:  "quantity_total * quality_bonus_percentage_value",
+            expression:  "quantity_total_pma * quality_bonus_percentage_value",
             description: "Bonus qualité "
           },
           {
             code:        :quarterly_payment,
-            expression:  "quantity_total + quality_bonus_value",
+            expression:  "quantity_total_pma + quality_bonus_value",
             description: "Quarterly Payment"
           }
         ]
       }
     )
-    [package_quantity_pma, package_quantity_pca, package_quality].each do |package|
-        project.payment_rules.first.package_payment_rules.build(package: package)
-        project.payment_rules.first.packages << package
+    [package_quantity_pma, package_quality].each do |package|
+        payment_pma.package_payment_rules.build(package: package)
+        payment_pma.packages << package
     end
-    project.payment_rules.first.rule.payment_rule = project.payment_rules.first
+    #project.payment_rules.first.rule.payment_rule = project.payment_rules.first
+
+    payment_pca = project.payment_rules.build(
+      rule_attributes: {
+        name:                "Payment rule pca",
+        kind:                "payment",
+        formulas_attributes: [
+          {
+            code:        :quality_bonus_percentage_value,
+            expression:  "IF(quality_technical_score_value > 50, (0.35 * quality_technical_score_value) + (0.30 * 10.0), 0.0) /*todo replace with survey score*/",
+            description: "Quality bonus percentage"
+          },
+          {
+            code:        :quality_bonus_value,
+            expression:  "quantity_total_pca * quality_bonus_percentage_value",
+            description: "Bonus qualité "
+          },
+          {
+            code:        :quarterly_payment,
+            expression:  "quantity_total_pca + quality_bonus_value",
+            description: "Quarterly Payment"
+          }
+        ]
+      }
+    )
+    [package_quantity_pca, package_quality].each do |package|
+        payment_pca.package_payment_rules.build(package: package)
+        payment_pca.packages << package
+    end
     project
   end
 

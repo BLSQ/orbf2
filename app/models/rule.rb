@@ -30,6 +30,8 @@ class Rule < ApplicationRecord
   validates :formulas, length: { minimum: 1 }
   validate :formulas, :formulas_are_coherent
 
+  validate :formulas, :package_formula_uniqness
+
   def activity_kind?
     kind == "activity"
   end
@@ -51,6 +53,24 @@ class Rule < ApplicationRecord
 
   def formulas_are_coherent
     Rules::Solver.new.validate_formulas(self) if name
+  end
+
+  def package_formula_uniqness
+    formula_by_codes = formulas.group_by(&:code)
+    if package_kind? && package.project
+      all_package_formulas = package.project.packages.flat_map(&:rules).select(&:package_kind?).flat_map(&:formulas)
+      all_formulas_by_codes = all_package_formulas.group_by(&:code)
+      all_formulas_by_codes.each do |code, non_uniq_formulas|
+        next unless formula_by_codes[code]
+        if non_uniq_formulas.size > 1
+          self.errors[:formulas] << "Formula's code must be unique accross packages, you have #{non_uniq_formulas.size} formulas with '#{code}' in #{non_uniq_formulas.map(&:rule).map(&:package).map(&:name).join(' and ')}"
+        end
+      end
+    end
+
+    formula_by_codes.each do |code, formulas|
+      self.errors[:formulas] << "Formula's code must be unique, you have #{formulas.size} formulas with '#{code}'" if formulas.size > 1
+    end
   end
 
   def available_variables

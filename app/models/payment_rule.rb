@@ -15,4 +15,8 @@ class PaymentRule < ApplicationRecord
 
   has_many :packages, through: :package_payment_rules, source: :package
   accepts_nested_attributes_for :rule, allow_destroy: true
+
+  def apply_for?(entity)
+    packages.all? { |p| p.apply_for(entity) }
+  end
 end
