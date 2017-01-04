@@ -39,7 +39,8 @@ class SetupController < PrivateController
                  project.packages.flat_map(&:rules).any?(&:invalid?) ||
                  project.packages.any? { |p| p.rules.size != 2 } ||
                  project.payment_rules.empty? ||
-                 project.payment_rules.map(&:rule).any?(&:invalid?)
+                 project.payment_rules.map(&:rule).any?(&:invalid?) ||
+                 !project.unused_packages.empty?
 
     step4 =  Step.new(name:   "Rules",
                       status: step4_todo ? :todo : :done,

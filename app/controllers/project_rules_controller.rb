@@ -23,6 +23,7 @@ class ProjectRulesController < PrivateController
       flash[:notice] = "Rule created !"
       redirect_to(root_path)
     else
+      @project_rule.rule.formulas.build if @project_rule.rule.formulas.empty?
       render action: "new"
     end
   end
@@ -36,6 +37,7 @@ class ProjectRulesController < PrivateController
       flash[:notice] = "Rule updated !"
       redirect_to(root_path)
     else
+      @project_rule.rule.formulas.build if @project_rule.rule.formulas.empty?
       render action: "edit"
     end
   end

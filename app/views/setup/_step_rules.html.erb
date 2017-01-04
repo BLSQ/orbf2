@@ -25,6 +25,12 @@
           <%= render partial: "project_rule", collection: @project.payment_rules %>
       </body>
   </table>
+  <% unless @project.unused_packages.empty? %>
+  <div class="alert alert-warning" role="alert">
+    <b> Package not yet used in payment rule : </b> <%= @project.unused_packages.map(&:name).join('') %>
+    <b> You probably want to create one !</b>
+  </div>
+  <% end %>
   <%= link_to 'Let\'s add final payment rule', new_setup_project_rule_path(@project) , class: 'btn btn-info pull-right'%>
   <% end %>
 <% end %>

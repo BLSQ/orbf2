@@ -45,6 +45,12 @@ class Project < ApplicationRecord
     )
   end
 
+  def unused_packages
+    packages.select do |package|
+      payment_rules.none? {|payment_rule| payment_rule.packages.include?(package)}
+    end
+  end
+
   def export_to_json
     to_json(
       except:  [:created_at, :updated_at, :password, :user],
