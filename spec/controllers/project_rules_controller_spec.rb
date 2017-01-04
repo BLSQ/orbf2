@@ -13,7 +13,6 @@ RSpec.describe ProjectRulesController, type: :controller do
   describe "When authenticated" do
     before(:each) do
       sign_in user
-      states
     end
 
     let(:project) do

@@ -12,7 +12,6 @@ RSpec.describe IncentivesController, type: :controller do
     include_context "basic_context"
     before(:each) do
       sign_in user
-      states
     end
 
     let(:project) do
