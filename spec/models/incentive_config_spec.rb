@@ -31,7 +31,7 @@ RSpec.describe IncentiveConfig, type: :model do
     it "should reject states belong to project configurable states" do
       incentives.state = State.find_by(name: %w(Budget))
       incentives.valid?
-      expect(incentives.errors.full_messages).to eq ["State Budget is not associated to selected package. Quantité PMA has Tarif states"]
+      expect(incentives.errors.full_messages).to eq ["State Budget is not associated to selected package. Quantity PMA has Tarif states"]
     end
 
     it "should reject when no entity groups specified" do

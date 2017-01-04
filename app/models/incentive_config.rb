@@ -35,27 +35,44 @@ class IncentiveConfig
   end
 
   def find_or_create_activity_incentives
-    package_des = get_data_elements_by_package
-    state_created_des = create_data_elements_for_state(package_des)
+    if state.activity_level?
+      package_des = get_data_elements_by_package
+      state_created_des = create_data_elements_for_state(package_des)
+    else
+      state_created_des = create_data_elements_for_package_state
+    end
     state_created_deg = create_data_element_group(state_created_des)
-    existing_values = get_data_elements_values(state_created_deg)
-
+    existing_values = get_data_elements_values_by_data_element_group(state_created_deg)
     existing_values_by_element_id = existing_values.group_by(&:data_element)
 
     self.activity_incentives = state_created_des.map do |de|
       values = existing_values_by_element_id[de.id]
       value = if values
-                values.map(&:value).uniq.size == 1 ? values.first.value : nil
+                uniq_values = values.map(&:value).uniq
+                uniq_values.size == 1 ? values.first.value : nil
               end
       ActivityIncentive.new(
         name:               de.name,
         external_reference: de.id,
         value:              value
-
-
-
       )
     end
+  end
+
+  def create_data_elements_for_package_state
+    code = "#{state.code}-#{package.name}"[0..49]
+    name = "#{state.name} for #{package.name}"
+    dhis2 = project.dhis2_connection
+    status = dhis2.data_elements.create(
+      [{
+        code:         code,
+        short_name:   name[0..49],
+        name:         name,
+        display_name: name
+      }]
+    )
+    created_datelement = dhis2.data_elements.find_by(code: code)
+    [created_datelement]
   end
 
   def get_data_elements_by_package
@@ -91,7 +108,7 @@ class IncentiveConfig
   end
 
   def create_data_element_group(state_created_des)
-    deg_code = "#{state.code}-#{package.name}"
+    deg_code = "#{state.code}-#{package.name}"[0..49]
     deg_name = "#{state.name} for #{package.name}"
     deg = [
       { name:          deg_name,
@@ -99,12 +116,15 @@ class IncentiveConfig
         code:          deg_code,
         display_name:  deg_name,
         data_elements: state_created_des.map do |state_created_de|
-          { id: state_created_de.id }
-        end }
+                         { id: state_created_de.id }
+                       end }
     ]
     dhis2 = project.dhis2_connection
-    dhis2.data_element_groups.create(deg)
-    dhis2.data_element_groups.find_by(code: deg_code)
+    raise "no data element provided #{state_created_des}" if state_created_des.empty?
+    status = dhis2.data_element_groups.create(deg)
+    created_group = dhis2.data_element_groups.find_by(code: deg_code)
+    raise "failed to create_data_element_group #{deg} - #{state_created_des} #{status.inspect}" unless created_group
+    created_group
   end
 
   def set_data_elemets_values
@@ -126,7 +146,7 @@ class IncentiveConfig
     dhis2.data_value_sets.create(values)
   end
 
-  def get_data_elements_values(deg)
+  def get_data_elements_values_by_data_element_group(deg)
     dhis2 = project.dhis2_connection
     values_query = {
       organisation_unit_group: entity_groups.first,
@@ -135,7 +155,7 @@ class IncentiveConfig
       end_date:                end_date_as_date
     }
     values = dhis2.data_value_sets.list(values_query)
-    values.table ? values.values : []
+    values.data_values ? values.values : []
   rescue RestClient::ExceptionWithResponse => e
     raise "Failed to access data element values #{values_query.to_json} #{e.message} #{e.response.body} #{e.response.request.url.gsub(project.password, '[REDACTED]')}"
   end

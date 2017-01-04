@@ -18,7 +18,7 @@ class Package < ApplicationRecord
   has_many :package_states, dependent: :destroy
   has_many :states, through: :package_states
   has_many :rules
-  validates :name, presence: true, length: { maximum: 230 }
+  validates :name, presence: true, length: { maximum: 50 }
   # validates :states, presence: true
   validates :frequency, presence: true, inclusion: {
     in:      FREQUENCIES,
@@ -63,8 +63,10 @@ class Package < ApplicationRecord
         end }
     ]
     dhis2 = project.dhis2_connection
-    dhis2.data_element_groups.create(deg)
-    return dhis2.data_element_groups.find_by(name: name)
+    status = dhis2.data_element_groups.create(deg)
+    created_deg = dhis2.data_element_groups.find_by(name: name)
+    raise "data element group not created #{name} : #{deg} : #{status.inspect}" unless created_deg
+    return created_deg
   rescue RestClient::Exception => e
     raise "Failed to create data element group #{deg} #{e.message} with #{project.dhis2_url}"
   end

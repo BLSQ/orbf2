@@ -7,12 +7,12 @@ class ProjectFactory
     }.merge(project_props))
 
     package_quantity_pma = new_package(
-      "Quantité PMA",
+      "Quantity PMA",
       "monthly",
       ["fosa_group_id"],
       [
         Rule.new(
-          name:     "Quantité PMA",
+          name:     "Quantity PMA",
           kind:     "activity",
           formulas: [
             new_formula(
@@ -33,7 +33,7 @@ class ProjectFactory
           ]
         ),
         Rule.new(
-          name:     "Quantité PMA",
+          name:     "Quantity PMA",
           kind:     "package",
           formulas: [
             new_formula(
@@ -51,12 +51,12 @@ class ProjectFactory
     )
 
     package_quantity_pca = new_package(
-      "Quantité PCA",
+      "Quantity PCA",
       "monthly",
       ["hospital_group_id"],
       [
         Rule.new(
-          name:     "Quantité PCA",
+          name:     "Quantity PCA",
           kind:     "activity",
           formulas: [
             new_formula(
@@ -77,7 +77,7 @@ class ProjectFactory
           ]
         ),
         Rule.new(
-          name:     "Quantité PHU",
+          name:     "Quantity PHU",
           kind:     "package",
           formulas: [
             new_formula(
@@ -93,12 +93,12 @@ class ProjectFactory
     )
 
     package_quality = new_package(
-      "Qualité",
+      "Quality",
       "quarterly",
       %w(hospital_group_id fosa_group_id),
       [
         Rule.new(
-          name:     "Qualité assessment",
+          name:     "Quality assessment",
           kind:     "activity",
           formulas: [
             new_formula(
@@ -145,7 +145,7 @@ class ProjectFactory
     )
 
     package_perfomance_admin = new_package(
-      "Performance administration",
+      "Performance Adm",
       "quarterly",
       ["administrative_group_id"],
       [
