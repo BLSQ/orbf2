@@ -1,5 +1,6 @@
+<% unless rule.payment_kind? %>
 <h1><%= rule_name(rule) %></h1>
-
+<%end%>
 <%= f.input :name %>
 
 <a class="btn pull-right" data-toggle="collapse" data-target="#cheat_sheet">

@@ -1,7 +1,7 @@
 class SeedsController < PrivateController
   def index
     current_user.project = ProjectFactory.new.build(
-      dhis2_url:  "https://play.dhis2.org/demo",
+      dhis2_url:  params[:local] ? "http://127.0.0.1:8085/" : "https://play.dhis2.org/demo",
       user:       "admin",
       password:   "district",
       bypass_ssl: false
@@ -16,8 +16,10 @@ class SeedsController < PrivateController
     suffix = " - " + Time.now.to_s[0..15]
     hospital_group = { name: "Hospital", organisation_unit_group_ext_ref: "tDZVQ1WtwpA" }
     clinic_group = { name: "Clinic", organisation_unit_group_ext_ref: "RXL3lPSK8oG" }
+    admin_group = { name: "Administrative", organisation_unit_group_ext_ref: "w0gFTTmsUcF" }
     default_quantity_states = State.where(name: %w(Claimed Verified Tarif)).to_a
     default_quality_states = State.where(name: ["Claimed", "Verified", "Max. Score"]).to_a
+    default_performance_states = State.where(name: ["Claimed", "Max. Score", "Budget"]).to_a
 
     project.name = "Sierra Leone"
 
@@ -43,9 +45,17 @@ class SeedsController < PrivateController
     created_ged = package_quality.create_data_element_group(%w(p4K11MFEWtw wWy5TE9cQ0V r6nrJANOqMw a0WhmKHnZ6J nXJJZNVAy0Y hnwWyM4gDSg CecywZWejT3 bVkFujnp3F2))
     package_quality.data_element_group_ext_ref = created_ged.id
 
+    package_perf = project.packages[3]
+    package_perf.name += suffix
+    package_perf.states = default_performance_states
+    package_perf.package_entity_groups[0].update_attributes(admin_group)
+    created_ged = package_perf.create_data_element_group(%w(p4K11MFEWtw wWy5TE9cQ0V r6nrJANOqMw a0WhmKHnZ6J nXJJZNVAy0Y hnwWyM4gDSg CecywZWejT3 bVkFujnp3F2))
+    package_perf.data_element_group_ext_ref = created_ged.id
+
     package_quantity_pca.save!
     package_quantity_pma.save!
     package_quality.save!
+    package_perf.save!
 
     current_user.project.save!
     current_user.save!

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161219103620) do
+ActiveRecord::Schema.define(version: 20170103112615) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -43,6 +43,15 @@ ActiveRecord::Schema.define(version: 20161219103620) do
     t.index ["package_id"], name: "index_package_entity_groups_on_package_id", using: :btree
   end
 
+  create_table "package_payment_rules", force: :cascade do |t|
+    t.integer  "package_id",      null: false
+    t.integer  "payment_rule_id", null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+    t.index ["package_id"], name: "index_package_payment_rules_on_package_id", using: :btree
+    t.index ["payment_rule_id"], name: "index_package_payment_rules_on_payment_rule_id", using: :btree
+  end
+
   create_table "package_states", force: :cascade do |t|
     t.integer  "package_id"
     t.integer  "state_id"
@@ -64,6 +73,13 @@ ActiveRecord::Schema.define(version: 20161219103620) do
     t.index ["project_id"], name: "index_packages_on_project_id", using: :btree
   end
 
+  create_table "payment_rules", force: :cascade do |t|
+    t.integer  "project_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_id"], name: "index_payment_rules_on_project_id", using: :btree
+  end
+
   create_table "projects", force: :cascade do |t|
     t.string   "name",                       null: false
     t.string   "dhis2_url",                  null: false
@@ -76,21 +92,22 @@ ActiveRecord::Schema.define(version: 20161219103620) do
   end
 
   create_table "rules", force: :cascade do |t|
-    t.string   "name",       null: false
-    t.string   "kind",       null: false
+    t.string   "name",            null: false
+    t.string   "kind",            null: false
     t.integer  "package_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer  "project_id"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+    t.integer  "payment_rule_id"
     t.index ["package_id"], name: "index_rules_on_package_id", using: :btree
-    t.index ["project_id"], name: "index_rules_on_project_id", using: :btree
+    t.index ["payment_rule_id"], name: "index_rules_on_payment_rule_id", using: :btree
   end
 
   create_table "states", force: :cascade do |t|
-    t.string   "name",                         null: false
-    t.datetime "created_at",                   null: false
-    t.datetime "updated_at",                   null: false
-    t.boolean  "configurable", default: false, null: false
+    t.string   "name",                              null: false
+    t.datetime "created_at",                        null: false
+    t.datetime "updated_at",                        null: false
+    t.boolean  "configurable", default: false,      null: false
+    t.string   "level",        default: "activity", null: false
     t.index ["name"], name: "index_states_on_name", unique: true, using: :btree
   end
 
@@ -116,10 +133,13 @@ ActiveRecord::Schema.define(version: 20161219103620) do
   add_foreign_key "entity_groups", "projects"
   add_foreign_key "formulas", "rules"
   add_foreign_key "package_entity_groups", "packages"
+  add_foreign_key "package_payment_rules", "packages"
+  add_foreign_key "package_payment_rules", "payment_rules"
   add_foreign_key "package_states", "packages"
   add_foreign_key "package_states", "states"
   add_foreign_key "packages", "projects"
+  add_foreign_key "payment_rules", "projects"
   add_foreign_key "rules", "packages"
-  add_foreign_key "rules", "projects"
+  add_foreign_key "rules", "payment_rules"
   add_foreign_key "users", "projects"
 end

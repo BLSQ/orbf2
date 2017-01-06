@@ -1,51 +1,43 @@
 class ProjectRulesController < PrivateController
-  helper_method :rule
-  attr_reader :rule
+  helper_method :project_rule
+  attr_reader :project_rule
 
   def new
-    if current_project.missing_rules_kind.empty?
-      flash[:alert] = "Sorry you can't create a new payment rule, edit existing one."
-      redirect_to(root_path)
-      return
-    end
-
-    @rule = current_project.rules.build(kind: current_project.missing_rules_kind.first)
-    @rule.formulas.build(rule: @rule)
+    @project_rule = current_project.payment_rules.build(rule_attributes: { kind: "payment" })
+    @project_rule.rule.formulas.build
   end
 
   def edit
-    @rule = current_project.payment_rule
-    @rule.valid?
-
+    @project_rule = current_project.payment_rules.find(params[:id])
+    @project_rule.valid?
+    @project_rule.rule.valid?
   end
 
   def create
-      if current_project.missing_rules_kind.empty?
-      flash[:alert] = "Sorry you can't create a new payment rule, edit existing one."
-      redirect_to(root_path)
-      return
-    end
-
-    @rule = current_project.rules.build(rule_params.merge(kind: current_project.missing_rules_kind.first))
-    puts @rule.valid?
-    puts @rule.errors.full_messages
-    if @rule.save
+    payment_rules_attributes = rule_params
+    payment_rules_attributes[:rule_attributes][:kind] = "payment"
+    @project_rule = current_project.payment_rules.build(payment_rules_attributes)
+    puts @project_rule.valid?
+    puts @project_rule.errors.full_messages
+    if @project_rule.save
       flash[:notice] = "Rule created !"
       redirect_to(root_path)
     else
+      @project_rule.rule.formulas.build if @project_rule.rule.formulas.empty?
       render action: "new"
     end
   end
 
   def update
-    @rule = current_project.rules.find(params[:id])
-    @rule.update_attributes(rule_params)
-    puts @rule.valid?
-    puts @rule.errors.full_messages
-    if @rule.save
+    @project_rule = current_project.payment_rules.find(params[:id])
+    @project_rule.update_attributes(rule_params)
+    puts @project_rule.valid?
+    puts @project_rule.errors.full_messages
+    if @project_rule.save
       flash[:notice] = "Rule updated !"
       redirect_to(root_path)
     else
+      @project_rule.rule.formulas.build if @project_rule.rule.formulas.empty?
       render action: "edit"
     end
   end
@@ -57,10 +49,15 @@ class ProjectRulesController < PrivateController
   end
 
   def rule_params
-    params.require(:rule)
-          .permit(:name,
-                  formulas_attributes: [
-                    :id, :code, :description, :expression, :_destroy
-                  ])
+    params.require(:payment_rule)
+          .permit(
+            package_ids:     [],
+            rule_attributes: [
+              :id,
+              :name,
+
+              formulas_attributes: [:id, :code, :description, :expression, :_destroy]
+            ]
+          )
   end
 end

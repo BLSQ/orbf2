@@ -96,9 +96,9 @@ module Analytics
 
       ]
 
-      return limit_values_to_date(activity_and_values_quantity_pca, date) if package.name.downcase.include?("quantité pca")
-      return limit_values_to_date(activity_and_values_quantity_pma, date) if package.name.downcase.include?("quantité pma")
-      return activity_and_values_quality if package.name.downcase.include?("qualité")
+      return limit_values_to_date(activity_and_values_quantity_pca, date) if package.name.downcase.include?("quantity pca")
+      return limit_values_to_date(activity_and_values_quantity_pma, date) if package.name.downcase.include?("quantity pma")
+      return activity_and_values_quality if package.name.downcase.include?("quality")
       raise "no data for #{name} and #{date}"
     end
 

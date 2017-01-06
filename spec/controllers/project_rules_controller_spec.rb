@@ -13,7 +13,6 @@ RSpec.describe ProjectRulesController, type: :controller do
   describe "When authenticated" do
     before(:each) do
       sign_in user
-      states
     end
 
     let(:project) do
@@ -23,8 +22,8 @@ RSpec.describe ProjectRulesController, type: :controller do
     end
 
     def delete_existing_project_rules
-      project.rules.destroy_all
-      expect(Rule.all.count).to eq(6)
+      project.payment_rules.destroy_all
+      expect(Rule.all.count).to eq(8)
     end
 
     describe "#new" do
@@ -32,10 +31,11 @@ RSpec.describe ProjectRulesController, type: :controller do
         get :new, params: {
           "project_id" => project.id
         }
-        expect(response).to redirect_to("/")
+        expect(response).to have_http_status(200)
       end
-      it "should render new edit form" do
-        project.payment_rule.destroy
+
+      it "should render new form" do
+        project.payment_rules.destroy_all
         get :new, params: {
           "project_id" => project.id
         }
@@ -46,39 +46,46 @@ RSpec.describe ProjectRulesController, type: :controller do
       it "should show and edit form" do
         get :edit, params: {
           "project_id" => project.id,
-          "id"         => project.payment_rule.id
+          "id"         => project.payment_rules.first.id
         }
       end
     end
     describe "#update" do
       it "should reject an existing one" do
         post :update, params: {
-          "project_id" => project.id,
-          "id"         => project.payment_rule.id,
-          "rule"       => {
-            "name"                => "payment rule",
-            "formulas_attributes" => [
-              { "id"          => project.payment_rule.formulas.first.id,
-                "code"        => "value",
-                "description" => "description",
-                "expression"  => "unknown_expression_in_other_rules" }
-            ]
+          "project_id"   => project.id,
+          "id"           => project.payment_rules.first.id,
+          "payment_rule" => {
+            "package_ids"  => project.packages.map(&:id).join(','),
+            "rule_attributes" => {
+              "id"                  => project.payment_rules.first.rule.id,
+              "name"                => "payment rule",
+              "formulas_attributes" => [
+                { "id"          => project.payment_rules.first.rule.formulas.first.id,
+                  "code"        => "value",
+                  "description" => "description",
+                  "expression"  => "unknown_expression_in_other_rules" }
+              ]
+            }
           }
         }
       end
       it "should update an existing one" do
-        formula = project.payment_rule.formulas.first
+        formula = project.payment_rules.first.rule.formulas.first
         post :update, params: {
-          "project_id" => project.id,
-          "id"         => project.payment_rule.id,
-          "rule"       => {
-            "name"                => "payment rule",
-            "formulas_attributes" => [
-              { "id"          => formula.id,
-                "code"        => formula.code,
-                "description" => "description",
-                "expression"  => "#{formula.expression} * 2 " }
-            ]
+          "project_id"   => project.id,
+          "id"           => project.payment_rules.first.id,
+          "payment_rule" => {
+            "rule_attributes" => {
+              "id"                  => project.payment_rules.first.rule.id,
+              "name"                => "payment rule",
+              "formulas_attributes" => [
+                { "id"          => formula.id,
+                  "code"        => formula.code,
+                  "description" => "description",
+                  "expression"  => "#{formula.expression} * 2 " }
+              ]
+            }
           }
         }
         expect(response).to redirect_to("/")
@@ -87,51 +94,46 @@ RSpec.describe ProjectRulesController, type: :controller do
 
     describe "#create" do
       it "should create a payment rule" do
+        project.id
+        rule_count_before = Rule.all.count
+        payment_rule_count_before = PaymentRule.all.count
         post :create, params: {
-          "project_id" => project.id,
-          "rule"       => {
-            "name"                => "payment rule",
-            "formulas_attributes" => [
-              { "code"        => "value",
-                "description" => "description",
-                "expression"  => "quality_technical_score_value" }
-            ]
+          "project_id"   => project.id,
+          "payment_rule" => {
+            "package_ids"  => project.packages.map(&:id),
+            "rule_attributes" => {
+              "name"                => "payment rule",
+              "formulas_attributes" => [
+                { "code"        => "value",
+                  "description" => "description",
+                  "expression"  => "quality_technical_score_value" }
+              ]
+            }
           }
         }
-        expect(Rule.all.count).to eq 7
+        expect(Rule.all.count).to eq rule_count_before + 1
+        expect(PaymentRule.all.count).to eq payment_rule_count_before + 1
       end
 
-      it "should not create an existing one" do
-        post :create, params: {
-          "project_id" => project.id,
-          "rule"       => {
-            "name"                => "payment rule",
-            "formulas_attributes" => [
-              { "code"        => "value",
-                "description" => "description",
-                "expression"  => "quality_technical_score_value" }
-            ]
-          }
-        }
-        expect(flash[:alert]).to eq "Sorry you can't create a new payment rule, edit existing one."
-        expect(response).to redirect_to("/")
-      end
 
       it "should not create when invalid expression" do
         delete_existing_project_rules
         post :create, params: {
-          "project_id" => project.id,
-          "rule"       => {
-            "name"                => "payment rule",
-            "formulas_attributes" => [
-              { "code"        => "value",
-                "description" => "description",
-                "expression"  => "invalid_state_or_expression" }
-            ]
+          "project_id"   => project.id,
+          "package_ids"  => project.packages.map(&:id),
+          "payment_rule" => {
+            "rule_attributes" => {
+              "name"                => "payment rule",
+              "formulas_attributes" => [
+                { "code"        => "value",
+                  "description" => "description",
+                  "expression"  => "invalid_state_or_expression" }
+              ]
+            }
           }
         }
 
-        expect(Rule.all.count).to eq 6
+        expect(Rule.all.count).to eq 8
       end
     end
   end

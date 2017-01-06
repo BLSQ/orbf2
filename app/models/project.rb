@@ -22,11 +22,7 @@ class Project < ApplicationRecord
 
   has_one :entity_group, dependent: :destroy
   has_many :packages, dependent: :destroy
-  has_many :rules, dependent: :destroy
-
-  def payment_rule
-    rules.find(&:payment_kind?)
-  end
+  has_many :payment_rules, dependent: :destroy
 
   def missing_rules_kind
     payment_rule ? [] : ["payment"]
@@ -49,16 +45,24 @@ class Project < ApplicationRecord
     )
   end
 
+  def unused_packages
+    packages.select do |package|
+      payment_rules.none? {|payment_rule| payment_rule.packages.include?(package)}
+    end
+  end
+
   def export_to_json
     to_json(
       except:  [:created_at, :updated_at, :password, :user],
       include: {
-        rules:    {
-          include: {
-            formulas: {}
+        payment_rules: {
+          rule: {
+            include: {
+              formulas: {}
+            }
           }
         },
-        packages: {
+        packages:     {
           except:  [:created_at, :updated_at],
           include: {
             rules: {
@@ -73,23 +77,34 @@ class Project < ApplicationRecord
   end
 
   def dump_validations
+    payment_rules.each do |payment_rule|
+      puts "payment_rule #{payment_rule.valid?} #{payment_rule.errors.full_messages}"
+      puts "payment_rule #{payment_rule.packages.first}"
+      next unless payment_rule.rule.invalid?
+
+      dump_validation_rule(payment_rule.rule)
+    end
     packages.each do |package|
       next unless package.invalid?
       puts package.errors.full_messages
       package.rules.each do |rule|
-        next unless rule.invalid?
-        puts "------"
-        puts rule.to_json
-        puts rule.available_variables_for_values.to_json
-        puts rule.errors.full_messages
-        rule.formulas.each do |formula|
-          next unless formula.invalid?
-          puts "------* *** *"
-          puts formula.to_json
-          puts formula.errors.full_messages
-          puts rule.available_variables_for_values
-        end
+        dump_validation_rule(rule)
       end
+    end
+  end
+
+  def dump_validation_rule(rule)
+
+    puts "------"
+    puts rule.to_json
+    puts rule.available_variables_for_values.to_json
+    puts rule.errors.full_messages
+    rule.formulas.each do |formula|
+      next unless formula.invalid?
+      puts "------* *** *"
+      puts formula.to_json
+      puts formula.errors.full_messages
+      puts rule.available_variables_for_values
     end
   end
 

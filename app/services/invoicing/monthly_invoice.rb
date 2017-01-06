@@ -21,7 +21,7 @@ module Invoicing
       end
 
       if payments && !payments.empty?
-        package_line = project.payment_rule.formulas.map do |formula|
+        package_line = project.payment_rules.first.rule.formulas.map do |formula|
           [formula.code, d_to_s(payments[formula.code])].join(" : ")
         end
         puts "************ payments "

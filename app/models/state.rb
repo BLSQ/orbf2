@@ -7,6 +7,7 @@
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #  configurable :boolean          default(FALSE), not null
+#  level        :string           default("activity"), not null
 #
 
 class State < ApplicationRecord
@@ -22,5 +23,13 @@ class State < ApplicationRecord
 
   def code
     name.parameterize("_")
+  end
+
+  def package_level?
+    level == "package"
+  end
+
+  def activity_level?
+    level == "activity"
   end
 end
