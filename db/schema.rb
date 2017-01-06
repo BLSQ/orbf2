@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170103112615) do
+ActiveRecord::Schema.define(version: 20170106134349) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -80,6 +80,13 @@ ActiveRecord::Schema.define(version: 20170103112615) do
     t.index ["project_id"], name: "index_payment_rules_on_project_id", using: :btree
   end
 
+  create_table "programs", force: :cascade do |t|
+    t.string   "code",       null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_programs_on_code", unique: true, using: :btree
+  end
+
   create_table "projects", force: :cascade do |t|
     t.string   "name",                       null: false
     t.string   "dhis2_url",                  null: false
@@ -89,6 +96,8 @@ ActiveRecord::Schema.define(version: 20170103112615) do
     t.boolean  "boolean",    default: false
     t.datetime "created_at",                 null: false
     t.datetime "updated_at",                 null: false
+    t.integer  "program_id",                 null: false
+    t.index ["program_id"], name: "index_projects_on_program_id", using: :btree
   end
 
   create_table "rules", force: :cascade do |t|
@@ -139,6 +148,7 @@ ActiveRecord::Schema.define(version: 20170103112615) do
   add_foreign_key "package_states", "states"
   add_foreign_key "packages", "projects"
   add_foreign_key "payment_rules", "projects"
+  add_foreign_key "projects", "programs"
   add_foreign_key "rules", "packages"
   add_foreign_key "rules", "payment_rules"
   add_foreign_key "users", "projects"

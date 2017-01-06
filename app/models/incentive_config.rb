@@ -42,7 +42,8 @@ class IncentiveConfig
       state_created_des = create_data_elements_for_package_state
     end
     state_created_deg = create_data_element_group(state_created_des)
-    existing_values = get_data_elements_values_by_data_element_group(state_created_deg)
+    # existing_values = get_data_elements_values_by_data_element_group(state_created_deg)
+    existing_values = []
     existing_values_by_element_id = existing_values.group_by(&:data_element)
 
     self.activity_incentives = state_created_des.map do |de|
