@@ -1,14 +1,13 @@
 class AutocompleteController < PrivateController
   def organisation_unit_group
     if params.key?(:term) || params.key?(:id)
-      organisation_unit_group_by_term_or_id
+      organisation_unit_group_by_term_or_id_on_sol
     elsif params.key?(:siblings)
       organisation_unit_group_by_used_or_sibling_id
     else
       render_sol_items([])
     end
   end
-
 
   def data_elements
     dhis2 = current_program.project.dhis2_connection
@@ -51,8 +50,28 @@ def organisation_unit_group_by_term_or_id
   render json: @items
 end
 
+def organisation_unit_group_by_term_or_id_on_sol
+  #http://localhost:8080/dhis/api/organisationUnitGroups.json?fields=id,name,displayName,organisationUnitGroupSet&filter=organisationUnitGroupSet.id:eq:Y2vBvfxaIcS
+  dhis2 = current_program.project.dhis2_connection
+  org_unit_groups = dhis2.organisation_unit_groups
+                         .list(fields: "id,displayName", page_size: 20_000)
+
+  total = dhis2.organisation_units.list.pager.total
+  org_unit_groups = org_unit_groups.map do |oug|
+    ou_total = dhis2.organisation_units.list(
+      filter: "organisationUnitGroups.id:eq:#{oug.id}"
+    ).pager.total
+    {
+      type:  "option",
+      value: oug.id,
+      label: "#{oug.display_name} (#{ou_total}/#{total})"
+    }
+  end
+  render json: org_unit_groups
+end
+
 def organisation_unit_group_by_used_or_sibling_id
-  render_sol_items( current_program.project.entity_group.find_sibling_organisation_unit_groups)
+  render_sol_items(current_program.project.entity_group.find_sibling_organisation_unit_groups)
 end
 
 def render_sol_items(items)
