@@ -45,7 +45,7 @@ class ProjectRulesController < PrivateController
   private
 
   def current_project
-    current_user.project
+    current_program.project
   end
 
   def rule_params

@@ -52,7 +52,7 @@ end
   private
 
   def current_package
-    @package ||= current_user.project.packages.find(params[:package_id])
+    @package ||= current_program.project.packages.find(params[:package_id])
   end
 
   def rule_params

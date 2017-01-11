@@ -1,5 +1,5 @@
 <h1>Configure Incentives</h1>
-<%= simple_form_for(incentive,  url: setup_project_incentives_path(current_user.project), method: :post) do |f| %>
+<%= simple_form_for(incentive,  url: setup_project_incentives_path(current_program.project), method: :post) do |f| %>
 <%= f.input :state_id, collection: State.configurables(true) %>
 <%= f.input :package_id, collection: @project.packages %>
 <div class="row">
@@ -18,7 +18,7 @@
                                 selected: incentive.entity_groups ? incentive.entity_groups.join(',') : '',
                                 placeholder:"Lookup the organisation units groups here...",
                                 selection:"org_units_groups_selection",
-                                url:organisation_unit_group_setup_project_autocomplete_index_path(current_user.project, siblings:true)
+                                url:organisation_unit_group_setup_project_autocomplete_index_path(current_program.project, siblings:true)
                               } %>
                 <% if incentive.errors[:entity_groups].any? %>
                 <%= f.error :entity_groups %></span>

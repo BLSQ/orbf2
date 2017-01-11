@@ -11,7 +11,7 @@ class AutocompleteController < PrivateController
 
 
   def data_elements
-    dhis2 = current_user.project.dhis2_connection
+    dhis2 = current_program.project.dhis2_connection
     dataelements = dhis2.data_elements
                         .list(fields: "id,displayName", page_size: 20_000)
     render_sol_items(dataelements)
@@ -27,7 +27,7 @@ def organisation_unit_group_by_term_or_id
     filter = "id:eq:#{params[:id]}"
   end
 
-  dhis2 = current_user.project.dhis2_connection
+  dhis2 = current_program.project.dhis2_connection
   @items = dhis2.organisation_unit_groups
                 .list(filter: filter,
                       fields: "id,name,displayName,organisationUnits~size~rename(orgunitscount)")
@@ -52,7 +52,7 @@ def organisation_unit_group_by_term_or_id
 end
 
 def organisation_unit_group_by_used_or_sibling_id
-  render_sol_items( current_user.project.entity_group.find_sibling_organisation_unit_groups)
+  render_sol_items( current_program.project.entity_group.find_sibling_organisation_unit_groups)
 end
 
 def render_sol_items(items)

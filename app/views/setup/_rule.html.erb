@@ -2,12 +2,12 @@
     <td title="<%= package.package_entity_groups.map{ |entitygroup|  %Q(#{entitygroup.name}) }.join(', ') %> - <%= package.states.map{ |state|  %Q(#{state.name}) }.join(', ') %>"><%= package.name %></td>
     <td valign="top">
         <div class="col-md-4"><% if package.activity_rule.present? %>
-            <%= link_to package.activity_rule.name, edit_setup_project_package_rule_path(current_user.project, package, package.activity_rule) , title:package.activity_rule.formulas.first.description, class: package.activity_rule.invalid? ? 'btn btn-danger' :''
+            <%= link_to package.activity_rule.name, edit_setup_project_package_rule_path(current_program.project, package, package.activity_rule) , title:package.activity_rule.formulas.first.description, class: package.activity_rule.invalid? ? 'btn btn-danger' :''
             %>
             <%= package.activity_rule.invalid? ? icon('exclamation-triangle text-danger fa-lg') :''%>
 
         <% else %>
-            <%= link_to 'Create new rule', new_setup_project_package_rule_path(current_user.project, package) , class: 'btn btn-warning' %>
+            <%= link_to 'Create new rule', new_setup_project_package_rule_path(current_program.project, package) , class: 'btn btn-warning' %>
             <% end %></div>
         <div class="col-md-8"><% if package.activity_rule.present? %>
             <%= render partial: "rule_formulas", locals: { formulas: package.activity_rule.formulas }%>
@@ -16,11 +16,11 @@
 
     <td valign="top">
         <div class="col-md-4"><% if package.package_rule %>
-            <%= link_to package.package_rule.name, edit_setup_project_package_rule_path(current_user.project, package, package.package_rule) , class: package.package_rule.invalid? ? 'btn btn-danger' :''  %>
+            <%= link_to package.package_rule.name, edit_setup_project_package_rule_path(current_program.project, package, package.package_rule) , class: package.package_rule.invalid? ? 'btn btn-danger' :''  %>
             <%= package.package_rule.invalid? ? icon('exclamation-triangle text-danger fa-lg') :''%>
 
             <% elsif package.activity_rule.present? %>
-            <%= link_to 'Create new rule', new_setup_project_package_rule_path(current_user.project, package)  , class: 'btn btn-warning' %>
+            <%= link_to 'Create new rule', new_setup_project_package_rule_path(current_program.project, package)  , class: 'btn btn-warning' %>
             <% end %></div>
         <div class="col-md-8"><% if package.package_rule.present? %>
             <%= render partial: "rule_formulas", locals: { formulas: package.package_rule.formulas }%>

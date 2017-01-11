@@ -31,10 +31,6 @@ class User < ApplicationRecord
 
   belongs_to :program, optional: true
 
-  def invalid_project?
-    project.nil? || project.invalid?
-  end
-
   def env_dev?
     Rails.env.dev?
   end
