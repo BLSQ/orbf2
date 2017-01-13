@@ -52,19 +52,16 @@ end
 
 def organisation_unit_group_by_term_or_id_on_sol
   #http://localhost:8080/dhis/api/organisationUnitGroups.json?fields=id,name,displayName,organisationUnitGroupSet&filter=organisationUnitGroupSet.id:eq:Y2vBvfxaIcS
-  dhis2 = current_program.project.dhis2_connection
-  org_unit_groups = dhis2.organisation_unit_groups
-                         .list(fields: "id,displayName", page_size: 20_000)
 
-  total = dhis2.organisation_units.list.pager.total
-  org_unit_groups = org_unit_groups.map do |oug|
-    ou_total = dhis2.organisation_units.list(
-      filter: "organisationUnitGroups.id:eq:#{oug.id}"
-    ).pager.total
+  pyr = Pyramid.new(current_program.project.dhis2_connection)
+
+  org_unit_groups = pyr.org_unit_groups.map do |oug|
+    ou_total = pyr.org_units_in_group(oug.id).size
+    sample_ous = pyr.org_units_in_group(oug.id).to_a.shuffle.slice(0, 5).map(&:display_name)
     {
       type:  "option",
       value: oug.id,
-      label: "#{oug.display_name} (#{ou_total}/#{total})"
+      label: "#{oug.display_name} (#{ou_total}/#{pyr.org_units.size}) : #{sample_ous.join(', ')},..."
     }
   end
   render json: org_unit_groups

@@ -14,9 +14,12 @@ RSpec.describe MainEntityGroupsController, type: :controller do
       sign_in user
     end
 
+    let(:program) { create :program }
+
     let(:project) do
-      project = create :project
-      user.project = project
+      project = create :project, program: program
+      user.program = program
+      program.project = project
       user.save!
       user.reload
       project

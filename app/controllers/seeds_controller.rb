@@ -1,17 +1,18 @@
 class SeedsController < PrivateController
   def index
-    current_user.project = ProjectFactory.new.build(
+    project = ProjectFactory.new.build(
       dhis2_url:  params[:local] ? "http://127.0.0.1:8085/" : "https://play.dhis2.org/demo",
       user:       "admin",
       password:   "district",
-      bypass_ssl: false
+      bypass_ssl: false,
+      program: current_user.program
     )
-    current_user.project.build_entity_group(
+
+    project = current_user.program.project
+    project.build_entity_group(
       name:               "Public facilities",
       external_reference: "oRVt7g429ZO"
     )
-
-    project = current_user.project
 
     suffix = " - " + Time.now.to_s[0..15]
     hospital_group = { name: "Hospital", organisation_unit_group_ext_ref: "tDZVQ1WtwpA" }
@@ -57,7 +58,7 @@ class SeedsController < PrivateController
     package_quality.save!
     package_perf.save!
 
-    current_user.project.save!
+    project.save!
     current_user.save!
     flash[:notice] = " created package and rules for #{suffix} : #{package_quantity_pma.name}"
     redirect_to root_path

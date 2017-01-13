@@ -8,9 +8,13 @@ RSpec.describe AutocompleteController, type: :controller do
     end
   end
 
+  let(:program) { create :program }
+
   let(:project) do
-    project = create :project
-    user.project = project
+    project = build :project
+    project.program = program
+    project.save!
+    user.program = program
     user.save!
     user.reload
     project
@@ -59,12 +63,7 @@ RSpec.describe AutocompleteController, type: :controller do
     it "should autocomplete by sibling_id" do
       project.create_entity_group(name: "Public Facilities", external_reference: "f25dqv3Y7Z0")
 
-      stub_request(:get, "#{project.dhis2_url}/api/organisationUnits?"\
-        "fields=id,name,organisationUnitGroups&pageSize=50000")
-        .to_return(
-          status: 200,
-          body:   fixture_content(:dhis2, "all_organisation_units_with_groups.json")
-        )
+      stub_dhis2_all_orgunits_groups
 
       stub_request(:get, "#{project.dhis2_url}/api/organisationUnitGroups?fields=:all&"\
         "filter=id:in:%5BRXL3lPSK8oG,oRVt7g429ZO,tDZVQ1WtwpA,EYbopBOJWsW,uYxK4wmcPqA,CXw2yu5fodb,gzcv65VyaGq,w1Atoz18PCL%5D"\
@@ -88,10 +87,8 @@ RSpec.describe AutocompleteController, type: :controller do
     end
 
     it "should autocomplete org unit groups by name" do
-      stub_dhis2_all_orgunit_counts
-      stub_dhis2_organisation_unit_groups_like "cli"
-      stub_dhis2_organisation_units_with_group_id "MAs88nJc9nL"
-      stub_dhis2_organisation_units_with_group_id "RXL3lPSK8oG"
+      stub_dhis2_all_orgunits_groups
+      stub_dhis2_all_orgunits
 
       get :organisation_unit_group, params: { project_id: project.id, term: "cli" }
 
@@ -99,13 +96,28 @@ RSpec.describe AutocompleteController, type: :controller do
     end
 
     it "should autocomplete org unit groups by id" do
-      stub_dhis2_all_orgunit_counts
-      stub_dhis2_organisation_units_groups_with_counts_by_id "RXL3lPSK8oG"
-      stub_dhis2_organisation_units_with_group_id "RXL3lPSK8oG"
+      stub_dhis2_all_orgunits_groups
+      stub_dhis2_all_orgunits
 
       get :organisation_unit_group, params: { project_id: project.id, id: "RXL3lPSK8oG" }
 
       expect(assigns(:items).first).to eq(expected_group)
+    end
+
+    def stub_dhis2_all_orgunits_groups
+      stub_request(:get, "#{project.dhis2_url}/api/organisationUnitGroups?fields=id,displayName&pageSize=20000")
+        .to_return(
+          status: 200,
+          body:   fixture_content(:dhis2, "organisationUnitGroups.json")
+        )
+    end
+
+    def stub_dhis2_all_orgunits
+      stub_request(:get, "#{project.dhis2_url}/api/organisationUnits?fields=id,name,organisationUnitGroups&pageSize=50000")
+        .to_return(
+          status: 200,
+          body:   fixture_content(:dhis2, "organisationUnits.json")
+        )
     end
 
     def stub_dhis2_organisation_unit_groups_like(term)
