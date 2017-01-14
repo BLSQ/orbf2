@@ -22,7 +22,8 @@ class EntityGroup < ApplicationRecord
       fields:    "id,name,organisationUnitGroups"
     )
 
-    group_ids = units.select { |unit| unit.organisation_unit_groups.any? { |g| g["id"] == external_reference } }
+    group_ids = units.reject{|unit| unit.organisation_unit_groups.nil? }
+                     .select { |unit| unit.organisation_unit_groups.any? { |g| g["id"] == external_reference } }
                      .map(&:organisation_unit_groups)
                      .flatten
                      .map { |g| g["id"] }

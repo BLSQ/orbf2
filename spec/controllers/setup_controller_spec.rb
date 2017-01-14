@@ -21,9 +21,13 @@ RSpec.describe SetupController, type: :controller do
       expect(setup.steps.all?(&:todo?)).to eq true
     end
 
+    let(:program) do
+      create :program
+    end
+
     let(:project) do
-      project = create :project
-      user.project = project
+      project = create :project, program: program
+      user.program = program
       user.save!
       user.reload
       project

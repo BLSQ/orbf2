@@ -64,6 +64,8 @@ def organisation_unit_group_by_term_or_id_on_sol
       label: "#{oug.display_name} (#{ou_total}/#{pyr.org_units.size}) : #{sample_ous.join(', ')},..."
     }
   end
+  
+  @items = org_unit_groups
   render json: org_unit_groups
 end
 
