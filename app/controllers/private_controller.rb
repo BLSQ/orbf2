@@ -8,4 +8,12 @@ class PrivateController < ApplicationController
   def current_program
     current_user.program
   end
+
+  def current_project
+    current_project_anchor.project
+  end
+
+  def current_project_anchor
+    current_user.program.project_anchor
+  end
 end

@@ -6,7 +6,7 @@
       </div>
     </td>
     <td>
-      <%= link_to project_rule.rule.name, edit_setup_project_rule_path(current_program.project, project_rule) ,
+      <%= link_to project_rule.rule.name, edit_setup_project_rule_path(project, project_rule) ,
               class: project_rule.invalid? ? 'btn btn-danger' :''  %> <%= project_rule.invalid? ? icon('exclamation-triangle text-danger fa-lg') :''%>
     </td>
 

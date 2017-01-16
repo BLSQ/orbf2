@@ -1,4 +1,4 @@
-class AutocompleteController < PrivateController
+class Setup::AutocompleteController < PrivateController
   def organisation_unit_group
     if params.key?(:term) || params.key?(:id)
       organisation_unit_group_by_term_or_id_on_sol
@@ -10,7 +10,7 @@ class AutocompleteController < PrivateController
   end
 
   def data_elements
-    dhis2 = current_program.project.dhis2_connection
+    dhis2 = current_project.dhis2_connection
     dataelements = dhis2.data_elements
                         .list(fields: "id,displayName", page_size: 20_000)
     render_sol_items(dataelements)
@@ -26,7 +26,7 @@ def organisation_unit_group_by_term_or_id
     filter = "id:eq:#{params[:id]}"
   end
 
-  dhis2 = current_program.project.dhis2_connection
+  dhis2 = current_project.dhis2_connection
   @items = dhis2.organisation_unit_groups
                 .list(filter: filter,
                       fields: "id,name,displayName,organisationUnits~size~rename(orgunitscount)")
@@ -53,7 +53,7 @@ end
 def organisation_unit_group_by_term_or_id_on_sol
   #http://localhost:8080/dhis/api/organisationUnitGroups.json?fields=id,name,displayName,organisationUnitGroupSet&filter=organisationUnitGroupSet.id:eq:Y2vBvfxaIcS
 
-  pyr = Pyramid.new(current_program.project.dhis2_connection)
+  pyr = Pyramid.new(current_project.dhis2_connection)
 
   org_unit_groups = pyr.org_unit_groups.map do |oug|
     ou_total = pyr.org_units_in_group(oug.id).size
@@ -64,13 +64,13 @@ def organisation_unit_group_by_term_or_id_on_sol
       label: "#{oug.display_name} (#{ou_total}/#{pyr.org_units.size}) : #{sample_ous.join(', ')},..."
     }
   end
-  
+
   @items = org_unit_groups
   render json: org_unit_groups
 end
 
 def organisation_unit_group_by_used_or_sibling_id
-  render_sol_items(current_program.project.entity_group.find_sibling_organisation_unit_groups)
+  render_sol_items(current_project.entity_group.find_sibling_organisation_unit_groups)
 end
 
 def render_sol_items(items)

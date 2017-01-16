@@ -2,15 +2,19 @@
 #
 # Table name: projects
 #
-#  id         :integer          not null, primary key
-#  name       :string           not null
-#  dhis2_url  :string           not null
-#  user       :string
-#  password   :string
-#  bypass_ssl :boolean          default(FALSE)
-#  boolean    :boolean          default(FALSE)
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id                :integer          not null, primary key
+#  name              :string           not null
+#  dhis2_url         :string           not null
+#  user              :string
+#  password          :string
+#  bypass_ssl        :boolean          default(FALSE)
+#  boolean           :boolean          default(FALSE)
+#  created_at        :datetime         not null
+#  updated_at        :datetime         not null
+#  program_id        :integer          not null
+#  status            :string           default("draft"), not null
+#  publish_date      :datetime
+#  project_anchor_id :integer
 #
 
 class Project < ApplicationRecord
@@ -23,7 +27,7 @@ class Project < ApplicationRecord
   has_one :entity_group, dependent: :destroy
   has_many :packages, dependent: :destroy
   has_many :payment_rules, dependent: :destroy
-  belongs_to :program
+  belongs_to :project_anchor
 
   def missing_rules_kind
     payment_rule ? [] : ["payment"]
@@ -120,4 +124,5 @@ class Project < ApplicationRecord
       end
     end
 end
+
 end

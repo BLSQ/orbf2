@@ -1,4 +1,4 @@
-class ProjectRulesController < PrivateController
+class Setup::ProjectRulesController < PrivateController
   helper_method :project_rule
   attr_reader :project_rule
 
@@ -44,9 +44,9 @@ class ProjectRulesController < PrivateController
 
   private
 
-  def current_project
-    current_program.project
-  end
+  # def current_project
+  #   current_project
+  # end
 
   def rule_params
     params.require(:payment_rule)

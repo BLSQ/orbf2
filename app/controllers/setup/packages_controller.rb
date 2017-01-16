@@ -1,13 +1,13 @@
-class PackagesController < PrivateController
+class Setup::PackagesController < PrivateController
   helper_method :package
   attr_reader :package
 
   def new
-    @package = current_program.project.packages.build
+    @package = current_project.packages.build
   end
 
   def create
-    @package = current_program.project.packages.build(params_package)
+    @package = current_project.packages.build(params_package)
 
     state_ids = params_package[:state_ids].reject(&:empty?)
 

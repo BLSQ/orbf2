@@ -1,4 +1,4 @@
-class RulesController < PrivateController
+class Setup::RulesController < PrivateController
   helper_method :rule
   attr_reader :rule
 
@@ -52,7 +52,7 @@ end
   private
 
   def current_package
-    @package ||= current_program.project.packages.find(params[:package_id])
+    @package ||= current_project.packages.find(params[:package_id])
   end
 
   def rule_params

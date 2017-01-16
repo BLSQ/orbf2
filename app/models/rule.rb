@@ -8,7 +8,6 @@
 #  package_id      :integer
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
-#  project_id      :integer
 #  payment_rule_id :integer
 #
 
