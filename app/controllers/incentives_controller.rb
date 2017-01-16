@@ -5,19 +5,19 @@ class IncentivesController < PrivateController
   def new
     @incentive = IncentiveConfig.new
     @incentive.state_id = State.configurables(true).first.id
-    @incentive.package_id = current_user.project.packages.first.id
+    @incentive.package_id = current_program.project.packages.first.id
     @incentive.start_date = Date.today.to_date.beginning_of_month.strftime("%Y-%m")
     @incentive.end_date = Date.today.to_date.end_of_month.strftime("%Y-%m")
-    @project = current_user.project
+    @project = current_program.project
     @incentive.project = @project
   end
 
   def create
     @incentive = IncentiveConfig.new(incentive_params)
-    @project = current_user.project
+    @project = current_program.project
     @incentive.package = @project.packages.find(@incentive.package_id) if @incentive.package_id
     @incentive.state = State.find(@incentive.state_id) if @incentive.state_id
-    @incentive.project = current_user.project
+    @incentive.project = current_program.project
 
     if @incentive.valid?
       dhis2 = incentive.project.dhis2_connection

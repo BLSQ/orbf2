@@ -15,10 +15,19 @@ RSpec.describe ProjectRulesController, type: :controller do
       sign_in user
     end
 
+    let(:program) { create :program }
+
     let(:project) do
-      user.project = ProjectFactory.new.build(dhis2_url: "http://play.dhis2.org/demo", user: "admin", password: "district", bypass_ssl: false)
+      program.project = ProjectFactory.new.build(
+        program:    program,
+        dhis2_url:  "http://play.dhis2.org/demo",
+        user:       "admin",
+        password:   "district",
+        bypass_ssl: false
+      )
+      user.program = program
       user.save!
-      user.project
+      program.project
     end
 
     def delete_existing_project_rules
@@ -56,7 +65,7 @@ RSpec.describe ProjectRulesController, type: :controller do
           "project_id"   => project.id,
           "id"           => project.payment_rules.first.id,
           "payment_rule" => {
-            "package_ids"  => project.packages.map(&:id).join(','),
+            "package_ids"     => project.packages.map(&:id).join(","),
             "rule_attributes" => {
               "id"                  => project.payment_rules.first.rule.id,
               "name"                => "payment rule",
@@ -100,7 +109,7 @@ RSpec.describe ProjectRulesController, type: :controller do
         post :create, params: {
           "project_id"   => project.id,
           "payment_rule" => {
-            "package_ids"  => project.packages.map(&:id),
+            "package_ids"     => project.packages.map(&:id),
             "rule_attributes" => {
               "name"                => "payment rule",
               "formulas_attributes" => [
@@ -114,7 +123,6 @@ RSpec.describe ProjectRulesController, type: :controller do
         expect(Rule.all.count).to eq rule_count_before + 1
         expect(PaymentRule.all.count).to eq payment_rule_count_before + 1
       end
-
 
       it "should not create when invalid expression" do
         delete_existing_project_rules

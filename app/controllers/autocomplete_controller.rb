@@ -1,7 +1,7 @@
 class AutocompleteController < PrivateController
   def organisation_unit_group
     if params.key?(:term) || params.key?(:id)
-      organisation_unit_group_by_term_or_id
+      organisation_unit_group_by_term_or_id_on_sol
     elsif params.key?(:siblings)
       organisation_unit_group_by_used_or_sibling_id
     else
@@ -9,9 +9,8 @@ class AutocompleteController < PrivateController
     end
   end
 
-
   def data_elements
-    dhis2 = current_user.project.dhis2_connection
+    dhis2 = current_program.project.dhis2_connection
     dataelements = dhis2.data_elements
                         .list(fields: "id,displayName", page_size: 20_000)
     render_sol_items(dataelements)
@@ -27,7 +26,7 @@ def organisation_unit_group_by_term_or_id
     filter = "id:eq:#{params[:id]}"
   end
 
-  dhis2 = current_user.project.dhis2_connection
+  dhis2 = current_program.project.dhis2_connection
   @items = dhis2.organisation_unit_groups
                 .list(filter: filter,
                       fields: "id,name,displayName,organisationUnits~size~rename(orgunitscount)")
@@ -51,8 +50,27 @@ def organisation_unit_group_by_term_or_id
   render json: @items
 end
 
+def organisation_unit_group_by_term_or_id_on_sol
+  #http://localhost:8080/dhis/api/organisationUnitGroups.json?fields=id,name,displayName,organisationUnitGroupSet&filter=organisationUnitGroupSet.id:eq:Y2vBvfxaIcS
+
+  pyr = Pyramid.new(current_program.project.dhis2_connection)
+
+  org_unit_groups = pyr.org_unit_groups.map do |oug|
+    ou_total = pyr.org_units_in_group(oug.id).size
+    sample_ous = pyr.org_units_in_group(oug.id).to_a.shuffle.slice(0, 5).map(&:display_name)
+    {
+      type:  "option",
+      value: oug.id,
+      label: "#{oug.display_name} (#{ou_total}/#{pyr.org_units.size}) : #{sample_ous.join(', ')},..."
+    }
+  end
+  
+  @items = org_unit_groups
+  render json: org_unit_groups
+end
+
 def organisation_unit_group_by_used_or_sibling_id
-  render_sol_items( current_user.project.entity_group.find_sibling_organisation_unit_groups)
+  render_sol_items(current_program.project.entity_group.find_sibling_organisation_unit_groups)
 end
 
 def render_sol_items(items)

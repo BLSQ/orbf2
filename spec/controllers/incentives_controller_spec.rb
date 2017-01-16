@@ -15,9 +15,9 @@ RSpec.describe IncentivesController, type: :controller do
     end
 
     let(:project) do
-      user.project = ProjectFactory.new.build(dhis2_url: "http://play.dhis2.org/demo", user: "admin", password: "district", bypass_ssl: false)
+      user.program.project = ProjectFactory.new.build(dhis2_url: "http://play.dhis2.org/demo", user: "admin", password: "district", bypass_ssl: false)
       user.save!
-      user.project
+      user.program.project
     end
 
     describe "#new" do

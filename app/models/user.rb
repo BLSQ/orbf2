@@ -29,11 +29,7 @@ class User < ApplicationRecord
                       message: "Sorry, restricted signup" },
             if:     :env_dev?
 
-  belongs_to :project, optional: true
-
-  def invalid_project?
-    project.nil? || project.invalid?
-  end
+  belongs_to :program, optional: true
 
   def env_dev?
     Rails.env.dev?

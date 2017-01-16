@@ -19,7 +19,7 @@ class MainEntityGroupsController < PrivateController
   private
 
   def current_project
-    @current_project ||= current_user.project
+    @current_project ||= current_program.project
   end
 
   def create_or_update

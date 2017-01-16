@@ -13,6 +13,8 @@ RSpec.describe ProjectsController, type: :controller do
     include WebmockDhis2Helpers
 
     before(:each) do
+      user.build_program(code: "siera")
+      user.save!
       sign_in user
     end
 
@@ -30,7 +32,7 @@ RSpec.describe ProjectsController, type: :controller do
       expect(response).to redirect_to("/")
       expect(flash[:notice]).to eq "Great your dhis2 connection looks valid !"
       user.reload
-      expect(user.project.name).to eq("project_name")
+      expect(user.program.project.name).to eq("project_name")
     end
   end
 end

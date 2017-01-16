@@ -18,12 +18,12 @@ class SetupController < PrivateController
           payment_rule: []
         ]
       ]
-    ).find(current_user.project.id) if current_user.project
+    ).find(current_program.project.id) if current_program.project
 
     step1 = Step.new(name:   "Dhis2 connection",
-                     status: current_user.invalid_project? ? :todo : :done,
+                     status: current_program.invalid_project? ? :todo : :done,
                      kind:   :dhis2,
-                     model:  project || current_user.build_project)
+                     model:  project || current_program.build_project)
 
     step2 = Step.new(name:   "Entities",
                      status: step1.todo? || project.entity_group.nil? ? :todo : :done,
@@ -54,4 +54,5 @@ class SetupController < PrivateController
 
     @setup = Setup.new([step1, step2, step3, step4, step5])
   end
+
 end

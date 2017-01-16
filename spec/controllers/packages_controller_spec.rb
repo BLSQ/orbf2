@@ -14,10 +14,14 @@ RSpec.describe PackagesController, type: :controller do
     before(:each) do
       sign_in user
     end
-
+    let(:program) do
+      create :program
+    end
     let(:project) do
-      project = create :project
-      user.project = project
+      project = create :project, program: program
+      program.project = project
+      program.save!
+      user.program = program
       user.save!
       user.reload
       project.create_entity_group(external_reference: "external_reference", name: "main group")

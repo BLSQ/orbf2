@@ -1,24 +1,40 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+# dependencies and config
 
-Things you may want to cover:
+pg
 
-* Ruby version
+```
+cp config/database-template.yml config/database.yml
+```
+edit if necessary
 
-* System dependencies
 
-* Configuration
+```
+cp config/application.template.yml config/application.yml
+```
 
-* Database creation
 
-* Database initialization
 
-* How to run the test suite
 
-* Services (job queues, cache servers, search engines, etc.)
 
-* Deployment instructions
+# setup the db and seed program and project
 
-* ...
+```
+rake db:migrate
+rake db:seed
+```
+## Seed a user and program
+
+```
+program = Program.create(code: "seria")
+program.users.create(   
+    password:"password",
+    password_confirmation:"password",
+    email: "...@bluesquare.org"
+)
+```
+
+## Seed a project
+
+http://127.0.0.1:3000/setup/seeds

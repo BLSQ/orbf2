@@ -23,6 +23,7 @@ class Project < ApplicationRecord
   has_one :entity_group, dependent: :destroy
   has_many :packages, dependent: :destroy
   has_many :payment_rules, dependent: :destroy
+  belongs_to :program
 
   def missing_rules_kind
     payment_rule ? [] : ["payment"]

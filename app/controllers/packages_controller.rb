@@ -3,11 +3,11 @@ class PackagesController < PrivateController
   attr_reader :package
 
   def new
-    @package = current_user.project.packages.build
+    @package = current_program.project.packages.build
   end
 
   def create
-    @package = current_user.project.packages.build(params_package)
+    @package = current_program.project.packages.build(params_package)
 
     state_ids = params_package[:state_ids].reject(&:empty?)
 
