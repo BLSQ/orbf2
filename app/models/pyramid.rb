@@ -12,6 +12,7 @@ class Pyramid
 
     org_units_by_group = {}
     org_units.each do |ou|
+      next unless ou.organisation_unit_groups
       ou.organisation_unit_groups.each do |group|
         org_units_by_group[group["id"]] ||= Set.new
         org_units_by_group[group["id"]].add(ou)
@@ -29,7 +30,7 @@ class Pyramid
   end
 
   def org_units_in_group(group_id)
-    @org_units_by_group[group_id]
+    @org_units_by_group[group_id] || Set.new
   end
 
 end

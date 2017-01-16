@@ -6,7 +6,7 @@ describe ProjectFactory do
       user:       "admin",
       password:   "district",
       bypass_ssl: false,
-      program:    Program.build(code: "siera")
+      program:    Program.new(code: "siera")
     )
     project.valid?
     project.dump_validations
