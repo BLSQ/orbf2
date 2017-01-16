@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/BLSQ/dhis2.git
-  revision: 89532fa741956a865e68fe3a462a24ac6862b4f2
+  revision: d91e3ebecefc3ded8c17d7d786a7de6d42efebfb
   specs:
     dhis2 (2.2.1)
       rest-client
@@ -84,7 +84,7 @@ GEM
       warden (~> 1.2.3)
     diff-lcs (1.2.5)
     docile (1.1.5)
-    domain_name (0.5.20160826)
+    domain_name (0.5.20161129)
       unf (>= 0.0.5, < 1.0.0)
     erubis (2.7.0)
     execjs (2.7.0)
@@ -108,7 +108,7 @@ GEM
     haml (4.0.7)
       tilt
     hashdiff (0.3.0)
-    http-cookie (1.0.2)
+    http-cookie (1.0.3)
       domain_name (~> 0.5)
     i18n (0.7.0)
     jbuilder (2.6.0)
