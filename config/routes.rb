@@ -18,6 +18,7 @@ Rails.application.routes.draw do
       get "/projects/:project_id", to: "setup#index", as: "project"
       resources :seeds, only: [:index] if Rails.env.development? || Rails.env.dev?
       resources :projects, only: [:create] do
+        resources :publish_drafts, only: [:create]
         resource :main_entity_group, only: [:create, :update]
         resources :packages, only: [:new, :create] do
           resources :rules, only: [:new, :create, :update, :edit]

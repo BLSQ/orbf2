@@ -29,6 +29,44 @@ class Project < ApplicationRecord
   has_many :payment_rules, dependent: :destroy
   belongs_to :project_anchor
 
+  def draft?
+    status == "draft"
+  end
+
+  def publish(date)
+    if draft?
+      old_project = self
+      new_project = nil
+      transaction do
+        package_association = {
+          package_entity_groups: [],
+          package_states:        [],
+          rules:                 [
+            :formulas
+          ]
+        }
+        new_project = deep_clone(
+          includes: [
+            :entity_group,
+            package_association,
+            payment_rules: {
+              package_payment_rules: [],
+              rules:                 [
+                :formulas
+              ]
+            }
+          ]
+        )
+        new_project.save!
+        old_project.publish_date = date
+        old_project.status = "published"
+        raise 'We are here'
+        old_project.save!
+      end
+      new_project
+    end
+  end
+
   def missing_rules_kind
     payment_rule ? [] : ["payment"]
   end
@@ -52,7 +90,7 @@ class Project < ApplicationRecord
 
   def unused_packages
     packages.select do |package|
-      payment_rules.none? {|payment_rule| payment_rule.packages.include?(package)}
+      payment_rules.none? { |payment_rule| payment_rule.packages.include?(package) }
     end
   end
 
@@ -67,7 +105,7 @@ class Project < ApplicationRecord
             }
           }
         },
-        packages:     {
+        packages:      {
           except:  [:created_at, :updated_at],
           include: {
             rules: {
@@ -99,7 +137,6 @@ class Project < ApplicationRecord
   end
 
   def dump_validation_rule(rule)
-
     puts "------"
     puts rule.to_json
     puts rule.available_variables_for_values.to_json
@@ -124,5 +161,4 @@ class Project < ApplicationRecord
       end
     end
 end
-
 end

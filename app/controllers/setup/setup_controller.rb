@@ -52,10 +52,15 @@ class Setup::SetupController < PrivateController
                       model:  step3.todo? ? nil : project.packages)
 
     step5 =  Step.new(name:   "Incentive Configuration",
-                      status: :todo,
+                      status: step4_todo ? :todo : :done,
                       kind:   :incentives,
                       model:  step4.todo? ? IncentiveConfig.new : IncentiveConfig.new)
 
-    @setup = Setup.new([step1, step2, step3, step4, step5])
+    step6 = Step.new(name:   "Publish project",
+                     status: step4_todo ? :todo : :done,
+                     kind:   :publish,
+                     model:  step4.todo? ? nil : project )
+    @project.publish_date = Date.today.to_date.strftime("%Y-%m-%d")
+    @setup = Setup.new([step1, step2, step3, step4, step5, step6])
   end
   end

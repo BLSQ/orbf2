@@ -17,7 +17,7 @@ RSpec.describe Setup::SetupController, type: :controller do
     it "should display steps when Dhis2 not set" do
       get :index
       expect(response).to have_http_status(:success)
-      expect(setup.steps.size).to eq 5
+      expect(setup.steps.size).to eq 6
       expect(setup.steps.all?(&:todo?)).to eq true
     end
 
@@ -45,7 +45,7 @@ RSpec.describe Setup::SetupController, type: :controller do
       project
       get :index, project_id: project.id
       expect(response).to have_http_status(:success)
-      expect(setup.steps.size).to eq 5
+      expect(setup.steps.size).to eq 6
       expect(setup.steps[1..5].all?(&:todo?)).to eq true
       expect(setup.steps[0].todo?).to eq false
     end
@@ -56,7 +56,7 @@ RSpec.describe Setup::SetupController, type: :controller do
 
       get :index, project_id: project.id
       expect(response).to have_http_status(:success)
-      expect(setup.steps.size).to eq 5
+      expect(setup.steps.size).to eq 6
       expect(setup.steps[0..1].all?(&:done?)).to eq true
       expect(setup.steps[2..5].all?(&:todo?)).to eq true
     end
@@ -76,7 +76,7 @@ RSpec.describe Setup::SetupController, type: :controller do
 
       get :index, project_id: project.id
       expect(response).to have_http_status(:success)
-      expect(setup.steps.size).to eq 5
+      expect(setup.steps.size).to eq 6
       expect(setup.steps[0..2].all?(&:done?)).to eq true
       expect(setup.steps[3..5].all?(&:todo?)).to eq true
     end
