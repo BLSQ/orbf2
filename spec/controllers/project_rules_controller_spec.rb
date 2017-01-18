@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe ProjectRulesController, type: :controller do
+RSpec.describe Setup::ProjectRulesController, type: :controller do
   include_context "basic_context"
 
   describe "When non authenticated #new" do
@@ -18,16 +18,20 @@ RSpec.describe ProjectRulesController, type: :controller do
     let(:program) { create :program }
 
     let(:project) do
-      program.project = ProjectFactory.new.build(
-        program:    program,
-        dhis2_url:  "http://play.dhis2.org/demo",
-        user:       "admin",
-        password:   "district",
-        bypass_ssl: false
+      project = ProjectFactory.new.build(
+        dhis2_url:      "http://play.dhis2.org/demo",
+        user:           "admin",
+        password:       "district",
+        bypass_ssl:     false,
+        project_anchor: program.build_project_anchor
       )
+
+      project.save!
       user.program = program
       user.save!
-      program.project
+      user.reload
+
+      project
     end
 
     def delete_existing_project_rules

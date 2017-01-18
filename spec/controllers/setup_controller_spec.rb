@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe SetupController, type: :controller do
+RSpec.describe Setup::SetupController, type: :controller do
   describe "When non authenticated #index" do
     it "should redirect to sign on" do
       get :index
@@ -26,7 +26,7 @@ RSpec.describe SetupController, type: :controller do
     end
 
     let(:project) do
-      project = create :project, program: program
+      project = create :project, project_anchor: program.build_project_anchor
       user.program = program
       user.save!
       user.reload
@@ -43,7 +43,7 @@ RSpec.describe SetupController, type: :controller do
 
     it "should display main entity group when Dhis2 is complete" do
       project
-      get :index
+      get :index, project_id: project.id
       expect(response).to have_http_status(:success)
       expect(setup.steps.size).to eq 5
       expect(setup.steps[1..5].all?(&:todo?)).to eq true
@@ -54,7 +54,7 @@ RSpec.describe SetupController, type: :controller do
       project
       project.create_entity_group(external_reference: "external_reference", name: "main group")
 
-      get :index
+      get :index, project_id: project.id
       expect(response).to have_http_status(:success)
       expect(setup.steps.size).to eq 5
       expect(setup.steps[0..1].all?(&:done?)).to eq true
@@ -74,7 +74,7 @@ RSpec.describe SetupController, type: :controller do
         organisation_unit_group_ext_ref: "organisation_unit_group_ext_ref"
       )
 
-      get :index
+      get :index, project_id: project.id
       expect(response).to have_http_status(:success)
       expect(setup.steps.size).to eq 5
       expect(setup.steps[0..2].all?(&:done?)).to eq true

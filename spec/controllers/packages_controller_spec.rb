@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe PackagesController, type: :controller do
+RSpec.describe Setup::PackagesController, type: :controller do
   describe "When non authenticated #new" do
     it "should redirect to sign on" do
       get :new, params: { project_id: 1 }
@@ -18,9 +18,9 @@ RSpec.describe PackagesController, type: :controller do
       create :program
     end
     let(:project) do
-      project = create :project, program: program
-      program.project = project
-      program.save!
+      project = build :project
+      project.project_anchor = program.build_project_anchor
+      project.save!
       user.program = program
       user.save!
       user.reload

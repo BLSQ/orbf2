@@ -6,7 +6,9 @@ class Setup::SetupController < PrivateController
   attr_reader :project
 
   def index
-    if current_project_anchor.project
+    current_program.build_project_anchor unless current_project_anchor
+    current_program.project_anchor unless current_project
+    if current_project_anchor && current_project_anchor.project
       @project = current_project_anchor.projects.includes(
         packages:      {
           rules:                 [formulas: [:rule]],

@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe AutocompleteController, type: :controller do
+RSpec.describe Setup::AutocompleteController, type: :controller do
   describe "When non authenticated #orgunitgroup" do
     it "should redirect to sign on" do
       get :organisation_unit_group, params: { project_id: 1 }
@@ -12,7 +12,7 @@ RSpec.describe AutocompleteController, type: :controller do
 
   let(:project) do
     project = build :project
-    project.program = program
+    project.project_anchor = program.build_project_anchor
     project.save!
     user.program = program
     user.save!

@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe IncentivesController, type: :controller do
+RSpec.describe Setup::IncentivesController, type: :controller do
   describe "When non authenticated #new" do
     it "should redirect to sign on" do
       get :new, params: { project_id: 1 }
@@ -14,10 +14,20 @@ RSpec.describe IncentivesController, type: :controller do
       sign_in user
     end
 
+    let(:program) { create :program }
+    
     let(:project) do
-      user.program.project = ProjectFactory.new.build(dhis2_url: "http://play.dhis2.org/demo", user: "admin", password: "district", bypass_ssl: false)
+      project = ProjectFactory.new.build(
+        dhis2_url:      "http://play.dhis2.org/demo",
+        user:           "admin",
+        password:       "district",
+        bypass_ssl:     false,
+        project_anchor: program.build_project_anchor
+      )
+      project.save!
       user.save!
-      user.program.project
+      user.program = program
+      project
     end
 
     describe "#new" do

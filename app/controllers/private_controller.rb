@@ -10,7 +10,7 @@ class PrivateController < ApplicationController
   end
 
   def current_project
-    current_project_anchor.project
+    @current_project ||= current_project_anchor.project
   end
 
   def current_project_anchor

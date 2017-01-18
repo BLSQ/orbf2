@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe MainEntityGroupsController, type: :controller do
+RSpec.describe Setup::MainEntityGroupsController, type: :controller do
   describe "When non authenticated #create" do
     it "should redirect to sign on" do
       post :create, params: { project_id: 1 }
@@ -11,15 +11,17 @@ RSpec.describe MainEntityGroupsController, type: :controller do
   describe "When authenticated #create" do
     include_context "basic_context"
     before(:each) do
+      project
       sign_in user
     end
 
     let(:program) { create :program }
 
     let(:project) do
-      project = create :project, program: program
+      project = build :project
+      project.project_anchor = program.build_project_anchor
+      project.save!
       user.program = program
-      program.project = project
       user.save!
       user.reload
       project
@@ -36,14 +38,14 @@ RSpec.describe MainEntityGroupsController, type: :controller do
     end
 
     it "should verify that a project already exist" do
+      project.destroy
       post :create, params: {
-        project_id:   1,
+        project_id:   0,
         entity_group: {
           external_reference: "external_reference",
           name:               "entity_group_name"
         }
       }
-
       expect(response).to redirect_to("/")
       expect(flash[:alert]).to eq("Please configure your dhis2 settings first !")
     end

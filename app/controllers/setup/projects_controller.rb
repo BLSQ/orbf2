@@ -1,11 +1,11 @@
-class ProjectsController < PrivateController
+class Setup::ProjectsController < PrivateController
   def create
-    project = current_program.build_project(project_params)
+    project_anchor = current_program.project_anchor || current_program.build_project_anchor
+    project = current_program.project_anchor.projects.build(project_params)
     answer = project.verify_connection
 
     if answer[:status] == :ok
-      current_program.project = project
-      current_program.save!
+      project.project_anchor.save!
       flash[:notice] = "Great your dhis2 connection looks valid !"
     else
       flash[:alert] = "Sorry your dhis2 connection looks invalid ! #{answer[:message]}"
