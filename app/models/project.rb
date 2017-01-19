@@ -38,29 +38,28 @@ class Project < ApplicationRecord
       old_project = self
       new_project = nil
       transaction do
-        package_association = {
-          package_entity_groups: [],
-          package_states:        [],
-          rules:                 [
-            :formulas
-          ]
-        }
-        new_project = deep_clone(
-          includes: [
-            :entity_group,
-            package_association,
-            payment_rules: {
-              package_payment_rules: [],
+        new_project = deep_clone include: {
+            entity_group: [],
+            packages:      {
+              package_entity_groups: [],
+              package_states:        [],
               rules:                 [
                 :formulas
               ]
+            },
+            payment_rules: {
+              package_payment_rules: [],
+              rule:                  [
+                :formulas
+              ]
             }
-          ]
-        )
-        new_project.save!
+        } # do |original, kopy|
+        #  puts "cloning #{original} #{kopy}"
+        #end
+
+        new_project.save!(validate: false)
         old_project.publish_date = date
         old_project.status = "published"
-        raise 'We are here'
         old_project.save!
       end
       new_project

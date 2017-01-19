@@ -60,7 +60,7 @@ class Setup::SetupController < PrivateController
                      status: step4_todo ? :todo : :done,
                      kind:   :publish,
                      model:  step4.todo? ? nil : project )
-    @project.publish_date = Date.today.to_date.strftime("%Y-%m-%d")
+    current_project_anchor.projects.last.publish_date = Date.today.to_date.strftime("%Y-%m-%d")
     @setup = Setup.new([step1, step2, step3, step4, step5, step6])
   end
   end

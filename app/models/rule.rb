@@ -14,7 +14,6 @@
 class Rule < ApplicationRecord
   RULE_TYPES = %w(payment activity package).freeze
   belongs_to :package, optional: true, inverse_of: :rules
-  belongs_to :project, optional: true, inverse_of: :rules
   belongs_to :payment_rule, optional: true, inverse_of: :rule
 
   has_many :formulas, dependent: :destroy, inverse_of: :rule
@@ -111,11 +110,18 @@ class Rule < ApplicationRecord
       }
     elsif payment_kind?
       facts = {}
-      rules = payment_rule.packages.flat_map(&:rules).select(&:package_kind?)
+      packages = payment_rule.packages
+      # in case we are in a clone packages a not there so go through long road
+      packages = payment_rule.package_payment_rules.flat_map(&:package) if packages.empty?
+      rules = packages.flat_map(&:rules).select(&:package_kind?)
       rules.flat_map(&:formulas).each do |formula|
         facts[formula.code] = "1040.1"
       end
       facts
     end
+  end
+
+  def to_s
+    "Rule##{id}-#{kind}-#{name}"
   end
 end
