@@ -28,6 +28,8 @@ class Project < ApplicationRecord
   has_many :packages, dependent: :destroy
   has_many :payment_rules, dependent: :destroy
   belongs_to :project_anchor
+  belongs_to :project, foreign_key: "original_id"
+  has_many :projects, foreign_key: "original_id"
 
   def draft?
     status == "draft"
@@ -39,23 +41,23 @@ class Project < ApplicationRecord
       new_project = nil
       transaction do
         new_project = deep_clone include: {
-            entity_group: [],
-            packages:      {
-              package_entity_groups: [],
-              package_states:        [],
-              rules:                 [
-                :formulas
-              ]
-            },
-            payment_rules: {
-              package_payment_rules: [],
-              rule:                  [
-                :formulas
-              ]
-            }
+          entity_group:  [],
+          packages:      {
+            package_entity_groups: [],
+            package_states:        [],
+            rules:                 [
+              :formulas
+            ]
+          },
+          payment_rules: {
+            package_payment_rules: [],
+            rule:                  [
+              :formulas
+            ]
+          }
         } # do |original, kopy|
         #  puts "cloning #{original} #{kopy}"
-        #end
+        # end
 
         new_project.save!(validate: false)
         old_project.publish_date = date
