@@ -1,3 +1,9 @@
+<% if project.draft? %>
 <h1>Let's setup your Project</h1>
+<%= render partial: "setup/setup/step", collection: setup.steps, locals: { readonly: false }%>
+<% else %>
+<h1>This project is in readonly</h1>
+<%= link_to "Latest project draft is available here", setup_project_path(current_program.project_anchor.latest_draft) %>
 
-<%= render partial: "setup/setup/step", collection: setup.steps %>
+<%= render "readonly" %>
+<% end %>

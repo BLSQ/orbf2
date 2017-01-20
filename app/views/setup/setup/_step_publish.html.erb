@@ -1,6 +1,6 @@
 <%if project &&  project.id%>
   <% if step.model%>
-    <%= simple_form_for(step.model,  url: setup_project_publish_drafts_path(current_user.program.project_anchor), method: :post) do |f| %>
+    <%= simple_form_for(step.model,  url: setup_project_publish_drafts_path(project), method: :post) do |f| %>
       <div class="form-group">
         <label class="control-label">Date:</label>
           <%= f.input_field :publish_date, as: :string, :readonly => true, class: "form-control input-date" %>

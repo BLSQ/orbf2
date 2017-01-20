@@ -7,7 +7,12 @@ class Setup::SetupController < PrivateController
 
   def index
     current_program.build_project_anchor unless current_project_anchor
-    current_program.project_anchor unless current_project
+    current_program.project_anchor unless current_project(raise_if_published: false)
+
+    unless params[:project_id]
+      latest_draft = current_program.project_anchor.latest_draft
+      redirect_to setup_project_path( latest_draft) && return if latest_draft
+    end
     if current_project_anchor && current_project_anchor.project
       @project = current_project_anchor.projects.includes(
         packages:      {
@@ -39,12 +44,12 @@ class Setup::SetupController < PrivateController
                      kind:   :packages,
                      model:  step1.todo? || step2.todo? ? nil : project.packages)
 
-    step4_todo = step3.todo? || project.packages.flat_map(&:rules).empty? ||
-                 project.packages.flat_map(&:rules).any?(&:invalid?) ||
-                 project.packages.any? { |p| p.rules.size != 2 } ||
-                 project.payment_rules.empty? ||
-                 project.payment_rules.map(&:rule).any?(&:invalid?) ||
-                 !project.unused_packages.empty?
+    step4_todo_basic = step3.todo? || project.packages.flat_map(&:rules).empty? ||
+                       project.packages.flat_map(&:rules).any?(&:invalid?) ||
+                       project.payment_rules.empty? ||
+                       project.payment_rules.map(&:rule).any?(&:invalid?)
+
+    step4_todo = step4_todo_basic || !project.unused_packages.empty? || project.packages.any? { |p| p.rules.size != 2 }
 
     step4 =  Step.new(name:   "Rules",
                       status: step4_todo ? :todo : :done,
@@ -57,10 +62,10 @@ class Setup::SetupController < PrivateController
                       model:  step4.todo? ? IncentiveConfig.new : IncentiveConfig.new)
 
     step6 = Step.new(name:   "Publish project",
-                     status: step4_todo ? :todo : :done,
+                     status: step4_todo_basic ? :todo : :done,
                      kind:   :publish,
-                     model:  step4.todo? ? nil : project )
-    current_project_anchor.projects.last.publish_date = Date.today.to_date.strftime("%Y-%m-%d")
+                     model:  step4_todo_basic ? nil : project)
+    project&.publish_date = Date.today.to_date.strftime("%Y-%m-%d")
     @setup = Setup.new([step1, step2, step3, step4, step5, step6])
   end
   end

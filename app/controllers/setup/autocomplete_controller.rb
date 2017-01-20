@@ -1,7 +1,7 @@
 class Setup::AutocompleteController < PrivateController
   def organisation_unit_group
-    if params.key?(:term) || params.key?(:id)
-      organisation_unit_group_by_term_or_id_on_sol
+    if params.key?(:term)
+      organisation_unit_group_by_term_on_sol
     elsif params.key?(:siblings)
       organisation_unit_group_by_used_or_sibling_id
     else
@@ -19,40 +19,7 @@ end
 
 private
 
-def organisation_unit_group_by_term_or_id
-  if params.key?(:term)
-    filter = "name:ilike:#{params[:term]}"
-  elsif params.key?(:id)
-    filter = "id:eq:#{params[:id]}"
-  end
-
-  dhis2 = current_project.dhis2_connection
-  @items = dhis2.organisation_unit_groups
-                .list(filter: filter,
-                      fields: "id,name,displayName,organisationUnits~size~rename(orgunitscount)")
-  render json: @items && return if @items.empty?
-  total = dhis2.organisation_units.list.pager.total
-
-  @items = @items.map do |item|
-    organisation_units = dhis2.organisation_units
-                              .list(
-                                filter:    "organisationUnitGroups.id:eq:#{item.id}",
-                                page_size: 5
-                              ).map { |orgunit| { name: orgunit.display_name } }
-    {
-      value:                    item.display_name,
-      id:                       item.id,
-      organisation_units_count: item.orgunitscount.to_s,
-      organisation_units:       organisation_units,
-      organisation_units_total: total
-    }
-  end
-  render json: @items
-end
-
-def organisation_unit_group_by_term_or_id_on_sol
-  #http://localhost:8080/dhis/api/organisationUnitGroups.json?fields=id,name,displayName,organisationUnitGroupSet&filter=organisationUnitGroupSet.id:eq:Y2vBvfxaIcS
-
+def organisation_unit_group_by_term_on_sol
   pyr = Pyramid.new(current_project.dhis2_connection)
 
   org_unit_groups = pyr.org_unit_groups.map do |oug|
@@ -70,7 +37,9 @@ def organisation_unit_group_by_term_or_id_on_sol
 end
 
 def organisation_unit_group_by_used_or_sibling_id
-  render_sol_items(current_project.entity_group.find_sibling_organisation_unit_groups)
+  pyr = Pyramid.new(current_project.dhis2_connection)
+  sibling_id = current_project.entity_group.external_reference
+  render_sol_items(pyr.find_sibling_organisation_unit_groups(sibling_id))
 end
 
 def render_sol_items(items)

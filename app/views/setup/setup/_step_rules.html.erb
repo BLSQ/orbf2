@@ -8,7 +8,7 @@
           </tr>
       </thead>
       <body>
-          <%= render partial: "rule", collection: step.model, as: :package %>
+          <%= render partial: "rule", collection: step.model, as: :package, locals: {readonly: readonly} %>
       </body>
   </table>
 <br>
@@ -22,7 +22,7 @@
           </tr>
       </thead>
       <body>
-          <%= render partial: "project_rule", collection: @project.payment_rules %>
+          <%= render partial: "project_rule", collection: @project.payment_rules, locals: {readonly: readonly} %>
       </body>
   </table>
   <% unless @project.unused_packages.empty? %>

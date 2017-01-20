@@ -5,7 +5,7 @@ class HomeController < PrivateController
     if @current_program.project_anchor.projects.empty?
       redirect_to setup_project_anchor_path
     else
-      redirect_to setup_project_path(@current_program.project_anchor.project)
+      redirect_to setup_project_path(@current_program.project_anchor.latest_draft)
     end
   end
 end

@@ -1,5 +1,6 @@
 class Setup::SeedsController < PrivateController
   def index
+    current_user.program.create_project_anchor unless current_user.program.project_anchor
     project = ProjectFactory.new.build(
       dhis2_url:      params[:local] ? "http://127.0.0.1:8085/" : "https://play.dhis2.org/demo",
       user:           "admin",
@@ -8,6 +9,7 @@ class Setup::SeedsController < PrivateController
       project_anchor: current_user.program.project_anchor
     )
 
+    current_user.program.project_anchor.projects.destroy_all
     current_user.program.project_anchor.projects.push project
 
     project.build_entity_group(
@@ -16,9 +18,9 @@ class Setup::SeedsController < PrivateController
     )
 
     suffix = " - " + Time.now.to_s[0..15]
-    hospital_group = { name: "Hospital", organisation_unit_group_ext_ref: "tDZVQ1WtwpA" }
-    clinic_group = { name: "Clinic", organisation_unit_group_ext_ref: "RXL3lPSK8oG" }
-    admin_group = { name: "Administrative", organisation_unit_group_ext_ref: "w0gFTTmsUcF" }
+    hospital_group = { name: "Hospital",       organisation_unit_group_ext_ref: "tDZVQ1WtwpA" }
+    clinic_group = {   name: "Clinic",         organisation_unit_group_ext_ref: "RXL3lPSK8oG" }
+    admin_group = {    name: "Administrative", organisation_unit_group_ext_ref: "w0gFTTmsUcF" }
     default_quantity_states = State.where(name: %w(Claimed Verified Tarif)).to_a
     default_quality_states = State.where(name: ["Claimed", "Verified", "Max. Score"]).to_a
     default_performance_states = State.where(name: ["Claimed", "Max. Score", "Budget"]).to_a
@@ -41,21 +43,17 @@ class Setup::SeedsController < PrivateController
       %w(p4K11MFEWtw wWy5TE9cQ0V r6nrJANOqMw a0WhmKHnZ6J nXJJZNVAy0Y hnwWyM4gDSg CecywZWejT3 bVkFujnp3F2)
     )
 
-
     update_package_with_dhis2(
       project.packages[2], suffix, default_performance_states,
       [admin_group],
       %w(p4K11MFEWtw wWy5TE9cQ0V r6nrJANOqMw a0WhmKHnZ6J nXJJZNVAy0Y hnwWyM4gDSg CecywZWejT3 bVkFujnp3F2)
     )
 
-
-    project.packages.each do |p|
-      p.save!
-    end
+    project.packages.each(&:save!)
     project.project_anchor.save!
     project.save!
     current_user.save!
-    flash[:notice] = " created package and rules for #{suffix} : #{project.packages.map(&:name).join(", ")}"
+    flash[:notice] = " created package and rules for #{suffix} : #{project.packages.map(&:name).join(', ')}"
     redirect_to root_path
   end
 

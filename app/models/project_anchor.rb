@@ -19,4 +19,8 @@ class ProjectAnchor < ApplicationRecord
   def project
     projects.first
   end
+
+  def latest_draft
+    projects.where(status: "draft").last
+  end
 end

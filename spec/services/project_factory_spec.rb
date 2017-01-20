@@ -40,13 +40,16 @@ describe ProjectFactory do
 
     new_draft = project.publish(Date.today.to_date)
     count_after = count_all_models
-
-
     count_after.keys.each do |k|
       coeff = no_duplications.include?(k) ? 1 : 2
       count_before[k] ||= 0
       expect(count_after[k]).to eq(count_before[k] * coeff), -> { "#{k} not multiplied by #{coeff} : #{count_after[k]} vs #{count_before[k]}" }
     end
+
+    expect(new_draft.draft?).to eq true
+    expect(new_draft.publish_date).to eq nil
+    expect(project.draft?).to eq false
+    expect(project.publish_date).to eq Date.today.to_date
 
   end
 end

@@ -5,6 +5,6 @@
 
     </div>
     <div id="step-<%=step.kind%>" class="panel-body panel-collapse collapse <%= " in" if step.highlighted %> ">
-        <%= render "setup/setup/step_#{step.kind}", step: step %>
+        <%= render partial: "setup/setup/step_#{step.kind}", locals: {readonly: readonly, step: step} %>
     </div>
 </div>

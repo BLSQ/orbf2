@@ -37,17 +37,18 @@ RSpec.describe Setup::MainEntityGroupsController, type: :controller do
       }
     end
 
-    it "should verify that a project already exist" do
-      project.destroy
+    it "should verify that a project exist and is a draft" do
+      project.status = "published"
+      project.save!
       post :create, params: {
-        project_id:   0,
+        project_id:   project.id,
         entity_group: {
           external_reference: "external_reference",
           name:               "entity_group_name"
         }
       }
-      expect(response).to redirect_to("/")
-      expect(flash[:alert]).to eq("Please configure your dhis2 settings first !")
+      expect(response).to redirect_to("/setup/projects/#{project.id}")
+      expect(flash[:failure]).to eq("Sorry this project has been published you can't edit it anymore")
     end
 
     it "should create missing entity group when correct info provided" do

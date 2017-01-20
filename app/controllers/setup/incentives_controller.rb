@@ -4,12 +4,12 @@ class Setup::IncentivesController < PrivateController
 
   def new
     @incentive = IncentiveConfig.new
-    @incentive.state_id = State.configurables(true).first.id
-    @incentive.package_id = current_project.packages.first.id
-    @incentive.start_date = Date.today.to_date.beginning_of_month.strftime("%Y-%m")
-    @incentive.end_date = Date.today.to_date.end_of_month.strftime("%Y-%m")
+    incentive.state_id = State.configurables(true).first.id
+    incentive.package_id = current_project.packages.first.id
+    incentive.start_date = Date.today.to_date.beginning_of_month.strftime("%Y-%m")
+    incentive.end_date = Date.today.to_date.end_of_month.strftime("%Y-%m")
     @project = current_project
-    @incentive.project = @project
+    incentive.project = @project
   end
 
   def create
