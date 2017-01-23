@@ -23,7 +23,7 @@ gem "turbolinks", "~> 5"
 gem "uglifier", ">= 1.3.0"
 gem "rails_admin"
 gem "figaro"
-
+gem "deep_cloneable"
 
 group :development, :test do
   gem "byebug", platform: :mri

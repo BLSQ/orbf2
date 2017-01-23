@@ -10,10 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170106145255) do
+ActiveRecord::Schema.define(version: 20170119144653) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "uuid-ossp"
 
   create_table "entity_groups", force: :cascade do |t|
     t.string   "name"
@@ -64,12 +65,13 @@ ActiveRecord::Schema.define(version: 20170106145255) do
   end
 
   create_table "packages", force: :cascade do |t|
-    t.string   "name",                       null: false
-    t.string   "data_element_group_ext_ref", null: false
-    t.string   "frequency",                  null: false
+    t.string   "name",                                                             null: false
+    t.string   "data_element_group_ext_ref",                                       null: false
+    t.string   "frequency",                                                        null: false
     t.integer  "project_id"
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
+    t.datetime "created_at",                                                       null: false
+    t.datetime "updated_at",                                                       null: false
+    t.uuid     "stable_id",                  default: -> { "uuid_generate_v4()" }, null: false
     t.index ["project_id"], name: "index_packages_on_project_id", using: :btree
   end
 
@@ -87,26 +89,37 @@ ActiveRecord::Schema.define(version: 20170106145255) do
     t.index ["code"], name: "index_programs_on_code", unique: true, using: :btree
   end
 
+  create_table "project_anchors", force: :cascade do |t|
+    t.integer  "program_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["program_id"], name: "index_project_anchors_on_program_id", using: :btree
+  end
+
   create_table "projects", force: :cascade do |t|
-    t.string   "name",                       null: false
-    t.string   "dhis2_url",                  null: false
+    t.string   "name",                                null: false
+    t.string   "dhis2_url",                           null: false
     t.string   "user"
     t.string   "password"
-    t.boolean  "bypass_ssl", default: false
-    t.boolean  "boolean",    default: false
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
-    t.integer  "program_id",                 null: false
-    t.index ["program_id"], name: "index_projects_on_program_id", using: :btree
+    t.boolean  "bypass_ssl",        default: false
+    t.boolean  "boolean",           default: false
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
+    t.string   "status",            default: "draft", null: false
+    t.datetime "publish_date"
+    t.integer  "project_anchor_id"
+    t.integer  "original_id"
+    t.index ["project_anchor_id"], name: "index_projects_on_project_anchor_id", using: :btree
   end
 
   create_table "rules", force: :cascade do |t|
-    t.string   "name",            null: false
-    t.string   "kind",            null: false
+    t.string   "name",                                                  null: false
+    t.string   "kind",                                                  null: false
     t.integer  "package_id"
-    t.datetime "created_at",      null: false
-    t.datetime "updated_at",      null: false
+    t.datetime "created_at",                                            null: false
+    t.datetime "updated_at",                                            null: false
     t.integer  "payment_rule_id"
+    t.uuid     "stable_id",       default: -> { "uuid_generate_v4()" }, null: false
     t.index ["package_id"], name: "index_rules_on_package_id", using: :btree
     t.index ["payment_rule_id"], name: "index_rules_on_payment_rule_id", using: :btree
   end
@@ -148,7 +161,9 @@ ActiveRecord::Schema.define(version: 20170106145255) do
   add_foreign_key "package_states", "states"
   add_foreign_key "packages", "projects"
   add_foreign_key "payment_rules", "projects"
-  add_foreign_key "projects", "programs"
+  add_foreign_key "project_anchors", "programs"
+  add_foreign_key "projects", "project_anchors"
+  add_foreign_key "projects", "projects", column: "original_id"
   add_foreign_key "rules", "packages"
   add_foreign_key "rules", "payment_rules"
   add_foreign_key "users", "programs"

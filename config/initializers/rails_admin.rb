@@ -32,4 +32,12 @@ RailsAdmin.config do |config|
       only EDITABLE_MODELS
     end
   end
+
+  if ENV["ADMIN_PASSWORD"]
+  config.authorize_with do
+    authenticate_or_request_with_http_basic("Authentication") do |username, password|
+      username == "admin" && password == ENV["ADMIN_PASSWORD"]
+    end
+  end
+end
 end

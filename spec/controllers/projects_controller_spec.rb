@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe ProjectsController, type: :controller do
+RSpec.describe Setup::ProjectsController, type: :controller do
   describe "When non authenticated #index" do
     it "should redirect to sign on" do
       post :create
@@ -32,7 +32,7 @@ RSpec.describe ProjectsController, type: :controller do
       expect(response).to redirect_to("/")
       expect(flash[:notice]).to eq "Great your dhis2 connection looks valid !"
       user.reload
-      expect(user.program.project.name).to eq("project_name")
+      expect(user.program.project_anchor.project.name).to eq("project_name")
     end
   end
 end

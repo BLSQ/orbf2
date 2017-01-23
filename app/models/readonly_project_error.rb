@@ -1,0 +1,2 @@
+class ReadonlyProjectError < StandardError
+end

@@ -19,7 +19,7 @@ class EntityGroup < ApplicationRecord
     dhis2 = project.dhis2_connection
     units = dhis2.organisation_units.list(
       page_size: 50_000,
-      fields:    "id,name,organisationUnitGroups"
+      fields:    "id,displayName,organisationUnitGroups"
     )
 
     group_ids = units.reject{|unit| unit.organisation_unit_groups.nil? }

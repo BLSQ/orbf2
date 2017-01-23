@@ -14,13 +14,10 @@ edit if necessary
 cp config/application.template.yml config/application.yml
 ```
 
-
-
-
-
 # setup the db and seed program and project
 
 ```
+rake db:create
 rake db:migrate
 rake db:seed
 ```

@@ -2,15 +2,19 @@
 #
 # Table name: projects
 #
-#  id         :integer          not null, primary key
-#  name       :string           not null
-#  dhis2_url  :string           not null
-#  user       :string
-#  password   :string
-#  bypass_ssl :boolean          default(FALSE)
-#  boolean    :boolean          default(FALSE)
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id                :integer          not null, primary key
+#  name              :string           not null
+#  dhis2_url         :string           not null
+#  user              :string
+#  password          :string
+#  bypass_ssl        :boolean          default(FALSE)
+#  boolean           :boolean          default(FALSE)
+#  created_at        :datetime         not null
+#  updated_at        :datetime         not null
+#  program_id        :integer          not null
+#  status            :string           default("draft"), not null
+#  publish_date      :datetime
+#  project_anchor_id :integer
 #
 
 class Project < ApplicationRecord
@@ -23,7 +27,50 @@ class Project < ApplicationRecord
   has_one :entity_group, dependent: :destroy
   has_many :packages, dependent: :destroy
   has_many :payment_rules, dependent: :destroy
-  belongs_to :program
+  belongs_to :project_anchor
+  belongs_to :original, foreign_key: "original_id", optional: true, class_name: Project.name
+  has_many :clones, foreign_key: "original_id", class_name: Project.name
+
+  def draft?
+    status == "draft"
+  end
+
+  def published?
+    status == "published"
+  end
+
+  def publish(date)
+    raise "already published !" unless draft?
+    old_project = self
+    new_project = nil
+    transaction do
+      new_project = deep_clone include: {
+        entity_group:  [],
+        packages:      {
+          package_entity_groups: [],
+          package_states:        [],
+          rules:                 [
+            :formulas
+          ]
+        },
+        payment_rules: {
+          package_payment_rules: [],
+          rule:                  [
+            :formulas
+          ]
+        }
+      } # do |original, kopy|
+      #  puts "cloning #{original} #{kopy}"
+      # end
+      new_project.original = old_project
+      new_project.save!
+
+      old_project.publish_date = date
+      old_project.status = "published"
+      old_project.save!
+    end
+    new_project
+  end
 
   def missing_rules_kind
     payment_rule ? [] : ["payment"]
@@ -48,7 +95,7 @@ class Project < ApplicationRecord
 
   def unused_packages
     packages.select do |package|
-      payment_rules.none? {|payment_rule| payment_rule.packages.include?(package)}
+      payment_rules.none? { |payment_rule| payment_rule.packages.include?(package) }
     end
   end
 
@@ -63,7 +110,7 @@ class Project < ApplicationRecord
             }
           }
         },
-        packages:     {
+        packages:      {
           except:  [:created_at, :updated_at],
           include: {
             rules: {
@@ -95,7 +142,6 @@ class Project < ApplicationRecord
   end
 
   def dump_validation_rule(rule)
-
     puts "------"
     puts rule.to_json
     puts rule.available_variables_for_values.to_json

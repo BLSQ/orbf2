@@ -15,7 +15,7 @@
 #  last_sign_in_ip        :inet
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
-#  project_id             :integer
+#  program_id             :integer
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

@@ -1,0 +1,10 @@
+<div class="panel panel-default">
+    <div class="panel-heading clickable <%= "collapsed" if step.highlighted %> " data-toggle="collapse" data-target="#step-<%= step.kind%>" >
+        <%= step.name %>
+        <span class="pull-right"><%= icon(step_status_icon(step)) %></span>
+
+    </div>
+    <div id="step-<%=step.kind%>" class="panel-body panel-collapse collapse <%= " in" if step.highlighted %> ">
+        <%= render partial: "setup/setup/step_#{step.kind}", locals: {readonly: readonly, step: step} %>
+    </div>
+</div>

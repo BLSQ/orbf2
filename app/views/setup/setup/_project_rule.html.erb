@@ -1,0 +1,17 @@
+<tr>
+    <td><%= project_rule.rule.name %></td>
+    <td>
+      <div class="col-md-8">
+          <%= render partial: "rule_formulas", locals: { formulas: project_rule.rule.formulas, readonly: readonly }%>
+      </div>
+    </td>
+    <td>
+      <% if readonly %>
+        <%= project_rule.rule.name %>
+      <% else %>
+      <%= link_to project_rule.rule.name, edit_setup_project_rule_path(project, project_rule) ,
+              class: project_rule.invalid? ? 'btn btn-danger' :''  %> <%= project_rule.invalid? ? icon('exclamation-triangle text-danger fa-lg') :''%>
+       <%end%>
+    </td>
+
+</tr>

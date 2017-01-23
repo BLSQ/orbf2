@@ -1,0 +1,24 @@
+<% if step.model%>
+<%= simple_form_for(step.model,  url: setup_project_main_entity_group_path(project), method: :post) do |f| %>
+<div class="row">
+    <div class="col-md-6">
+        <div class="form-group">
+            <label class="control-label">Target group</label>
+
+            <%= f.input_field :external_reference,
+                              id: "main_target_group_selector",
+                              class: "form-control sol-powered",
+                              data: {
+                                selected: step.model.external_reference,
+                                placeholder:"Lookup the main target group here...",
+                                selection:"main_target_group_selection",
+                                url:organisation_unit_group_setup_project_autocomplete_index_path(project, term:'')
+                              } %>
+
+        </div>
+    </div>
+    <div class="col-md-6" id="main_target_group_selection"></div>
+</div>
+<%= f.button :submit, class: "btn btn-success" %>
+<% end %>
+<% end %>

@@ -1,0 +1,5 @@
+<% if rule.package %>
+  <%= render "setup/rules/cheat_sheet_package", rule: rule %>
+<% else %>
+  <%= render "setup/rules/cheat_sheet_project", rule: rule %>
+<%end%>
