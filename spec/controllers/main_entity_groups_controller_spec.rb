@@ -38,13 +38,13 @@ RSpec.describe Setup::MainEntityGroupsController, type: :controller do
     end
 
     it "should verify that a project exist and is a draft" do
+      stub_dhis_data_element_by_id(project, "external_reference")
       project.status = "published"
       project.save!
       post :create, params: {
         project_id:   project.id,
         entity_group: {
-          external_reference: "external_reference",
-          name:               "entity_group_name"
+          external_reference: "external_reference"
         }
       }
       expect(response).to redirect_to("/setup/projects/#{project.id}")
@@ -52,30 +52,36 @@ RSpec.describe Setup::MainEntityGroupsController, type: :controller do
     end
 
     it "should create missing entity group when correct info provided" do
+      stub_dhis_data_element_by_id(project, "external_reference")
+
       post :create, params: valid_attributes
 
       expect(response).to redirect_to("/")
       expect(flash[:success]).to eq("Main entity group set !")
       group_entry = EntityGroup.all.last
       expect(group_entry.external_reference).to eq("external_reference")
-      expect(group_entry.name).to eq("entity_group_name")
+      expect(group_entry.name).to eq("Clinic")
     end
 
     it "should update when correct info provided" do
+      stub_dhis_data_element_by_id(project, "external_reference")
+      stub_dhis_data_element_by_id(project, "new_external_reference")
       post :create, params: valid_attributes
-      post :create, params: valid_attributes.merge(entity_group: {
-                                                     external_reference: "new_external_reference",
-                                                     name:               "new_entity_group_name"
-                                                   })
+      post :create, params: valid_attributes.merge(
+        entity_group: {
+          external_reference: "new_external_reference"
+        }
+      )
       expect(response).to redirect_to("/")
       expect(flash[:success]).to eq("Main entity group set !")
 
       group_entry = EntityGroup.all.last
       expect(group_entry.external_reference).to eq("new_external_reference")
-      expect(group_entry.name).to eq("new_entity_group_name")
+      expect(group_entry.name).to eq("Clinic")
     end
 
     it "should validate presence" do
+      stub_dhis_data_element_by_id(project, "external_reference")
       post :create, params: valid_attributes.merge(
         entity_group: {
           external_reference: " ",
@@ -84,6 +90,11 @@ RSpec.describe Setup::MainEntityGroupsController, type: :controller do
       )
       expect(response).to redirect_to("/")
       expect(flash[:alert]).to eq("External reference can't be blank, Name can't be blank")
+    end
+
+    def stub_dhis_data_element_by_id(project, external_reference)
+      stub_request(:get, "#{project.dhis2_url}/api/organisationUnitGroups/#{external_reference}")
+        .to_return(status: 200, body: fixture_content(:dhis2, "organisationUnitGroups-findid.json"))
     end
   end
 end
