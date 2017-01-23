@@ -22,7 +22,7 @@ class State < ApplicationRecord
   end
 
   def code
-    name.parameterize("_")
+    name.parameterize(separator: "_")
   end
 
   def package_level?

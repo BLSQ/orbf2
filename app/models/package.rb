@@ -94,6 +94,28 @@ class Package < ApplicationRecord
     end
   end
 
+  def to_unified_h
+    {
+      stable_id:             stable_id,
+      name:                  name,
+      states:                states.map do |state|
+        { code: state.code }
+      end,
+      package_entity_groups: package_entity_groups.map do |entity_group|
+        {
+          external_reference: entity_group.organisation_unit_group_ext_ref,
+          name:               name
+        }
+      end,
+
+      rules:                 Hash[
+        rules.map(&:to_unified_h).map do |rule|
+          [rule[:stable_id], rule]
+        end
+      ]
+    }
+  end
+
   def to_s
     "Package-#{id}-#{name}"
   end

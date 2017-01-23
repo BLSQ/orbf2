@@ -31,6 +31,10 @@ class Project < ApplicationRecord
   belongs_to :original, foreign_key: "original_id", optional: true, class_name: Project.name
   has_many :clones, foreign_key: "original_id", class_name: Project.name
 
+  def self.latests
+    order("id desc").limit(10)
+  end
+
   def draft?
     status == "draft"
   end
@@ -125,6 +129,25 @@ class Project < ApplicationRecord
           }
         }
       }
+    )
+  end
+
+  def to_unified_h
+    {
+      entity_group:  {
+        external_reference: entity_group.external_reference,
+        name:               entity_group.name
+      },
+      packages:      Hash[packages.map(&:to_unified_h).map { |h| [h[:stable_id], h] }],
+      payment_rules: Hash[payment_rules.map(&:to_unified_h).map { |h| [h[:stable_id], h] }]
+    }
+  end
+
+  def to_unified_names
+    Hash[packages.map(&:to_unified_h).map { |h| [h[:stable_id], h[:name]] }].merge(
+      Hash[payment_rules.map(&:to_unified_h).map { |h| [h[:stable_id], h[:name]] }]
+    ).merge(
+      Hash[packages.flat_map(&:rules).map(&:to_unified_h).map {|h| [h[:stable_id], h[:name]] }]
     )
   end
 

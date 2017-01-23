@@ -19,4 +19,13 @@ class PaymentRule < ApplicationRecord
   def apply_for?(entity)
     packages.all? { |p| p.apply_for(entity) }
   end
+
+  def to_unified_h
+    {
+      stable_id: rule.stable_id,
+      name:      rule.name,
+      packages:  package_payment_rules.map(&:package).map(&:stable_id),
+      rule:      rule.to_unified_h
+    }
+  end
 end
