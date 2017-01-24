@@ -14,7 +14,7 @@
               <th>Parent Id</th>
               <th>Status</th>
               <th>Publish date</th>
-              <th>Diff</th>
+              <th>Diff (compared to parent)</th>
           </tr>
       </thead>
       <body>
@@ -44,12 +44,12 @@
                     <td><%= entry.operation %></td>
                     <td><%= entry.human_readable_path %></td>
                     <td>
-                      <%if entry.show_detail %>
+                      <%if entry.show_detail && entry.current_value %>
                         <pre><%= entry.current_value %></pre>
                       <%end%>
                     </td>
                     <td>
-                      <%if entry.show_detail %>
+                      <%if entry.show_detail && entry.previous_value%>
                         <pre><%=entry.previous_value%></pre>
                       <%end%>
                     </td>
