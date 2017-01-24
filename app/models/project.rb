@@ -147,8 +147,30 @@ class Project < ApplicationRecord
     Hash[packages.map(&:to_unified_h).map { |h| [h[:stable_id], h[:name]] }].merge(
       Hash[payment_rules.map(&:to_unified_h).map { |h| [h[:stable_id], h[:name]] }]
     ).merge(
-      Hash[packages.flat_map(&:rules).map(&:to_unified_h).map {|h| [h[:stable_id], h[:name]] }]
+      Hash[packages.flat_map(&:rules).map(&:to_unified_h).map { |h| [h[:stable_id], h[:name]] }]
     )
+  end
+
+  def changelog(other_project = self.original )
+    return [] unless other_project
+    diff_symbols = { "+" => :added, "-" => :removed, "~" => :modified }
+    all_names = self.to_unified_names.merge(other_project.to_unified_names)
+
+    HashDiff.diff(other_project.to_unified_h, self.to_unified_h).map do |hash_diff|
+      operation, path, value, current = hash_diff
+      all_names.each do |uuid, name|
+        path = path.gsub(".#{uuid}.", " '#{name}' ")
+        path = path.gsub(".#{uuid}", " '#{name}' ")
+      end
+      ChangelogEntry.new(
+        operation:           diff_symbols[operation],
+        path:                hash_diff[1],
+        human_readable_path: path,
+        current_value:       current,
+        previous_value:      value,
+        show_detail:         value.is_a?(String) || current.is_a?(String)
+      )
+    end
   end
 
   def dump_validations

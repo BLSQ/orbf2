@@ -11,6 +11,7 @@
       <thead>
           <tr>
               <th>Id</th>
+              <th>Parent Id</th>
               <th>Status</th>
               <th>Publish date</th>
               <th>Diff</th>
@@ -18,31 +19,40 @@
       </thead>
       <body>
 
-        <% diff_symbols = {"+" => "added", "-" => "removed", "~" => "modified"} %>
         <% project.project_anchor.projects.latests.each do |project|%>
         <tr>
           <td><%= project.id %></td>
+          <td><%= project.original_id %></td>
           <td><%= project.status %></td>
           <td><%= project.publish_date %></td>
           <td>
 
-            <%if  project.original%>
-              <% HashDiff.diff(project.original.to_unified_h, project.to_unified_h).each do |hash_diff| %>
-              <% operation, path, value, now = hash_diff %>
-              <% all_names = project.to_unified_names.merge(project.original.to_unified_names)%>
-              <%  all_names.each do |uuid, name|
-                path.gsub!(".#{uuid}.", " '#{name}' ")
-                path.gsub!(".#{uuid}", " '#{name}' ")
-              end;%>
-               <li>  <%= diff_symbols[operation] %>  in  <%= path %>
-              <%if value.is_a?(String) || now.is_a?(String)  %>
-                 <%if now %>
-                 before
-                 <pre><%= now.to_json %></pre>
-                 <%end%>
-                 <pre><%=value.to_json%></pre>
-              <%end%>
-            <%end%>
+            <% changelog = project.changelog %>
+            <% unless changelog.empty? %>
+            <table class="table">
+              <thead>
+                 <tr><th>Operation</th><th>What</th><th>Currently</th><th>Previously</th>
+              </thead>
+              <body>
+
+            <% changelog.each do |entry| %>
+                  <tr>
+                    <td><%= entry.operation %></td>
+                    <td><%= entry.human_readable_path %></td>
+                    <td>
+                      <%if entry.show_detail %>
+                        <pre><%= entry.current_value %></pre>
+                      <%end%>
+                    </td>
+                    <td>
+                      <%if entry.show_detail %>
+                        <pre><%=entry.previous_value%></pre>
+                      <%end%>
+                    </td>
+                  </tr>
+           <%end%>
+             </body>
+           </table>
            <%end%>
           </td>
         </tr>
