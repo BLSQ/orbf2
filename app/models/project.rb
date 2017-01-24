@@ -135,8 +135,8 @@ class Project < ApplicationRecord
   def to_unified_h
     {
       entity_group:  {
-        external_reference: entity_group.external_reference,
-        name:               entity_group.name
+        external_reference: entity_group ? entity_group.external_reference : "",
+        name:               entity_group ? entity_group.name : ""
       },
       packages:      Hash[packages.map(&:to_unified_h).map { |h| [h[:stable_id], h] }],
       payment_rules: Hash[payment_rules.map(&:to_unified_h).map { |h| [h[:stable_id], h] }]
@@ -158,19 +158,27 @@ class Project < ApplicationRecord
 
     HashDiff.diff(other_project.to_unified_h, self.to_unified_h).map do |hash_diff|
       operation, path, value, current = hash_diff
-      all_names.each do |uuid, name|
-        path = path.gsub(".#{uuid}.", " '#{name}' ")
-        path = path.gsub(".#{uuid}", " '#{name}' ")
-      end
+
       ChangelogEntry.new(
         operation:           diff_symbols[operation],
         path:                hash_diff[1],
-        human_readable_path: path,
-        current_value:       current,
-        previous_value:      value,
+        human_readable_path: replace_stable_id(all_names, path),
+        current_value:       replace_stable_id(all_names, current),
+        previous_value:      replace_stable_id(all_names, value),
         show_detail:         value.is_a?(String) || current.is_a?(String)
       )
     end
+  end
+
+  def replace_stable_id(all_names, path)
+    return nil if path.nil?
+    return path unless path.is_a?(String)
+    all_names.each do |uuid, name|
+      path = path.gsub(".#{uuid}.", " '#{name}' ")
+      path = path.gsub(".#{uuid}", " '#{name}' ")
+      path = path.gsub("#{uuid}", " '#{name}' ")
+    end
+    path
   end
 
   def dump_validations

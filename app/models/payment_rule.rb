@@ -24,7 +24,7 @@ class PaymentRule < ApplicationRecord
     {
       stable_id: rule.stable_id,
       name:      rule.name,
-      packages:  package_payment_rules.map(&:package).map(&:stable_id),
+      packages:  Hash[package_payment_rules.map(&:package).map(&:stable_id).map {|stable_id|[stable_id, stable_id]}],
       rule:      rule.to_unified_h
     }
   end
