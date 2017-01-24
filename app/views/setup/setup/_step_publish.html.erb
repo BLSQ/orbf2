@@ -21,8 +21,8 @@
 
         <% project.project_anchor.projects.latests.each do |project|%>
         <tr>
-          <td><%= project.id %></td>
-          <td><%= project.original_id %></td>
+          <td><%= link_to "#{project.id}", setup_project_path(project) %></td>
+          <td><%= link_to "#{project.original_id}", setup_project_path(project.original_id) if project.original_id%></td>
           <td><%= project.status %></td>
           <td><%= project.publish_date %></td>
           <td>
@@ -31,7 +31,11 @@
             <% unless changelog.empty? %>
             <table class="table">
               <thead>
-                 <tr><th>Operation</th><th>What</th><th>Currently</th><th>Previously</th>
+                 <tr>
+                   <th>Operation</th>
+                   <th>What</th>
+                   <th>In this revision</th>
+                   <th>Previously</th>
               </thead>
               <body>
 
