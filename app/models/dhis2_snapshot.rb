@@ -25,7 +25,4 @@ class Dhis2Snapshot < ApplicationRecord
     kind.to_sym == :organisation_unit_groups
   end
 
-  def content_as_hash
-    JSON.parse(content)
-  end
 end

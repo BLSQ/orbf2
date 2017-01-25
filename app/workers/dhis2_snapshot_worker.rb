@@ -30,7 +30,7 @@ class Dhis2SnapshotWorker
     ) do
       new_snapshot = true
     end
-    snapshot.content = data.to_json
+    snapshot.content = JSON.parse(data.to_json)
     snapshot.job_id = jid || "railsc"
     snapshot.dhis2_version = dhis2_version
     snapshot.save!

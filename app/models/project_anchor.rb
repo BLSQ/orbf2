@@ -32,8 +32,8 @@ class ProjectAnchor < ApplicationRecord
                         .where(month: date.month)
                         .where(year: date.year)
 
-    organisation_units = pyramid_snapshots.find(&:kind_organisation_units?).content_as_hash
-    organisation_unit_groups = pyramid_snapshots.find(&:kind_organisation_unit_groups?).content_as_hash
+    organisation_units = pyramid_snapshots.find(&:kind_organisation_units?).content
+    organisation_unit_groups = pyramid_snapshots.find(&:kind_organisation_unit_groups?).content
 
     Pyramid.new(
       organisation_units.map { |r| Dhis2::Api::OrganisationUnit.new(nil, r["table"]) },
