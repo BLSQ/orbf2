@@ -12,6 +12,8 @@ class ProjectAnchor < ApplicationRecord
   belongs_to :program
   has_many :projects, inverse_of: :project_anchor, dependent: :destroy
 
+  has_many :dhis2_snapshots, inverse_of: :project_anchor, dependent: :destroy
+
   def invalid_project?
     project.nil? || project.invalid?
   end

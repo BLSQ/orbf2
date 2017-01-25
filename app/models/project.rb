@@ -11,10 +11,10 @@
 #  boolean           :boolean          default(FALSE)
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
-#  program_id        :integer          not null
 #  status            :string           default("draft"), not null
 #  publish_date      :datetime
 #  project_anchor_id :integer
+#  original_id       :integer
 #
 
 class Project < ApplicationRecord
@@ -30,6 +30,14 @@ class Project < ApplicationRecord
   belongs_to :project_anchor
   belongs_to :original, foreign_key: "original_id", optional: true, class_name: Project.name
   has_many :clones, foreign_key: "original_id", class_name: Project.name
+
+  def self.for_date(date)
+    where(status: "published")
+      .where("projects.publish_date <= ?", date)
+      .order("projects.publish_date desc")
+      .limit(1)
+      .first
+  end
 
   def draft?
     status == "draft"
