@@ -26,6 +26,7 @@ gem "figaro"
 gem "deep_cloneable"
 gem "hashdiff"
 gem "easy_diff"
+gem "sidekiq"
 
 group :development, :test do
   gem "byebug", platform: :mri
@@ -55,6 +56,7 @@ group :test do
   gem "codeclimate-test-reporter", "~> 1.0.0"
   gem "simplecov", require: false
   gem "webmock"
+  gem "rspec-sidekiq"
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
