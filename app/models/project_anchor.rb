@@ -25,4 +25,19 @@ class ProjectAnchor < ApplicationRecord
   def latest_draft
     projects.where(status: "draft").last
   end
+
+  def pyramid_for(date)
+    pyramid_snapshots = dhis2_snapshots
+                        .where(kind: [:organisation_units, :organisation_unit_groups])
+                        .where(month: date.month)
+                        .where(year: date.year)
+
+    organisation_units = pyramid_snapshots.find(&:kind_organisation_units?).content_as_hash
+    organisation_unit_groups = pyramid_snapshots.find(&:kind_organisation_unit_groups?).content_as_hash
+
+    Pyramid.new(
+      organisation_units.map { |r| Dhis2::Api::OrganisationUnit.new(nil, r["table"]) },
+      organisation_unit_groups.map { |r| Dhis2::Api::OrganisationUnitGroup.new(nil, r["table"]) }
+    )
+  end
 end

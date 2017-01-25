@@ -20,7 +20,7 @@ end
 private
 
 def organisation_unit_group_by_term_on_sol
-  pyr = Pyramid.new(current_project.dhis2_connection)
+  pyr = Pyramid.from(current_project)
 
   org_unit_groups = pyr.org_unit_groups.map do |oug|
     ou_total = pyr.org_units_in_group(oug.id).size
@@ -37,7 +37,7 @@ def organisation_unit_group_by_term_on_sol
 end
 
 def organisation_unit_group_by_used_or_sibling_id
-  pyr = Pyramid.new(current_project.dhis2_connection)
+  pyr = Pyramid.from(current_project)
   sibling_id = current_project.entity_group.external_reference
   render_sol_items(pyr.find_sibling_organisation_unit_groups(sibling_id))
 end

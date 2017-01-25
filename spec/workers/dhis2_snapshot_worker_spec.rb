@@ -25,18 +25,18 @@ RSpec.describe Dhis2SnapshotWorker do
     stub_organisation_unit_groups
     stub_organisation_units
     stub_system_info
-
     expect(Dhis2Snapshot.all.count).to eq 0
 
     Dhis2SnapshotWorker.new.perform(project_anchor.id)
-
     expect(Dhis2Snapshot.all.count).to eq 2
 
     Dhis2SnapshotWorker.new.perform(project_anchor.id)
-
     expect(Dhis2Snapshot.all.count).to eq 2
-  end
 
+    pyramid = project_anchor.pyramid_for(Time.now)
+    expect(pyramid.org_units.size).to eq 1336
+    expect(pyramid.org_unit_groups.size).to eq 14
+  end
 
   def stub_system_info
     stub_request(:get, "#{project.dhis2_url}/api/system/info")
@@ -45,12 +45,11 @@ RSpec.describe Dhis2SnapshotWorker do
 
   def stub_organisation_units
     stub_request(:get, "#{project.dhis2_url}/api/organisationUnits?fields=:all&pageSize=50000")
-      .to_return(status: 200, body: '{"pager":{"page":1,"pageCount":1,"total":1332,"pageSize":50000},"organisationUnits":[]}')
+      .to_return(status: 200, body: fixture_content(:dhis2, "all_organisation_units_with_groups.json"))
   end
 
   def stub_organisation_unit_groups
-    stub_request(:get, "#{project.dhis2_url}/api/organisationUnitGroups?fields=:all&pageSize=50000").
-      to_return(:status => 200, :body => '{"pager":{"page":1,"pageCount":1,"total":1332,"pageSize":50000},"organisationUnitGroups":[]}', :headers => {})
-
+    stub_request(:get, "#{project.dhis2_url}/api/organisationUnitGroups?fields=:all&pageSize=50000")
+      .to_return(status: 200, body: fixture_content(:dhis2, "organisationUnitGroups.json"))
   end
 end

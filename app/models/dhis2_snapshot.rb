@@ -16,4 +16,16 @@
 
 class Dhis2Snapshot < ApplicationRecord
   belongs_to :project_anchor
+
+  def kind_organisation_units?
+    kind.to_sym == :organisation_units
+  end
+
+  def kind_organisation_unit_groups?
+    kind.to_sym == :organisation_unit_groups
+  end
+
+  def content_as_hash
+    JSON.parse(content)
+  end
 end

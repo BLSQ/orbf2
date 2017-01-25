@@ -80,6 +80,7 @@ class Project < ApplicationRecord
     new_project
   end
 
+
   def at_least_one_package_rule
     packages.any? { |p| p.rules.size == 2 }
   end
