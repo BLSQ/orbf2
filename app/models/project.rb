@@ -31,6 +31,10 @@ class Project < ApplicationRecord
   belongs_to :original, foreign_key: "original_id", optional: true, class_name: Project.name
   has_many :clones, foreign_key: "original_id", class_name: Project.name
 
+  def self.latests
+    order("id desc").limit(10)
+  end
+
   def draft?
     status == "draft"
   end
@@ -126,6 +130,55 @@ class Project < ApplicationRecord
         }
       }
     )
+  end
+
+  def to_unified_h
+    {
+      entity_group:  {
+        external_reference: entity_group ? entity_group.external_reference : "",
+        name:               entity_group ? entity_group.name : ""
+      },
+      packages:      Hash[packages.map(&:to_unified_h).map { |h| [h[:stable_id], h] }],
+      payment_rules: Hash[payment_rules.map(&:to_unified_h).map { |h| [h[:stable_id], h] }]
+    }
+  end
+
+  def to_unified_names
+    Hash[packages.map(&:to_unified_h).map { |h| [h[:stable_id], h[:name]] }].merge(
+      Hash[payment_rules.map(&:to_unified_h).map { |h| [h[:stable_id], h[:name]] }]
+    ).merge(
+      Hash[packages.flat_map(&:rules).map(&:to_unified_h).map { |h| [h[:stable_id], h[:name]] }]
+    )
+  end
+
+  def changelog(other_project = self.original )
+    return [] unless other_project
+    diff_symbols = { "+" => :added, "-" => :removed, "~" => :modified }
+    all_names = self.to_unified_names.merge(other_project.to_unified_names)
+
+    HashDiff.diff(other_project.to_unified_h, self.to_unified_h).map do |hash_diff|
+      operation, path, value, current = hash_diff
+
+      ChangelogEntry.new(
+        operation:           diff_symbols[operation],
+        path:                hash_diff[1],
+        human_readable_path: replace_stable_id(all_names, path),
+        current_value:       replace_stable_id(all_names, current),
+        previous_value:      replace_stable_id(all_names, value),
+        show_detail:         value.is_a?(String) || current.is_a?(String)
+      )
+    end
+  end
+
+  def replace_stable_id(all_names, path)
+    return nil if path.nil?
+    return path unless path.is_a?(String)
+    all_names.each do |uuid, name|
+      path = path.gsub(".#{uuid}.", " '#{name}' ")
+      path = path.gsub(".#{uuid}", " '#{name}' ")
+      path = path.gsub("#{uuid}", " '#{name}' ")
+    end
+    path
   end
 
   def dump_validations

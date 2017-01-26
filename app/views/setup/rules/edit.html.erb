@@ -1,4 +1,4 @@
-<%= simple_form_for rule, url: setup_project_package_rule_path(rule) do |f| %>
+<%= simple_form_for rule, url: setup_project_package_rule_path(rule.package.project, rule.package, rule) do |f| %>
   <%= render partial: "form", locals: { f: f }%>
   <br><br>
   <%= f.button :submit, class: "btn btn-success" %>

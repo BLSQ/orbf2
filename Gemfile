@@ -24,6 +24,8 @@ gem "uglifier", ">= 1.3.0"
 gem "rails_admin"
 gem "figaro"
 gem "deep_cloneable"
+gem "hashdiff"
+gem "easy_diff"
 gem "sidekiq"
 
 group :development, :test do
