@@ -32,12 +32,12 @@ class ProjectAnchor < ApplicationRecord
                         .where(month: date.month)
                         .where(year: date.year)
 
-    organisation_units = pyramid_snapshots.find(&:kind_organisation_units?).content
-    organisation_unit_groups = pyramid_snapshots.find(&:kind_organisation_unit_groups?).content
-
+    organisation_units = pyramid_snapshots.find(&:kind_organisation_units?)
+    organisation_unit_groups = pyramid_snapshots.find(&:kind_organisation_unit_groups?)
+    return nil unless organisation_units && organisation_unit_groups
     Pyramid.new(
-      organisation_units.map { |r| Dhis2::Api::OrganisationUnit.new(nil, r["table"]) },
-      organisation_unit_groups.map { |r| Dhis2::Api::OrganisationUnitGroup.new(nil, r["table"]) }
+      organisation_units.content.map { |r| Dhis2::Api::OrganisationUnit.new(nil, r["table"]) },
+      organisation_unit_groups.content.map { |r| Dhis2::Api::OrganisationUnitGroup.new(nil, r["table"]) }
     )
   end
 end

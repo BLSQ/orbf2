@@ -17,6 +17,8 @@ class Pyramid
   end
 
   def self.from(project)
+    pyramid = project.project_anchor.pyramid_for(Time.now.utc)
+    return pyramid if pyramid
     dhis2 = project.dhis2_connection
     org_unit_groups = dhis2.organisation_unit_groups
                            .list(fields: "id,displayName", page_size: 20_000)
