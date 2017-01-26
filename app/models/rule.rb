@@ -62,13 +62,13 @@ class Rule < ApplicationRecord
       all_formulas_by_codes.each do |code, non_uniq_formulas|
         next unless formula_by_codes[code]
         if non_uniq_formulas.size > 1
-          self.errors[:formulas] << "Formula's code must be unique accross packages, you have #{non_uniq_formulas.size} formulas with '#{code}' in #{non_uniq_formulas.map(&:rule).map(&:package).map(&:name).join(' and ')}"
+          errors[:formulas] << "Formula's code must be unique accross packages, you have #{non_uniq_formulas.size} formulas with '#{code}' in #{non_uniq_formulas.map(&:rule).map(&:package).map(&:name).join(' and ')}"
         end
       end
     end
 
     formula_by_codes.each do |code, formulas|
-      self.errors[:formulas] << "Formula's code must be unique, you have #{formulas.size} formulas with '#{code}'" if formulas.size > 1
+      errors[:formulas] << "Formula's code must be unique, you have #{formulas.size} formulas with '#{code}'" if formulas.size > 1
     end
   end
 
@@ -120,6 +120,15 @@ class Rule < ApplicationRecord
       end
       facts
     end
+  end
+
+  def to_unified_h
+    { stable_id: stable_id,
+      name:      name,
+      kind:      kind,
+      formulas:  Hash[formulas.map do |formula|
+        [formula.code, { description: formula.description, expression: formula.expression }]
+      end] }
   end
 
   def to_s
