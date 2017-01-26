@@ -11,5 +11,5 @@
 
 class PackagePaymentRule < ApplicationRecord
   belongs_to :package
-  belongs_to :payment_rule
+  belongs_to :package_payment_rules, inverse_of: :rule
 end

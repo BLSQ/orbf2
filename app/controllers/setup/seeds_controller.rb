@@ -44,7 +44,7 @@ class Setup::SeedsController < PrivateController
     )
 
     update_package_with_dhis2(
-      project.packages[2], suffix, default_performance_states,
+      project.packages[3], suffix, default_performance_states,
       [admin_group],
       %w(p4K11MFEWtw wWy5TE9cQ0V r6nrJANOqMw a0WhmKHnZ6J nXJJZNVAy0Y hnwWyM4gDSg CecywZWejT3 bVkFujnp3F2)
     )
