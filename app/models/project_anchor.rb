@@ -40,4 +40,19 @@ class ProjectAnchor < ApplicationRecord
       organisation_unit_groups.content.map { |r| Dhis2::Api::OrganisationUnitGroup.new(nil, r["table"]) }
     )
   end
+
+  def data_compound_for(date)
+    snapshots = dhis2_snapshots
+                        .where(kind: [:data_elements, :data_element_groups])
+                        .where(month: date.month)
+                        .where(year: date.year)
+
+    data_elements = snapshots.find(&:kind_data_elements?)
+    data_element_groups = snapshots.find(&:kind_data_element_groups?)
+    return nil unless data_elements && data_element_groups
+    DataCompound.new(
+      data_elements.content.map { |r| Dhis2::Api::DataElement.new(nil, r["table"]) },
+      data_element_groups.content.map { |r| Dhis2::Api::DataElementGroup.new(nil, r["table"]) }
+    )
+  end
 end

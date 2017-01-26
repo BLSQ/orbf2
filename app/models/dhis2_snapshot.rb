@@ -17,6 +17,11 @@
 class Dhis2Snapshot < ApplicationRecord
   belongs_to :project_anchor
 
+  KINDS = [:organisation_units,
+           :organisation_unit_groups,
+           :data_elements,
+           :data_element_groups].freeze
+
   def kind_organisation_units?
     kind.to_sym == :organisation_units
   end
@@ -25,4 +30,11 @@ class Dhis2Snapshot < ApplicationRecord
     kind.to_sym == :organisation_unit_groups
   end
 
+  def kind_data_elements?
+    kind.to_sym == :data_elements
+  end
+
+  def kind_data_element_groups?
+    kind.to_sym == :data_element_groups
+  end
 end

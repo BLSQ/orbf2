@@ -8,9 +8,8 @@ class Dhis2SnapshotWorker
 
     project = project_anchor.projects.for_date(now)
 
-    [:organisation_units, :organisation_unit_groups].each do |kind|
-      snapshot(project,kind, now)
-
+    Dhis2Snapshot::KINDS.each do |kind|
+      snapshot(project, kind, now)
     end
   end
 
