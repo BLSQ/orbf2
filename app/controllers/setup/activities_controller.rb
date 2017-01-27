@@ -1,5 +1,7 @@
 class Setup::ActivitiesController < PrivateController
-  def new; end
+  def new
+    @activity = current_project.activities.build
+  end
 
   def create; end
 
