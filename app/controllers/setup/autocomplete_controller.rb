@@ -10,10 +10,10 @@ class Setup::AutocompleteController < PrivateController
   end
 
   def data_elements
-    dhis2 = current_project.dhis2_connection
-    dataelements = dhis2.data_elements
-                        .list(fields: "id,displayName", page_size: 20_000)
-    render_sol_items(dataelements)
+
+    data_compound = DataCompound.from(current_project)
+
+    render_sol_items(data_compound.data_elements)
   end
 end
 
