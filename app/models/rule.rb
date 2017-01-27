@@ -9,6 +9,7 @@
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #  payment_rule_id :integer
+#  stable_id       :uuid             not null
 #
 
 class Rule < ApplicationRecord

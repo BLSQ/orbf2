@@ -20,7 +20,8 @@ describe ProjectFactory do
       User,
       State,
       Program,
-      ProjectAnchor
+      ProjectAnchor,
+      Dhis2Snapshot
     ].map(&:name).map(&:to_sym)
     count_before = count_all_models
 

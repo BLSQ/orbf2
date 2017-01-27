@@ -11,10 +11,10 @@
 #  boolean           :boolean          default(FALSE)
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
-#  program_id        :integer          not null
 #  status            :string           default("draft"), not null
 #  publish_date      :datetime
 #  project_anchor_id :integer
+#  original_id       :integer
 #
 
 class Project < ApplicationRecord
@@ -24,12 +24,20 @@ class Project < ApplicationRecord
   validates :user, presence: true
   validates :password, presence: true
 
+  has_many :payment_rules, dependent: :destroy
   has_one :entity_group, dependent: :destroy
   has_many :packages, dependent: :destroy
-  has_many :payment_rules, dependent: :destroy
   belongs_to :project_anchor
   belongs_to :original, foreign_key: "original_id", optional: true, class_name: Project.name
-  has_many :clones, foreign_key: "original_id", class_name: Project.name
+  has_many :clones, foreign_key: "original_id", class_name: Project.name, dependent: :destroy
+
+  def self.for_date(date)
+    where(status: "published")
+      .where("projects.publish_date <= ?", date)
+      .order("projects.publish_date desc")
+      .limit(1)
+      .first
+  end
 
   def self.latests
     order("id desc").limit(10)
@@ -75,6 +83,7 @@ class Project < ApplicationRecord
     end
     new_project
   end
+
 
   def at_least_one_package_rule
     packages.any? { |p| p.rules.size == 2 }

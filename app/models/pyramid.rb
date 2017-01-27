@@ -1,12 +1,7 @@
 
 class Pyramid
-  def initialize(dhis2)
-    org_unit_groups = dhis2.organisation_unit_groups
-                           .list(fields: "id,displayName", page_size: 20_000)
+  def initialize(org_units, org_unit_groups)
     @org_unit_groups_by_id = org_unit_groups.index_by(&:id)
-
-    org_units = dhis2.organisation_units
-                     .list(fields: "id,displayName,organisationUnitGroups", page_size: 50_000)
 
     @org_units_by_id = org_units.index_by(&:id)
 
@@ -19,6 +14,17 @@ class Pyramid
       end
     end
     @org_units_by_group = org_units_by_group
+  end
+
+  def self.from(project)
+    pyramid = project.project_anchor.pyramid_for(Time.now.utc)
+    return pyramid if pyramid
+    dhis2 = project.dhis2_connection
+    org_unit_groups = dhis2.organisation_unit_groups
+                           .list(fields: "id,displayName", page_size: 20_000)
+    org_units = dhis2.organisation_units
+                     .list(fields: "id,displayName,organisationUnitGroups", page_size: 50_000)
+    Pyramid.new(org_units, org_unit_groups)
   end
 
   def org_units

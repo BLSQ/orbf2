@@ -11,10 +11,10 @@
 #  boolean           :boolean          default(FALSE)
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
-#  program_id        :integer          not null
 #  status            :string           default("draft"), not null
 #  publish_date      :datetime
 #  project_anchor_id :integer
+#  original_id       :integer
 #
 
 require "rails_helper"
