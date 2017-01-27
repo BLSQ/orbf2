@@ -1,0 +1,15 @@
+<h1>Configure Incentives</h1>
+<%= simple_form_for(@activity,  url: setup_project_activities_path(@activity.project), method: :post) do |f| %>
+<%= f.input :name %>
+<div class="row">
+    <div class="col-md-6">
+      <div class="form-group">
+        <label class="control-label">Data Elements</label>
+        <select id="data_elements_selector" data-selected="<%=params[:data_elements].join(',') if params[:data_elements] %>" data-placeholder="Lookup the data elements here..." data-selection = "data_elements_selection" data-url = "<%= data_elements_setup_project_autocomplete_index_path(@activity.project) %>" class="form-control sol-powered" name="data_elements[]" multiple="multiple">
+        </select>
+    </div>
+  </div>
+    <div class="col-md-6" id="data_elements_selection"></div>
+</div>
+<%= f.button :submit, class: "btn btn-success" %>
+<% end %>
