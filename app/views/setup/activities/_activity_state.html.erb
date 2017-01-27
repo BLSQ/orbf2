@@ -1,0 +1,22 @@
+
+<tr>
+  <td> <%= activity_state.name %> </td>
+  <td>
+
+    <div class="switch-field">
+      <input type="radio" id="switch_3_left" name="switch_3" value="yes" checked/>
+      <label for="switch_3_left">One</label>
+      <input type="radio" id="switch_3_center" name="switch_3" value="maybe" />
+      <label for="switch_3_center">Two</label>
+            <input type="radio" id="switch_3_right" name="switch_3" value="no" />
+      <label for="switch_3_right">Three</label>
+    </div>
+
+    <div class="switch-field">
+      <% State.all.each do |state| %>
+         <label><%=state.name%></label>
+         <%= radio_button_tag 'activity[]', state.id %>
+      <% end %>
+    </div>
+  </td>
+</tr>
