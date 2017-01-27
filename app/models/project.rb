@@ -27,6 +27,7 @@ class Project < ApplicationRecord
   has_many :payment_rules, dependent: :destroy
   has_one :entity_group, dependent: :destroy
   has_many :packages, dependent: :destroy
+  has_many :activities, dependent: :destroy
   belongs_to :project_anchor
   belongs_to :original, foreign_key: "original_id", optional: true, class_name: Project.name
   has_many :clones, foreign_key: "original_id", class_name: Project.name, dependent: :destroy

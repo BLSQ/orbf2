@@ -6,7 +6,7 @@ class ActivityIncentive
   validates :name, presence: true
 
   def activity
-    @activity ||= Activity.new
+    @activity ||= ActivityForm.new
   end
 
   def external_reference=(external_reference)

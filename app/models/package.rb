@@ -88,7 +88,7 @@ class Package < ApplicationRecord
   def fetch_activities
     dhis2 = project.dhis2_connection
     activities = dhis2.data_elements.list(filter: "dataElementGroups.id:eq:#{data_element_group_ext_ref}").map do |dataelement|
-      Activity.new(
+      ActivityForm.new(
         external_reference: dataelement.id,
         name:               dataelement.display_name
       )

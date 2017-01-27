@@ -105,7 +105,7 @@ module Analytics
     private
 
     def new_activity(id, name)
-      Activity.new(id: id, name: name)
+      ActivityForm.new(id: id, name: name)
     end
 
     def new_values(claimed = 0.0, verified = 0.0, validated = 0.0)
