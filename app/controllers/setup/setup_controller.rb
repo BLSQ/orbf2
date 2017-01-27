@@ -11,7 +11,7 @@ class Setup::SetupController < PrivateController
 
     unless params[:project_id]
       latest_draft = current_program.project_anchor.latest_draft
-      redirect_to setup_project_path( latest_draft) && return if latest_draft
+      redirect_to setup_project_path(latest_draft) && return if latest_draft
     end
     if current_project_anchor && current_project_anchor.project && params[:project_id]
       @project = current_project_anchor.projects.includes(
@@ -29,43 +29,48 @@ class Setup::SetupController < PrivateController
       ).find(params[:project_id])
     end
 
-    step1 = Step.new(name:   "Dhis2 connection",
-                     status: current_project_anchor.invalid_project? ? :todo : :done,
-                     kind:   :dhis2,
-                     model:  project || current_project_anchor.projects.build)
+    step_connection = Step.new(name:   "Dhis2 connection",
+                               status: current_project_anchor.invalid_project? ? :todo : :done,
+                               kind:   :dhis2,
+                               model:  project || current_project_anchor.projects.build)
 
-    step2 = Step.new(name:   "Entities",
-                     status: step1.todo? || project.entity_group.nil? ? :todo : :done,
-                     kind:   :entities,
-                     model:  step1.todo? ? nil : project.entity_group || project.build_entity_group)
+    step_entities = Step.new(name:   "Entities",
+                             status: step_connection.todo? || project.entity_group.nil? ? :todo : :done,
+                             kind:   :entities,
+                             model:  step_connection.todo? ? nil : project.entity_group || project.build_entity_group)
 
-    step3 = Step.new(name:   "Package of Activities",
-                     status: step2.todo? || project.packages.nil? || project.packages.empty? ? :todo : :done,
-                     kind:   :packages,
-                     model:  step1.todo? || step2.todo? ? nil : project.packages)
+    step_activities = Step.new(name:   "Activities",
+                               status: step_entities.todo? || project.activities.empty? ? :todo : :done,
+                               kind:   :activities,
+                               model:  step_entities.todo? ? nil : project)
 
-    step4_todo_basic = step3.todo? || project.packages.flat_map(&:rules).empty? ||
-                       project.packages.flat_map(&:rules).any?(&:invalid?) ||
-                       project.payment_rules.empty? ||
-                       project.payment_rules.map(&:rule).any?(&:invalid?)
+    step_package = Step.new(name:   "Package of Activities",
+                            status: step_activities.todo? || project.packages.nil? || project.packages.empty? ? :todo : :done,
+                            kind:   :packages,
+                            model:  step_connection.todo? || step_activities.todo? ? nil : project.packages)
 
-    step4_todo = step4_todo_basic || !project.unused_packages.empty? || project.packages.any? { |p| p.rules.size != 2 }
+    step_rules_todo_basic = step_package.todo? || project.packages.flat_map(&:rules).empty? ||
+                            project.packages.flat_map(&:rules).any?(&:invalid?) ||
+                            project.payment_rules.empty? ||
+                            project.payment_rules.map(&:rule).any?(&:invalid?)
 
-    step4 =  Step.new(name:   "Rules",
-                      status: step4_todo ? :todo : :done,
-                      kind:   :rules,
-                      model:  step3.todo? ? nil : project.packages)
+    step_rules_todo = step_rules_todo_basic || !project.unused_packages.empty? || project.packages.any? { |p| p.rules.size != 2 }
 
-    step5 =  Step.new(name:   "Incentive Configuration",
-                      status: step4_todo ? :todo : :done,
-                      kind:   :incentives,
-                      model:  step4.todo? ? IncentiveConfig.new : IncentiveConfig.new)
+    step_rules = Step.new(name:   "Rules",
+                          status: step_rules_todo ? :todo : :done,
+                          kind:   :rules,
+                          model:  step_package.todo? ? nil : project.packages)
 
-    step6 = Step.new(name:   "Publish project",
-                     status: step4_todo_basic ? :todo : :done,
-                     kind:   :publish,
-                     model:  step4_todo_basic ? nil : project)
+    step_incentives = Step.new(name:   "Incentive Configuration",
+                               status: step_rules_todo ? :todo : :done,
+                               kind:   :incentives,
+                               model:  step_rules.todo? ? IncentiveConfig.new : IncentiveConfig.new)
+
+    step_publish = Step.new(name:   "Publish project",
+                            status: step_rules_todo_basic ? :todo : :done,
+                            kind:   :publish,
+                            model:  step_rules_todo_basic ? nil : project)
     project&.publish_date = Date.today.to_date.strftime("%Y-%m-%d")
-    @setup = Setup.new([step1, step2, step3, step4, step5, step6])
+    @setup = Setup.new([step_connection, step_entities, step_activities, step_package, step_rules, step_incentives, step_publish])
   end
   end
