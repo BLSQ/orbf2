@@ -42,7 +42,7 @@ class Setup::SetupController < PrivateController
     step_activities = Step.new(name:   "Activities",
                                status: step_entities.todo? || project.activities.empty? ? :todo : :done,
                                kind:   :activities,
-                               model:  step_entities.todo? ? nil : project)
+                               model:  step_entities.todo? ? nil : project.activities)
 
     step_package = Step.new(name:   "Package of Activities",
                             status: step_activities.todo? || project.packages.nil? || project.packages.empty? ? :todo : :done,

@@ -1,0 +1,6 @@
+<tr>
+    <td><%= activity.name %></td>
+    <td>
+        <small><%= activity.activity_packages.map(&:package).map{|package| package.name}.join(', ') %></small>
+    </td>
+</tr>
