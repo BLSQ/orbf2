@@ -1,6 +1,7 @@
 <tr>
     <td><%= activity.name %></td>
     <td>
+      <!-- HTML ul li should be created in a separate partial if Stephan OKays this. -->
         <small><%= activity.activity_packages.map(&:package).map{|package| package.name}.join(', ') %></small>
     </td>
 </tr>

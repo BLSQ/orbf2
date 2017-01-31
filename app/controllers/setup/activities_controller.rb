@@ -28,34 +28,33 @@ class Setup::ActivitiesController < PrivateController
         render :new
       else
 
-        # save activity
-        activity = Activity.new
+        allowedstates = current_project.packages.find(params[:activity][:package_id]).state_ids
+
+        activity = current_project.activities.build
         activity.name = params[:activity][:name]
-        activity.project = current_project
-        activity.save
-        activity_id = activity.id
+        activity.activity_packages.build(
+          package_id: params[:activity][:package_id]
+        )
 
-        # attach activity to package
-        activity_packages = ActivityPackage.new
-        activity_packages.activity_id = activity_id
-        activity_packages.package_id = params[:activity][:package_id]
-        activity_packages.save
-
-        # save activities and
         data_compound = DataCompound.from(current_project)
         data_elements = params[:data_elements].map { |element_id| data_compound.data_element(element_id) }
         data_elements.each do |element|
-          activity_states = ActivityState.new
-          activity_states.external_reference = element.id
-          activity_states.name = element.name
-          # check if state is allowed in the package
-          activity_states.state_id = params[:activity][:states][element.id]
-          activity_states.activity_id = activity.id
-          activity_states.save
+          next unless allowedstates.include? params[:activity][:states][element.id].to_i
+          activity.activity_states.build(
+            name:               element.name,
+            external_reference: element.id,
+            state_id:           params[:activity][:states][element.id]
+          )
         end
-
-        flash[:success] = "Data element created successfuly"
-        redirect_to(root_path)
+        if activity.save
+          flash[:success] = "Data element created successfuly"
+          redirect_to(root_path)
+        else
+          @activity = activity
+          @packages = current_project.packages
+          flash[:failure] = "Error creating activity"
+          render :new
+        end
       end
     end
   end
