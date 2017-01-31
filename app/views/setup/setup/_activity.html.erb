@@ -1,5 +1,5 @@
 <tr>
-    <td><%= activity.name %></td>
+    <td><%= link_to activity.name, edit_setup_project_activity_path(project,activity.id) %></td>
     <td>
       <!-- HTML ul li should be created in a separate partial if Stephan OKays this. -->
         <small><%= activity.activity_packages.map(&:package).map{|package| package.name}.join(', ') %></small>

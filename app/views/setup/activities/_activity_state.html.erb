@@ -3,8 +3,7 @@
   <td>
     <div class="switch-field pull-right">
       <% State.where(level: 'activity').each do |state| %>
-      <%= radio_button_tag "activity[states][#{activity_state.external_reference}]", state.id %>
-
+      <%= radio_button_tag "activity[states][#{activity_state.external_reference}]", state.id, ((state.id == activity_state.state_id)? true : false) %>
       <label for="<%= "activity_states_#{activity_state.external_reference}_#{state.id}"%>"><%=state.name%></label>
       <% end %>
     </div>

@@ -59,6 +59,13 @@ class Setup::ActivitiesController < PrivateController
     end
   end
 
+  def edit
+    @activity = current_project.activities.where(id: params[:id]).first
+    params[:data_elements] = @activity.activity_states.map{|activ| activ.external_reference}
+    @packages = current_project.packages
+    render :new
+  end
+
   private
 
   def params_package
