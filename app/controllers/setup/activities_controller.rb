@@ -19,11 +19,10 @@ class Setup::ActivitiesController < PrivateController
 
       @packages = current_project.packages
       render :new
-    elsif params[:activity].key?(:states)
+    else
       if params[:activity][:package_id].empty? || (params[:activity][:states].size != params[:data_elements].size)
         @activity = current_project.activities.build
         @packages = current_project.packages
-        # @activity.activity_states = params[:activity][:states]
         flash[:failure] = "Please select or create a package or/and check if you selected a state for each data element"
         render :new
       else
@@ -61,7 +60,7 @@ class Setup::ActivitiesController < PrivateController
 
   def edit
     @activity = current_project.activities.where(id: params[:id]).first
-    params[:data_elements] = @activity.activity_states.map{|activ| activ.external_reference}
+    params[:data_elements] = @activity.activity_states.map(&:external_reference)
     @packages = current_project.packages
     render :new
   end
