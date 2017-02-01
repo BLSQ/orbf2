@@ -24,7 +24,8 @@ class Step
     Step.new(name:   "Dhis2 connection",
              status: current_project_anchor.invalid_project? ? :todo : :done,
              kind:   :dhis2,
-             model:  current_project_anchor.projects.find_by(status: "draft") || current_project_anchor.projects.build)
+             model:  current_project_anchor.projects.find_by(status: "draft") ||
+             current_project_anchor.projects.build)
   end
 
   def self.entities(project, step_connection)
@@ -81,17 +82,14 @@ class Step
   end
 
   def self.rules_todo_basic(project, step_package)
-    step_rules_todo_basic = step_package.todo? || project.packages.flat_map(&:rules).empty? ||
-                            project.packages.flat_map(&:rules).any?(&:invalid?) ||
-                            project.payment_rules.empty? ||
-                            project.payment_rules.map(&:rule).any?(&:invalid?)
-
-    step_rules_todo_basic
+    step_package.todo? || project.packages.flat_map(&:rules).empty? ||
+      project.packages.flat_map(&:rules).any?(&:invalid?) ||
+      project.payment_rules.empty? ||
+      project.payment_rules.map(&:rule).any?(&:invalid?)
   end
 
   def self.rules_todo(project, step_package)
-    step_rules_todo_basic = rules_todo_basic(project, step_package)
-    step_rules_todo = (step_rules_todo_basic || !project.unused_packages.empty? || project.packages.any? { |p| p.rules.size != 2 })
-    step_rules_todo
+    rules_todo_basic(project, step_package) || !project.unused_packages.empty? ||
+      project.packages.any? { |p| p.rules.size != 2 }
   end
 end
