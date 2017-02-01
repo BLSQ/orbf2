@@ -31,29 +31,8 @@ class Setup
           ]
         ).find(params[:project_id])
       end
-
-      step_connection = Step.connection(current_project_anchor)
-
-      step_entities = Step.entities(project, step_connection)
-
-      step_activities = Step.activities(project, step_entities)
-
-      step_packages = Step.packages(project, step_activities, step_connection)
-
-      step_rules = Step.rules(project, step_packages)
-
-      step_incentives = Step.incentives(project, step_packages, step_rules)
-
-      step_publish = Step.publish(project, step_packages)
-
       project&.publish_date = Time.zone.today.to_date.strftime("%Y-%m-%d")
-      @setup = Setup.new([step_connection,
-                          step_entities,
-                          step_activities,
-                          step_packages,
-                          step_rules,
-                          step_incentives,
-                          step_publish])
+      @setup = Setup.new(Step.get_steps(project))
     end
   end
 end

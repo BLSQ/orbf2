@@ -2,6 +2,24 @@ class Step
   include ActiveModel::Model
   attr_accessor(:name, :status, :hint, :kind, :highlighted, :model)
 
+  def self.get_steps(project)
+    step_connection = connection(project.project_anchor)
+    step_entities = entities(project, step_connection)
+    step_activities = activities(project, step_entities)
+    step_packages = packages(project, step_activities, step_connection)
+    step_rules = rules(project, step_packages)
+    step_incentives = incentives(project, step_packages, step_rules)
+    step_publish = publish(project, step_packages)
+
+    [step_connection,
+     step_entities,
+     step_activities,
+     step_packages,
+     step_rules,
+     step_incentives,
+     step_publish]
+  end
+
   def self.connection(current_project_anchor)
     Step.new(name:   "Dhis2 connection",
              status: current_project_anchor.invalid_project? ? :todo : :done,
@@ -62,8 +80,6 @@ class Step
     status == :done
   end
 
-  private
-
   def self.rules_todo_basic(project, step_package)
     step_rules_todo_basic = step_package.todo? || project.packages.flat_map(&:rules).empty? ||
                             project.packages.flat_map(&:rules).any?(&:invalid?) ||
@@ -75,7 +91,7 @@ class Step
 
   def self.rules_todo(project, step_package)
     step_rules_todo_basic = rules_todo_basic(project, step_package)
-    step_rules_todo = step_rules_todo_basic || !project.unused_packages.empty? || project.packages.any? { |p| p.rules.size != 2 }
+    step_rules_todo = (step_rules_todo_basic || !project.unused_packages.empty? || project.packages.any? { |p| p.rules.size != 2 })
     step_rules_todo
   end
 end
