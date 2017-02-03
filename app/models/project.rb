@@ -59,6 +59,9 @@ class Project < ApplicationRecord
     transaction do
       new_project = deep_clone include: {
         entity_group:  [],
+        activities:    {
+          activity_states: []
+        },
         packages:      {
           package_entity_groups: [],
           package_states:        [],
@@ -84,7 +87,6 @@ class Project < ApplicationRecord
     end
     new_project
   end
-
 
   def at_least_one_package_rule
     packages.any? { |p| p.rules.size == 2 }
@@ -148,6 +150,7 @@ class Project < ApplicationRecord
         external_reference: entity_group ? entity_group.external_reference : "",
         name:               entity_group ? entity_group.name : ""
       },
+      activities: Hash[activities.map(&:to_unified_h).map { |h| [h[:stable_id], h] }],
       packages:      Hash[packages.map(&:to_unified_h).map { |h| [h[:stable_id], h] }],
       payment_rules: Hash[payment_rules.map(&:to_unified_h).map { |h| [h[:stable_id], h] }]
     }
@@ -158,15 +161,19 @@ class Project < ApplicationRecord
       Hash[payment_rules.map(&:to_unified_h).map { |h| [h[:stable_id], h[:name]] }]
     ).merge(
       Hash[packages.flat_map(&:rules).map(&:to_unified_h).map { |h| [h[:stable_id], h[:name]] }]
+    ).merge(
+      Hash[activities.flat_map(&:activity_states).map(&:to_unified_h).map { |h| [h[:stable_id], h[:name]] }]
+    ).merge(
+      Hash[activities.map(&:to_unified_h).map { |h| [h[:stable_id], h[:name]] }]
     )
   end
 
-  def changelog(other_project = self.original )
+  def changelog(other_project = original)
     return [] unless other_project
     diff_symbols = { "+" => :added, "-" => :removed, "~" => :modified }
-    all_names = self.to_unified_names.merge(other_project.to_unified_names)
+    all_names = to_unified_names.merge(other_project.to_unified_names)
 
-    HashDiff.diff(other_project.to_unified_h, self.to_unified_h).map do |hash_diff|
+    HashDiff.diff(other_project.to_unified_h, to_unified_h).map do |hash_diff|
       operation, path, value, current = hash_diff
 
       ChangelogEntry.new(
@@ -186,7 +193,7 @@ class Project < ApplicationRecord
     all_names.each do |uuid, name|
       path = path.gsub(".#{uuid}.", " '#{name}' ")
       path = path.gsub(".#{uuid}", " '#{name}' ")
-      path = path.gsub("#{uuid}", " '#{name}' ")
+      path = path.gsub(uuid.to_s, " '#{name}' ")
     end
     path
   end

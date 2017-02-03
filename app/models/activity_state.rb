@@ -15,4 +15,19 @@
 class ActivityState < ApplicationRecord
   belongs_to :activity, inverse_of: :activity_states
   has_one :state
+
+  validates :state_id, presence: { message: "Select a state or remove this activity from the list" }
+  validates :external_reference, presence: true
+  validates :name, presence: true
+
+  validates_uniqueness_of :state_id, scope: [:activity_id]
+
+  def to_unified_h
+    {
+      stable_id:          stable_id,
+      name:               name,
+      external_reference: external_reference,
+      state:              state_id
+    }
+  end
 end

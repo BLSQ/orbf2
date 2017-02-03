@@ -1,11 +1,24 @@
-<tr>
-  <td> <%= activity_state.name %> </td>
+<tr class="nested-fields">
+  <td> <%= activity_state.name %>
+    <% if activity_state.errors.any? %>
+    <br>
+      <%=icon("exclamation-triangle")%> <% activity_state.errors.full_messages.each do |msg| %>
+       <%= msg %>
+      <% end %>
+    </ul>
+   </div>
+   <% end %>
+  </td>
+  <td> <%= link_to_remove_association icon("trash-o") , f %> </td>
   <td>
     <div class="switch-field pull-right">
-      <% State.where(level: 'activity').each do |state| %>
-      <%= radio_button_tag "activity[states][#{activity_state.external_reference}]", state.id, ((state.id == activity_state.state_id)? true : false) %>
-      <label for="<%= "activity_states_#{activity_state.external_reference}_#{state.id}"%>"><%=state.name%></label>
+      <% states.each_with_index do |state| %>
+        <%= radio_button_tag "#{prefix}[state_id]", state.id, state.id == activity_state.state_id %>
+        <label for='<%= sanitize_to_id("#{prefix}[state_id]_#{state.id}")%>'><%= state.name%></label>
       <% end %>
     </div>
+
+    <%= f.hidden_field :external_reference, value: activity_state.external_reference %>
+    <%= f.hidden_field :name, value: activity_state.name %>
   </td>
 </tr>

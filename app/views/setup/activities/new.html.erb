@@ -1,41 +1,4 @@
 <h1>Create activity and associated dhis2 elements</h1>
-<%= simple_form_for(@activity,  url: setup_project_activities_path(@activity.project), method: :post) do |f| %>
-<%= f.input :name, input_html: {value: params.has_key?(:activity) ? params[:activity][:name] : @activity.name} %>
-<div class="row">
-    <div class="col-md-6">
-      <div class="form-group">
-        <label class="control-label">Data Elements</label>
-        <select id="data_elements_selector" data-selected="<%=params[:data_elements].join(',') if params[:data_elements] %>" data-placeholder="Lookup the data elements here..." data-selection = "data_elements_selection" data-url = "<%= data_elements_setup_project_autocomplete_index_path(@activity.project) %>" class="form-control sol-powered" name="data_elements[]" multiple="multiple">
-        </select>
-    </div>
-  </div>
-    <div class="col-md-6" id="data_elements_selection"></div>
-</div>
-
-<% if params.has_key?(:activity) || @activity.activity_states.present? %>
-<div>
-    <table class="table table-striped table-condensed">
-        <thead>
-            <tr>
-                <th>Activity</th>
-                <th>States</th>
-            </tr>
-        </thead>
-        <body>
-            <%= render partial: "activity_state", collection: @activity.activity_states, as: :activity_state %>
-        </body>
-    </table>
-</div>
-<div>
-    <div class="input-group">
-      <span class="input-group-addon"><strong>Package</strong></span>
-      <%= f.input_field :package_id, collection: @packages, include_blank: "Select a package or create one...", selected: @activity.activity_packages.present? ? @activity.activity_packages.first.package_id : '', class:"form-control", error: 'Username is mandatory, please specify one' %>
-      <span class="input-group-btn">
-        <button class="btn btn-info" type="button">Create new package</button>
-      </span>
-    </div>
-  </div>
-  <br><br>
-<% end %>
-<%= f.button :submit, class: "btn btn-success" %>
+<%= simple_form_for(activity,  url: setup_project_activities_path(activity.project), method: :post) do |f| %>
+  <%= render 'form', f: f %>
 <% end %>

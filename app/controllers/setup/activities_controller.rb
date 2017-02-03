@@ -1,73 +1,71 @@
 class Setup::ActivitiesController < PrivateController
+  helper_method :states, :activity
+
+  attr_reader :activity, :states
+
   def new
     @activity = current_project.activities.build
   end
 
   def create
-    if !params[:activity].key?(:states)
-      @activity = current_project.activities.build
-
-      data_compound = DataCompound.from(current_project)
-      data_elements = params[:data_elements].map { |element_id| data_compound.data_element(element_id) }
-
-      data_elements.each do |element|
-        @activity.activity_states.build(
-          external_reference: element.external_reference.nil? ? element.id : element.external_reference,
-          name:               element.name
-        )
-      end
-
-      @packages = current_project.packages
-      render :new
-    else
-      if params[:activity][:package_id].empty? || (params[:activity][:states].size != params[:data_elements].size)
-        @activity = current_project.activities.build
-        @packages = current_project.packages
-        flash[:failure] = "Please select or create a package or/and check if you selected a state for each data element"
-        render :new
-      else
-
-        allowedstates = current_project.packages.find(params[:activity][:package_id]).state_ids
-
-        activity = current_project.activities.build
-        activity.name = params[:activity][:name]
-        activity.activity_packages.build(
-          package_id: params[:activity][:package_id]
-        )
-
-        data_compound = DataCompound.from(current_project)
-        data_elements = params[:data_elements].map { |element_id| data_compound.data_element(element_id) }
-        data_elements.each do |element|
-          next unless allowedstates.include? params[:activity][:states][element.id].to_i
-          activity.activity_states.build(
-            name:               element.name,
-            external_reference: element.id,
-            state_id:           params[:activity][:states][element.id]
-          )
-        end
-        if activity.save
-          flash[:success] = "Data element created successfuly"
-          redirect_to(root_path)
-        else
-          @activity = activity
-          @packages = current_project.packages
-          flash[:failure] = "Error creating activity"
-          render :new
-        end
-      end
-    end
+    @states = State.where(level: "activity")
+    @packages = current_project.packages
+    @activity = current_project.activities.build(params_activity)
+    handle_action(:new)
   end
 
   def edit
-    @activity = current_project.activities.where(id: params[:id]).first
-    params[:data_elements] = @activity.activity_states.map(&:external_reference)
+    @states = State.where(level: "activity")
     @packages = current_project.packages
-    render :new
+    @activity = current_project.activities.find(params[:id])
+    render(:edit)
+  end
+
+  def update
+    @states = State.where(level: "activity")
+    @packages = current_project.packages
+    @activity = current_project.activities.find(params[:id])
+    @activity.update_attributes(params_activity)
+    handle_action(:edit)
   end
 
   private
 
-  def params_package
-    params.require(:activity).permit(:name)
+  def handle_action(template)
+    if params[:commit] && params[:commit].starts_with?("Add data elements")
+      data_compound = DataCompound.from(current_project)
+      existing_element_ids = @activity.activity_states.map(&:external_reference)
+      selectable_element_ids = params[:data_elements] - existing_element_ids
+      data_elements = selectable_element_ids.map { |element_id| data_compound.data_element(element_id) }
+
+      data_elements.each do |element|
+        @activity.activity_states.build(
+          external_reference: element.id,
+          name:               element.name
+        )
+      end
+      flash[:notice] = "Assign states to desired data elements "
+      render template
+    elsif @activity.invalid?
+      flash[:failure] = "Some validation errors occured"
+      render template
+    else
+      id = @activity.id
+      @activity.save!
+      flash[:success] = "Activity #{activity.name} #{id ? 'created' : 'updated'} !"
+      redirect_to(root_path)
+    end
+  end
+
+  def params_activity
+    params.require(:activity).permit(
+      :name,
+      activity_states_attributes: [
+        :id,
+        :state_id,
+        :name,
+        :external_reference
+      ]
+    )
   end
 end

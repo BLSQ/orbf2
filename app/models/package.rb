@@ -19,6 +19,8 @@ class Package < ApplicationRecord
   has_many :package_states, dependent: :destroy
   has_many :states, through: :package_states
   has_many :rules, dependent: :destroy
+  has_many :activity_packages, dependent: :destroy
+
   validates :name, presence: true, length: { maximum: 50 }
   # validates :states, presence: true
   validates :frequency, presence: true, inclusion: {
@@ -102,6 +104,11 @@ class Package < ApplicationRecord
       states:                states.map do |state|
         { code: state.code }
       end,
+      activity_packages: Hash[
+        activity_packages.flat_map(&:activity).map(&:to_unified_h).map do |activity|
+          [activity[:stable_id], activity]
+        end
+      ],
       package_entity_groups: package_entity_groups.map do |entity_group|
         {
           external_reference: entity_group.organisation_unit_group_ext_ref,
