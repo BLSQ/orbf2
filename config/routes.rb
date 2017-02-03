@@ -23,7 +23,7 @@ Rails.application.routes.draw do
         resources :activities, only: [:new, :create, :edit, :update]
         resources :publish_drafts, only: [:create]
         resource :main_entity_group, only: [:create, :update]
-        resources :packages, only: [:new, :create] do
+        resources :packages, only: [:new, :create, :update, :edit] do
           resources :rules, only: [:new, :create, :update, :edit]
         end
         resources :incentives, only: [:new, :create, :update]

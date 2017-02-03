@@ -1,5 +1,5 @@
 <tr>
-    <td><%= package.name %></td>
+    <td><%= link_to package.name , edit_setup_project_package_path(project,package)%></td>
     <td>
         <small><%= package.package_entity_groups.map{ |entitygroup|  entitygroup.name }.join(', ') %></small>
     </td>

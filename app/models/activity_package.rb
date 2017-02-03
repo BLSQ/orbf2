@@ -12,5 +12,5 @@
 
 class ActivityPackage < ApplicationRecord
   belongs_to :package
-  belongs_to :state
+  belongs_to :activity
 end

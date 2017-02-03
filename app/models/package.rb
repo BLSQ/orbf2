@@ -21,6 +21,8 @@ class Package < ApplicationRecord
   has_many :rules, dependent: :destroy
   has_many :activity_packages, dependent: :destroy
 
+  has_many :activities, through: :activity_packages
+
   validates :name, presence: true, length: { maximum: 50 }
   # validates :states, presence: true
   validates :frequency, presence: true, inclusion: {
