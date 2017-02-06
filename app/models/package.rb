@@ -17,7 +17,7 @@ class Package < ApplicationRecord
   belongs_to :project, inverse_of: :packages
   has_many :package_entity_groups, dependent: :destroy
   has_many :package_states, dependent: :destroy
-  has_many :states, through: :package_states
+  has_many :states, through: :package_states, source: :state
   has_many :rules, dependent: :destroy
   has_many :activity_packages, dependent: :destroy
 
@@ -55,6 +55,17 @@ class Package < ApplicationRecord
 
   def activity_rule
     rules.find { |r| r.kind == "activity" }
+  end
+
+  def missing_activity_state
+    missing_activity_states = {}
+    activities.each do |activity|
+      missing_states = states.map do |state|
+        state unless activity.activity_state(state)
+      end
+      missing_activity_states[activity] = missing_states.reject(&:nil?)
+    end
+    missing_activity_states
   end
 
   def create_data_element_group(data_element_ids)
@@ -106,7 +117,7 @@ class Package < ApplicationRecord
       states:                states.map do |state|
         { code: state.code }
       end,
-      activity_packages: Hash[
+      activity_packages:     Hash[
         activity_packages.flat_map(&:activity).map(&:to_unified_h).map do |activity|
           [activity[:stable_id], activity]
         end
