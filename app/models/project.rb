@@ -240,5 +240,17 @@ class Project < ApplicationRecord
         end
       end
     end
-end
+  end
+
+  def missing_activity_states
+    missing_activity_states = {}
+    packages.each do |package|
+      package_missing_states = package.missing_activity_states
+      package_missing_states.each do |activity, states|
+        missing_activity_states[activity] ||= []
+        missing_activity_states[activity] += states
+      end
+    end
+    missing_activity_states
+  end
 end

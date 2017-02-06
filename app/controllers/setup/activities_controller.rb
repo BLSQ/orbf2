@@ -29,6 +29,17 @@ class Setup::ActivitiesController < PrivateController
     handle_action(:edit)
   end
 
+
+  def mass_creation
+    @missing_activity_states = current_project.missing_activity_states
+    render :mass_creation
+  end
+
+  def confirm_mass_creation
+    flash[:notice] = "creation of missing dhis2 and activity states scheduled."
+    redirect_to(root_path)
+  end
+
   private
 
   def handle_action(template)
@@ -64,7 +75,8 @@ class Setup::ActivitiesController < PrivateController
         :id,
         :state_id,
         :name,
-        :external_reference
+        :external_reference,
+        :_destroy
       ]
     )
   end

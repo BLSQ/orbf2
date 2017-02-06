@@ -16,4 +16,8 @@
   <% else %>
     <%= link_to 'Let\'s create activities', new_setup_project_activity_path(project)  %>
   <% end %>
+  <% if project.missing_activity_states.values.flatten.any? %>
+    <%= link_to 'Let\'s create missing dhis2 elements', mass_creation_setup_project_activities_path(project), class: 'btn btn-danger'  %>
+  <% end %>
+
 <% end %>

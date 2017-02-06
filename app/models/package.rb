@@ -57,12 +57,17 @@ class Package < ApplicationRecord
     rules.find { |r| r.kind == "activity" }
   end
 
-  def missing_activity_state
+  def missing_activity_states
     missing_activity_states = {}
     activities.each do |activity|
-      missing_states = states.map do |state|
+      missing_states = states.select(&:activity_level?).map do |state|
         state unless activity.activity_state(state)
       end
+      puts "----- #{self.name} #{self.states.map(&:name)}"
+      puts "activity #{activity_packages.to_json}"
+      puts "activity #{activity.name} #{self.id} #{self.name} #{states.map(&:name)} #{activities.map(&:name)}"
+      puts "missing_states.reject(&:nil?) #{missing_states.reject(&:nil?).to_json}"
+      puts "-----"
       missing_activity_states[activity] = missing_states.reject(&:nil?)
     end
     missing_activity_states
