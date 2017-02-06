@@ -18,21 +18,19 @@ class Activity < ApplicationRecord
   accepts_nested_attributes_for :activity_states, allow_destroy: true
 
   validates :name, presence: true
-  validates :activity_states, :length => { :minimum => 1 }
-  # validates :package_id, presence: true
+  validates :activity_states, length: { minimum: 1 }
 
   def activity_state(state)
-    activity_states.find {|as| as.state == state }
+    activity_states.find { |as| as.state == state }
   end
 
   def to_unified_h
     {
-      name: name,
-      stable_id: stable_id,
+      name:            name,
+      stable_id:       stable_id,
       activity_states: Hash[
 
       ]
     }
   end
-
 end
