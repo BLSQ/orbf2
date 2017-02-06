@@ -2,7 +2,7 @@
     <td><%= link_to activity.name, edit_setup_project_activity_path(project,activity.id) %></td>
     <td>
       <% activity.activity_states.each do |activity_state| %>
-        <li><%= activity_state.name %></li>
+        <li><%= activity_state.name %> (<%= activity_state.state.name %>)</li>
       <% end %>
     </td>
     <td>

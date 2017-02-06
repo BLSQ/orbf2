@@ -20,6 +20,10 @@ class Activity < ApplicationRecord
   validates :name, presence: true
   validates :activity_states, :length => { :minimum => 1 }
 
+  def activity_state(state)
+    activity_states.find {|as| as.state == state }
+  end
+
   def to_unified_h
     {
       name: name,

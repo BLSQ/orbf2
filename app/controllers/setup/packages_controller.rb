@@ -12,11 +12,18 @@ class Setup::PackagesController < PrivateController
     package.update_attributes(params_package)
 
     if package.valid?
+      entity_groups = package.create_package_entity_groups(params[:package][:entity_groups])
+      package.package_entity_groups=[]
+      package.package_entity_groups.create(entity_groups)
+
+      package.save!
+      flash[:success] = "Package updated"
+      redirect_to(root_path)
+    else
+      puts "!!!!!!!! package invalid : #{package.errors.full_messages.join(',')}"
       flash[:failure] = "Package doesn't look valid..."
       render :edit
-    else
-      flash[:success] = "Package doesn't look valid..."
-      redirect_to(root_path)
+
     end
   end
 

@@ -14,7 +14,7 @@
 
 class ActivityState < ApplicationRecord
   belongs_to :activity, inverse_of: :activity_states
-  has_one :state
+  belongs_to :state
 
   validates :state_id, presence: { message: "Select a state or remove this activity from the list" }
   validates :external_reference, presence: true
