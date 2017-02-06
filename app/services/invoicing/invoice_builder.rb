@@ -119,7 +119,7 @@ module Invoicing
     def generate_quarterly_entity_invoice(current_project, entity, analytics_service, date)
       tarification_service = Tarification::MockTarificationService.new
       current_quarter_end = date.to_date.end_of_month
-      quarter_dates = [current_quarter_end - 2.months, current_quarter_end - 1.month, current_quarter_end]
+      quarter_dates = [current_quarter_end - 2.months, current_quarter_end - 1.month, current_quarter_end].map(&:end_of_month)
 
       quarter_details_results = {}
       quarterly_package_results = {}

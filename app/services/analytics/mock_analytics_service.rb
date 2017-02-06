@@ -122,7 +122,7 @@ module Analytics
 
     def limit_values_to_date(activity_and_values, date)
       current_quarter_end = Date.today.to_date.end_of_month
-      quarter_dates = [current_quarter_end - 2.months, current_quarter_end - 1.month, current_quarter_end]
+      quarter_dates = [(current_quarter_end - 2.months).end_of_month, (current_quarter_end - 1.month).end_of_month, current_quarter_end]
       index_to_keep = quarter_dates.index(date)
       raise "no data for #{date} vs #{quarter_dates}" unless index_to_keep
       filtered = activity_and_values.map do |activity, values|
