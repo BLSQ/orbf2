@@ -36,6 +36,7 @@ class Setup::ActivitiesController < PrivateController
   end
 
   def confirm_mass_creation
+    CreateMissingDhis2ElementsWorker.perform_async(current_project.project_anchor.id)
     flash[:notice] = "creation of missing dhis2 and activity states scheduled."
     redirect_to(root_path)
   end
