@@ -19,6 +19,7 @@ class Activity < ApplicationRecord
 
   validates :name, presence: true
   validates :activity_states, :length => { :minimum => 1 }
+  # validates :package_id, presence: true
 
   def activity_state(state)
     activity_states.find {|as| as.state == state }

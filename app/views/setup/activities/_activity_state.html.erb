@@ -2,14 +2,14 @@
   <td> <%= activity_state.name %>
     <% if activity_state.errors.any? %>
     <br>
-      <%=icon("exclamation-triangle")%> <% activity_state.errors.full_messages.each do |msg| %>
-       <%= msg %>
+      <%=icon("exclamation-triangle text-danger")%> <% activity_state.errors.full_messages.each do |msg| %>
+       <small class="text-danger"><%= msg %></small>
       <% end %>
     </ul>
    </div>
    <% end %>
   </td>
-  <td> <%= link_to_remove_association icon("trash-o") , f %> </td>
+  <td> <%= link_to_remove_association icon("trash-o text-danger") , f %> </td>
   <td>
     <div class="switch-field pull-right">
       <% states.each_with_index do |state| %>
