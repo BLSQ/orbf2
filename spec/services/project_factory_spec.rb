@@ -63,6 +63,31 @@ describe ProjectFactory do
     clinic_group = {   name: "Clinic",         organisation_unit_group_ext_ref: "RXL3lPSK8oG" }
     admin_group = {    name: "Administrative", organisation_unit_group_ext_ref: "w0gFTTmsUcF" }
 
+    claimed_state = State.find_by(name: "Claimed")
+    verified_state = State.find_by(name: "Verified")
+    tarif_state = State.find_by(name: "Tarif")
+
+    activity_1 = project.activities.build(
+      project: project,
+      name: "Vaccination", activity_states_attributes: [
+        { name: "Vaccination claimed", state: claimed_state, external_reference: "cl-ext-1" },
+        { name: "tarif for Vaccination ", state: tarif_state, external_reference: "tarif-ext-1" }
+      ]
+    )
+
+    activity_2 = project.activities.build(
+      project: project,
+      name: "Clients sous traitement ARV suivi pendant les 6 premiers mois", activity_states_attributes: [
+        { name: "Clients sous traitement ARV suivi pendant les 6 premiers mois - decl", state: claimed_state, external_reference: "cl-ext-2" },
+        { name: "tarif for Clients sous traitement ARV suivi pendant les 6 premiers mois ", state: tarif_state, external_reference: "tarif-ext-2" }
+      ]
+    )
+
+    project.packages[0].activities = [activity_1, activity_2]
+    project.packages[1].activities = [activity_1, activity_2]
+    project.packages[2].activities = [activity_1, activity_2]
+    project.packages[3].activities = [activity_1, activity_2]
+
     default_quantity_states = State.where(name: %w(Claimed Verified Tarif)).to_a
     default_quality_states = State.where(name: ["Claimed", "Verified", "Max. Score"]).to_a
     default_performance_states = State.where(name: ["Claimed", "Max. Score", "Budget"]).to_a
@@ -102,7 +127,7 @@ describe ProjectFactory do
     package.name += suffix
     package.states = states
     groups.each_with_index do |group, index|
-      package.package_entity_groups[index].update_attributes(group)
+      package.package_entity_groups[index].assign_attributes(group)
     end
   end
 end
