@@ -37,18 +37,7 @@
         </body>
     </table>
 </div>
-<div>
-    <div class="input-group">
-      <span class="input-group-addon"><strong>Package</strong></span>
-      <%= f.input_field :package_id, collection: @packages,
-                        include_blank: "Select a package or create one...",
-                        selected: activity.activity_packages.present? ? activity.activity_packages.first.package_id : '',
-                        class:"form-control", error: 'Package is mandatory, please specify one' %>
-      <span class="input-group-btn">
-        <button class="btn btn-info" type="button">Create new package</button>
-      </span>
-    </div>
-  </div>
+
   <br><br>
 <% end %>
 <%= f.button :submit, class: "btn btn-success" %>

@@ -9,21 +9,18 @@ class Setup::ActivitiesController < PrivateController
 
   def create
     @states = State.where(level: "activity")
-    @packages = current_project.packages
     @activity = current_project.activities.build(params_activity)
     handle_action(:new)
   end
 
   def edit
     @states = State.where(level: "activity")
-    @packages = current_project.packages
     @activity = current_project.activities.find(params[:id])
     render(:edit)
   end
 
   def update
     @states = State.where(level: "activity")
-    @packages = current_project.packages
     @activity = current_project.activities.find(params[:id])
     @activity.update_attributes(params_activity)
     handle_action(:edit)
