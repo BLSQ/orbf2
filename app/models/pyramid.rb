@@ -39,6 +39,11 @@ class Pyramid
     @org_units_by_group[group_id] || Set.new
   end
 
+  def org_units_in_all_groups(group_ids)
+    entities_in_groups = group_ids.map { |group_id| org_units_in_group(group_id) }
+    entities_in_groups.reduce(&:intersection)
+  end
+
   def find_sibling_organisation_unit_groups(group_id)
     units = org_units
 

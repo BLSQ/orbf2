@@ -34,6 +34,14 @@ class Package < ApplicationRecord
 
   attr_accessor :invoice_details
 
+  def package_state(state)
+    package_states.find { |ps| ps.state_id == state.id }
+  end
+
+  def activity_states(state)
+    self.activities.flat_map(&:activity_states).select { |activity_state| activity_state.state == state }
+  end
+
   def missing_rules_kind
     supported_rules_kind = %w(activity package)
     supported_rules_kind.delete("activity") if activity_rule
@@ -63,9 +71,9 @@ class Package < ApplicationRecord
       missing_states = states.select(&:activity_level?).map do |state|
         state unless activity.activity_state(state)
       end
-      puts "----- #{self.name} #{self.states.map(&:name)}"
+      puts "----- #{name} #{states.map(&:name)}"
       puts "activity #{activity_packages.to_json}"
-      puts "activity #{activity.name} #{self.id} #{self.name} #{states.map(&:name)} #{activities.map(&:name)}"
+      puts "activity #{activity.name} #{id} #{name} #{states.map(&:name)} #{activities.map(&:name)}"
       puts "missing_states.reject(&:nil?) #{missing_states.reject(&:nil?).to_json}"
       puts "-----"
       missing_activity_states[activity] = missing_states.reject(&:nil?)

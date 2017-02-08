@@ -1,5 +1,7 @@
 <%if project &&  project.id%>
-<% if step.model%>
+ <% if project.missing_activity_states.values.flatten.any? %>
+  <%= link_to 'Let\'s create missing dhis2 elements', mass_creation_setup_project_activities_path(project), class: 'btn btn-danger'  %>
+ <% elsif step.model%>
   <%= link_to 'New Configuration', new_setup_project_incentive_path(project), class: 'btn btn-info pull-right' %>
   <table class="table table-striped table-condensed">
       <thead>

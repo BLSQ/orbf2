@@ -64,6 +64,7 @@ class Setup::ActivitiesController < PrivateController
     else
       id = @activity.id
       @activity.save!
+      SynchroniseDegDsWorker.perform_async(current_project.project_anchor.id)
       flash[:success] = "Activity #{activity.name} #{id ? 'created' : 'updated'} !"
       redirect_to(root_path)
     end

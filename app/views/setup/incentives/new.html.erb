@@ -1,7 +1,7 @@
 <h1>Configure Incentives</h1>
 <%= simple_form_for(incentive,  url: setup_project_incentives_path(incentive.project), method: :post) do |f| %>
 <%= f.input :state_id, collection: State.configurables(true) %>
-<%= f.input :package_id, collection: @project.packages %>
+<%= f.input :package_id, collection: incentive.project.packages %>
 <div class="row">
     <div class="col-md-6">
 
@@ -58,7 +58,7 @@
 <%end%>
 <div>
     <h2>Sample affected entities (
-        <%= incentive.entities.pager.total %>
+        <%= incentive.entities.size %>
         )
     </h2>
     <%= render partial: "entity", collection: incentive.entities, as: :entity %>

@@ -35,102 +35,41 @@ class IncentiveConfig
   end
 
   def find_or_create_activity_incentives
-    if state.activity_level?
-      package_des = get_data_elements_by_package
-      state_created_des = create_data_elements_for_state(package_des)
-    else
-      state_created_des = create_data_elements_for_package_state
-    end
-    state_created_deg = create_data_element_group(state_created_des)
-    # existing_values = get_data_elements_values_by_data_element_group(state_created_deg)
+    pyramid = Pyramid.from(project)
+
+    self.entities = pyramid.org_units_in_all_groups(entity_groups).to_a
+    org_unit_ids = entities.map(&:id)
+
     existing_values = []
+    org_unit_ids.each_slice(100).each do |org_unit_slice_ids|
+      puts "***************** fetching #{org_unit_slice_ids}"
+      slice_values = get_data_elements_values_by_data_set(package.package_state(state).ds_external_reference, org_unit_slice_ids)
+      puts " retrieved : #{slice_values.size}"
+      existing_values.push(slice_values)
+    end
+
+    existing_values = existing_values.flatten
     existing_values_by_element_id = existing_values.group_by(&:data_element)
 
-    self.activity_incentives = state_created_des.map do |de|
-      values = existing_values_by_element_id[de.id]
+    self.activity_incentives = package.activity_states(state).map do |activity_state|
+      values = existing_values_by_element_id[activity_state.external_reference]
       value = if values
                 uniq_values = values.map(&:value).uniq
                 uniq_values.size == 1 ? values.first.value : nil
               end
       ActivityIncentive.new(
-        name:               de.name,
-        external_reference: de.id,
+        name:               activity_state.name,
+        external_reference: activity_state.external_reference,
         value:              value
       )
     end
   end
 
-  def create_data_elements_for_package_state
-    code = "#{state.code}-#{package.name}"[0..49]
-    name = "#{state.name} for #{package.name}"
-    dhis2 = project.dhis2_connection
-    status = dhis2.data_elements.create(
-      [{
-        code:         code,
-        short_name:   name[0..49],
-        name:         name,
-        display_name: name
-      }]
-    )
-    created_datelement = dhis2.data_elements.find_by(code: code)
-    [created_datelement]
-  end
-
-  def get_data_elements_by_package
-    # https://play.dhis2.org/demo/api/dataElements.json?filter=dataElementGroups.id:in:[HeAnxDMyrOd]
-    dhis2 = project.dhis2_connection
-    des = dhis2.data_elements.list(filter: "dataElementGroups.id:eq:#{package.data_element_group_ext_ref}")
-
-    des.map do |de|
-      {
-        id:   de.id,
-        name: de.display_name
-      }
-    end
-  end
-
-  def create_data_elements_for_state(package_des)
-    state_created_des = []
-    dhis2 = project.dhis2_connection
-    # default_combo_id = dhis2.category_combos.list(fields: "id", filter: "name=default").first.id
-    dhis2.data_elements.create(
-      package_des.map do |de|
-        {
-          code:         "#{state.code}-#{de[:id]}",
-          short_name:   "#{state.name} for #{de[:name]}"[0..49],
-          name:         "#{state.name} for #{de[:name]}",
-          display_name: "#{state.name} for #{de[:name]}"
-        }
-      end
-    )
-    package_des.map do |de|
-      dhis2.data_elements.find_by(code: "#{state.code}-#{de[:id]}")
-    end
-  end
-
-  def create_data_element_group(state_created_des)
-    deg_code = "#{state.code}-#{package.name}"[0..49]
-    deg_name = "#{state.name} for #{package.name}"
-    deg = [
-      { name:          deg_name,
-        short_name:    deg_name[0..49],
-        code:          deg_code,
-        display_name:  deg_name,
-        data_elements: state_created_des.map do |state_created_de|
-                         { id: state_created_de.id }
-                       end }
-    ]
-    dhis2 = project.dhis2_connection
-    raise "no data element provided #{state_created_des}" if state_created_des.empty?
-    status = dhis2.data_element_groups.create(deg)
-    created_group = dhis2.data_element_groups.find_by(code: deg_code)
-    raise "failed to create_data_element_group #{deg} - #{state_created_des} #{status.inspect}" unless created_group
-    created_group
-  end
-
-  def set_data_elemets_values
+  def set_data_elements_values
     period = start_date
+    pyramid = Pyramid.from(project)
 
+    self.entities = pyramid.org_units_in_all_groups(entity_groups).to_a
     values = []
     entities.each do |org_unit|
       activity_incentives.each do |activity_incentive|
@@ -147,13 +86,13 @@ class IncentiveConfig
     dhis2.data_value_sets.create(values)
   end
 
-  def get_data_elements_values_by_data_element_group(deg)
+  def get_data_elements_values_by_data_set(dataset_id, org_unit_ids)
     dhis2 = project.dhis2_connection
     values_query = {
-      organisation_unit_group: entity_groups.first,
-      data_element_groups:     [deg.id],
-      start_date:              start_date_as_date,
-      end_date:                end_date_as_date
+      organisation_unit: org_unit_ids,
+      data_sets:         [dataset_id],
+      start_date:        start_date_as_date,
+      end_date:          end_date_as_date
     }
     values = dhis2.data_value_sets.list(values_query)
     values.data_values ? values.values : []

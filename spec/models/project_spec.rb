@@ -23,7 +23,7 @@ RSpec.describe Project, type: :model do
   include_context "basic_context"
   include WebmockDhis2Helpers
 
-  let!(:project) { create(:project, project_anchor: Program.new(code: "siera").build_project_anchor) }
+  let!(:project) { create(:project, project_anchor: program.build_project_anchor) }
 
   it "should validate url " do
     expect(project.valid?).to eq true

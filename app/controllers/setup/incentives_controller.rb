@@ -18,32 +18,19 @@ class Setup::IncentivesController < PrivateController
     incentive.package = @project.packages.find(incentive.package_id) if incentive.package_id
     incentive.state = State.find(incentive.state_id) if incentive.state_id
     incentive.project = current_project
-
     if incentive.valid?
-      dhis2 = incentive.project.dhis2_connection
-
-      if incentive.entity_groups
-
-        org_units = incentive.project.dhis2_connection.organisation_units.list(filter: "organisationUnitGroups.id:in:[#{@incentive.entity_groups.join(',')}]", page_size: 15)
-        incentive.entities = org_units
-      end
-
       if incentive.activity_incentives && params[:set_values]
-
-        org_units = incentive.project.dhis2_connection.organisation_units.list(filter: "organisationUnitGroups.id:in:[#{incentive.entity_groups.join(',')}]", page_size: 50_000)
-
-        status = incentive.set_data_elemets_values
-
+        status = incentive.set_data_elements_values
         if status.success?
           ttl_affected = status.raw_status["import_count"]["imported"] + status.raw_status["import_count"]["updated"]
           flash[:success] = "#{incentive.state.name}-#{incentive.package.name} created successfuly for #{ttl_affected} Org. Units"
           redirect_to(root_path)
+        else
+          flash[:error] = "#{incentive.state.name}-#{incentive.package.name} problem setting values to all  #{ttl_affected} Org. Units"
+          render "new"
         end
-
       else
-
         @incentive.find_or_create_activity_incentives
-
         render "new"
       end
     else

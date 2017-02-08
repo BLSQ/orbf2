@@ -15,15 +15,9 @@ RSpec.describe Setup::IncentivesController, type: :controller do
     end
 
     let(:program) { create :program }
-    
+
     let(:project) do
-      project = ProjectFactory.new.build(
-        dhis2_url:      "http://play.dhis2.org/demo",
-        user:           "admin",
-        password:       "district",
-        bypass_ssl:     false,
-        project_anchor: program.build_project_anchor
-      )
+      project = full_project
       project.save!
       user.save!
       user.program = program
