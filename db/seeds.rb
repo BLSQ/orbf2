@@ -12,7 +12,9 @@ states = [
   { name: "Validated",  configurable: false,  level: "activity" },
   { name: "Max. Score", configurable: true,   level: "activity" },
   { name: "Tarif",      configurable: true,   level: "activity" },
-  { name: "Budget",     configurable: true,   level: "package"  }
+  { name: "Budget",     configurable: true,   level: "package"  },
+  { name: "Remoteness Bonus", configurable: false,   level: "package"  },
+  { name: "Applicable Points", configurable: false,   level: "activity" },
 ]
 
 states.each do |state|
