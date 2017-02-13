@@ -12,13 +12,21 @@
   <td> <%= link_to_remove_association icon("trash-o text-danger") , f %> </td>
   <td>
     <div class="switch-field pull-right">
-      <% states.each_with_index do |state| %>
-        <%= radio_button_tag "#{prefix}[state_id]", state.id, state.id == activity_state.state_id %>
-        <label for='<%= sanitize_to_id("#{prefix}[state_id]_#{state.id}")%>'><%= state.name%></label>
-      <% end %>
+      <div class="col-md-12 col-sm-3">
+        <% states.each_with_index do |state| %>
+          <%= radio_button_tag "#{prefix}[state_id]", state.id, state.id == activity_state.state_id %>
+          <label for='<%= sanitize_to_id("#{prefix}[state_id]_#{state.id}")%>'><%= state.name%></label>
+        <% end %>
+      </div>
     </div>
 
     <%= f.hidden_field :external_reference, value: activity_state.external_reference %>
     <%= f.hidden_field :name, value: activity_state.name %>
+    <%= f.hidden_field :kind, value: activity_state.kind %>
+  </td>
+  <td>
+    <%if f.object.kind_formula? %>
+      <%= f.text_field :formula %>
+    <%end%>
   </td>
 </tr>

@@ -17,10 +17,19 @@ class ActivityState < ApplicationRecord
   belongs_to :state
 
   validates :state_id, presence: { message: "Select a state or remove this activity from the list" }
-  validates :external_reference, presence: true
+  validates :external_reference, presence: true, if: :kind_data_element?
   validates :name, presence: true
 
   validates_uniqueness_of :state_id, scope: [:activity_id]
+
+  def kind_data_element?
+    kind == 'data_element'
+  end
+
+  def kind_formula?
+    kind == 'formula'
+  end
+
 
   def to_unified_h
     {

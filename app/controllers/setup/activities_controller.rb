@@ -50,7 +50,8 @@ class Setup::ActivitiesController < PrivateController
       data_elements.each do |element|
         @activity.activity_states.build(
           external_reference: element.id,
-          name:               element.name
+          name:               element.name,
+          kind:               "data_element"
         )
       end
       flash[:notice] = "Assign states to desired data elements "
@@ -75,6 +76,8 @@ class Setup::ActivitiesController < PrivateController
         :state_id,
         :name,
         :external_reference,
+        :kind,
+        :formula,
         :_destroy
       ]
     )

@@ -10,7 +10,7 @@
   <div class="col-md-6">
      <div class="col-md-12" id="data_elements_selection"></div>
      <div class="pull-right">
-      <%= f.button :submit, 'Add data elements for state mapping', class: "btn btn-success" %>
+      <%= f.button :submit, 'Add data elements for state mapping', class: "btn btn-primary" %>
     </div>
   </div>
 </div>
@@ -24,6 +24,7 @@
                 <th>Activity</th>
                 <th>Remove</th>
                 <th style="text-align: center;">State</th>
+                <th>Value</th>
             </tr>
         </thead>
         <body>
@@ -34,10 +35,15 @@
                prefix:  "activity[activity_states_attributes][#{activity_state_form.index}]"
                } %>
           <% end %>
+          <%= link_to_add_association 'Add constant', f, :activity_states, partial: 'constant',class: "btn btn-primary pull-right" %>
         </body>
     </table>
 </div>
 
+<div>
+<table class="tabke table-striped table-condensed">
+</table>
+</div>
   <br><br>
 <% end %>
 <%= f.button :submit, class: "btn btn-success" %>

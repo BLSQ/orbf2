@@ -12,8 +12,11 @@
 }
 
 .switch-field label {
-  display: inline-block;
+  display: flex;
+  justify-content: center; /* align horizontal */
+  align-items: center; /* align vertical */
   width: 120px;
+  height: 60px;
   background-color: #eeeeee;
   color: rgba(0, 0, 0, 0.6);
   font-size: 14px;
@@ -40,6 +43,7 @@
   color: #ffffff;
   -webkit-box-shadow: none;
   box-shadow: none;
+   font-weight: bold;
 }
 
 .switch-field label:first-of-type {

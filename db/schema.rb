@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170210065410) do
+ActiveRecord::Schema.define(version: 20170213070333) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -38,13 +38,15 @@ ActiveRecord::Schema.define(version: 20170210065410) do
   end
 
   create_table "activity_states", force: :cascade do |t|
-    t.string   "external_reference",                                       null: false
+    t.string   "external_reference"
     t.string   "name",                                                     null: false
     t.integer  "state_id",                                                 null: false
     t.integer  "activity_id",                                              null: false
     t.uuid     "stable_id",          default: -> { "uuid_generate_v4()" }, null: false
     t.datetime "created_at",                                               null: false
     t.datetime "updated_at",                                               null: false
+    t.string   "kind",               default: "data_element",              null: false
+    t.string   "formula"
     t.index ["activity_id"], name: "index_activity_states_on_activity_id", using: :btree
     t.index ["external_reference", "activity_id"], name: "index_activity_states_on_external_reference_and_activity_id", unique: true, using: :btree
     t.index ["state_id"], name: "index_activity_states_on_state_id", using: :btree
