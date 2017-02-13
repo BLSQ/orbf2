@@ -14,15 +14,16 @@ class Setup::PackagesController < PrivateController
     package.package_states.each do |package_state|
       de_external_reference = params["data_elements"][package_state.state_id.to_s]
       puts "de_external_reference #{de_external_reference} #{package_state.inspect}"
-      package_state.de_external_reference=de_external_reference if de_external_reference
+      package_state.de_external_reference = de_external_reference if de_external_reference
     end
 
     if package.valid?
       entity_groups = package.create_package_entity_groups(params[:package][:entity_groups])
-      package.package_entity_groups=[]
+      package.package_entity_groups = []
       package.package_entity_groups.create(entity_groups)
-
       package.save!
+      package.package_states.each(&:save!)
+
       flash[:success] = "Package updated"
       redirect_to(root_path)
     else
