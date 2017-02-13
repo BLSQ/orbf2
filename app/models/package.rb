@@ -71,11 +71,6 @@ class Package < ApplicationRecord
       missing_states = states.select(&:activity_level?).map do |state|
         state unless activity.activity_state(state)
       end
-      puts "----- #{name} #{states.map(&:name)}"
-      puts "activity #{activity_packages.to_json}"
-      puts "activity #{activity.name} #{id} #{name} #{states.map(&:name)} #{activities.map(&:name)}"
-      puts "missing_states.reject(&:nil?) #{missing_states.reject(&:nil?).to_json}"
-      puts "-----"
       missing_activity_states[activity] = missing_states.reject(&:nil?)
     end
     missing_activity_states

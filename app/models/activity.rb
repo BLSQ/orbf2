@@ -21,9 +21,7 @@ class Activity < ApplicationRecord
   validates :activity_states, length: { minimum: 1 }
 
   def activity_state(state)
-    activity_state = activity_states.find { |as| as.state.id == state.id }
-    puts "activity_state #{state.name} #{state.id} #{activity_state.name} #{activity_state.external_reference}" if activity_state
-    activity_state
+    activity_states.find { |as| as.state.id == state.id }
   end
 
   def to_unified_h

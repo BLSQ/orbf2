@@ -11,11 +11,7 @@ class Setup::PackagesController < PrivateController
     @package = current_project.packages.find(params[:id])
     package.update_attributes(params_package)
 
-    package.package_states.each do |package_state|
-      de_external_reference = params["data_elements"][package_state.state_id.to_s]
-      puts "de_external_reference #{de_external_reference} #{package_state.inspect}"
-      package_state.de_external_reference = de_external_reference if de_external_reference
-    end
+    update_package_constants
 
     if package.valid?
       entity_groups = package.create_package_entity_groups(params[:package][:entity_groups])
@@ -42,6 +38,8 @@ class Setup::PackagesController < PrivateController
     @package = current_project.packages.build(params_package)
     state_ids = params_package[:state_ids].reject(&:empty?)
 
+    update_package_constants
+
     package.states = State.find(state_ids)
 
     if package.invalid?
@@ -66,6 +64,14 @@ class Setup::PackagesController < PrivateController
   end
 
   private
+
+  def update_package_constants
+    package.package_states.each do |package_state|
+      de_external_reference = params["data_elements"][package_state.state_id.to_s]
+      package_state.de_external_reference = de_external_reference if de_external_reference
+    end
+  end
+
 
   def params_package
     params.require(:package).permit(:name, :frequency, state_ids: [], activity_ids: [])
