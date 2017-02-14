@@ -6,7 +6,7 @@ class Dhis2SnapshotWorker
 
     project_anchor = ProjectAnchor.find(project_anchor_id)
 
-    project = project_anchor.projects.for_date(now)
+    project = project_anchor.projects.for_date(now) || project.latest_draft
 
     Dhis2Snapshot::KINDS.each do |kind|
       snapshot(project, kind, now)

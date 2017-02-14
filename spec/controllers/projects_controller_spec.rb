@@ -13,7 +13,7 @@ RSpec.describe Setup::ProjectsController, type: :controller do
     include WebmockDhis2Helpers
 
     before(:each) do
-      user.build_program(code: "siera")
+      user.program = program
       user.save!
       sign_in user
     end

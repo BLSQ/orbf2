@@ -1,0 +1,4 @@
+<h1>Create activity and associated dhis2 elements</h1>
+<%= simple_form_for(activity,  url: setup_project_activities_path(activity.project), method: :post) do |f| %>
+  <%= render 'form', f: f %>
+<% end %>

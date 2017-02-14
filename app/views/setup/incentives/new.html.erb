@@ -1,7 +1,7 @@
 <h1>Configure Incentives</h1>
-<%= simple_form_for(incentive,  url: setup_project_incentives_path(current_user.program.project_anchor), method: :post) do |f| %>
+<%= simple_form_for(incentive,  url: setup_project_incentives_path(incentive.project), method: :post) do |f| %>
 <%= f.input :state_id, collection: State.configurables(true) %>
-<%= f.input :package_id, collection: @project.packages %>
+<%= f.input :package_id, collection: incentive.project.packages %>
 <div class="row">
     <div class="col-md-6">
 
@@ -18,7 +18,7 @@
                                 selected: incentive.entity_groups ? incentive.entity_groups.join(',') : '',
                                 placeholder:"Lookup the organisation units groups here...",
                                 selection:"org_units_groups_selection",
-                                url:organisation_unit_group_setup_project_autocomplete_index_path(current_user.program.project_anchor, siblings:true)
+                                url:organisation_unit_group_setup_project_autocomplete_index_path(incentive.project, siblings:true)
                               } %>
                 <% if incentive.errors[:entity_groups].any? %>
                 <%= f.error :entity_groups %></span>
@@ -58,7 +58,7 @@
 <%end%>
 <div>
     <h2>Sample affected entities (
-        <%= incentive.entities.pager.total %>
+        <%= incentive.entities.size %>
         )
     </h2>
     <%= render partial: "entity", collection: incentive.entities, as: :entity %>

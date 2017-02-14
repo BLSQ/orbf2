@@ -15,11 +15,11 @@ describe Invoicing::InvoiceBuilder do
   it "should generate quarterly and monthly invoices" do
     builder = Invoicing::InvoiceBuilder.new project_finder
     analytics_service.entities.each do |entity|
-      [Date.today - 2.months, Date.today - 1.month, Date.today].each do |month|
+      [(Date.today - 2.months).end_of_month, (Date.today - 1.month).end_of_month, (Date.today).end_of_month].each do |month|
         monthly_invoice = builder.generate_monthly_entity_invoice(project, entity, analytics_service, month)
         monthly_invoice.dump_invoice
       end
-      quarterly_invoice = builder.generate_quarterly_entity_invoice(project, entity, analytics_service, Date.today)
+      quarterly_invoice = builder.generate_quarterly_entity_invoice(project, entity, analytics_service, Date.today.end_of_month)
     end
   end
 end

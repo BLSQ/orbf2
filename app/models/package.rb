@@ -17,8 +17,12 @@ class Package < ApplicationRecord
   belongs_to :project, inverse_of: :packages
   has_many :package_entity_groups, dependent: :destroy
   has_many :package_states, dependent: :destroy
-  has_many :states, through: :package_states
+  has_many :states, through: :package_states, source: :state
   has_many :rules, dependent: :destroy
+  has_many :activity_packages, dependent: :destroy
+
+  has_many :activities, through: :activity_packages, source: :activity
+
   validates :name, presence: true, length: { maximum: 50 }
   # validates :states, presence: true
   validates :frequency, presence: true, inclusion: {
@@ -29,6 +33,14 @@ class Package < ApplicationRecord
   accepts_nested_attributes_for :states
 
   attr_accessor :invoice_details
+
+  def package_state(state)
+    package_states.find { |ps| ps.state_id == state.id }
+  end
+
+  def activity_states(state)
+    self.activities.flat_map(&:activity_states).select { |activity_state| activity_state.state == state }
+  end
 
   def missing_rules_kind
     supported_rules_kind = %w(activity package)
@@ -51,6 +63,17 @@ class Package < ApplicationRecord
 
   def activity_rule
     rules.find { |r| r.kind == "activity" }
+  end
+
+  def missing_activity_states
+    missing_activity_states = {}
+    activities.each do |activity|
+      missing_states = states.select(&:activity_level?).map do |state|
+        state unless activity.activity_state(state)
+      end
+      missing_activity_states[activity] = missing_states.reject(&:nil?)
+    end
+    missing_activity_states
   end
 
   def create_data_element_group(data_element_ids)
@@ -88,7 +111,7 @@ class Package < ApplicationRecord
   def fetch_activities
     dhis2 = project.dhis2_connection
     activities = dhis2.data_elements.list(filter: "dataElementGroups.id:eq:#{data_element_group_ext_ref}").map do |dataelement|
-      Activity.new(
+      ActivityForm.new(
         external_reference: dataelement.id,
         name:               dataelement.display_name
       )
@@ -102,6 +125,11 @@ class Package < ApplicationRecord
       states:                states.map do |state|
         { code: state.code }
       end,
+      activity_packages:     Hash[
+        activity_packages.flat_map(&:activity).map(&:to_unified_h).map do |activity|
+          [activity[:stable_id], activity]
+        end
+      ],
       package_entity_groups: package_entity_groups.map do |entity_group|
         {
           external_reference: entity_group.organisation_unit_group_ext_ref,

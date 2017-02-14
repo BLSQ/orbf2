@@ -1,0 +1,21 @@
+<tr>
+    <td><%= link_to activity.name, edit_setup_project_activity_path(project,activity.id) %></td>
+    <td>
+      <small>
+      <% activity.activity_states.each do |activity_state| %>
+        <li><%= activity_state.name %> (<%= activity_state.state.name %>)</li>
+      <% end %>
+      </small>
+  </td>
+    <td>
+      <% activity.activity_packages.each do |activity_package| %>
+
+        <li><%= activity_package.package.name %>
+          <% if activity_package.package.missing_activity_states[activity] && activity_package.package.missing_activity_states[activity].any? %>
+            <br>
+            <%= icon("exclamation-triangle text-warning ")%> Missing element for :  <%= activity_package.package.missing_activity_states[activity].map(&:name).join(',') %>
+          <% end%>
+        </li>
+      <%end%>
+    </td>
+</tr>

@@ -29,8 +29,11 @@ RSpec.describe Setup::AutocompleteController, type: :controller do
     end
 
     it "should return all data_ements" do
-      stub_request(:get, "#{project.dhis2_url}/api/dataElements?fields=id,displayName&pageSize=20000")
+      stub_request(:get, "#{project.dhis2_url}/api/dataElements?fields=:all&pageSize=50000")
         .to_return(status: 200, body: fixture_content(:dhis2, "all_data_elements.json"))
+
+        stub_request(:get, "#{project.dhis2_url}/api/dataElementGroups?fields=:all&pageSize=50000")
+          .to_return(status: 200, body: fixture_content(:dhis2, "data_element_groups.json"))
 
       get :data_elements, params: { project_id: project.id }
     end

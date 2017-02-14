@@ -1,0 +1,15 @@
+
+
+This will create the following data elements and link them to the associated activity :
+
+<br>
+
+<% @missing_activity_states.each do |activity, states|  %>
+  <% if states.any? %>
+  <li><%= activity.name %> : <%= states.map(&:name).uniq.join(', ') %> </li>
+  <%end%>
+<% end%>
+
+<br>
+
+<%= link_to 'Confirm creation', confirm_mass_creation_setup_project_activities_path(@current_project), method: :post, class: 'btn btn-danger'  %>

@@ -1,0 +1,49 @@
+<%= f.input :name, input_html: {value: params.has_key?(:activity) ? params[:activity][:name] : @activity.name} %>
+<div class="row">
+    <div class="col-md-6">
+      <div class="form-group">
+        <label class="control-label">Data Elements</label>
+        <select id="data_elements_selector" data-selected="<%=params[:data_elements].join(',') if params[:data_elements] %>" data-placeholder="Lookup the data elements here..." data-selection = "data_elements_selection" data-url = "<%= data_elements_setup_project_autocomplete_index_path(@activity.project) %>" class="form-control sol-powered" name="data_elements[]" multiple="multiple">
+        </select>
+    </div>
+  </div>
+  <div class="col-md-6">
+     <div class="col-md-12" id="data_elements_selection"></div>
+     <div class="pull-right">
+      <%= f.button :submit, 'Add data elements for state mapping', class: "btn btn-primary" %>
+    </div>
+  </div>
+</div>
+
+<% if params.has_key?(:activity) || activity.activity_states.present? %>
+
+<div>
+    <table class="table table-striped table-condensed">
+        <thead>
+            <tr>
+                <th>Activity</th>
+                <th>Remove</th>
+                <th style="text-align: center;">State</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <body>
+          <%= f.simple_fields_for :activity_states do |activity_state_form| %>
+            <%= render partial: "activity_state",  locals: {
+               f: activity_state_form,
+               activity_state: activity_state_form.object,
+               prefix:  "activity[activity_states_attributes][#{activity_state_form.index}]"
+               } %>
+          <% end %>
+          <%= link_to_add_association 'Add constant', f, :activity_states, partial: 'constant',class: "btn btn-primary pull-right" %>
+        </body>
+    </table>
+</div>
+
+<div>
+<table class="tabke table-striped table-condensed">
+</table>
+</div>
+  <br><br>
+<% end %>
+<%= f.button :submit, class: "btn btn-success" %>

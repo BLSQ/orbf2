@@ -10,11 +10,47 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170125081629) do
+ActiveRecord::Schema.define(version: 20170213070333) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "uuid-ossp"
+
+  create_table "activities", force: :cascade do |t|
+    t.string   "name",                                             null: false
+    t.integer  "project_id",                                       null: false
+    t.uuid     "stable_id",  default: -> { "uuid_generate_v4()" }, null: false
+    t.datetime "created_at",                                       null: false
+    t.datetime "updated_at",                                       null: false
+    t.index ["name", "project_id"], name: "index_activities_on_name_and_project_id", unique: true, using: :btree
+    t.index ["project_id"], name: "index_activities_on_project_id", using: :btree
+  end
+
+  create_table "activity_packages", force: :cascade do |t|
+    t.integer  "activity_id",                                       null: false
+    t.integer  "package_id",                                        null: false
+    t.uuid     "stable_id",   default: -> { "uuid_generate_v4()" }, null: false
+    t.datetime "created_at",                                        null: false
+    t.datetime "updated_at",                                        null: false
+    t.index ["activity_id"], name: "index_activity_packages_on_activity_id", using: :btree
+    t.index ["package_id", "activity_id"], name: "index_activity_packages_on_package_id_and_activity_id", unique: true, using: :btree
+    t.index ["package_id"], name: "index_activity_packages_on_package_id", using: :btree
+  end
+
+  create_table "activity_states", force: :cascade do |t|
+    t.string   "external_reference"
+    t.string   "name",                                                     null: false
+    t.integer  "state_id",                                                 null: false
+    t.integer  "activity_id",                                              null: false
+    t.uuid     "stable_id",          default: -> { "uuid_generate_v4()" }, null: false
+    t.datetime "created_at",                                               null: false
+    t.datetime "updated_at",                                               null: false
+    t.string   "kind",               default: "data_element",              null: false
+    t.string   "formula"
+    t.index ["activity_id"], name: "index_activity_states_on_activity_id", using: :btree
+    t.index ["external_reference", "activity_id"], name: "index_activity_states_on_external_reference_and_activity_id", unique: true, using: :btree
+    t.index ["state_id"], name: "index_activity_states_on_state_id", using: :btree
+  end
 
   create_table "dhis2_snapshots", force: :cascade do |t|
     t.string   "kind",              null: false
@@ -69,8 +105,11 @@ ActiveRecord::Schema.define(version: 20170125081629) do
   create_table "package_states", force: :cascade do |t|
     t.integer  "package_id"
     t.integer  "state_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+    t.string   "ds_external_reference"
+    t.string   "deg_external_reference"
+    t.string   "de_external_reference"
     t.index ["package_id", "state_id"], name: "index_package_states_on_package_id_and_state_id", unique: true, using: :btree
     t.index ["package_id"], name: "index_package_states_on_package_id", using: :btree
     t.index ["state_id", "package_id"], name: "index_package_states_on_state_id_and_package_id", unique: true, using: :btree
@@ -165,6 +204,11 @@ ActiveRecord::Schema.define(version: 20170125081629) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
   end
 
+  add_foreign_key "activities", "projects"
+  add_foreign_key "activity_packages", "activities"
+  add_foreign_key "activity_packages", "packages"
+  add_foreign_key "activity_states", "activities"
+  add_foreign_key "activity_states", "states"
   add_foreign_key "dhis2_snapshots", "project_anchors"
   add_foreign_key "entity_groups", "projects"
   add_foreign_key "formulas", "rules"
