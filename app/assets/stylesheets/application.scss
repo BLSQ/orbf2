@@ -22,7 +22,11 @@
 @import "jquery-ui/autocomplete";
 @import "sol/searchableOptionList";
 @import "bootstrap-datepicker";
-@import "activities_controller.css";
+@import "activities_controller";
+@import "project_controller";
+@import "setup";
+@import "packages";
+
 body.private {
   padding-top: 70px;
 }
@@ -37,4 +41,9 @@ body.private {
 
 .input-group .form-control {
     z-index: 1 !important;
+}
+
+textarea {
+    width: 50em;
+    height: 4em;
 }
