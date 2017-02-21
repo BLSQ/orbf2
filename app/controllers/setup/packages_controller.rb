@@ -67,7 +67,7 @@ class Setup::PackagesController < PrivateController
 
   def update_package_constants
     package.package_states.each do |package_state|
-      de_external_reference = params["data_elements"][package_state.state_id.to_s]
+      de_external_reference = params["data_elements"][package_state.state_id.to_s] if params["data_elements"]
       package_state.de_external_reference = de_external_reference if de_external_reference
     end
   end
