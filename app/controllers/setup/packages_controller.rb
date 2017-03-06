@@ -13,7 +13,7 @@ class Setup::PackagesController < PrivateController
 
     update_package_constants
 
-    if package.valid?
+    if package.valid? && params[:package][:entity_groups]
       entity_groups = package.create_package_entity_groups(params[:package][:entity_groups])
       package.package_entity_groups = []
       package.package_entity_groups.create(entity_groups)
@@ -25,6 +25,7 @@ class Setup::PackagesController < PrivateController
     else
       puts "!!!!!!!! package invalid : #{package.errors.full_messages.join(',')}"
       flash[:failure] = "Package doesn't look valid..."
+      flash[:failure] += "Please select at least one organisation group" unless params[:package][:entity_groups]
       render :edit
 
     end

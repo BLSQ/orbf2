@@ -103,7 +103,9 @@ class Rule < ApplicationRecord
         declared:  "1.0",
         validated: "1.0",
         tarif:     "100",
-        max_score: "100"
+        max_score: "100",
+        waiver:    "10",
+        applicable_points: "100"
       }
     elsif package_kind?
       {
