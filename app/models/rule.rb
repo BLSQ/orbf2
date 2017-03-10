@@ -97,17 +97,11 @@ class Rule < ApplicationRecord
 
   def fake_facts
     if activity_kind?
-      result = {}
-      package.package_states.map(&:state).select(&:activity_level?).map(&:code).each do |var_name|
-        result[var_name.to_sym] = "10"
-      end
-      result
+      # in case we are in a clone packages a not there so go through long road package_states instead of states
+      to_fake_facts(package.package_states.map(&:state).select(&:activity_level?))
     elsif package_kind?
-      result = {}
-      package.package_states.map(&:state).select(&:package_level?).map(&:code).each do |var_name|
-        result[var_name.to_sym] = "10"
-      end
-      result
+      # in case we are in a clone packages a not there so go through long road package_states instead of states
+      to_fake_facts(package.package_states.map(&:state).select(&:package_level?))
     elsif payment_kind?
       facts = {}
       packages = payment_rule.packages
@@ -132,5 +126,11 @@ class Rule < ApplicationRecord
 
   def to_s
     "Rule##{id}-#{kind}-#{name}"
+  end
+
+  private
+
+  def to_fake_facts(states)
+    Hash[states.map { |state| [state.code.to_sym, "10"] }]
   end
 end
