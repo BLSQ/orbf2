@@ -42,9 +42,7 @@ class IncentiveConfig
 
     existing_values = []
     org_unit_ids.each_slice(100).each do |org_unit_slice_ids|
-      puts "***************** fetching #{org_unit_slice_ids}"
       slice_values = get_data_elements_values_by_data_set(package.package_state(state).ds_external_reference, org_unit_slice_ids)
-      puts " retrieved : #{slice_values.size}"
       existing_values.push(slice_values)
     end
 
@@ -66,20 +64,24 @@ class IncentiveConfig
   end
 
   def set_data_elements_values
-    period = start_date
+
     pyramid = Pyramid.from(project)
 
     self.entities = pyramid.org_units_in_all_groups(entity_groups).to_a
     values = []
-    entities.each do |org_unit|
-      activity_incentives.each do |activity_incentive|
-        de_values = {
-          value:        activity_incentive.value,
-          period:       period,
-          org_unit:     org_unit.id,
-          data_element: activity_incentive.external_reference
-        }
-        values.push de_values
+    periods = (start_date_as_date..end_date_as_date).map { |d| [d.year, d.month.to_s.rjust(2,"0")].join() }.uniq
+    periods.each do |period|
+      entities.each do |org_unit|
+        activity_incentives.each do |activity_incentive|
+          de_values = {
+            value:        activity_incentive.value,
+            period:       period,
+            org_unit:     org_unit.id,
+            data_element: activity_incentive.external_reference
+          }
+
+          values.push de_values
+        end
       end
     end
     dhis2 = project.dhis2_connection
