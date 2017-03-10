@@ -1,0 +1,24 @@
+
+<h2>Dependencies between formulas</h2>
+<div class="mermaid" style="width: 100%">
+  graph TD
+    <%= render partial: "setup/rules/graph_rule", locals: {rule: rule}%>
+
+    <% if params[:deep] %>
+      <% if rule.package %>
+        <% rule.package.rules.each do |linked_rule| %>
+          <%= render partial: "setup/rules/graph_rule", locals: {rule: linked_rule}%>
+        <%end%>
+      <%end%>
+
+      <% if rule.payment_rule %>
+        <% rule.payment_rule.packages.flat_map(&:rules).select(&:package_kind?).each do |linked_rule| %>
+          <%= render partial: "setup/rules/graph_rule", locals: {rule: linked_rule}%>
+        <%end%>
+      <%end %>
+
+      <% rule.available_variables_for_values.each do |value| %>
+        <%=value %> --> <%=value.remove("_values") %>
+      <%end%>
+    <%end%>
+</div>

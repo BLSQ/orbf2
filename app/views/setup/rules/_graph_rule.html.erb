@@ -1,0 +1,7 @@
+<% rule.formulas.each do |formula| %>
+    <%= formula.code %>("<h3><%=formula.code%></h3> <br> <pre> <%=formula.expression %></pre>")
+
+  <% formula.dependencies.each do |dependency| %>
+    <%= formula.code %> --> <%= dependency %>
+  <% end%>
+<% end%>
