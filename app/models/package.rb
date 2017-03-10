@@ -53,6 +53,11 @@ class Package < ApplicationRecord
     package_entity_groups.any? { |group| entity.groups.include?(group.organisation_unit_group_ext_ref) }
   end
 
+  def apply_for_org_unit(org_unit)
+    group_ids = org_unit.organisation_unit_groups.map {|g| g["id"] }
+    package_entity_groups.any? { |group| group_ids.include?(group.organisation_unit_group_ext_ref) }
+  end
+
   def for_frequency(frequency_to_apply)
     frequency_to_apply == frequency
   end

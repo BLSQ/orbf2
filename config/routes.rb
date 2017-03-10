@@ -20,6 +20,7 @@ Rails.application.routes.draw do
       get "/projects/:project_id", to: "setup#index", as: "project"
       resources :seeds, only: [:index] if Rails.env.development? || Rails.env.dev?
       resources :projects, only: [:create, :update] do
+        resources :invoices, only: [:new, :create]
         resources :activities, only: [:new, :create, :edit, :update, :mass_creation] do
           collection do
             get :mass_creation
