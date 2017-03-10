@@ -1,8 +1,17 @@
 require "rails_helper"
 
 RSpec.describe Rule, kind: :model do
-  let(:quantity_package) { build(:package) }
-  let(:quality_package) { build(:package) }
+  let(:quantity_package) {
+    p = build(:package)
+    p.states <<  State.where(name: %w(Claimed Verified Tarif)).to_a
+    p
+  }
+  let(:quality_package) {
+    p = build(:package)
+    p.states << State.where(name: ["Claimed", "Verified", "Max. Score"]).to_a
+
+    p
+  }
   let(:valid_activity_quantity_rule) do
     rule = quantity_package.rules.build(
       name: "Quantité PMA",
@@ -11,7 +20,7 @@ RSpec.describe Rule, kind: :model do
     rule.formulas.build(
       rule:        rule,
       code:        :difference_percentage,
-      expression:  "if (verified != 0.0, (ABS(declared - verified) / verified ) * 100.0, 0.0)",
+      expression:  "if (verified != 0.0, (ABS(claimed - verified) / verified ) * 100.0, 0.0)",
       description: "Pourcentage difference entre déclaré & vérifié"
     )
     rule.formulas.build(
@@ -37,7 +46,7 @@ RSpec.describe Rule, kind: :model do
     rule.formulas.build(
       rule:        rule,
       code:        :difference_percentage,
-      expression:  "if (verified != 0.0, (ABS(declared - verified) / verified ) * 100.0, 0.0)",
+      expression:  "if (verified != 0.0, (ABS(claimed - verified) / verified ) * 100.0, 0.0)",
       description: "Pourcentage difference entre déclaré & vérifié"
     )
     rule.formulas.build(

@@ -24,6 +24,7 @@ shared_context "basic_context" do
     claimed_state = State.find_by(name: "Claimed")
     verified_state = State.find_by(name: "Verified")
     tarif_state = State.find_by(name: "Tarif")
+    max_score_state = State.find_by(name: "Max. Score")
 
     activity_1 = project.activities.build(
       project: project,
@@ -67,11 +68,11 @@ shared_context "basic_context" do
     )
 
     update_package_with_dhis2(
-      project.packages[2], suffix, default_performance_states,
+      project.packages[3], suffix, default_performance_states,
       [admin_group],
       %w(p4K11MFEWtw wWy5TE9cQ0V r6nrJANOqMw a0WhmKHnZ6J nXJJZNVAy0Y hnwWyM4gDSg CecywZWejT3 bVkFujnp3F2)
     )
-
+    project.dump_validations
     project.save!
     project
   end
