@@ -35,3 +35,14 @@ program.users.create(
 ## Seed a project
 
 http://127.0.0.1:3000/setup/seeds
+
+
+## Restoring a testing or production Environment
+
+get a fresh copy
+
+```
+heroku pg:pull DATABASE_URL scorpiocopy --app scorpio-dev
+```
+
+note that you need a pg 9.6.1 version

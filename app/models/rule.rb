@@ -97,20 +97,17 @@ class Rule < ApplicationRecord
 
   def fake_facts
     if activity_kind?
-      {
-        claimed:   "1.0",
-        verified:  "1.0",
-        declared:  "1.0",
-        validated: "1.0",
-        tarif:     "100",
-        max_score: "100",
-        waiver:    "10",
-        applicable_points: "100"
-      }
+      result = {}
+      package.package_states.map(&:state).select(&:activity_level?).map(&:code).each do |var_name|
+        result[var_name.to_sym] = "10"
+      end
+      result
     elsif package_kind?
-      {
-        budget: "10000"
-      }
+      result = {}
+      package.package_states.map(&:state).select(&:package_level?).map(&:code).each do |var_name|
+        result[var_name.to_sym] = "10"
+      end
+      result
     elsif payment_kind?
       facts = {}
       packages = payment_rule.packages
