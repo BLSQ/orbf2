@@ -17,12 +17,14 @@ class SynchroniseDegDsWorker
       state = package_state.state
       puts "\t ---------------- #{state.name}"
       activity_states = package.activities.map { |activity| activity.activity_state(state) }.reject(&:nil?)
-      created_deg = create_data_element_group(package, state, activity_states.map(&:external_reference))
+      data_element_ids = activity_states.map(&:external_reference).reject(&:nil?).reject(&:empty?)
+      puts "dataelements : #{data_element_ids}"
+      created_deg = create_data_element_group(package, state, data_element_ids )
       puts "created #{created_deg}"
       package_state.deg_external_reference = created_deg.id
       package_state.save!
 
-      created_ds = create_dataset(package, state, activity_states.map(&:external_reference))
+      created_ds = create_dataset(package, state, data_element_ids)
       package_state.ds_external_reference = created_ds.id
       package_state.save!
       puts "updated package_state ds and deg external_reference to #{created_deg.id}  #{created_ds.id} #{package_state.inspect}"

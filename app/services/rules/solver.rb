@@ -23,7 +23,7 @@ module Rules
       solution[:elapsed_time] = (end_time - start_time)
       puts " #{Time.new} => #{solution[:elapsed_time]}" if debug
       puts JSON.pretty_generate([solution]) if debug
-      solution
+      solution.with_indifferent_access
     end
 
     def validate_expression(formula)

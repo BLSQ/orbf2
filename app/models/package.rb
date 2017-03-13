@@ -34,6 +34,10 @@ class Package < ApplicationRecord
 
   attr_accessor :invoice_details
 
+  def invoice_details
+    rules.flat_map(&:formulas).map(&:code)  + ["activity_name"]
+  end
+
   def package_state(state)
     package_states.find { |ps| ps.state_id == state.id }
   end
