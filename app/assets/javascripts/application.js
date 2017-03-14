@@ -12,6 +12,7 @@
 //
 //= require jquery
 //= require sol/sol-2.0.0
+//= require mermaid.min
 //= require jquery_ujs
 //= require jquery-ui/autocomplete
 //= require autocomplete-rails

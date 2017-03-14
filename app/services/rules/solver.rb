@@ -38,6 +38,12 @@ module Rules
       formula.errors[:expression] << e.message
     end
 
+    def dependencies(formula)
+      @@calculator.dependencies(mock_values(formula.expression, formula.rule.available_variables_for_values))
+    rescue => ignored
+      []
+    end
+
     def validate_formulas(rule)
       facts = {}.merge(rule.fake_facts)
       rule.formulas.each { |formula| facts[formula.code] = mock_values(formula.expression, rule.available_variables_for_values) }

@@ -10,18 +10,14 @@ module Analytics
       @facts
     end
 
-    def facts
-      @facts
+    attr_reader :facts
+
+    def self.from(claimed, verified, validated, max_score, _date)
+      Values.new(nil,
+                 "claimed"   => claimed,
+                 "verified"  => verified,
+                 "validated" => validated,
+                 "max_score" => max_score)
     end
   end
-
-  def self.from(claimed, verified, validated, date)
-    Values.new(
-      "claimed"  => claimed,
-      "verified"  => verified,
-      "validated" => validated
-    )
-  end
-
-
 end

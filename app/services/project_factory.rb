@@ -108,7 +108,7 @@ class ProjectFactory
             ),
             new_formula(
               :max_points,
-              "tarif",
+              "max_score",
               "Max Points"
             ),
             new_formula(

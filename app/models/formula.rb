@@ -25,4 +25,12 @@ class Formula < ApplicationRecord
   def expression_is_valid
     Rules::Solver.new.validate_expression(self) if code && description
   end
+
+
+  def dependencies
+    values_dependencies = rule.available_variables_for_values.select do |values|
+      expression.include?("%{#{values}}")
+    end
+    values_dependencies + Rules::Solver.new.dependencies(self)
+  end
 end
