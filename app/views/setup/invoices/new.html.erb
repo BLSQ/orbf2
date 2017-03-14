@@ -9,7 +9,9 @@
   <%= f.submit 'Simulate',   class: "btn btn-primary pull-right" %>
 <%end%>
 
-
+<br>
+<br>
+<br>
 <pre>
   <%= invoicing_request.invoices.flat_map(&:lines).join("\n")%>
 </pre>

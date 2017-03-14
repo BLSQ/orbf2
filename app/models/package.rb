@@ -35,7 +35,7 @@ class Package < ApplicationRecord
   attr_accessor :invoice_details
 
   def invoice_details
-    rules.flat_map(&:formulas).map(&:code)  + ["activity_name"]
+    states.select(&:activity_level?).map(&:code) + activity_rule.formulas.map(&:code)  + ["activity_name"]
   end
 
   def package_state(state)

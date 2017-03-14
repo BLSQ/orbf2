@@ -17,4 +17,8 @@ class InvoicingRequest
   def end_date_as_date
     Date.parse("#{year}-#{QUARTER_TO_MONTH[quarter.to_i]}-01").end_of_month
   end
+
+  def invoices
+    @invoices ||= []
+  end
 end

@@ -30,7 +30,7 @@ class Setup::InvoicesController < PrivateController
     values = dhis2.data_value_sets.list(values_query)
     @values = values.data_values ? values.values : []
 
-    values.data_values.group_by { |v| [v["data_element"], v["period"]] }.each do |k, v|
+    @values.group_by { |v| [v["data_element"], v["period"]] }.each do |k, v|
       puts "#{k} => #{v.size}\n\t #{v.first} \n\t #{v.last} "
     end
 

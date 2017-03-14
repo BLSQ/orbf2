@@ -19,15 +19,15 @@ module Invoicing
           puts package.invoice_details.join("\t")
           results.each do |result|
             line = package.invoice_details.map { |item| d_to_s(item, result.solution[item]) }
-            #line << result.solution.to_json
             puts line.join("\t\t")
           end
           next unless package_results
-          package_line = package.invoice_details.map do |item|
+          package_line = package.package_rule.formulas.map(&:code).map do |item|
             package_result = package_results.find { |pr| pr.package == package }
-            d_to_s(item, package_result.solution[item])
+            next unless package_result.solution[item]
+            [item, d_to_s(item, package_result.solution[item])].join("=")
           end
-          puts "Totals :  #{package_line.join("\t")}"
+          puts "#{package_line.compact.join("\n")}"
         end
       end
 

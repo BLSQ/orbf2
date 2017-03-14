@@ -76,9 +76,10 @@ module Invoicing
         package_results = all_package_results.select {|pr|
           payment_rule.packages.map(&:name).include?(pr.package.name)
         }
-        puts "********* #{package_results} #{payment_rule.apply_for?(entity)} #{package_results.size} #{payment_rule.packages.size}"
-        next unless payment_rule.apply_for?(entity)
-        next unless package_results.size > payment_rule.packages.size
+        puts "********* calculate_payments : #{package_results} #{payment_rule.apply_for?(entity)} #{package_results.size} #{payment_rule.packages.size}"
+        byebug
+        puts "apply_for?" && next unless payment_rule.apply_for?(entity)
+        puts "not all results" && next unless package_results.size >= payment_rule.packages.size
 
 
         package_facts_and_rules = {}
