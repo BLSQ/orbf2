@@ -77,9 +77,9 @@ module Invoicing
           payment_rule.packages.map(&:name).include?(pr.package.name)
         }
         puts "********* calculate_payments : #{package_results} #{payment_rule.apply_for?(entity)} #{package_results.size} #{payment_rule.packages.size}"
-        byebug
-        puts "apply_for?" && next unless payment_rule.apply_for?(entity)
-        puts "not all results" && next unless package_results.size >= payment_rule.packages.size
+
+        next unless payment_rule.apply_for?(entity)
+        next unless package_results.size >= payment_rule.packages.size
 
 
         package_facts_and_rules = {}
@@ -137,21 +137,6 @@ module Invoicing
       end
 
       quarter_entity_results = calculate_package_results(quarter_details_results.values.flatten)
-      # quarter_details_results.values.flatten.group_by { |r| r.package.name }.each do |package_name, results|
-      #   puts "#{package_name} (#{results.first.package.frequency})"
-      #   headers = results.flat_map(&:date)[0..2]
-      #   headers << "total"
-      #   headers << "Activity"
-      #   puts headers.join("\t")
-      #   results.group_by{ |r| r.activity.name }.each do |activity_name, activity_results|
-      #     amounts_quarter = activity_results.map(&:solution).map { |s| s["amount"] }
-      #     amounts_quarter << amounts_quarter.sum
-      #     puts "#{amounts_quarter.join("\t\t")}\t#{activity_name}"
-      #   end
-      # end
-      # totals = quarterly_package_results.values.flatten.map { |qr| qr.solution[:quantity_total] }
-      # totals << quarter_entity_results.first.solution[:quantity_total]
-      # puts totals.join("\t\t").to_s
 
       begin
         project = project_finder.find_project(current_project, current_quarter_end)

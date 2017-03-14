@@ -28,7 +28,7 @@ module Analytics
 
         package.states.each do |state|
           puts " !!!\twarn defaulting to 0\t#{state.code}" unless facts[state.code]
-          facts[state.code] = 25 +rand(6) #||= 0
+          facts[state.code] ||= 0
         end
 
         [ activity, Values.new(date,facts)]

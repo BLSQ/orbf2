@@ -32,6 +32,51 @@ class Project < ApplicationRecord
   belongs_to :original, foreign_key: "original_id", optional: true, class_name: Project.name
   has_many :clones, foreign_key: "original_id", class_name: Project.name, dependent: :destroy
 
+  def self.no_includes
+    current_scope
+  end
+
+  def self.fully_loaded
+    package_includes = {
+      activities:            {
+        activity_states: [:state]
+      },
+      activity_packages:     {
+        activity: {
+          activity_states: [:state]
+        }
+      },
+      package_entity_groups: {
+
+      },
+      states:                {
+      },
+      package_states:        {
+        state: []
+      },
+      rules:                 {
+        formulas:     {
+          rule: [:formulas]
+        },
+        payment_rule: {}
+      }
+    }
+
+    includes(
+      packages:      package_includes,
+      activities:    {
+        activity_states: [:state],
+        activity_packages: { package: package_includes}
+      },
+      payment_rules: {
+        package_payment_rules: {
+          package: package_includes
+        },
+        packages:              package_includes
+      }
+    )
+  end
+
   def self.for_date(date)
     where(status: "published")
       .where("projects.publish_date <= ?", date)
@@ -68,7 +113,7 @@ class Project < ApplicationRecord
           rules:                 [
             :formulas
           ],
-          activity_packages: [],
+          activity_packages:     []
         },
         payment_rules: {
           package_payment_rules: [],
@@ -151,7 +196,7 @@ class Project < ApplicationRecord
         external_reference: entity_group ? entity_group.external_reference : "",
         name:               entity_group ? entity_group.name : ""
       },
-      activities: Hash[activities.map(&:to_unified_h).map { |h| [h[:stable_id], h] }],
+      activities:    Hash[activities.map(&:to_unified_h).map { |h| [h[:stable_id], h] }],
       packages:      Hash[packages.map(&:to_unified_h).map { |h| [h[:stable_id], h] }],
       payment_rules: Hash[payment_rules.map(&:to_unified_h).map { |h| [h[:stable_id], h] }]
     }

@@ -12,7 +12,7 @@ class PrivateController < ApplicationController
   end
 
   def current_project(options =  {raise_if_published: true})
-    @current_project ||= current_project_anchor.projects.find(params[:project_id]) if params[:project_id]
+    @current_project ||= current_project_anchor.projects.send(options[:project_scope] || :no_includes).find(params[:project_id]) if params[:project_id]
     unless @current_project.nil?
       raise ReadonlyProjectError, "No more editable project is published" if @current_project.published? && options[:raise_if_published]
     end

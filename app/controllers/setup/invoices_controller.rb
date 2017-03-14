@@ -11,13 +11,16 @@ class Setup::InvoicesController < PrivateController
   end
 
   def create
-    @invoicing_request = InvoicingRequest.new(invoice_params.merge(project: current_project))
 
-    dhis2 = current_project.dhis2_connection
+    project = current_project(project_scope: :fully_loaded)
+
+    @invoicing_request = InvoicingRequest.new(invoice_params.merge(project: project))
+
+    dhis2 = project.dhis2_connection
     org_unit = dhis2.organisation_units.find("CV4IXOSr5ky")
     org_unit_ids = [org_unit.id]
 
-    packages = current_project.packages # .select { |p| p.apply_for_org_unit(org_unit) }
+    packages = project.packages # .select { |p| p.apply_for_org_unit(org_unit) }
     dataset_ids = packages.flat_map(&:package_states).map(&:ds_external_reference).reject(&:nil?)
 
     values_query = {
@@ -34,8 +37,7 @@ class Setup::InvoicesController < PrivateController
       puts "#{k} => #{v.size}\n\t #{v.first} \n\t #{v.last} "
     end
 
-    project = current_project
-    entity = Analytics::Entity.new(org_unit.id, org_unit.name, org_unit.organisation_unit_groups.map {|n| n["id"]})
+    entity = Analytics::Entity.new(org_unit.id, org_unit.name, org_unit.organisation_unit_groups.map { |n| n["id"] })
     invoice_builder = Invoicing::InvoiceBuilder.new(ConstantProjectFinder.new(project), Tarification::TarificationService.new)
     analytics_service = Analytics::CachedAnalyticsService.new([org_unit], @values)
 
