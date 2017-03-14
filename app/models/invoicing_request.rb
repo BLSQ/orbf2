@@ -21,4 +21,12 @@ class InvoicingRequest
   def invoices
     @invoices ||= []
   end
+
+  def quarter_dates
+    [
+      end_date_as_date - 2.months,
+      end_date_as_date - 1.month,
+      end_date_as_date
+    ].map(&:end_of_month)
+  end
 end

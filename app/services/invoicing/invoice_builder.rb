@@ -10,7 +10,7 @@ module Invoicing
 
     def calculate_activity_results(analytics_service, project, entity, date, frequency)
       selected_packages = project.packages.select do |package|
-        package.apply_for(entity) && package.for_frequency(frequency)
+        package.for_frequency(frequency) && package.apply_for(entity)
       end
       raise "No package for #{entity.name} #{entity.groups} vs supported groups #{project.packages.flat_map(&:entity_groups).uniq}" if selected_packages.empty?
       selected_packages.map do |package|
@@ -76,7 +76,7 @@ module Invoicing
         package_results = all_package_results.select {|pr|
           payment_rule.packages.map(&:name).include?(pr.package.name)
         }
-        puts "********* calculate_payments : #{package_results} #{payment_rule.apply_for?(entity)} #{package_results.size} #{payment_rule.packages.size}"
+        #puts "********* calculate_payments : #{package_results} #{payment_rule.apply_for?(entity)} #{package_results.size} #{payment_rule.packages.size}"
 
         next unless payment_rule.apply_for?(entity)
         next unless package_results.size >= payment_rule.packages.size
