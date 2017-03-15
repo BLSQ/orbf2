@@ -15,7 +15,3 @@
 <pre>
   <%= invoicing_request.invoices.flat_map(&:lines).join("\n")%>
 </pre>
-
-<pre>
-  <%= JSON.pretty_generate(invoicing_request.invoices.flat_map(&:to_h)) %>
-</pre>
