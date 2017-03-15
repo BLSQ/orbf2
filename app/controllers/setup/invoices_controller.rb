@@ -16,30 +16,16 @@ class Setup::InvoicesController < PrivateController
 
     @invoicing_request = InvoicingRequest.new(invoice_params.merge(project: project))
 
-
-    timing = Benchmark.bm do |x|
-      org_unit = nil
-      x.report("org_unit:") do
-          org_unit = fetch_org_unit(project,invoicing_request.entity)
-      end
-      values = nil
-      x.report("values:") do
-        values = fetch_values(project, [org_unit.id])
-      end
-      x.report("calculate_invoices:") do
-        invoicing_request.invoices = calculate_invoices(project, org_unit, values)
-      end
-    end
-
-    puts "!!!! Invoiced in"
-    puts timing
+    org_unit = fetch_org_unit(project, invoicing_request.entity)
+    values = fetch_values(project, [org_unit.id])
+    invoicing_request.invoices = calculate_invoices(project, org_unit, values)
 
     render :new
   end
 
   private
 
-  def fetch_org_unit(project,id)
+  def fetch_org_unit(project, id)
     project.dhis2_connection.organisation_units.find(id)
   end
 
