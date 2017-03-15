@@ -1,0 +1,122 @@
+{
+    "code": "OU_268246",
+    "lastUpdated": "2014-11-25T09:37:53.975",
+    "id": "BV4IomHvri4",
+    "href": "https://play.dhis2.org/demo/api/organisationUnits/BV4IomHvri4",
+    "level": 4,
+    "created": "2012-02-17T15:54:39.987",
+    "leaf": true,
+    "name": "Ahmadiyya Muslim Hospital",
+    "shortName": "Ahmadiyya Muslim Hospital",
+    "displayName": "Ahmadiyya Muslim Hospital",
+    "displayShortName": "Ahmadiyya Muslim Hospital",
+    "externalAccess": false,
+    "path": "/ImspTQPwCqd/eIQbndfxQMb/NNE0YMCDZkO/BV4IomHvri4",
+    "featureType": "POINT",
+    "openingDate": "1970-01-01T00:00:00.000",
+    "dimensionItem": "BV4IomHvri4",
+    "coordinates": "[-12.2231,8.466]",
+    "dimensionItemType": "ORGANISATION_UNIT",
+    "parent": {
+        "id": "NNE0YMCDZkO"
+    },
+    "access": {
+        "read": true,
+        "update": true,
+        "externalize": false,
+        "delete": true,
+        "write": true,
+        "manage": false
+    },
+    "children": [],
+    "translations": [{
+        "property": "SHORT_NAME",
+        "locale": "en_GB",
+        "value": "Ahmadiyya Muslim Hospital"
+    }, {
+        "property": "NAME",
+        "locale": "en_GB",
+        "value": "Ahmadiyya Muslim Hospital"
+    }],
+    "ancestors": [{
+        "id": "ImspTQPwCqd"
+    }, {
+        "id": "eIQbndfxQMb"
+    }, {
+        "id": "NNE0YMCDZkO"
+    }],
+    "organisationUnitGroups": [{
+        "id": "f25dqv3Y7Z0"
+    }, {
+        "id": "oRVt7g429ZO"
+    }, {
+        "id": "tDZVQ1WtwpA"
+    }],
+    "userGroupAccesses": [],
+    "attributeValues": [],
+    "users": [],
+    "userAccesses": [],
+    "dataSets": [{
+        "id": "aLpVgfXiz0f"
+    }, {
+        "id": "pBOMPrpg1QX"
+    }, {
+        "id": "EKWVBc5C0ms"
+    }, {
+        "id": "ULowA8V3ucd"
+    }, {
+        "id": "QX4ZTUbOt3a"
+    }, {
+        "id": "eZDhcZi6FLP"
+    }, {
+        "id": "V8MHeZHIrcP"
+    }, {
+        "id": "ce7DSxx5H2I"
+    }, {
+        "id": "Rl58JxmKJo2"
+    }, {
+        "id": "YZhd4nu3mzY"
+    }, {
+        "id": "YFTk3VdO9av"
+    }, {
+        "id": "EDzMBk0RRji"
+    }, {
+        "id": "VTdjfLXXmoi"
+    }, {
+        "id": "N4fIX1HL3TQ"
+    }, {
+        "id": "SF8FDSqw30D"
+    }, {
+        "id": "BfMAe6Itzgt"
+    }, {
+        "id": "OsPTWNqq26W"
+    }, {
+        "id": "PLq9sJluXvc"
+    }, {
+        "id": "TuL8IOPzpHh"
+    }, {
+        "id": "Y8gAn9DfAGU"
+    }, {
+        "id": "lyLU2wR22tC"
+    }],
+    "legendSets": [],
+    "programs": [{
+        "id": "uy2gU8kT1jF"
+    }, {
+        "id": "q04UBOqq3rp"
+    }, {
+        "id": "VBqh0ynB2wv"
+    }, {
+        "id": "eBAyeGv0exc"
+    }, {
+        "id": "kla3mAPgvCH"
+    }, {
+        "id": "lxAQ7Zs9VYR"
+    }, {
+        "id": "IpHINAT79UW"
+    }, {
+        "id": "WSGAb5XwJ3Y"
+    }, {
+        "id": "ur1Edk5Oe2n"
+    }]
+}

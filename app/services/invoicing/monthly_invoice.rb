@@ -45,5 +45,9 @@ module Invoicing
       return "%.2f" % decimal if decimal.is_a? Numeric
       decimal
     end
+
+    def to_json(options)
+      to_h.to_json(options)
+    end
   end
 end
