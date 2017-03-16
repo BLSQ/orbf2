@@ -153,7 +153,9 @@ module Invoicing
 
         raise "should have at least one package_results" if package_results.empty?
         payments = calculate_payments(project, entity, package_results)
-        MonthlyInvoice.new(date, entity, project, activity_results, package_results, payments)
+        invoice = MonthlyInvoice.new(date, entity, project, activity_results, package_results, payments)
+        invoice.dump_invoice
+        invoice
       rescue => e
         raise e
       end

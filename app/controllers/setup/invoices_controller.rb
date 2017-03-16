@@ -19,7 +19,7 @@ class Setup::InvoicesController < PrivateController
     org_unit = fetch_org_unit(project, invoicing_request.entity)
     values = fetch_values(project, [org_unit.id])
     invoicing_request.invoices = calculate_invoices(project, org_unit, values)
-
+    
     render :new
   end
 
@@ -40,9 +40,10 @@ class Setup::InvoicesController < PrivateController
       monthly_invoice.dump_invoice
       invoices << monthly_invoice
     end
-    quarterly_invoice = invoice_builder.generate_quarterly_entity_invoice(project, entity, analytics_service, invoicing_request.end_date_as_date)
-
-    invoices << quarterly_invoice
+    puts "..... generated #{invoices.size} monthly "
+    quarterly_invoices = invoice_builder.generate_quarterly_entity_invoice(project, entity, analytics_service, invoicing_request.end_date_as_date)
+    puts "..... generated #{quarterly_invoices.size} quaterly "
+    invoices << quarterly_invoices
     invoices.flatten
   end
 
