@@ -26,21 +26,20 @@ module Analytics
     def calculate(parsed_expressions, values)
       indexed_values = values.group_by do |value|
         [
-          value["dataElement"],
-          value["period"],
-          value["orgUnit"],
-          value["categoryOptionCombo"]
+          value.data_element,
+          value.period,
+          value.org_unit,
+          value.category_option_combo
         ]
       end
       indexed_values_without_category = values.group_by do |value|
         [
-          value["dataElement"],
-          value["period"],
-          value["orgUnit"]
+          value.data_element,
+          value.period,
+          value.org_unit
         ]
       end
-      period_orgunits = values.map { |value| [value["period"], value["orgUnit"]] }.uniq.sort
-
+      period_orgunits = values.map { |value| [value.period, value.org_unit] }.uniq
       parsed_expressions.map do |indicator_id, expressions_to_sum|
         period_orgunits.map do |period, orgunit|
           # handle the dhjgLt7EYmu.se1qWfbtkmx part of {dhjgLt7EYmu.se1qWfbtkmx}+#{xtVtnuWBBLB}
@@ -64,14 +63,14 @@ module Analytics
           end
 
           value = values_for_entity.flatten.compact.map { |v| v["value"].to_f }.sum
-          #puts "calculating #{indicator_id} for pe:#{period} ou:#{orgunit} => #{values_for_entity} => #{value}"
-          {
-            "dataElement":         indicator_id,
-            "period":              period,
-            "orgUnit":             orgunit,
-            "value":               value,
-            "categoryOptionCombo": nil
-          }
+          puts "calculating #{indicator_id} for pe:#{period} ou:#{orgunit} => #{values_for_entity} => #{value}"
+          OpenStruct.new(
+            data_element:          indicator_id,
+            period:                period,
+            org_unit:              orgunit,
+            value:                 value,
+            category_option_combo: nil
+          )
         end
       end.flatten
     end
