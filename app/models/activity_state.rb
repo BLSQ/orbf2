@@ -32,6 +32,9 @@ class ActivityState < ApplicationRecord
     kind == 'formula'
   end
 
+  def kind_indicator?
+    kind == 'indicator'
+  end
 
   def to_unified_h
     {
