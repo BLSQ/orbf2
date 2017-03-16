@@ -38,6 +38,7 @@ Rails.application.routes.draw do
           collection do
             get :organisation_unit_group
             get :data_elements
+            get :indicators
           end
         end
       end
