@@ -19,28 +19,13 @@ class Setup::InvoicesController < PrivateController
     org_unit = fetch_org_unit(project, invoicing_request.entity)
     values = fetch_values(project, [org_unit.id])
     indicators_expressions = fetch_indicators_expressions(project)
-    values += mock_values(indicators_expressions, [org_unit.id])
-
+    puts "VALUES ::: #{JSON.pretty_generate(values)}"
     invoicing_request.invoices = calculate_invoices(project, org_unit, values, indicators_expressions)
 
     render :new
   end
 
   private
-
-  def mock_values(indicators_expressions, orgunits)
-    orgunits.map do |ou_id|
-      indicators_expressions.values.flatten.map do |e|
-        {
-          "data_element"         => e[:data_element],
-          "category_option_combo" => e[:category_combo],
-          "value"               => rand(25),
-          "period"              => "201501",
-          "org_unit"             => ou_id
-        }
-      end
-    end.flatten.map {|e| OpenStruct.new(e)}
-  end
 
   def fetch_org_unit(project, id)
     # TODO: use snapshots

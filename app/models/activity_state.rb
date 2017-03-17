@@ -44,4 +44,5 @@ class ActivityState < ApplicationRecord
       state:              state_id
     }
   end
+
 end

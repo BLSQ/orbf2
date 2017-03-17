@@ -13,13 +13,16 @@ class SynchroniseDegDsWorker
 
   def synchronize(package)
     puts "********** Synchronizing #{package.name} (#{package.id}) - activities #{package.activities.size}"
+    @indicators ||= package.project.dhis2_connection.indicators.list(fields: ":all", page_size: 50_000)
     package.package_states.each do |package_state|
       state = package_state.state
       puts "\t ---------------- #{state.name}"
       activity_states = package.activities.map { |activity| activity.activity_state(state) }.reject(&:nil?)
-      data_element_ids = activity_states.map(&:external_reference).reject(&:nil?).reject(&:empty?)
+      data_element_ids = activity_states.select(&:kind_data_element?).map(&:external_reference).flatten.reject(&:nil?).reject(&:empty?)
+      data_element_ids += indicators_data_element_references(@indicators, activity_states)
+      data_element_ids = data_element_ids.uniq
       puts "dataelements : #{data_element_ids}"
-      created_deg = create_data_element_group(package, state, data_element_ids )
+      created_deg = create_data_element_group(package, state, data_element_ids)
       puts "created #{created_deg}"
       package_state.deg_external_reference = created_deg.id
       package_state.save!
@@ -53,7 +56,6 @@ class SynchroniseDegDsWorker
     raise "Failed to create data element group #{deg} #{e.message} with #{package.project.dhis2_url}  #{e.response.body}"
   end
 
-
   def create_dataset(package, state, data_element_ids)
     ds_code = "#{state.code}-#{package.name}"[0..49]
     ds_name = "#{state.name.pluralize} - #{package.name}"
@@ -78,5 +80,16 @@ class SynchroniseDegDsWorker
     return created_ds
   rescue RestClient::Exception => e
     raise "Failed to create dataset #{ds} #{e.message} with #{package.project.dhis2_url} #{e.response.body}"
+  end
+
+  def indicators_data_element_references(indicators, activity_states)
+    indicator_references = Set.new(activity_states.select(&:kind_indicator?).map(&:external_reference))
+    indicator_references += ["sJZI0t71kK7"]
+    dataelement_references = indicators.select {|i|indicator_references.include?(i.id)}
+              .map { |indicator| Analytics::IndicatorCalculator.parse_expression(indicator.numerator) }
+              .flatten
+              .map { |expr| expr[:data_element] }
+    puts "Adding indicator's data elements #{indicator_references.to_a} => #{dataelement_references}"
+    dataelement_references
   end
 end

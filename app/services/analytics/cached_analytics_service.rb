@@ -10,7 +10,7 @@ module Analytics
 
     def activity_and_values(package, date)
       package.activities.map do |activity|
-        facts = Hash[activity.activity_states.select(&:kind_data_element?).map do |activity_state|
+        facts = Hash[activity.activity_states.select{|activity_state| activity_state.external_reference?}.map do |activity_state|
           activity_values = @values_by_data_element_and_period[[activity_state.external_reference,"#{date.year}#{date.month.to_s.rjust(2, '0')}"  ]] || []
           values_for_activity =  activity_values.map { |v| v["value"] }.map(&:to_f)
           [activity_state.state.code, values_for_activity.sum]
