@@ -1,7 +1,8 @@
 class DataCompound
-  def initialize(data_elements, data_elements_groups)
+  def initialize(data_elements, data_elements_groups, indicators)
     @data_elements_by_id = data_elements.index_by(&:id)
     @data_elements_groups_by_id = data_elements_groups.index_by(&:id)
+    @indicators_by_id = indicators.index_by(&:id)
 
     data_elements_by_group = {}
     data_elements.each do |de|
@@ -20,7 +21,16 @@ class DataCompound
     dhis2 = project.dhis2_connection
     data_elements = dhis2.data_elements.list(fields: ":all", page_size: 50_000)
     data_element_groups = dhis2.data_element_groups.list(fields: ":all", page_size: 50_000)
-    DataCompound.new(data_elements, data_element_groups)
+    indicators = dhis2.indicators.list(fields: ":all", page_size: 50_000)
+    DataCompound.new(data_elements, data_element_groups,indicators)
+  end
+
+  def indicators
+    @indicators_by_id.values
+  end
+
+  def indicator(id)
+    @indicators_by_id[id]
   end
 
   def data_element(id)

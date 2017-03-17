@@ -27,18 +27,19 @@ RSpec.describe Dhis2SnapshotWorker do
     stub_data_elements
     stub_data_elements_groups
     stub_system_info
+    stub_indicators
+
     expect(Dhis2Snapshot.all.count).to eq 0
 
     Dhis2SnapshotWorker.new.perform(project_anchor.id)
-    expect(Dhis2Snapshot.all.count).to eq 4
+    expect(Dhis2Snapshot.all.count).to eq 5
 
     Dhis2SnapshotWorker.new.perform(project_anchor.id)
-    expect(Dhis2Snapshot.all.count).to eq 4
+    expect(Dhis2Snapshot.all.count).to eq 5
 
     pyramid = project_anchor.pyramid_for(Time.now)
     expect(pyramid.org_units.size).to eq 1336
     expect(pyramid.org_unit_groups.size).to eq 14
-
 
     data_compound = project_anchor.data_compound_for(Time.now)
     expect(data_compound.data_elements.size).to eq 875
@@ -70,5 +71,8 @@ RSpec.describe Dhis2SnapshotWorker do
       .to_return(status: 200, body: fixture_content(:dhis2, "data_element_groups.json"))
   end
 
-
+  def stub_indicators
+    stub_request(:get, "http://play.dhis2.org/demo/api/indicators?fields=:all&pageSize=50000")
+      .to_return(status: 200, body: fixture_content(:dhis2, "indicators.json"))
+  end
 end

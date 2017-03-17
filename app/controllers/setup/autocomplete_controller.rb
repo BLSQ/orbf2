@@ -15,6 +15,12 @@ class Setup::AutocompleteController < PrivateController
 
     render_sol_items(data_compound.data_elements)
   end
+
+  def indicators
+    data_compound = DataCompound.from(current_project)
+
+    render_sol_items(data_compound.indicators)
+  end
 end
 
 private

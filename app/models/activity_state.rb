@@ -3,13 +3,15 @@
 # Table name: activity_states
 #
 #  id                 :integer          not null, primary key
-#  external_reference :string           not null
+#  external_reference :string
 #  name               :string           not null
 #  state_id           :integer          not null
 #  activity_id        :integer          not null
 #  stable_id          :uuid             not null
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
+#  kind               :string           default("data_element"), not null
+#  formula            :string
 #
 
 class ActivityState < ApplicationRecord
@@ -30,6 +32,9 @@ class ActivityState < ApplicationRecord
     kind == 'formula'
   end
 
+  def kind_indicator?
+    kind == 'indicator'
+  end
 
   def to_unified_h
     {
@@ -39,4 +44,5 @@ class ActivityState < ApplicationRecord
       state:              state_id
     }
   end
+
 end

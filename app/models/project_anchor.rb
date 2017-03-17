@@ -43,16 +43,18 @@ class ProjectAnchor < ApplicationRecord
 
   def data_compound_for(date)
     snapshots = dhis2_snapshots
-                        .where(kind: [:data_elements, :data_element_groups])
+                        .where(kind: [:data_elements, :data_element_groups, :indicators])
                         .where(month: date.month)
                         .where(year: date.year)
 
     data_elements = snapshots.find(&:kind_data_elements?)
     data_element_groups = snapshots.find(&:kind_data_element_groups?)
+    indicators = snapshots.find(&:kind_indicators?)
     return nil unless data_elements && data_element_groups
     DataCompound.new(
       data_elements.content.map { |r| Dhis2::Api::DataElement.new(nil, r["table"]) },
-      data_element_groups.content.map { |r| Dhis2::Api::DataElementGroup.new(nil, r["table"]) }
+      data_element_groups.content.map { |r| Dhis2::Api::DataElementGroup.new(nil, r["table"]) },
+      indicators ? indicators.content.map { |r| Dhis2::Api::Indicator.new(nil, r["table"]) } : []
     )
   end
 end

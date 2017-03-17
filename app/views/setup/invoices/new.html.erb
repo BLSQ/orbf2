@@ -1,0 +1,17 @@
+
+
+<%= simple_form_for(invoicing_request,  url: setup_project_invoices_path(invoicing_request.project), method: :post) do |f| %>
+
+  <%= f.input :entity %>
+  <%= f.input :year %>
+  <%= f.input :quarter %>
+
+  <%= f.submit 'Simulate',   class: "btn btn-primary pull-right" %>
+<%end%>
+
+<br>
+<br>
+<br>
+<pre>
+  <%= invoicing_request.invoices.flat_map(&:lines).join("\n")%>
+</pre>

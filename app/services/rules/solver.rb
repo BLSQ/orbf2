@@ -23,7 +23,7 @@ module Rules
       solution[:elapsed_time] = (end_time - start_time)
       puts " #{Time.new} => #{solution[:elapsed_time]}" if debug
       puts JSON.pretty_generate([solution]) if debug
-      solution
+      solution.with_indifferent_access
     end
 
     def validate_expression(formula)
@@ -94,6 +94,12 @@ module Rules
       sum_function = lambda do |*args|
         args.inject(0.0) { |sum, x| sum + x }
       end
+
+      safe_div = lambda do |*args|
+        dividend = args[0]
+        divisor = args[1]
+        divisor > 0 ? (dividend/divisor) : 0
+      end
       between = ->(lower, score, greater) { lower <= score && score <= greater }
 
       calculator = Dentaku::Calculator.new
@@ -102,6 +108,7 @@ module Rules
       calculator.add_function(:score_table, :numeric, score_table)
       calculator.add_function(:avg, :numeric, avg_function)
       calculator.add_function(:sum, :numeric, sum_function)
+      calculator.add_function(:safe_div, :numeric, sum_function)
       calculator
    end
  end

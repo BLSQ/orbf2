@@ -134,7 +134,7 @@ class ProjectFactory
             ),
             new_formula(
               :quality_technical_score_value,
-              "SUM(%{attributed_points_values})/SUM(%{max_points_values}) * 100.0",
+              "SAFE_DIV(SUM(%{attributed_points_values}),SUM(%{max_points_values})) * 100.0",
               "Quality score"
             )
           ]

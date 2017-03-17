@@ -1,5 +1,16 @@
 module Invoicing
   class MonthlyInvoice < Struct.new(:date, :entity, :project, :activity_results, :package_results, :payments)
+
+
+    def puts(message = "")
+      @lines ||= []
+      @lines << message
+    end
+
+    def lines
+      @lines
+    end
+
     def dump_invoice
       puts "-------********* #{entity.name} #{date}************------------"
       if activity_results
@@ -7,22 +18,22 @@ module Invoicing
           puts "************ Package #{package.name} "
           puts package.invoice_details.join("\t")
           results.each do |result|
-            line = package.invoice_details.map { |item| d_to_s(result.solution[item]) }
-            # line << result.solution.to_json
+            line = package.invoice_details.map { |item| d_to_s(item, result.solution[item]) }
             puts line.join("\t\t")
           end
           next unless package_results
-          package_line = package.invoice_details.map do |item|
+          package_line = package.package_rule.formulas.map(&:code).map do |item|
             package_result = package_results.find { |pr| pr.package == package }
-            d_to_s(package_result.solution[item])
+            next unless package_result.solution[item]
+            [item, d_to_s(item, package_result.solution[item])].join("=")
           end
-          puts "Totals :  #{package_line.join("\t")}"
+          puts "#{package_line.compact.join("\n")}"
         end
       end
 
       if payments && !payments.empty?
         package_line = project.payment_rules.first.rule.formulas.map do |formula|
-          [formula.code, d_to_s(payments[formula.code])].join(" : ")
+          [formula.code, d_to_s(formula.code, payments[formula.code])].join(" : ")
         end
         puts "************ payments "
         puts package_line.join("\n")
@@ -30,9 +41,13 @@ module Invoicing
       puts
     end
 
-    def d_to_s(decimal)
+    def d_to_s(item, decimal)
       return "%.2f" % decimal if decimal.is_a? Numeric
       decimal
+    end
+
+    def to_json(options)
+      to_h.to_json(options)
     end
   end
 end

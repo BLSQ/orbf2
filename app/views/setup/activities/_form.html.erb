@@ -15,6 +15,23 @@
   </div>
 </div>
 
+<div class="row">
+    <div class="col-md-6">
+      <div class="form-group">
+        <label class="control-label">Indicators</label>
+        <select id="indicators_selector" data-selected="<%=params[:indicators].join(',') if params[:indicators] %>" data-placeholder="Lookup the indicators here..." data-selection = "indicators_selection" data-url = "<%= indicators_setup_project_autocomplete_index_path(@activity.project) %>" class="form-control sol-powered" name="indicators[]" multiple="multiple">
+        </select>
+    </div>
+  </div>
+  <div class="col-md-6">
+     <div class="col-md-12" id="indicators_selection"></div>
+     <div class="pull-right">
+      <%= f.button :submit, 'Add indicators for state mapping', class: "btn btn-primary" %>
+    </div>
+  </div>
+</div>
+
+
 <% if params.has_key?(:activity) || activity.activity_states.present? %>
 
 <div>
@@ -22,6 +39,7 @@
         <thead>
             <tr>
                 <th>Activity</th>
+                <th>Kind</th>
                 <th>Remove</th>
                 <th style="text-align: center;">State</th>
                 <th>Value</th>

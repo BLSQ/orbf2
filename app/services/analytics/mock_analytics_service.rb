@@ -1,12 +1,12 @@
 module Analytics
   class MockAnalyticsService
-
     def entities
       [
         Analytics::Entity.new(1, "Maqokho HC", ["hospital_group_id"]),
         Analytics::Entity.new(2, "fosa", ["fosa_group_id"])
       ]
     end
+
     def activity_and_values(package, date)
       # build from data element group and analytics api
       activity_and_values_quantity_pma = [ # PMA
@@ -109,14 +109,14 @@ module Analytics
     end
 
     def new_values(claimed = 0.0, verified = 0.0, validated = 0.0)
-      Analytics::Values.new(claimed, verified, validated, 10.0)
+      Analytics::Values.new(nil, claimed: claimed, verified: verified, validated: validated, max_score: 10.0)
     end
 
     def for_quarter(value)
       quarter = []
-      quarter << new_values(value.claimed, value.verified, value.validated)
-      quarter << new_values(value.claimed + 2, value.claimed + 1, value.validated)
-      quarter << new_values(value.claimed, value.claimed, value.validated)
+      quarter << new_values(value.facts[:claimed], value.facts[:verified], value.facts[:validated])
+      quarter << new_values(value.facts[:claimed] + 2, value.facts[:claimed] + 1, value.facts[:validated])
+      quarter << new_values(value.facts[:claimed], value.facts[:claimed], value.facts[:validated])
       quarter
     end
 

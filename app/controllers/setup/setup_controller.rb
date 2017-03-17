@@ -17,26 +17,7 @@ class Setup
         redirect_to setup_project_path(latest_draft) && return if latest_draft
       end
       if current_project_anchor && current_project_anchor.project && params[:project_id]
-        @project = current_project_anchor.projects.includes(
-          activities:            {
-            activity_packages: {
-              package:[],
-              activity: { activity_states: [ :state]}
-            }
-          },
-          packages:      {
-            rules:                 [formulas: [:rule], package:[]],
-            package_entity_groups: [:package],
-            package_states:        [:package, :state],
-            activity_packages: [:activity, :package]
-          },
-          payment_rules: [
-            rule: [
-              formulas:     [:rule],
-              payment_rule: []
-            ]
-          ]
-        ).find(params[:project_id])
+        @project = current_project_anchor.projects.fully_loaded.find(params[:project_id])
       end
       project&.publish_date = Time.zone.today.to_date.strftime("%Y-%m-%d")
       @setup = Setup.new(Step.get_steps(project))

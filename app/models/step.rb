@@ -9,6 +9,7 @@ class Step
     step_packages = packages(project, step_activities, step_connection)
     step_rules = rules(project, step_packages)
     step_incentives = incentives(project, step_packages, step_rules)
+    step_invoicing = invoicing(project, step_packages, step_rules)
     step_publish = publish(project, step_packages)
 
     [step_connection,
@@ -17,6 +18,7 @@ class Step
      step_packages,
      step_rules,
      step_incentives,
+     step_invoicing,
      step_publish]
   end
 
@@ -56,6 +58,15 @@ class Step
              kind:   :rules,
              model:  step_package.todo? ? nil : project.packages)
   end
+
+
+def self.invoicing(project, step_package, step_rules)
+  step_rules_todo = rules_todo(project, step_package)
+  Step.new(name:   "Invoicing",
+           status: step_rules_todo ? :todo : :done,
+           kind:   :invoicing,
+           model:  project)
+end
 
   def self.incentives(project, step_package, step_rules)
     step_rules_todo = rules_todo(project, step_package)

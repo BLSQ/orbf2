@@ -35,6 +35,10 @@ RSpec.describe Setup::AutocompleteController, type: :controller do
         stub_request(:get, "#{project.dhis2_url}/api/dataElementGroups?fields=:all&pageSize=50000")
           .to_return(status: 200, body: fixture_content(:dhis2, "data_element_groups.json"))
 
+        stub_request(:get, "#{project.dhis2_url}/api/indicators?fields=:all&pageSize=50000")
+            .to_return(status: 200, body: fixture_content(:dhis2, "indicators.json"))
+
+
       get :data_elements, params: { project_id: project.id }
     end
   end
