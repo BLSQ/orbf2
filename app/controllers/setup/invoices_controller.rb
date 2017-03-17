@@ -6,7 +6,7 @@ class Setup::InvoicesController < PrivateController
     @invoicing_request = InvoicingRequest.new(
       project: current_project,
       year:    Date.today.to_date.year,
-      quarter: (Date.today.to_date.month / 4) + 1,
+      quarter: (Date.today.to_date.month / 3) + 1,
       entity:  "CV4IXOSr5ky"
     )
   end
