@@ -3,7 +3,7 @@
     <td>
       <small>
       <% activity.activity_states.each do |activity_state| %>
-        <li><%= activity_state.name %> (<%= activity_state.state.name %>)</li>
+        <li><%= activity_state.name %> (<%= activity_state.state.name %> - <%= activity_state.kind %> <%= activity_state.formula? ? "- #{activity_state.formula}" : ""%> <%if params[:debug] %> - <%= activity_state.external_reference %> <%end%>)</li>
       <% end %>
       </small>
   </td>
