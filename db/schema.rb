@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170213070333) do
+ActiveRecord::Schema.define(version: 20170321072633) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -72,6 +72,15 @@ ActiveRecord::Schema.define(version: 20170213070333) do
     t.datetime "created_at",         null: false
     t.datetime "updated_at",         null: false
     t.index ["project_id"], name: "index_entity_groups_on_project_id", using: :btree
+  end
+
+  create_table "formula_mappings", force: :cascade do |t|
+    t.integer "formula_id",         null: false
+    t.integer "activity_id"
+    t.string  "external_reference", null: false
+    t.string  "kind",               null: false
+    t.index ["activity_id"], name: "index_formula_mappings_on_activity_id", using: :btree
+    t.index ["formula_id"], name: "index_formula_mappings_on_formula_id", using: :btree
   end
 
   create_table "formulas", force: :cascade do |t|
@@ -211,6 +220,8 @@ ActiveRecord::Schema.define(version: 20170213070333) do
   add_foreign_key "activity_states", "states"
   add_foreign_key "dhis2_snapshots", "project_anchors"
   add_foreign_key "entity_groups", "projects"
+  add_foreign_key "formula_mappings", "activities"
+  add_foreign_key "formula_mappings", "formulas"
   add_foreign_key "formulas", "rules"
   add_foreign_key "package_entity_groups", "packages"
   add_foreign_key "package_payment_rules", "packages"

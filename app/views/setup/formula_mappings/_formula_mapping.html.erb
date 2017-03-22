@@ -1,0 +1,19 @@
+<tr>
+<td><%= formula_mapping.formula.rule&.package&.name || formula_mapping.formula.rule&.name %></td>
+<td><%= formula_mapping.kind %></td>
+<td><%= formula_mapping&.activity&.name %></td>
+<td title="<%= formula_mapping.formula.description%> | <%= formula_mapping.formula.expression %>"><%= formula_mapping.formula.code %></td>
+<td>
+<% formula_mappings_external_reference_id = "formula_mappings_ext_ref_#{formula_mapping.formula_id}_#{formula_mapping.activity_id}" %>
+  <%= hidden_field_tag "formula_mappings[][formula_id]", formula_mapping.formula_id %>
+  <%= hidden_field_tag "formula_mappings[][kind]", formula_mapping.kind %>
+  <%= hidden_field_tag "formula_mappings[][activity_id]", formula_mapping.activity_id %>
+  <%= hidden_field_tag "formula_mappings[][external_reference]", formula_mapping.external_reference, id: formula_mappings_external_reference_id %>
+  <%= text_field_tag formula_mappings_external_reference_id,
+                     formula_mapping.external_reference ,
+                     data: { autocomplete: data_elements_setup_project_autocomplete_index_path(project) ,
+                             id_element: "##{formula_mappings_external_reference_id}" },
+                     class: "form-control autocomplete-data-element",
+                     placeholder: "Type some letters to start searching..." %>
+</td>
+</tr>

@@ -10,10 +10,12 @@ class Setup::AutocompleteController < PrivateController
   end
 
   def data_elements
-
     data_compound = DataCompound.from(current_project)
-
-    render_sol_items(data_compound.data_elements)
+    if params[:id]
+      render_sol_items([data_compound.data_element(params[:id])], params[:id])
+    else
+      render_sol_items(filter_ilike(data_compound.data_elements, params[:term]), params[:term])
+    end
   end
 
   def indicators
@@ -24,6 +26,20 @@ class Setup::AutocompleteController < PrivateController
 end
 
 private
+
+def filter_ilike(elements, name)
+  return elements if name.nil?
+
+  search_name = transliterate(name)
+  selected = elements.select do |element|
+    name.length < 4 ? transliterate(element.display_name).starts_with?(search_name) : transliterate(element.display_name).include?(search_name)
+  end
+  selected.first(20)
+end
+
+def transliterate(name)
+  ActiveSupport::Inflector.transliterate(name).downcase
+end
 
 def organisation_unit_group_by_term_on_sol
   pyr = Pyramid.from(current_project)
@@ -48,11 +64,12 @@ def organisation_unit_group_by_used_or_sibling_id
   render_sol_items(pyr.find_sibling_organisation_unit_groups(sibling_id))
 end
 
-def render_sol_items(items)
+def render_sol_items(items, type = nil)
   @items = items.map do |item|
     {
       type:  "option",
-      value: item.id,
+      value: type.nil? ? item.id : item.display_name,
+      id: item.id,
       label: item.display_name
     }
   end

@@ -1,4 +1,5 @@
 
 <% if project.id %>
-  <%= link_to 'Invoicing simulation', new_setup_project_invoice_path(project), class: 'btn btn-danger'  %>
+  <%= link_to 'Configure dhis2 mapping of formulas', new_setup_project_formula_mapping_path(project), class: 'btn btn-info' %>
+  <%= link_to 'Invoicing simulation', new_setup_project_invoice_path(project), class: 'btn btn-info'  %>
 <% end %>

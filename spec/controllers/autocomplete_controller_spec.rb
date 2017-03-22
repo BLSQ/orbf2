@@ -66,7 +66,10 @@ RSpec.describe Setup::AutocompleteController, type: :controller do
          { "type" => "option", "value" => "uYxK4wmcPqA", "label" => "CHP" },
          { "type" => "option", "value" => "CXw2yu5fodb", "label" => "CHC" },
          { "type" => "option", "value" => "gzcv65VyaGq", "label" => "Chiefdom" },
-         { "type" => "option", "value" => "w1Atoz18PCL", "label" => "District" }]
+         { "type" => "option", "value" => "w1Atoz18PCL", "label" => "District" }].map { |entry|
+           entry["id"] = entry["value"]
+           entry
+         }
       )
     end
 
