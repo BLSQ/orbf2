@@ -11,9 +11,8 @@ class Setup::FormulaMappingsController < PrivateController
     @formula_mappings = build_formula_mappings
 
     @formula_mappings.mappings.each do |mapping|
-      byebug
       mapping.save! if mapping.valid?
-      mapping.destroy! if mapping.external_reference.nil? && mapping.id
+      mapping.destroy! if mapping.external_reference.blank? && mapping.id
     end
     render :new
   end
@@ -24,7 +23,7 @@ class Setup::FormulaMappingsController < PrivateController
     mappings = []
     project = current_project(project_scope: :fully_loaded)
     mapping_by_key = params[:formula_mappings] ? params[:formula_mappings].index_by { |mapping| [mapping[:formula_id].to_i, mapping[:activity_id].to_i] } : {}
-
+    puts mapping_by_key
     activity_rules = project.packages.flat_map(&:rules).select(&:activity_kind?)
 
     mappings += activity_rules.map do |rule|
@@ -48,7 +47,7 @@ class Setup::FormulaMappingsController < PrivateController
         mapping = formula.find_or_build_mapping(
           kind: rule.kind
         )
-        mapping.external_reference = external_reference(mapping_by_key[[formula.id, nil]]) || mapping.external_reference
+        mapping.external_reference = external_reference(mapping_by_key[[formula.id, 0]]) || mapping.external_reference
         mapping
       end
     end
@@ -56,8 +55,6 @@ class Setup::FormulaMappingsController < PrivateController
     FormulaMappings.new(mappings: mappings.flatten, project: project)
   end
 
-  def build_activity_rules
-  end
 
   def external_reference(param)
     param ? param[:external_reference] : nil
