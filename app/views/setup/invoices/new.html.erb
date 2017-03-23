@@ -9,9 +9,19 @@
   <%= f.submit 'Simulate',   class: "btn btn-primary pull-right" %>
 <%end%>
 
+<%if invoicing_request.invoices && invoicing_request.invoices.any? %>
 <br>
 <br>
 <br>
+<h3> Invoice details </h3>
 <pre>
   <%= invoicing_request.invoices.flat_map(&:lines).join("\n")%>
 </pre>
+
+<h3> Dhis2 values </h3>
+<pre>
+  <%=
+  JSON.pretty_generate(Publishing::Dhis2InvoicePublisher.new.to_values(invoicing_request.project, invoicing_request.invoices))
+  %>
+</pre>
+<% end%>

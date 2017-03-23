@@ -1,5 +1,5 @@
 module Invoicing
-  class MonthlyInvoice < Struct.new(:date, :entity, :project, :activity_results, :package_results, :payments)
+  class MonthlyInvoice < Struct.new(:date, :entity, :project, :activity_results, :package_results, :payment_result)
 
 
     def puts(message = "")
@@ -31,9 +31,9 @@ module Invoicing
         end
       end
 
-      if payments && !payments.empty?
+      if payment_result
         package_line = project.payment_rules.first.rule.formulas.map do |formula|
-          [formula.code, d_to_s(formula.code, payments[formula.code])].join(" : ")
+          [formula.code, d_to_s(formula.code, payment_result.solution[formula.code])].join(" : ")
         end
         puts "************ payments "
         puts package_line.join("\n")

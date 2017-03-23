@@ -41,4 +41,13 @@ class Formula < ApplicationRecord
     existing_mapping = formula_mappings.detect {|mapping| mapping.kind == mapping_attributes[:kind] && ( mapping_attributes[:activity] ? mapping.activity == mapping_attributes[:activity] : true)}
     existing_mapping ? existing_mapping : formula_mappings.build(mapping_attributes)
   end
+
+  def has_mappings?
+    formula_mappings.any?
+  end
+
+  def formula_mapping(activity = nil)
+    formula_mappings.find {|mapping| mapping.activity == activity }
+  end
+
 end

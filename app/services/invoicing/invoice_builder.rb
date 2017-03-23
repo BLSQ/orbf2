@@ -71,16 +71,14 @@ module Invoicing
     end
 
     def calculate_payments(project, entity, all_package_results)
-
       project.payment_rules.each do |payment_rule|
-        package_results = all_package_results.select {|pr|
+        package_results = all_package_results.select do |pr|
           payment_rule.packages.map(&:name).include?(pr.package.name)
-        }
-        #puts "********* calculate_payments : #{package_results} #{payment_rule.apply_for?(entity)} #{package_results.size} #{payment_rule.packages.size}"
+        end
+        # puts "********* calculate_payments : #{package_results} #{payment_rule.apply_for?(entity)} #{package_results.size} #{payment_rule.packages.size}"
 
         next unless payment_rule.apply_for?(entity)
         next unless package_results.size >= payment_rule.packages.size
-
 
         package_facts_and_rules = {}
         package_results.each do |package_result|
@@ -88,13 +86,15 @@ module Invoicing
         end
         package_facts_and_rules = package_facts_and_rules.merge(payment_rule.rule.to_facts)
 
-        return solver.solve!("payment rule", package_facts_and_rules, false)
+        return PaymentResult.new(
+           payment_rule,
+           solver.solve!("payment rule", package_facts_and_rules, false)
+        )
       end
-      return {}
+      nil
     end
 
     def generate_monthly_entity_invoice(current_project, entity, analytics_service, date)
-
       date = date.to_date.end_of_month
       project = project_finder.find_project(current_project, date)
 
@@ -110,9 +110,9 @@ module Invoicing
         package_results = calculate_package_results(activity_results)
         raise "should have at least one package_results" if package_results.empty?
         # No payments in monthly ?
-        return Invoicing::MonthlyInvoice.new(date, entity, project, activity_results, package_results, {})
+        return Invoicing::MonthlyInvoice.new(date, entity, project, activity_results, package_results, nil)
       rescue => e
-        Invoicing::MonthlyInvoice.new(date, entity, project, activity_results, package_results, {}).dump_invoice
+        Invoicing::MonthlyInvoice.new(date, entity, project, activity_results, package_results, nil).dump_invoice
         raise e
       end
     end
@@ -152,8 +152,8 @@ module Invoicing
         package_results.concat(quarter_entity_results)
 
         raise "should have at least one package_results" if package_results.empty?
-        payments = calculate_payments(project, entity, package_results)
-        invoice = MonthlyInvoice.new(date, entity, project, activity_results, package_results, payments)
+        payment_result = calculate_payments(project, entity, package_results)
+        invoice = MonthlyInvoice.new(date, entity, project, activity_results, package_results, payment_result)
         invoice.dump_invoice
         invoice
       rescue => e
