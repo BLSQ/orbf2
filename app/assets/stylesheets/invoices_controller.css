@@ -1,0 +1,15 @@
+.num-span {
+    display: inline-block;
+    width: 100px;
+    text-align: right;
+}
+.num-span-table td {
+   text-align: left;
+   white-space: nowrap;
+   padding: 2px !important;
+ }
+.num-span-table th {
+  text-align: center;
+  white-space: normal;
+  width: 10px;
+}

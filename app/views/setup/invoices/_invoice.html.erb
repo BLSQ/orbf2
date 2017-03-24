@@ -1,0 +1,63 @@
+
+<% if invoice.activity_results %>
+  <% invoice.activity_results.flatten.group_by(&:package).map do |package, results| %>
+  <h2><%= package.name %> at <%=invoice.date%></h2>
+
+  <table class="table invoice num-span-table table-striped">
+    <thead>
+      <tr>
+      <%package.invoice_details.each do |detail| %>
+         <th><%=detail.humanize %> </th>
+      <%end%>
+    </tr>
+    </thead>
+
+    <tbody>
+    <%results.each do |result|%>
+      <tr>
+       <% package.invoice_details.each do |detail|%>
+       <td title="<%=result.solution.to_json%><br>">
+         <span class="<%= 'num-span' if result.solution[detail].is_a? Numeric %>"><%= d_to_s(result.solution[detail]) %></span>
+      </td>
+       <% end%>
+     </tr>
+    <%end%>
+   </tbody>
+  </table>
+
+
+    <% if invoice.package_results %>
+
+    <div class="container">
+    <% package.package_rule.formulas.map(&:code).map do |item| %>
+      <%package_result = invoice.package_results.find { |pr| pr.package == package }%>
+      <%next unless package_result.solution[item]%>
+        <div class="row">
+           <div class="col-md-3">
+             <%=item.humanize %> :
+          </div>
+          <div class="col-md-4" title="<%=package_result.solution.to_json%>">
+            <b><%= d_to_s(package_result.solution[item])%></b>
+          </div>
+        </div>
+    <%end%>
+    </div>
+    <%end%>
+  <%end%>
+  <%if invoice.payment_result %>
+  <h2>Payments</h2>
+
+    <div class="container">
+      <%invoice.payment_result.payment_rule.rule.formulas.map do |formula|%>
+        <div class="row">
+           <div class="col-md-3">
+             <%=formula.code .humanize %> :
+          </div>
+          <div class="col-md-4">
+            <b><%= d_to_s( invoice.payment_result.solution[formula.code])%></b>
+          </div>
+        </div>
+      <%end%>
+  <%end%>
+
+<%end%>
