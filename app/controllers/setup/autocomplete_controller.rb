@@ -65,7 +65,7 @@ def organisation_unit_group_by_used_or_sibling_id
 end
 
 def render_sol_items(items, type = nil)
-  @items = items.reject(&:nil?).map do |item|
+  @items = items.compact.map do |item|
     {
       type:  "option",
       value: type.nil? ? item.id : item.display_name,
