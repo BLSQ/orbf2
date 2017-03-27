@@ -42,4 +42,8 @@ class Dhis2Snapshot < ApplicationRecord
   def kind_indicators?
     kind.to_sym == :indicators
   end
+
+  def snapshoted_at
+    Date.parse("#{year}-#{month}-01").end_of_month
+  end
 end

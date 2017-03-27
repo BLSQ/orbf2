@@ -4,6 +4,7 @@ require "dentaku/calculator"
 module Rules
   class Solver
     def initialize
+      Dentaku.enable_ast_cache!
       @@calculator ||= new_calculator
     end
 
@@ -20,7 +21,7 @@ module Rules
         raise SolvingError.new(e.message, facts_and_rules), "Failed to solve this problem #{message} : #{e.message}"
       end
       end_time = Time.new.utc
-      solution[:elapsed_time] = (end_time - start_time)
+      #solution[:elapsed_time] = (end_time - start_time)
       puts " #{Time.new} => #{solution[:elapsed_time]}" if debug
       puts JSON.pretty_generate([solution]) if debug
       solution.with_indifferent_access
