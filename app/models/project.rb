@@ -56,7 +56,8 @@ class Project < ApplicationRecord
       },
       rules:                 {
         formulas:     {
-          rule: [:formulas]
+          rule: [:formulas],
+          formula_mappings: []
         },
         payment_rule: {}
       }
@@ -72,7 +73,14 @@ class Project < ApplicationRecord
         package_payment_rules: {
           package: package_includes
         },
-        packages:              package_includes
+        packages:              package_includes,
+        rule: {
+          formulas:     {
+            rule: [:formulas],
+            formula_mappings: []
+          },
+          payment_rule: {}
+        }
       }
     )
   end
@@ -111,7 +119,7 @@ class Project < ApplicationRecord
           package_entity_groups: [],
           package_states:        [],
           rules:                 [
-            :formulas
+            formulas: [:formula_mappings]
           ],
           activity_packages:     []
         },

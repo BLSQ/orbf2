@@ -3,12 +3,16 @@ $ ->
   # generic class to improve the rails/jquery autocomplete behaviors
   class AutocompleteImprover
     initialize: (autocomplete_element, update_ui_callback) ->
+      if autocomplete_element.length == 0
+        return
+
       # update the ui change auto select
       autocomplete_element.bind 'railsAutocomplete.select', (event, data) ->
         update_ui_callback data
 
       # load when id filled is already filled at page loading
       id_value = $(autocomplete_element.data('id-element')).val()
+
       if  id_value != ''
         $.ajax
           url: autocomplete_element.data('autocomplete')
@@ -27,7 +31,15 @@ $ ->
         data.item.organisation_units_count ,
         'in main target group'].join(' '))
 
+  nothing = (data) ->
+    ""
   $(document).ready ->
     new AutocompleteImprover().initialize(
       $('#organisation_unit_group'),
       update_ui_entities)
+
+  $(document).ready ->
+    $('.autocomplete-data-element').each (index, element) ->
+      new AutocompleteImprover().initialize(
+        $(element),
+        nothing)

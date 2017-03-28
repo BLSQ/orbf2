@@ -13,6 +13,9 @@
 
 class Formula < ApplicationRecord
   belongs_to :rule, inverse_of: :formulas
+
+  has_many :formula_mappings, dependent: :destroy, inverse_of: :formula
+
   validates :code, presence: true, format: {
     with:    /\A[a-z_]+\z/,
     message: ": should only contains small letters and _ like 'quality_score' or 'total_amount'"
@@ -33,4 +36,18 @@ class Formula < ApplicationRecord
     end
     values_dependencies + Rules::Solver.new.dependencies(self)
   end
+
+  def find_or_build_mapping(mapping_attributes)
+    existing_mapping = formula_mappings.detect {|mapping| mapping.kind == mapping_attributes[:kind] && ( mapping_attributes[:activity] ? mapping.activity == mapping_attributes[:activity] : true)}
+    existing_mapping || formula_mappings.build(mapping_attributes)
+  end
+
+  def has_mappings?
+    formula_mappings.any?
+  end
+
+  def formula_mapping(activity = nil)
+    formula_mappings.find {|mapping| mapping.activity == activity }
+  end
+
 end

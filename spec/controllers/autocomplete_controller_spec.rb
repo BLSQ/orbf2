@@ -20,7 +20,67 @@ RSpec.describe Setup::AutocompleteController, type: :controller do
     project
   end
 
+  def stub_all_data_compound
+    stub_request(:get, "#{project.dhis2_url}/api/dataElements?fields=:all&pageSize=50000")
+      .to_return(status: 200, body: fixture_content(:dhis2, "all_data_elements.json"))
+
+    stub_request(:get, "#{project.dhis2_url}/api/dataElementGroups?fields=:all&pageSize=50000")
+      .to_return(status: 200, body: fixture_content(:dhis2, "data_element_groups.json"))
+
+    stub_request(:get, "#{project.dhis2_url}/api/indicators?fields=:all&pageSize=50000")
+      .to_return(status: 200, body: fixture_content(:dhis2, "indicators.json"))
+  end
+
   describe "When authenticated #data_ements" do
+    include_context "basic_context"
+    include WebmockDhis2Helpers
+
+    before(:each) do
+      sign_in user
+      stub_all_data_compound
+    end
+
+    it "should return all data_ements" do
+      get :data_elements, params: { project_id: project.id }
+    end
+
+    it "should return for including name" do
+      get :data_elements, params: { project_id: project.id, term: "flaccid" }
+      expect(assigns(:items).map { |i| i[:label] }.uniq).to eq(
+        [
+          "Accute Flaccid Paralysis (Deaths < 5 yrs)",
+          "Acute Flaccid Paralysis (AFP) follow-up",
+          "Acute Flaccid Paralysis (AFP) new",
+          "Acute Flaccid Paralysis (AFP) referrals"
+        ]
+      )
+    end
+    it "should return for starting with if term too short" do
+      get :data_elements, params: { project_id: project.id, term: "ac" }
+
+      expect(assigns(:items).map { |i| i[:label] }.uniq).to eq(
+        [
+          "Accute Flaccid Paralysis (Deaths < 5 yrs)",
+          "Acute Flaccid Paralysis (AFP) follow-up",
+          "Acute Flaccid Paralysis (AFP) new",
+          "Acute Flaccid Paralysis (AFP) referrals"
+        ]
+      )
+    end
+
+    it "should return empty array if non existing id" do
+      get :data_elements, params: { project_id: project.id, id: "unknownid" }
+      expect(response.body).to eq "[]"
+    end
+
+    it "should return for a single element if existing id" do
+      get :data_elements, params: { project_id: project.id, id: "FTRrcoaog83" }
+    expect(assigns(:items).map { |i| i[:label] }).to eq  ["Accute Flaccid Paralysis (Deaths < 5 yrs)"]
+   end
+
+  end
+
+  describe "When authenticated #indicators" do
     include_context "basic_context"
     include WebmockDhis2Helpers
 
@@ -28,18 +88,9 @@ RSpec.describe Setup::AutocompleteController, type: :controller do
       sign_in user
     end
 
-    it "should return all data_ements" do
-      stub_request(:get, "#{project.dhis2_url}/api/dataElements?fields=:all&pageSize=50000")
-        .to_return(status: 200, body: fixture_content(:dhis2, "all_data_elements.json"))
-
-        stub_request(:get, "#{project.dhis2_url}/api/dataElementGroups?fields=:all&pageSize=50000")
-          .to_return(status: 200, body: fixture_content(:dhis2, "data_element_groups.json"))
-
-        stub_request(:get, "#{project.dhis2_url}/api/indicators?fields=:all&pageSize=50000")
-            .to_return(status: 200, body: fixture_content(:dhis2, "indicators.json"))
-
-
-      get :data_elements, params: { project_id: project.id }
+    it "should autocomplete indicators" do
+      stub_all_data_compound
+      get :indicators, params: { project_id: project.id, term: "cli" }
     end
   end
 
@@ -49,6 +100,15 @@ RSpec.describe Setup::AutocompleteController, type: :controller do
 
     before(:each) do
       sign_in user
+    end
+
+    it "should return empty when no params" do
+
+      stub_dhis2_all_orgunits
+      stub_dhis2_all_orgunits_groups
+
+      get :organisation_unit_group, params: { project_id: project.id }
+      expect(JSON.parse(response.body).size).to eq 0
     end
 
     it "should autocomplete by sibling_id" do
@@ -66,7 +126,10 @@ RSpec.describe Setup::AutocompleteController, type: :controller do
          { "type" => "option", "value" => "uYxK4wmcPqA", "label" => "CHP" },
          { "type" => "option", "value" => "CXw2yu5fodb", "label" => "CHC" },
          { "type" => "option", "value" => "gzcv65VyaGq", "label" => "Chiefdom" },
-         { "type" => "option", "value" => "w1Atoz18PCL", "label" => "District" }]
+         { "type" => "option", "value" => "w1Atoz18PCL", "label" => "District" }].map do |entry|
+           entry["id"] = entry["value"]
+           entry
+         end
       )
     end
 
@@ -80,7 +143,6 @@ RSpec.describe Setup::AutocompleteController, type: :controller do
       expect(options.first["type"]).to eq "option"
       expect(options.first["value"]).to eq "CXw2yu5fodb"
       expect(options.first["label"]).to include("CHC (194/1336)")
-
     end
 
     def stub_dhis2_all_orgunits_groups

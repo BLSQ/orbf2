@@ -21,6 +21,8 @@ Rails.application.routes.draw do
       resources :seeds, only: [:index] if Rails.env.development? || Rails.env.dev?
       resources :projects, only: [:create, :update] do
         resources :invoices, only: [:new, :create]
+        resources :formula_mappings, only: [:new, :create]
+
         resources :activities, only: [:new, :create, :edit, :update, :mass_creation] do
           collection do
             get :mass_creation

@@ -232,6 +232,10 @@ class ProjectFactory
         payment_pma.package_payment_rules.build(package: package)
         payment_pma.packages << package
     end
+
+    package_quality.package_rule.formulas.each do |formula|
+      formula.formula_mappings.build(kind: formula.rule.kind, external_reference:"ext-#{formula.code}")
+    end
     #project.payment_rules.first.rule.payment_rule = project.payment_rules.first
 
     payment_pca = project.payment_rules.build(
@@ -261,6 +265,8 @@ class ProjectFactory
         payment_pca.package_payment_rules.build(package: package)
         payment_pca.packages << package
     end
+
+
     project
   end
 

@@ -6,7 +6,7 @@ class Setup::InvoicesController < PrivateController
     @invoicing_request = InvoicingRequest.new(
       project: current_project,
       year:    Date.today.to_date.year,
-      quarter: (Date.today.to_date.month / 3) + 1,
+      quarter: (Date.today.to_date.month / 4) + 1,
       entity:  "CV4IXOSr5ky"
     )
   end
@@ -18,9 +18,7 @@ class Setup::InvoicesController < PrivateController
 
     org_unit = fetch_org_unit(project, invoicing_request.entity)
     values = fetch_values(project, [org_unit.id])
-    indicators_expressions = fetch_indicators_expressions(project)
-    puts "VALUES ::: #{JSON.pretty_generate(values)}"
-    invoicing_request.invoices = calculate_invoices(project, org_unit, values, indicators_expressions)
+    invoicing_request.invoices = calculate_invoices(project, org_unit, values)
 
     render :new
   end
@@ -28,22 +26,10 @@ class Setup::InvoicesController < PrivateController
   private
 
   def fetch_org_unit(project, id)
-    # TODO: use snapshots
     project.dhis2_connection.organisation_units.find(id)
   end
 
-  def fetch_indicators_expressions(project)
-    # TODO: use snapshots
-    indicator_ids = project.activities.flat_map(&:activity_states).select(&:kind_indicator?).map(&:external_reference)
-    # indicator_ids += ["sJZI0t71kK7"]  TODO: remove me
-    return {} if indicator_ids.empty?
-    indicators = project.dhis2_connection.indicators.find(indicator_ids)
-    Hash[indicators.map { |indicator| [indicator.id, Analytics::IndicatorCalculator.parse_expression(indicator.numerator)] }]
-  end
-
-  def calculate_invoices(project, org_unit, values, indicators_expressions)
-    values += Analytics::IndicatorCalculator.new.calculate(indicators_expressions, values)
-
+  def calculate_invoices(project, org_unit, values)
     entity = Analytics::Entity.new(org_unit.id, org_unit.name, org_unit.organisation_unit_groups.map { |n| n["id"] })
     invoice_builder = Invoicing::InvoiceBuilder.new(ConstantProjectFinder.new(project), Tarification::TarificationService.new)
     analytics_service = Analytics::CachedAnalyticsService.new([org_unit], values)
