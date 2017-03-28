@@ -18,7 +18,8 @@ class Setup::InvoicesController < PrivateController
 
     org_unit = fetch_org_unit(project, invoicing_request.entity)
     values = fetch_values(project, [org_unit.id])
-    invoicing_request.invoices = calculate_invoices(project, org_unit, values)
+    indicators_expressions = fetch_indicators_expressions(project)
+    invoicing_request.invoices = calculate_invoices(project, org_unit, values, indicators_expressions)
 
     render :new
   end
@@ -29,23 +30,34 @@ class Setup::InvoicesController < PrivateController
     project.dhis2_connection.organisation_units.find(id)
   end
 
-  def calculate_invoices(project, org_unit, values)
-    entity = Analytics::Entity.new(org_unit.id, org_unit.name, org_unit.organisation_unit_groups.map { |n| n["id"] })
-    invoice_builder = Invoicing::InvoiceBuilder.new(ConstantProjectFinder.new(project), Tarification::TarificationService.new)
-    analytics_service = Analytics::CachedAnalyticsService.new([org_unit], values)
-
-    invoices = []
-    invoicing_request.quarter_dates.each do |month|
-      monthly_invoice = invoice_builder.generate_monthly_entity_invoice(project, entity, analytics_service, month)
-      monthly_invoice.dump_invoice
-      invoices << monthly_invoice
-    end
-    puts "..... generated #{invoices.size} monthly "
-    quarterly_invoices = invoice_builder.generate_quarterly_entity_invoice(project, entity, analytics_service, invoicing_request.end_date_as_date)
-    puts "..... generated #{quarterly_invoices.size} quaterly "
-    invoices << quarterly_invoices
-    invoices.flatten
+  def fetch_indicators_expressions(project)
+    # TODO: use snapshots
+    indicator_ids = project.activities.flat_map(&:activity_states).select(&:kind_indicator?).map(&:external_reference)
+    # indicator_ids += ["sJZI0t71kK7"]  TODO: remove me
+    return {} if indicator_ids.empty?
+    indicators = project.dhis2_connection.indicators.find(indicator_ids)
+    Hash[indicators.map { |indicator| [indicator.id, Analytics::IndicatorCalculator.parse_expression(indicator.numerator)] }]
   end
+
+  def calculate_invoices(project, org_unit, values, indicators_expressions)
+     values += Analytics::IndicatorCalculator.new.calculate(indicators_expressions, values)
+
+     entity = Analytics::Entity.new(org_unit.id, org_unit.name, org_unit.organisation_unit_groups.map { |n| n["id"] })
+     invoice_builder = Invoicing::InvoiceBuilder.new(ConstantProjectFinder.new(project), Tarification::TarificationService.new)
+     analytics_service = Analytics::CachedAnalyticsService.new([org_unit], values)
+
+     invoices = []
+     invoicing_request.quarter_dates.each do |month|
+       monthly_invoice = invoice_builder.generate_monthly_entity_invoice(project, entity, analytics_service, month)
+       monthly_invoice.dump_invoice
+       invoices << monthly_invoice
+     end
+     puts "..... generated #{invoices.size} monthly "
+     quarterly_invoices = invoice_builder.generate_quarterly_entity_invoice(project, entity, analytics_service, invoicing_request.end_date_as_date)
+     puts "..... generated #{quarterly_invoices.size} quaterly "
+     invoices << quarterly_invoices
+     invoices.flatten
+   end
 
   def fetch_values(project, org_unit_ids)
     dhis2 = project.dhis2_connection

@@ -10,18 +10,20 @@
 <%end%>
 
 <%if invoicing_request.invoices && invoicing_request.invoices.any? %>
-<br>
-<br>
-<br>
-<h3> Invoice details </h3>
-<pre>
-  <%= invoicing_request.invoices.flat_map(&:lines).join("\n")%>
-</pre>
+  <br>
+  <br>
+  <br>
+  <h3> Invoice details </h3>
+  <%= render partial: "invoice", collection: invoicing_request.invoices, :as => :invoice  %>
 
-<h3> Dhis2 values </h3>
-<pre>
-  <%=
-  JSON.pretty_generate(Publishing::Dhis2InvoicePublisher.new.to_values(invoicing_request.project, invoicing_request.invoices))
-  %>
-</pre>
+  <br>
+  <br>
+  <br>
+  <% values = Publishing::Dhis2InvoicePublisher.new.to_values(invoicing_request.project, invoicing_request.invoices)%>
+  <% if values && values.any? %>
+    <h3> Dhis2 values </h3>
+    <pre>
+      <%= JSON.pretty_generate(values) %>
+    </pre>
+  <%end%>
 <% end%>
