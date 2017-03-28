@@ -14,31 +14,14 @@ class InvoicesForEntitiesWorker
 
     puts "************ invoices for #{project_anchor_id} - #{year}/Q#{quarter} -  #{org_unit_ids}"
     invoicing_request = InvoicingRequest.new(year: year, quarter: quarter)
-    project_finder = profile("load Project") do
-      ConstantProjectFinder.new(
-        Hash[invoicing_request.quarter_dates.map do |date|
-               project = project_anchor.projects.fully_loaded.for_date(date) || project_anchor.latest_draft
-               [date, project]
-             end
-        ]
-      )
-    end
-    project = project_finder.find_project(nil,invoicing_request.end_date_as_date)
+
+    project_finder = project_finder(project_anchor, invoicing_request)
+    project = project_finder.find_project(nil, invoicing_request.end_date_as_date)
     invoicing_request.project = project
-    org_units_by_id = profile("fetch_org_units") do
-      fetch_org_units(project, org_unit_ids).index_by(&:id)
-    end
+    org_units_by_id = fetch_org_units(project, org_unit_ids)
 
-    values = profile("fetch_values for #{org_unit_ids.size}") do
-      fetch_values(invoicing_request, org_unit_ids)
-    end
 
-    indicators_expressions = profile("indicators_expressions") do
-      fetch_indicators_expressions(project)
-    end
-
-    values += Analytics::IndicatorCalculator.new.calculate(indicators_expressions, values)
-    analytics_service = Analytics::CachedAnalyticsService.new([], values)
+    analytics_service = analytics_service(invoicing_request, org_unit_ids)
 
     invoices = {}
     org_unit_ids.each do |org_unit_id|
@@ -55,9 +38,38 @@ class InvoicesForEntitiesWorker
     publish(project, invoices.values.flatten)
   end
 
+  def project_finder(project_anchor, invoicing_request)
+    profile("load Project") do
+      ConstantProjectFinder.new(
+        Hash[invoicing_request.quarter_dates.map do |date|
+               project = project_anchor.projects.fully_loaded.for_date(date) || project_anchor.latest_draft
+               [date, project]
+             end
+        ]
+      )
+    end
+  end
+
+  def analytics_service(invoicing_request, org_unit_ids)
+    values = profile("fetch_values for #{org_unit_ids.size}") do
+      fetch_values(invoicing_request, org_unit_ids)
+    end
+
+    # TODO: indicators might have changed over time
+    indicators_expressions = profile("indicators_expressions") do
+      fetch_indicators_expressions(invoicing_request.project)
+    end
+
+    values += Analytics::IndicatorCalculator.new.calculate(indicators_expressions, values)
+    Analytics::CachedAnalyticsService.new([], values)
+  end
+
   def publish(project, all_invoices)
     puts "generated #{all_invoices.size} invoices"
-    publishers = [Publishing::Dhis2InvoicePublisher.new]
+    publishers = [
+      Publishing::DummyInvoicePublisher.new,
+      Publishing::Dhis2InvoicePublisher.new,
+    ]
     publishers.each do |publisher|
       profile("publish #{all_invoices.size} invoices ") do
         publisher.publish(project, all_invoices)
@@ -82,8 +94,10 @@ class InvoicesForEntitiesWorker
   end
 
   def fetch_org_units(project, ids)
+    profile("fetch_org_units") do
     # TODO: use dhis2 snapshot
-    project.dhis2_connection.organisation_units.find(ids)
+    project.dhis2_connection.organisation_units.find(ids).index_by(&:id)
+  end
   end
 
   def fetch_indicators_expressions(project)
