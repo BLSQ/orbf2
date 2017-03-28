@@ -1,6 +1,7 @@
 
 class InvoicesForEntitiesWorker
   include Sidekiq::Worker
+  include Support::Profiling
 
   def perform(project_anchor_id, year, quarter, org_unit_ids)
     profile("InvoicesForEntitiesWorker") do
@@ -8,65 +9,66 @@ class InvoicesForEntitiesWorker
     end
   end
 
-
   def do_perform(project_anchor_id, year, quarter, org_unit_ids)
-  project_anchor = ProjectAnchor.find(project_anchor_id)
+    project_anchor = ProjectAnchor.find(project_anchor_id)
 
-  puts "************ invoices for #{project_anchor_id} - #{year}/Q#{quarter} -  #{org_unit_ids}"
-  invoicing_request = InvoicingRequest.new(year: year, quarter: quarter)
-  project = profile("load Project") do
-     project_anchor.projects.fully_loaded.for_date(invoicing_request.end_date_as_date) || project_anchor.latest_draft
-  end
-  invoicing_request.project = project
-  org_units_by_id =  profile("fetch_org_units") do
-    fetch_org_units(project, org_unit_ids).index_by(&:id)
-  end
-
-  values = profile("fetch_values for #{org_unit_ids.size}") do
-    fetch_values(invoicing_request, org_unit_ids)
-  end
-  indicators_expressions = profile("indicators_expressions") do
-    fetch_indicators_expressions(project)
-  end
-
-  org_unit_ids.each do |org_unit_id|
-    org_unit = org_units_by_id[org_unit_id]
-    profile("calculate invoices #{org_unit_id}") do
-      calculate_invoices(invoicing_request, org_unit, values, indicators_expressions)
+    puts "************ invoices for #{project_anchor_id} - #{year}/Q#{quarter} -  #{org_unit_ids}"
+    invoicing_request = InvoicingRequest.new(year: year, quarter: quarter)
+    project_finder = profile("load Project") do
+      ConstantProjectFinder.new(
+        Hash[invoicing_request.quarter_dates.map do |date|
+               project = project_anchor.projects.fully_loaded.for_date(date) || project_anchor.latest_draft
+               [date, project]
+             end
+        ]
+      )
     end
-  end
-end
-
-  def profile(message, &block)
-    start = Time.now.utc
-    element = yield block
-    elapsed = Time.now.utc - start
-    puts "\t => #{message} in #{elapsed}\t|\t#{MemInfo.rss}"
-    element
-  end
-
-  module MemInfo
-    # This uses backticks to figure out the pagesize, but only once
-    # when loading this module.
-    # You might want to move this into some kind of initializer
-    # that is loaded when your app starts and not when autoload
-    # loads this module.
-    KERNEL_PAGE_SIZE = `getconf PAGESIZE`.chomp.to_i rescue 4096
-    STATM_PATH       = "/proc/#{Process.pid}/statm"
-    STATM_FOUND      = File.exist?(STATM_PATH)
-
-    def self.rss
-      STATM_FOUND ? (File.read(STATM_PATH).split(' ')[1].to_i * KERNEL_PAGE_SIZE) / 1024 : 0
+    project = project_finder.find_project(nil,invoicing_request.end_date_as_date)
+    invoicing_request.project = project
+    org_units_by_id = profile("fetch_org_units") do
+      fetch_org_units(project, org_unit_ids).index_by(&:id)
     end
-  end
 
-  def calculate_invoices(invoicing_request, org_unit, values, indicators_expressions)
+    values = profile("fetch_values for #{org_unit_ids.size}") do
+      fetch_values(invoicing_request, org_unit_ids)
+    end
+
+    indicators_expressions = profile("indicators_expressions") do
+      fetch_indicators_expressions(project)
+    end
+
     values += Analytics::IndicatorCalculator.new.calculate(indicators_expressions, values)
+    analytics_service = Analytics::CachedAnalyticsService.new([], values)
 
+    invoices = {}
+    org_unit_ids.each do |org_unit_id|
+      org_unit = org_units_by_id[org_unit_id]
+      begin
+        profile("calculate invoices #{org_unit_id}") do
+          orgunit_invoices = calculate_invoices(invoicing_request, org_unit, analytics_service, project_finder)
+          invoices[org_unit_id] = orgunit_invoices
+        end
+      rescue Invoicing::InvoicingError => e
+        puts e.message
+      end
+    end
+    publish(project, invoices.values.flatten)
+  end
+
+  def publish(project, all_invoices)
+    puts "generated #{all_invoices.size} invoices"
+    publishers = [Publishing::Dhis2InvoicePublisher.new]
+    publishers.each do |publisher|
+      profile("publish #{all_invoices.size} invoices ") do
+        publisher.publish(project, all_invoices)
+      end
+    end
+  end
+
+  def calculate_invoices(invoicing_request, org_unit, analytics_service, project_finder)
     entity = Analytics::Entity.new(org_unit.id, org_unit.name, org_unit.organisation_unit_groups.map { |n| n["id"] })
     # TODO: don't use constant project finder but based on date
-    invoice_builder = Invoicing::InvoiceBuilder.new(ConstantProjectFinder.new(invoicing_request.project), Tarification::TarificationService.new)
-    analytics_service = Analytics::CachedAnalyticsService.new([org_unit], values)
+    invoice_builder = Invoicing::InvoiceBuilder.new(project_finder, Tarification::TarificationService.new)
 
     invoices = []
     invoicing_request.quarter_dates.each do |month|

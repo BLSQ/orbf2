@@ -30,6 +30,7 @@ gem "sidekiq"
 
 group :development, :test do
   gem "byebug", platform: :mri
+  gem "ruby-prof"
   gem "database_cleaner"
   gem "factory_girl_rails", " 4.0"
   gem "faker"

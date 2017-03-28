@@ -2,7 +2,7 @@
 class InvoiceForProjectAnchorWorker
   include Sidekiq::Worker
 
-  def perform(project_anchor_id= 2, year= 2015, quarter= 1)
+  def perform(project_anchor_id, year, quarter)
     project_anchor = ProjectAnchor.find(project_anchor_id)
 
     request = InvoicingRequest.new(year: year, quarter: quarter)
@@ -10,7 +10,7 @@ class InvoiceForProjectAnchorWorker
 
     puts "contracted_entities #{contracted_entities.size}"
 
-    contracted_entities.each_slice(50).each do |org_unit_ids|
+    contracted_entities.each_slice(25).each do |org_unit_ids|
       InvoicesForEntitiesWorker.new.perform(project_anchor_id, year, quarter, org_unit_ids)
     end
   end
