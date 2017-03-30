@@ -16,10 +16,8 @@ class InvoicesForEntitiesWorker
     invoicing_request = InvoicingRequest.new(year: year, quarter: quarter)
 
     project_finder = project_finder(project_anchor, invoicing_request)
-    project = project_finder.find_project(nil, invoicing_request.end_date_as_date)
-    invoicing_request.project = project
+    invoicing_request.project = project_finder.find_project(nil, invoicing_request.end_date_as_date)
     org_units_by_id = fetch_org_units(invoicing_request, org_unit_ids)
-
     analytics_service = analytics_service(invoicing_request, org_unit_ids)
 
     invoices = {}
@@ -34,7 +32,7 @@ class InvoicesForEntitiesWorker
         puts e.message
       end
     end
-    publish(project, invoices.values.flatten)
+    publish(invoicing_request.project, invoices.values.flatten)
   end
 
   def project_finder(project_anchor, invoicing_request)
