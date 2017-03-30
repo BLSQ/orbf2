@@ -76,7 +76,6 @@ class InvoicesForEntitiesWorker
 
   def calculate_invoices(invoicing_request, org_unit, analytics_service, project_finder)
     entity = Analytics::Entity.new(org_unit.id, org_unit.name, org_unit.organisation_unit_groups.map { |n| n["id"] })
-    # TODO: don't use constant project finder but based on date
     invoice_builder = Invoicing::InvoiceBuilder.new(project_finder, Tarification::TarificationService.new)
 
     invoices = []
