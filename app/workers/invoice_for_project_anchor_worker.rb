@@ -17,7 +17,7 @@ class InvoiceForProjectAnchorWorker
 
   def organisation_units(project_anchor, request)
     request.quarter_dates.map do |quarter_date|
-      pyramid = project_anchor.latest_pyramid_for(quarter_date)
+      pyramid = project_anchor.nearest_pyramid_for(quarter_date)
       project = project_anchor.projects.for_date(quarter_date) || project_anchor.latest_draft
       contracted_entities = pyramid.org_units_in_all_groups([project.entity_group.external_reference])
       puts "quarter_date #{quarter_date.year}-#{quarter_date.month} => projects #{project.status} #{project.id} => #{contracted_entities.size}"

@@ -26,22 +26,7 @@ class ProjectAnchor < ApplicationRecord
     projects.where(status: "draft").fully_loaded.last
   end
 
-  MONTH_TO_QUATER = {
-    1  => 1,
-    2  => 1,
-    3  => 1,
-    4  => 2,
-    5  => 2,
-    6  => 2,
-    7  => 3,
-    8  => 3,
-    9  => 3,
-    10 => 4,
-    11 => 4,
-    12 => 4
-  }.freeze
-
-  def latest_pyramid_for(date)
+  def nearest_pyramid_for(date)
     pyramid_snapshots = dhis2_snapshots.select("id, year, month, kind").where(kind: [:organisation_units, :organisation_unit_groups])
 
     candidates = pyramid_snapshots.sort_by { |snap| [snap.kind, [snap.year, snap.month].join("-")] }
@@ -55,15 +40,32 @@ class ProjectAnchor < ApplicationRecord
     new_pyramid(organisation_units, organisation_unit_groups)
   end
 
+  def nearest_data_compound_for(date)
+    pyramid_snapshots = dhis2_snapshots.select("id, year, month, kind").where(kind: [:data_elements, :data_element_groups, :indicators])
+
+    candidates = pyramid_snapshots.sort_by { |snap| [snap.kind, [snap.year, snap.month].join("-")] }
+
+    data_elements = nearest(candidates.select(&:kind_data_elements?), date)
+    data_element_groups = nearest(candidates.select(&:kind_data_element_groups?), date)
+    indicators = nearest(candidates.select(&:kind_indicators?), date)
+
+    puts "for #{date} using snapshots #{data_elements.year} #{data_elements.month} and #{data_element_groups.year} #{data_element_groups.month} and #{indicators.year} #{indicators.month}"
+    data_elements = dhis2_snapshots.find(data_elements.id) if data_elements
+    data_element_groups = dhis2_snapshots.find(data_element_groups.id) if data_element_groups
+    indicators = dhis2_snapshots.find(indicators.id) if indicators
+    new_data_compound(data_elements, data_element_groups, indicators)
+  end
+
   def nearest(snapshots, date)
     # there should be a better way
 
     past_candidates = snapshots.select { |snapshot| snapshot.snapshoted_at <= date }
-                              .sort_by { |snapshot| date - snapshot.snapshoted_at }
+                               .sort_by { |snapshot| date - snapshot.snapshoted_at }
 
     past_candidate = past_candidates.first
     return past_candidate if past_candidate
-    futur_candidates = snapshots.select { |snapshot| snapshot.snapshoted_at > date }.sort_by { |snapshot| snapshot.snapshoted_at- date }
+    futur_candidates = snapshots.select { |snapshot| snapshot.snapshoted_at > date }
+                                .sort_by { |snapshot| snapshot.snapshoted_at - date }
 
     futur_candidates.first
   end
@@ -77,6 +79,15 @@ class ProjectAnchor < ApplicationRecord
     organisation_units = pyramid_snapshots.find(&:kind_organisation_units?)
     organisation_unit_groups = pyramid_snapshots.find(&:kind_organisation_unit_groups?)
     new_pyramid(organisation_units, organisation_unit_groups)
+  end
+
+  def new_data_compound(data_elements, data_element_groups, indicators)
+    return nil unless data_elements && data_element_groups
+    DataCompound.new(
+      data_elements.content.map { |r| Dhis2::Api::DataElement.new(nil, r["table"]) },
+      data_element_groups.content.map { |r| Dhis2::Api::DataElementGroup.new(nil, r["table"]) },
+      indicators ? indicators.content.map { |r| Dhis2::Api::Indicator.new(nil, r["table"]) } : []
+    )
   end
 
   def new_pyramid(organisation_units, organisation_unit_groups)
@@ -96,11 +107,6 @@ class ProjectAnchor < ApplicationRecord
     data_elements = snapshots.find(&:kind_data_elements?)
     data_element_groups = snapshots.find(&:kind_data_element_groups?)
     indicators = snapshots.find(&:kind_indicators?)
-    return nil unless data_elements && data_element_groups
-    DataCompound.new(
-      data_elements.content.map { |r| Dhis2::Api::DataElement.new(nil, r["table"]) },
-      data_element_groups.content.map { |r| Dhis2::Api::DataElementGroup.new(nil, r["table"]) },
-      indicators ? indicators.content.map { |r| Dhis2::Api::Indicator.new(nil, r["table"]) } : []
-    )
+    new_data_compound(data_elements, data_element_groups, indicators)
   end
 end

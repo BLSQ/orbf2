@@ -18,8 +18,7 @@ class InvoicesForEntitiesWorker
     project_finder = project_finder(project_anchor, invoicing_request)
     project = project_finder.find_project(nil, invoicing_request.end_date_as_date)
     invoicing_request.project = project
-    org_units_by_id = fetch_org_units(project, org_unit_ids)
-
+    org_units_by_id = fetch_org_units(invoicing_request, org_unit_ids)
 
     analytics_service = analytics_service(invoicing_request, org_unit_ids)
 
@@ -57,7 +56,7 @@ class InvoicesForEntitiesWorker
 
     # TODO: indicators might have changed over time
     indicators_expressions = profile("indicators_expressions") do
-      fetch_indicators_expressions(invoicing_request.project)
+      fetch_indicators_expressions(invoicing_request)
     end
 
     values += Analytics::IndicatorCalculator.new.calculate(indicators_expressions, values)
@@ -68,7 +67,7 @@ class InvoicesForEntitiesWorker
     puts "generated #{all_invoices.size} invoices"
     publishers = [
       Publishing::DummyInvoicePublisher.new,
-      Publishing::Dhis2InvoicePublisher.new,
+      Publishing::Dhis2InvoicePublisher.new
     ]
     publishers.each do |publisher|
       profile("publish #{all_invoices.size} invoices ") do
@@ -93,18 +92,18 @@ class InvoicesForEntitiesWorker
     invoices.flatten
   end
 
-  def fetch_org_units(project, ids)
+  def fetch_org_units(invoicing_request, ids)
     profile("fetch_org_units") do
-    # TODO: use dhis2 snapshot
-    project.dhis2_connection.organisation_units.find(ids).index_by(&:id)
-  end
+      pyramid = invoicing_request.project.project_anchor.nearest_pyramid_for(invoicing_request.end_date_as_date)
+      pyramid.org_units(ids).index_by(&:id)
+    end
   end
 
-  def fetch_indicators_expressions(project)
-    # TODO: use dhis2 snapshot
-    indicator_ids = project.activities.flat_map(&:activity_states).select(&:kind_indicator?).map(&:external_reference)
+  def fetch_indicators_expressions(invoicing_request)
+    indicator_ids = invoicing_request.project.activities.flat_map(&:activity_states).select(&:kind_indicator?).map(&:external_reference)
     return {} if indicator_ids.empty?
-    indicators = project.dhis2_connection.indicators.find(indicator_ids)
+    data_compound = invoicing_request.project.project_anchor.nearest_data_compound_for(invoicing_request.end_date_as_date)
+    indicators = data_compound.indicators(indicator_ids)
     Hash[indicators.map { |indicator| [indicator.id, Analytics::IndicatorCalculator.parse_expression(indicator.numerator)] }]
   end
 
