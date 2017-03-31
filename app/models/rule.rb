@@ -46,7 +46,6 @@ class Rule < ApplicationRecord
   def to_facts
     facts = {}
     formulas.each { |formula| facts[formula.code] = formula.expression }
-    #facts[:actictity_rule_name] = Rules::Solver.escapeString(name)
     facts
   end
 

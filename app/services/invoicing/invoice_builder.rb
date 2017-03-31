@@ -27,7 +27,6 @@ module Invoicing
                         .merge(package.activity_rule.to_facts)
                         .merge(activity_tarification_facts)
                         .merge(values.to_facts)
-                        #.merge("activity_name" => "'#{activity.name.tr("'", ' ')}'")
 
       solution = solver.solve!(activity.name.to_s, facts_and_rules)
 

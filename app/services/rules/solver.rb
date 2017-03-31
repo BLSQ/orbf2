@@ -21,9 +21,10 @@ module Rules
         raise SolvingError.new(e.message, facts_and_rules), "Failed to solve this problem #{message} : #{e.message}"
       end
       end_time = Time.new.utc
-      #solution[:elapsed_time] = (end_time - start_time)
-      puts " #{Time.new} => #{solution[:elapsed_time]}" if debug
-      puts JSON.pretty_generate([solution]) if debug
+      if debug
+        puts " #{Time.new} => #{solution[:elapsed_time]}"
+        puts JSON.pretty_generate([solution])
+      end
       solution.with_indifferent_access
     end
 
@@ -67,7 +68,7 @@ module Rules
 
     def mock_values(expression, available_variables_for_values)
       variables = {}
-      available_variables_for_values.select {|name|name.ends_with?("_values")}.each do |variable_name|
+      available_variables_for_values.select { |name| name.ends_with?("_values") }.each do |variable_name|
         raise "please don't add extra spaces in '%{#{variable_name}}'" if variable_name.include?(" ")
         variables[variable_name.to_sym] = "1 , 2"
       end
@@ -99,7 +100,7 @@ module Rules
       safe_div = lambda do |*args|
         dividend = args[0]
         divisor = args[1]
-        divisor > 0 ? (dividend/divisor) : 0
+        divisor > 0 ? (dividend / divisor) : 0
       end
       between = ->(lower, score, greater) { lower <= score && score <= greater }
 
