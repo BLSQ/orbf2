@@ -22,11 +22,11 @@ class DataCompound
     data_elements = dhis2.data_elements.list(fields: ":all", page_size: 50_000)
     data_element_groups = dhis2.data_element_groups.list(fields: ":all", page_size: 50_000)
     indicators = dhis2.indicators.list(fields: ":all", page_size: 50_000)
-    DataCompound.new(data_elements, data_element_groups,indicators)
+    DataCompound.new(data_elements, data_element_groups, indicators)
   end
 
-  def indicators
-    @indicators_by_id.values
+  def indicators(ids = nil)
+    ids ? ids.map { |id| @indicators_by_id[id] } : @indicators_by_id.values
   end
 
   def indicator(id)

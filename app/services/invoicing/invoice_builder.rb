@@ -12,7 +12,7 @@ module Invoicing
       selected_packages = project.packages.select do |package|
         package.for_frequency(frequency) && package.apply_for(entity)
       end
-      raise "No package for #{entity.name} #{entity.groups} vs supported groups #{project.packages.flat_map(&:entity_groups).uniq}" if selected_packages.empty?
+      raise InvoicingError, "No package for #{entity.name} #{entity.groups} vs supported groups #{project.packages.flat_map(&:package_entity_groups).map(&:organisation_unit_group_ext_ref).uniq}" if selected_packages.empty?
       selected_packages.map do |package|
         analytics_service.activity_and_values(package, date).map do |activity, values|
           calculate_activity_results_monthly(entity, date, frequency, package, activity, values)
@@ -25,7 +25,6 @@ module Invoicing
 
       facts_and_rules = {}
                         .merge(package.activity_rule.to_facts)
-                        .merge("activity_name" => "'#{activity.name.tr("'", ' ')}'")
                         .merge(activity_tarification_facts)
                         .merge(values.to_facts)
 
@@ -106,9 +105,9 @@ module Invoicing
           date,
           "monthly"
         )
-        raise "should have at least one activity_results" if activity_results.empty?
+        raise InvoicingError, "should have at least one activity_results" if activity_results.empty?
         package_results = calculate_package_results(activity_results)
-        raise "should have at least one package_results" if package_results.empty?
+        raise InvoicingError, "should have at least one package_results" if package_results.empty?
         # No payments in monthly ?
         return Invoicing::MonthlyInvoice.new(date, entity, project, activity_results, package_results, nil)
       rescue => e

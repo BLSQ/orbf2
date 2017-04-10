@@ -11,7 +11,8 @@ module Invoicing
       @lines
     end
 
-    def dump_invoice
+    def dump_invoice(debug = false)
+      return unless debug
       puts "-------********* #{entity.name} #{date}************------------"
       if activity_results
         activity_results.flatten.group_by(&:package).map do |package, results|

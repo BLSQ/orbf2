@@ -27,8 +27,8 @@ class Pyramid
     Pyramid.new(org_units, org_unit_groups)
   end
 
-  def org_units
-    @org_units_by_id.values
+  def org_units(ids = nil)
+    ids ? ids.map { |id| @org_units_by_id[id] } : @org_units_by_id.values
   end
 
   def org_unit_groups

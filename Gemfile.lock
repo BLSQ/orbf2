@@ -246,6 +246,7 @@ GEM
       rspec (~> 3.0, >= 3.0.0)
       sidekiq (>= 2.4.0)
     rspec-support (3.5.0)
+    ruby-prof (0.16.2)
     safe_yaml (1.0.4)
     sass (3.4.22)
     sass-rails (5.0.6)
@@ -349,6 +350,7 @@ DEPENDENCIES
   rspec-its
   rspec-rails (~> 3.0)
   rspec-sidekiq
+  ruby-prof
   sass-rails (~> 5.0)
   shoulda-matchers
   sidekiq

@@ -1,7 +1,10 @@
 module Publishing
   class Dhis2InvoicePublisher
-    def publish(project, _invoices)
-      project.dhis2_connection.values.create
+    def publish(project, invoices)
+      values = to_values(project, invoices)
+      puts "about to publish #{values.size} values to dhis2"
+      return if values.empty?
+      project.dhis2_connection.data_value_sets.create(values)
     end
 
     def to_values(_project, invoices)
