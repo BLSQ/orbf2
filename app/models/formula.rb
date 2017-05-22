@@ -32,7 +32,7 @@ class Formula < ApplicationRecord
 
   def dependencies
     values_dependencies = rule.available_variables_for_values.select do |values|
-      expression.include?("%{#{values}}")
+      expression && expression.include?("%{#{values}}")
     end
     values_dependencies + Rules::Solver.new.dependencies(self)
   end
