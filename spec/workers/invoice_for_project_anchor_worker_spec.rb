@@ -17,6 +17,7 @@ RSpec.describe InvoicesForEntitiesWorker do
 
   def create_snaphots
     project
+    stub_organisation_unit_group_sets
     stub_organisation_unit_groups
     stub_organisation_units
     stub_data_elements

@@ -19,6 +19,7 @@ class Dhis2Snapshot < ApplicationRecord
 
   KINDS = [:data_elements,
            :data_element_groups,
+           :organisation_unit_group_sets,
            :organisation_unit_groups,
            :organisation_units,
            :indicators].freeze
@@ -29,6 +30,10 @@ class Dhis2Snapshot < ApplicationRecord
 
   def kind_organisation_unit_groups?
     kind.to_sym == :organisation_unit_groups
+  end
+
+  def kind_organisation_unit_group_sets?
+    kind.to_sym == :organisation_unit_group_sets
   end
 
   def kind_data_elements?

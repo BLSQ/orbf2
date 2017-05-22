@@ -26,6 +26,7 @@ RSpec.describe Dhis2SnapshotWorker do
 
   it "should perform organisation_units and organisation_unit_groups snapshot and update existing when run twice" do
     project
+    stub_organisation_unit_group_sets
     stub_organisation_unit_groups
     stub_organisation_units
     stub_data_elements
@@ -36,10 +37,10 @@ RSpec.describe Dhis2SnapshotWorker do
     expect(Dhis2Snapshot.all.count).to eq 0
 
     Dhis2SnapshotWorker.new.perform(project_anchor.id)
-    expect(Dhis2Snapshot.all.count).to eq 5
+    expect(Dhis2Snapshot.all.count).to eq Dhis2Snapshot::KINDS.size
 
     Dhis2SnapshotWorker.new.perform(project_anchor.id)
-    expect(Dhis2Snapshot.all.count).to eq 5
+    expect(Dhis2Snapshot.all.count).to eq Dhis2Snapshot::KINDS.size
 
     pyramid = project_anchor.pyramid_for(Time.now)
     expect(pyramid.org_units.size).to eq 1336
