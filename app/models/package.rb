@@ -10,10 +10,13 @@
 #  created_at                 :datetime         not null
 #  updated_at                 :datetime         not null
 #  stable_id                  :uuid             not null
+#  kind                       :string           default("single")
+#  ogs_reference              :string
 #
 
 class Package < ApplicationRecord
   FREQUENCIES = %w(monthly quarterly).freeze
+  KINDS = %w(single multi-groupset).freeze
   belongs_to :project, inverse_of: :packages
   has_many :package_entity_groups, dependent: :destroy
   has_many :package_states, dependent: :destroy
@@ -30,12 +33,17 @@ class Package < ApplicationRecord
     message: "%{value} is not a valid see #{FREQUENCIES.join(',')}"
   }
 
+  validates :kind, presence: true, inclusion: {
+    in:      KINDS,
+    message: "%{value} is not a valid see #{FREQUENCIES.join(',')}"
+  }
+
   accepts_nested_attributes_for :states
 
   attr_accessor :invoice_details
 
   def invoice_details
-    states.select(&:activity_level?).map(&:code) + activity_rule.formulas.map(&:code)  + ["activity_name"]
+    states.select(&:activity_level?).map(&:code) + activity_rule.formulas.map(&:code) + ["activity_name"]
   end
 
   def package_state(state)
@@ -43,11 +51,11 @@ class Package < ApplicationRecord
   end
 
   def activity_states(state)
-    self.activities.flat_map(&:activity_states).select { |activity_state| activity_state.state == state }
+    activities.flat_map(&:activity_states).select { |activity_state| activity_state.state == state }
   end
 
   def missing_rules_kind
-    supported_rules_kind = %w(activity package)
+    supported_rules_kind = %w[activity package]
     supported_rules_kind.delete("activity") if activity_rule
     supported_rules_kind.delete("package") if package_rule
     supported_rules_kind
@@ -57,8 +65,12 @@ class Package < ApplicationRecord
     package_entity_groups.any? { |group| entity.groups.include?(group.organisation_unit_group_ext_ref) }
   end
 
+  def linked_org_units(org_unit, pyramid)
+    pyramid.org_units_in_same_group(org_unit, ogs_reference)
+  end
+
   def apply_for_org_unit(org_unit)
-    group_ids = org_unit.organisation_unit_groups.map {|g| g["id"] }
+    group_ids = org_unit.organisation_unit_groups.map { |g| g["id"] }
     package_entity_groups.any? { |group| group_ids.include?(group.organisation_unit_group_ext_ref) }
   end
 
@@ -72,6 +84,10 @@ class Package < ApplicationRecord
 
   def activity_rule
     rules.find { |r| r.kind == "activity" }
+  end
+
+  def kind_multi?
+    kind.start_with?("multi-")
   end
 
   def missing_activity_states

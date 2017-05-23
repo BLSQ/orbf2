@@ -14,6 +14,23 @@
     <div class="col-md-6" id="org_units_groups_selection"></div>
 </div>
 
+<div class="row">
+    <div class="col-md-6">
+      <div class="form-group">
+        <label class="control-label">Multiple entity ?</label>
+        <select id="org_units_groups_selector"
+                data-selected="<%=package.ogs_reference%>"
+                data-placeholder="Lookup the organisation units groups set here..."
+                data-selection = "org_units_group_set_selection"
+                data-url = "<%= organisation_unit_group_sets_setup_project_autocomplete_index_path(package.project) %>"
+                class="form-control sol-powered"
+                name="package[ogs_reference]" >
+        </select>
+    </div>
+  </div>
+    <div class="col-md-6" id="org_units_group_set_selection"></div>
+</div>
+
 
 <%= f.association :states, collection: State.configurables(), as: :check_boxes %>
 
@@ -21,7 +38,7 @@
 <div class="row">
     <div class="col-md-6">
       <div class="form-group">
-        <label class="control-label">Date element for <%= state.name %> (leave empty if not applicable)</label>
+        <label class="control-label">Data element for <%= state.name %> (leave empty if not applicable)</label>
         <select id="data_elements_selector" data-selected="<%=package.package_state(state).try(:de_external_reference) %>"
            name="data_elements[<%= state.id%>]"
            data-placeholder="Lookup the data elements here..."
@@ -36,6 +53,8 @@
   </div>
 </div>
 <%end%>
-<%= f.association :activities, collection: package.project.activities %>
+<%= f.association :activities, collection: package.project.activities, input_html: {class: 'sol-powered', data: { selection:"activities_selection", selected: package.project.activities.map(&:id)}} %>
+<div id="activities_selection">
+</div>
 <%= f.input :frequency, collection: Package::FREQUENCIES, as: :select %>
 <%= f.button :submit, class: "btn btn-success" %>

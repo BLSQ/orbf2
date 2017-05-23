@@ -1,11 +1,9 @@
 
 class Pyramid
   def initialize(org_units, org_unit_groups, org_unit_group_sets)
-
     @org_unit_groups_by_id = org_unit_groups.index_by(&:id)
     @org_units_by_id = org_units.index_by(&:id)
     @org_unit_group_sets_by_id = org_unit_group_sets.index_by(&:id)
-
 
     org_units_by_group = {}
     org_units.each do |ou|
@@ -44,8 +42,19 @@ class Pyramid
     @org_units_by_group[group_id] || Set.new
   end
 
-  def org_unit_group_sets
-    org_unit_group_sets_by_id.values
+  def organisation_unit_group_sets
+    @org_unit_group_sets_by_id.values
+  end
+
+  def org_unit_group_set(group_set_id)
+    @org_unit_group_sets_by_id[group_set_id]
+  end
+
+  def org_units_in_same_group(org_unit, group_set_id)
+    groupset_group_ids = org_unit_group_set(group_set_id).organisation_unit_groups.map { |e| e["id"] }
+    org_unit_group_ids = org_unit.organisation_unit_groups.map { |e| e["id"] }
+    group_id = (groupset_group_ids & org_unit_group_ids).first
+    org_units_in_group(group_id)
   end
 
   def org_units_in_all_groups(group_ids)

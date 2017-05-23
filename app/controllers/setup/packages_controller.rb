@@ -37,6 +37,8 @@ class Setup::PackagesController < PrivateController
 
   def create
     @package = current_project.packages.build(params_package)
+    package.kind = package.ogs_reference.present? ? 'multi-groupset' : 'single'
+
     state_ids = params_package[:state_ids].reject(&:empty?)
 
     update_package_constants
@@ -75,6 +77,6 @@ class Setup::PackagesController < PrivateController
 
 
   def params_package
-    params.require(:package).permit(:name, :frequency, state_ids: [], activity_ids: [])
+    params.require(:package).permit(:name, :frequency, :ogs_reference, state_ids: [], activity_ids: [])
   end
 end

@@ -10,6 +10,8 @@
 #  created_at                 :datetime         not null
 #  updated_at                 :datetime         not null
 #  stable_id                  :uuid             not null
+#  kind                       :string           default("single")
+#  ogs_reference              :string
 #
 
 FactoryGirl.define do
