@@ -29,4 +29,9 @@ module Dhis2SnapshotFixture
     stub_request(:get, "http://play.dhis2.org/demo/api/indicators?fields=:all&pageSize=50000")
       .to_return(status: 200, body: fixture_content(:dhis2, "indicators.json"))
   end
+
+  def stub_organisation_unit_group_sets
+    stub_request(:get, "http://play.dhis2.org/demo/api/organisationUnitGroupSets?fields=:all&pageSize=50000")
+      .to_return(status: 200, body: fixture_content(:dhis2, "organisation_unit_group_sets.json"))
+  end
 end

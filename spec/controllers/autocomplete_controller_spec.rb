@@ -75,9 +75,8 @@ RSpec.describe Setup::AutocompleteController, type: :controller do
 
     it "should return for a single element if existing id" do
       get :data_elements, params: { project_id: project.id, id: "FTRrcoaog83" }
-    expect(assigns(:items).map { |i| i[:label] }).to eq  ["Accute Flaccid Paralysis (Deaths < 5 yrs)"]
-   end
-
+      expect(assigns(:items).map { |i| i[:label] }).to eq ["Accute Flaccid Paralysis (Deaths < 5 yrs)"]
+    end
   end
 
   describe "When authenticated #indicators" do
@@ -103,7 +102,6 @@ RSpec.describe Setup::AutocompleteController, type: :controller do
     end
 
     it "should return empty when no params" do
-
       stub_dhis2_all_orgunits
       stub_dhis2_all_orgunits_groups
 
@@ -114,6 +112,7 @@ RSpec.describe Setup::AutocompleteController, type: :controller do
     it "should autocomplete by sibling_id" do
       project.create_entity_group(name: "Public Facilities", external_reference: "f25dqv3Y7Z0")
 
+      stub_dhis2_all_org_unit_group_sets
       stub_dhis2_all_orgunits
       stub_dhis2_all_orgunits_groups
 
@@ -134,6 +133,7 @@ RSpec.describe Setup::AutocompleteController, type: :controller do
     end
 
     it "should autocomplete org unit groups by name" do
+      stub_dhis2_all_org_unit_group_sets
       stub_dhis2_all_orgunits_groups
       stub_dhis2_all_orgunits
 
@@ -143,6 +143,11 @@ RSpec.describe Setup::AutocompleteController, type: :controller do
       expect(options.first["type"]).to eq "option"
       expect(options.first["value"]).to eq "CXw2yu5fodb"
       expect(options.first["label"]).to include("CHC (194/1336)")
+    end
+
+    def stub_dhis2_all_org_unit_group_sets
+      stub_request(:get, "#{project.dhis2_url}/api/organisationUnitGroupSets?fields=id,displayName&pageSize=20000")
+        .to_return(status: 200, body: fixture_content(:dhis2, "organisation_unit_group_sets.json"))
     end
 
     def stub_dhis2_all_orgunits_groups

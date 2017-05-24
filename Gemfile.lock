@@ -1,9 +1,9 @@
 GIT
   remote: git://github.com/BLSQ/dhis2.git
-  revision: b7f7ce4bcbc97cc07825e041387e782f3a066dd7
-  branch: feature/create-dataset-backward-compat-dhis-v20
+  revision: 986e2ec42cd0ad2f0a15b838b636ae2f2db11c14
+  branch: feature/add-organisation-unit-group-sets
   specs:
-    dhis2 (2.3.2)
+    dhis2 (2.3.5)
       rest-client
 
 GEM

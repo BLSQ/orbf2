@@ -1,9 +1,9 @@
 
 class Pyramid
-  def initialize(org_units, org_unit_groups)
+  def initialize(org_units, org_unit_groups, org_unit_group_sets)
     @org_unit_groups_by_id = org_unit_groups.index_by(&:id)
-
     @org_units_by_id = org_units.index_by(&:id)
+    @org_unit_group_sets_by_id = org_unit_group_sets.index_by(&:id)
 
     org_units_by_group = {}
     org_units.each do |ou|
@@ -17,14 +17,17 @@ class Pyramid
   end
 
   def self.from(project)
-    pyramid = project.project_anchor.pyramid_for(Time.now.utc)
+    pyramid = project.project_anchor.nearest_pyramid_for(Time.now.utc)
     return pyramid if pyramid
     dhis2 = project.dhis2_connection
     org_unit_groups = dhis2.organisation_unit_groups
                            .list(fields: "id,displayName", page_size: 20_000)
     org_units = dhis2.organisation_units
                      .list(fields: "id,displayName,organisationUnitGroups", page_size: 50_000)
-    Pyramid.new(org_units, org_unit_groups)
+    org_unit_group_sets = dhis2.organisation_unit_group_sets
+                               .list(fields: "id,displayName", page_size: 20_000)
+
+    Pyramid.new(org_units, org_unit_groups, org_unit_group_sets)
   end
 
   def org_units(ids = nil)
@@ -37,6 +40,21 @@ class Pyramid
 
   def org_units_in_group(group_id)
     @org_units_by_group[group_id] || Set.new
+  end
+
+  def organisation_unit_group_sets
+    @org_unit_group_sets_by_id.values
+  end
+
+  def org_unit_group_set(group_set_id)
+    @org_unit_group_sets_by_id[group_set_id]
+  end
+
+  def org_units_in_same_group(org_unit, group_set_id)
+    groupset_group_ids = org_unit_group_set(group_set_id).organisation_unit_groups.map { |e| e["id"] }
+    org_unit_group_ids = org_unit.organisation_unit_groups.map { |e| e["id"] }
+    group_id = (groupset_group_ids & org_unit_group_ids).first
+    org_units_in_group(group_id)
   end
 
   def org_units_in_all_groups(group_ids)
