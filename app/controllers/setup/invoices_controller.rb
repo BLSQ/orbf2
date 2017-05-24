@@ -18,7 +18,7 @@ class Setup::InvoicesController < PrivateController
 
     org_unit = fetch_org_unit(project, invoicing_request.entity)
     pyramid = project.project_anchor.nearest_pyramid_for(invoicing_request.end_date_as_date)
-    values = fetch_values(project, org_units(project, pyramid, org_unit))
+    values = fetch_values(project, org_units_with_multi(project, pyramid, org_unit))
     indicators_expressions = fetch_indicators_expressions(project)
     invoicing_request.invoices = calculate_invoices(invoicing_request, org_unit, values, indicators_expressions)
 
@@ -27,14 +27,14 @@ class Setup::InvoicesController < PrivateController
 
   private
 
-  def org_units(project, pyramid, org_unit)
+  def org_units_with_multi(project, pyramid, org_unit)
     multi_org_unit_packages = project.packages.to_a.select(&:kind_multi?)
 
     org_unit_ids = multi_org_unit_packages.map do |package|
       package.linked_org_units(org_unit, pyramid).map(&:id)
     end
 
-    ([org_unit.id] + org_units.flatten).uniq
+    ([org_unit.id] + org_unit_ids.flatten).uniq
   end
 
   def fetch_org_unit(project, id)
