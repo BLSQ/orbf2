@@ -6,13 +6,21 @@
   <%= f.input :year %>
   <%= f.input :quarter %>
 
+  <%= f.input :mock_values, as: :boolean%>
+
   <%= f.submit 'Simulate',   class: "btn btn-primary pull-right" %>
 <%end%>
 
 <%if invoicing_request.invoices && invoicing_request.invoices.any? %>
+  <%= @org_unit_summary %>
   <br>
   <br>
   <br>
+      <% invoicing_request.invoices.each do |invoice| %>
+       <% invoice.activity_results.flatten.group_by(&:package).map do |package, results| %>
+        <li><a href="#<%= (package.name+"-"+invoice.date.strftime('%Y-%m')).underscore%>"><%= package.name %> at <%=invoice.date.strftime('%Y/%m')%></a></li>
+        <%end%>
+      <%end%>
   <h3> Invoice details </h3>
   <%= render partial: "invoice", collection: invoicing_request.invoices, :as => :invoice  %>
 

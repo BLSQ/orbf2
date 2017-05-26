@@ -30,12 +30,16 @@ class Pyramid
     Pyramid.new(org_units, org_unit_groups, org_unit_group_sets)
   end
 
+  def org_unit(id)
+    @org_units_by_id[id]
+  end
+
   def org_units(ids = nil)
     ids ? ids.map { |id| @org_units_by_id[id] } : @org_units_by_id.values
   end
 
-  def org_unit_groups
-    @org_unit_groups_by_id.values
+  def org_unit_groups(ids = nil)
+    ids ? ids.map { |id| @org_unit_groups_by_id[id] } : @org_unit_groups_by_id.values
   end
 
   def org_units_in_group(group_id)
@@ -48,6 +52,10 @@ class Pyramid
 
   def org_unit_group_set(group_set_id)
     @org_unit_group_sets_by_id[group_set_id]
+  end
+
+  def org_unit_groups_of(org_unit)
+    org_unit_groups(org_unit.organisation_unit_groups.map { |e| e["id"] })
   end
 
   def org_units_in_same_group(org_unit, group_set_id)

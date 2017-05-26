@@ -1,7 +1,8 @@
 
 <% if invoice.activity_results %>
   <% invoice.activity_results.flatten.group_by(&:package).map do |package, results| %>
-  <h2><%= package.name %> at <%=invoice.date%></h2>
+  <a name="<%= (package.name+"-"+invoice.date.strftime('%Y-%m')).underscore%>"></a>
+  <h2><%= package.name %> at <%=invoice.date%>  </h2>
 
   <table class="table invoice num-span-table table-striped">
     <thead>
@@ -51,7 +52,7 @@
       <%invoice.payment_result.payment_rule.rule.formulas.map do |formula|%>
         <div class="row">
            <div class="col-md-3">
-             <%=formula.code .humanize %> :
+             <%=formula.code.humanize %> :
           </div>
           <div class="col-md-4">
             <b><%= d_to_s( invoice.payment_result.solution[formula.code])%></b>

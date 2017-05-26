@@ -1,7 +1,7 @@
 
 class InvoicingRequest
   include ActiveModel::Model
-  attr_accessor :entity, :year, :quarter, :project, :invoices
+  attr_accessor :entity, :year, :quarter, :project, :invoices, :mock_values
 
   QUARTER_TO_MONTH = {
     1 => 3,

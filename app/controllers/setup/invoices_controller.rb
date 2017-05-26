@@ -7,7 +7,7 @@ class Setup::InvoicesController < PrivateController
       project: current_project,
       year:    Date.today.to_date.year,
       quarter: (Date.today.to_date.month / 4) + 1,
-      entity:  "CV4IXOSr5ky"
+      entity:  "foYdyvZdi5e"
     )
   end
 
@@ -16,41 +16,83 @@ class Setup::InvoicesController < PrivateController
 
     @invoicing_request = InvoicingRequest.new(invoice_params.merge(project: project))
 
-    org_unit = fetch_org_unit(project, invoicing_request.entity)
     pyramid = project.project_anchor.nearest_pyramid_for(invoicing_request.end_date_as_date)
-    values = fetch_values(project, org_units_with_multi(project, pyramid, org_unit))
+    pyramid ||= Pyramid.from(project)
+
+    org_unit = pyramid.org_unit(invoicing_request.entity)
+
+    data_compound = project.project_anchor.nearest_data_compound_for(invoicing_request.end_date_as_date)
+    data_compound ||= DataCompound.from(project)
+
+    aggregation_per_data_elements = data_compound.data_elements.map { |de| [de.id, de.aggregation_type] }.to_h
+
+    org_units_by_package = org_units_by_package(project, pyramid, org_unit)
+    values = if invoicing_request.mock_values == "1"
+               mock_values(org_units_by_package)
+             else
+               fetch_values(project, org_units_by_package.values.flatten.map(&:id))
+            end
+
+    @org_unit_summary = org_unit.name + " : " + pyramid.org_unit_groups_of(org_unit).map(&:name).join(", ")
+
     indicators_expressions = fetch_indicators_expressions(project)
-    invoicing_request.invoices = calculate_invoices(invoicing_request, org_unit, values, indicators_expressions)
+    invoicing_request.invoices = calculate_invoices(
+      invoicing_request,
+      org_unit,
+      org_units_by_package,
+      values,
+      indicators_expressions,
+      aggregation_per_data_elements
+    )
 
     render :new
   end
 
   private
 
-  def org_units_with_multi(project, pyramid, org_unit)
-    multi_org_unit_packages = project.packages.to_a.select(&:kind_multi?)
-
-    org_unit_ids = multi_org_unit_packages.map do |package|
-      package.linked_org_units(org_unit, pyramid).map(&:id)
+  def mock_values(org_units_by_package)
+    values = []
+    org_units_by_package.each do |package, org_units|
+      invoicing_request.quarter_dates.map { |date| "#{date.year}#{date.month.to_s.rjust(2, '0')}" }.each do |period|
+        package.activities.each do |activity|
+          package.states.each do |state|
+            org_units.each do |org_unit_to_mock|
+              activity_state = activity.activity_state(state)
+              next unless activity_state
+              value = if state.code == "tarif"
+                        11
+                      else
+                        20 + rand(5)
+                      end
+              values.push OpenStruct.new(
+                data_element: activity_state.external_reference,
+                period:       period,
+                org_unit:     org_unit_to_mock.id,
+                value:        value
+              )
+            end
+          end
+        end
+      end
     end
-
-    ([org_unit.id] + org_unit_ids.flatten).uniq
+    values
   end
 
-  def fetch_org_unit(project, id)
-    project.dhis2_connection.organisation_units.find(id)
+  def org_units_by_package(project, pyramid, org_unit)
+    project.packages.map do |package|
+      [package, package.linked_org_units(org_unit, pyramid)]
+    end.to_h
   end
 
   def fetch_indicators_expressions(project)
     # TODO: use snapshots
     indicator_ids = project.activities.flat_map(&:activity_states).select(&:kind_indicator?).map(&:external_reference)
-    # indicator_ids += ["sJZI0t71kK7"]  TODO: remove me
     return {} if indicator_ids.empty?
     indicators = project.dhis2_connection.indicators.find(indicator_ids)
     Hash[indicators.map { |indicator| [indicator.id, Analytics::IndicatorCalculator.parse_expression(indicator.numerator)] }]
   end
 
-  def calculate_invoices(invoicing_request, org_unit, values, indicators_expressions)
+  def calculate_invoices(invoicing_request, org_unit, org_units_by_package, values, indicators_expressions, aggregation_per_data_elements)
     values += Analytics::IndicatorCalculator.new.calculate(indicators_expressions, values)
 
     entity = Analytics::Entity.new(org_unit.id, org_unit.name, org_unit.organisation_unit_groups.map { |n| n["id"] })
@@ -58,7 +100,7 @@ class Setup::InvoicesController < PrivateController
       Hash[invoicing_request.quarter_dates.map { |date| [date, invoicing_request.project] }]
     )
     invoice_builder = Invoicing::InvoiceBuilder.new(project_finder, Tarification::TarificationService.new)
-    analytics_service = Analytics::CachedAnalyticsService.new([org_unit], values)
+    analytics_service = Analytics::CachedAnalyticsService.new(org_unit, org_units_by_package, values, aggregation_per_data_elements)
 
     invoices = []
     invoicing_request.quarter_dates.each do |month|
@@ -103,6 +145,7 @@ class Setup::InvoicesController < PrivateController
     params.require(:invoicing_request)
           .permit(:entity,
                   :year,
-                  :quarter)
+                  :quarter,
+                  :mock_values)
   end
 end

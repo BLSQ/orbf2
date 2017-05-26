@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe Setup::AutocompleteController, type: :controller do
+  include WebmockDhis2Helpers
+
   describe "When non authenticated #orgunitgroup" do
     it "should redirect to sign on" do
       get :organisation_unit_group, params: { project_id: 1 }
@@ -20,24 +22,13 @@ RSpec.describe Setup::AutocompleteController, type: :controller do
     project
   end
 
-  def stub_all_data_compound
-    stub_request(:get, "#{project.dhis2_url}/api/dataElements?fields=:all&pageSize=50000")
-      .to_return(status: 200, body: fixture_content(:dhis2, "all_data_elements.json"))
-
-    stub_request(:get, "#{project.dhis2_url}/api/dataElementGroups?fields=:all&pageSize=50000")
-      .to_return(status: 200, body: fixture_content(:dhis2, "data_element_groups.json"))
-
-    stub_request(:get, "#{project.dhis2_url}/api/indicators?fields=:all&pageSize=50000")
-      .to_return(status: 200, body: fixture_content(:dhis2, "indicators.json"))
-  end
-
   describe "When authenticated #data_ements" do
     include_context "basic_context"
     include WebmockDhis2Helpers
 
     before(:each) do
       sign_in user
-      stub_all_data_compound
+      stub_all_data_compound(project)
     end
 
     it "should return all data_ements" do
@@ -88,7 +79,7 @@ RSpec.describe Setup::AutocompleteController, type: :controller do
     end
 
     it "should autocomplete indicators" do
-      stub_all_data_compound
+      stub_all_data_compound(project)
       get :indicators, params: { project_id: project.id, term: "cli" }
     end
   end
@@ -102,8 +93,8 @@ RSpec.describe Setup::AutocompleteController, type: :controller do
     end
 
     it "should return empty when no params" do
-      stub_dhis2_all_orgunits
-      stub_dhis2_all_orgunits_groups
+      stub_dhis2_all_orgunits(project)
+      stub_dhis2_all_orgunits_groups(project)
 
       get :organisation_unit_group, params: { project_id: project.id }
       expect(JSON.parse(response.body).size).to eq 0
@@ -112,9 +103,7 @@ RSpec.describe Setup::AutocompleteController, type: :controller do
     it "should autocomplete by sibling_id" do
       project.create_entity_group(name: "Public Facilities", external_reference: "f25dqv3Y7Z0")
 
-      stub_dhis2_all_org_unit_group_sets
-      stub_dhis2_all_orgunits
-      stub_dhis2_all_orgunits_groups
+      stub_all_pyramid(project)
 
       get :organisation_unit_group, params: { project_id: project.id, siblings: "true" }
       expect(JSON.parse(response.body)).to eq(
@@ -133,9 +122,7 @@ RSpec.describe Setup::AutocompleteController, type: :controller do
     end
 
     it "should autocomplete org unit groups by name" do
-      stub_dhis2_all_org_unit_group_sets
-      stub_dhis2_all_orgunits_groups
-      stub_dhis2_all_orgunits
+      stub_all_pyramid(project)
 
       get :organisation_unit_group, params: { project_id: project.id, term: "cli" }
       options = JSON.parse(response.body)
@@ -143,27 +130,6 @@ RSpec.describe Setup::AutocompleteController, type: :controller do
       expect(options.first["type"]).to eq "option"
       expect(options.first["value"]).to eq "CXw2yu5fodb"
       expect(options.first["label"]).to include("CHC (194/1336)")
-    end
-
-    def stub_dhis2_all_org_unit_group_sets
-      stub_request(:get, "#{project.dhis2_url}/api/organisationUnitGroupSets?fields=id,displayName&pageSize=20000")
-        .to_return(status: 200, body: fixture_content(:dhis2, "organisation_unit_group_sets.json"))
-    end
-
-    def stub_dhis2_all_orgunits_groups
-      stub_request(:get, "#{project.dhis2_url}/api/organisationUnitGroups?fields=id,displayName&pageSize=20000")
-        .to_return(
-          status: 200,
-          body:   fixture_content(:dhis2, "organisationUnitGroups.json")
-        )
-    end
-
-    def stub_dhis2_all_orgunits
-      stub_request(:get, "#{project.dhis2_url}/api/organisationUnits?fields=id,displayName,organisationUnitGroups&pageSize=50000")
-        .to_return(
-          status: 200,
-          body:   fixture_content(:dhis2, "all_organisation_units_with_groups.json")
-        )
     end
   end
 end

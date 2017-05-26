@@ -37,7 +37,7 @@ class Setup::PackagesController < PrivateController
 
   def create
     @package = current_project.packages.build(params_package)
-    package.kind = package.ogs_reference.present? ? 'multi-groupset' : 'single'
+    package.kind = package.ogs_reference.present? ? "multi-groupset" : "single"
 
     state_ids = params_package[:state_ids].reject(&:empty?)
 
@@ -74,7 +74,6 @@ class Setup::PackagesController < PrivateController
       package_state.de_external_reference = de_external_reference if de_external_reference
     end
   end
-
 
   def params_package
     params.require(:package).permit(:name, :frequency, :ogs_reference, state_ids: [], activity_ids: [])

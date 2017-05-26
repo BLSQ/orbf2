@@ -55,7 +55,7 @@ class Package < ApplicationRecord
   end
 
   def missing_rules_kind
-    supported_rules_kind = %w[activity package]
+    supported_rules_kind = %w(activity package)
     supported_rules_kind.delete("activity") if activity_rule
     supported_rules_kind.delete("package") if package_rule
     supported_rules_kind
@@ -66,7 +66,11 @@ class Package < ApplicationRecord
   end
 
   def linked_org_units(org_unit, pyramid)
-    pyramid.org_units_in_same_group(org_unit, ogs_reference)
+    if kind_multi?
+      pyramid.org_units_in_same_group(org_unit, ogs_reference).to_a
+    else
+      [org_unit]
+    end
   end
 
   def apply_for_org_unit(org_unit)
@@ -129,17 +133,6 @@ class Package < ApplicationRecord
         name:                            organisation_unit_group.display_name,
         organisation_unit_group_ext_ref: organisation_unit_group.id
       }
-    end
-  end
-
-  # will fetch the activities of a given package id (data_element_group_ext_ref)
-  def fetch_activities
-    dhis2 = project.dhis2_connection
-    activities = dhis2.data_elements.list(filter: "dataElementGroups.id:eq:#{data_element_group_ext_ref}").map do |dataelement|
-      ActivityForm.new(
-        external_reference: dataelement.id,
-        name:               dataelement.display_name
-      )
     end
   end
 

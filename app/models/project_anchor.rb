@@ -27,7 +27,7 @@ class ProjectAnchor < ApplicationRecord
   end
 
   def nearest_pyramid_for(date)
-    kinds = %i[organisation_units organisation_unit_groups organisation_unit_group_sets]
+    kinds = %i(organisation_units organisation_unit_groups organisation_unit_group_sets)
     pyramid_snapshots = dhis2_snapshots.select("id, year, month, kind").where(kind: kinds)
 
     candidates = pyramid_snapshots.sort_by { |snap| [snap.kind, [snap.year, snap.month].join("-")] }
@@ -44,7 +44,7 @@ class ProjectAnchor < ApplicationRecord
   end
 
   def nearest_data_compound_for(date)
-    kinds = %i[data_elements data_element_groups indicators]
+    kinds = %i(data_elements data_element_groups indicators)
     pyramid_snapshots = dhis2_snapshots.select("id, year, month, kind").where(kind: kinds)
 
     candidates = pyramid_snapshots.sort_by { |snap| [snap.kind, [snap.year, snap.month].join("-")] }
@@ -53,6 +53,7 @@ class ProjectAnchor < ApplicationRecord
     data_element_groups = nearest(candidates.select(&:kind_data_element_groups?), date)
     indicators = nearest(candidates.select(&:kind_indicators?), date)
 
+    return nil unless data_elements || data_element_groups || indicators
     puts "for #{date} using snapshots #{data_elements.year} #{data_elements.month} and #{data_element_groups.year} #{data_element_groups.month} and #{indicators.year} #{indicators.month}"
     data_elements = dhis2_snapshots.find(data_elements.id) if data_elements
     data_element_groups = dhis2_snapshots.find(data_element_groups.id) if data_element_groups
@@ -69,13 +70,13 @@ class ProjectAnchor < ApplicationRecord
     past_candidate = past_candidates.first
     return past_candidate if past_candidate
     futur_candidates = snapshots.select { |snapshot| snapshot.snapshoted_at > date }
-                                .sort_by { |snapshot| snapshot.snapshoted_at.to_time - date.to_time }
+                                .sort_by { |snapshot| snapshot.snapshoted_at.to_time(:utc) - date.to_time(:utc) }
 
     futur_candidates.first
   end
 
   def pyramid_for(date)
-    kinds = %i[organisation_units organisation_unit_groups organisation_unit_group_sets]
+    kinds = %i(organisation_units organisation_unit_groups organisation_unit_group_sets)
     pyramid_snapshots = dhis2_snapshots
                         .where(kind: kinds)
                         .where(month: date.month)
@@ -102,15 +103,21 @@ class ProjectAnchor < ApplicationRecord
 
   def new_pyramid(orgs_data)
     Pyramid.new(
-      orgs_data[:organisation_units].content.map { |r| Dhis2::Api::OrganisationUnit.new(nil, r["table"]) },
-      orgs_data[:organisation_unit_groups].content.map { |r| Dhis2::Api::OrganisationUnitGroup.new(nil, r["table"]) },
-      orgs_data[:organisation_unit_group_sets].content.map { |r| Dhis2::Api::OrganisationUnitGroupSet.new(nil, r["table"]) }
+      orgs_data[:organisation_units].content.map do |r|
+        Dhis2::Api::OrganisationUnit.new(nil, r["table"])
+      end,
+      orgs_data[:organisation_unit_groups].content.map do |r|
+        Dhis2::Api::OrganisationUnitGroup.new(nil, r["table"])
+      end,
+      orgs_data[:organisation_unit_group_sets].content.map do |r|
+        Dhis2::Api::OrganisationUnitGroupSet.new(nil, r["table"])
+      end
     )
   end
 
   def data_compound_for(date)
     snapshots = dhis2_snapshots
-                .where(kind: %i[data_elements data_element_groups indicators])
+                .where(kind: %i(data_elements data_element_groups indicators))
                 .where(month: date.month)
                 .where(year: date.year)
 

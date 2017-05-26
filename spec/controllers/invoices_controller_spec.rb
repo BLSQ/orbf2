@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe Setup::InvoicesController, type: :controller do
+  include WebmockDhis2Helpers
+
   describe "When non authenticated #new" do
     it "should redirect to sign on" do
       get :new, params: { project_id: 1 }
@@ -14,6 +16,8 @@ RSpec.describe Setup::InvoicesController, type: :controller do
       sign_in user
     end
 
+    let(:org_unit_id) { "cDw53Ej8rju" }
+
     it "displays the form for entities" do
       get :new, params: { project_id: full_project.id }
       expect(response).to have_http_status(:success)
@@ -21,13 +25,14 @@ RSpec.describe Setup::InvoicesController, type: :controller do
     end
 
     it "calculate invoices" do
-      stub_orgunit
+      stub_all_pyramid(full_project)
+      stub_all_data_compound(full_project)
       stub_data_value_sets
 
       post :create, params: {
         project_id:        full_project.id,
         invoicing_request: {
-          entity:  "CV4IXOSr5ky",
+          entity:  org_unit_id,
           year:    "2017",
           quarter: "1"
         }
@@ -36,13 +41,25 @@ RSpec.describe Setup::InvoicesController, type: :controller do
       expect(response).to have_http_status(:success)
     end
 
-    def stub_orgunit
-      stub_request(:get, "http://play.dhis2.org/demo/api/organisationUnits/CV4IXOSr5ky")
-        .to_return(status: 200, body: fixture_content(:dhis2, "organisationUnit.json"))
+    it "calculate invoices with mock_values" do
+      stub_all_pyramid(full_project)
+      stub_all_data_compound(full_project)
+
+      post :create, params: {
+        project_id:        full_project.id,
+        invoicing_request: {
+          entity:      org_unit_id,
+          year:        "2017",
+          quarter:     "1",
+          mock_values: "1"
+        }
+      }
+
+      expect(response).to have_http_status(:success)
     end
 
     def stub_data_value_sets
-      stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=true&endDate=2017-03-31&orgUnit=BV4IomHvri4&startDate=2017-01-01")
+      stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=true&endDate=2017-03-31&orgUnit=#{org_unit_id}&startDate=2017-01-01")
         .to_return(status: 200, body: "")
     end
   end
