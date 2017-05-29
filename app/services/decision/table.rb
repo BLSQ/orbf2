@@ -42,7 +42,7 @@ module Decision
         next unless rule.matches?(hash)
         return rule.apply(hash)
       end
-      byebug
+      nil
     end
   end
 end
