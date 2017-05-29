@@ -65,7 +65,7 @@ class ProjectAnchor < ApplicationRecord
     # there should be a better way
     time = date.to_time
     past_candidates = snapshots.select { |snapshot| snapshot.snapshoted_at <= date }
-                               .sort_by { |snapshot| time - snapshot.snapshoted_at }
+                               .sort_by { |snapshot| time - snapshot.snapshoted_at.to_time }
 
     past_candidate = past_candidates.first
     return past_candidate if past_candidate
