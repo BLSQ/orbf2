@@ -63,14 +63,15 @@ class ProjectAnchor < ApplicationRecord
 
   def nearest(snapshots, date)
     # there should be a better way
-
+    time = date.to_time
     past_candidates = snapshots.select { |snapshot| snapshot.snapshoted_at <= date }
-                               .sort_by { |snapshot| date - snapshot.snapshoted_at }
+                               .sort_by { |snapshot| time - snapshot.snapshoted_at }
 
     past_candidate = past_candidates.first
     return past_candidate if past_candidate
     futur_candidates = snapshots.select { |snapshot| snapshot.snapshoted_at > date }
-                                .sort_by { |snapshot| snapshot.snapshoted_at.to_time(:utc) - date.to_time(:utc) }
+                                .sort_by { |snapshot|
+                                  snapshot.snapshoted_at.to_time - time }
 
     futur_candidates.first
   end
