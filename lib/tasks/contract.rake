@@ -23,12 +23,12 @@ namespace :contract do
       parent = pyramid.org_unit(orgunit.parent["id"])
       values = equity_bonus_decisions.find(level_3: fix_name(orgunit.name))
       puts "no values for '#{fix_name(parent.name)}' '#{fix_name(orgunit.name)}'" unless values
-      [parent.id, fix_name(parent.name), orgunit.id, fix_name(orgunit.name), values ? values["equity_bonus"]: 0]
+      [parent.id, fix_name(parent.name), orgunit.id, fix_name(orgunit.name), values ? values["equity_bonus"] : 0]
     end.compact
 
-    orgs_level3 = orgs_level3.sort_by { |arr|
+    orgs_level3 = orgs_level3.sort_by do |arr|
       [arr[1], arr[3]]
-    }
+    end
 
     csv_string = CSV.generate do |csv|
       orgs_level3.each do |row|
@@ -39,6 +39,6 @@ namespace :contract do
   end
 
   def fix_name(name)
-    name.strip.gsub("\n","").gsub("\r","")
+    name.strip.delete("\n").delete("\r")
   end
 end

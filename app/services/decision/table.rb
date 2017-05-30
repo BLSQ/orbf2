@@ -46,7 +46,7 @@ module Decision
     end
 
     def headers(type)
-      @headers.select { |header| header.start_with?(type.to_s) }.map {|h| h.split(":")[1]}
+      @headers.select { |header| header.start_with?(type.to_s) }.map { |h| h.split(":")[1] }
     end
   end
 end

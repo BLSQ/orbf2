@@ -73,7 +73,7 @@ class Pyramid
   def org_unit_parents(org_unit_id)
     ou = org_unit(org_unit_id)
     return [ou] unless ou.path
-    ou.path.split("/").reject(&:empty?).map {|parent_id| org_unit(parent_id)}
+    ou.path.split("/").reject(&:empty?).map { |parent_id| org_unit(parent_id) }
   end
 
   def find_sibling_organisation_unit_groups(group_id)

@@ -13,7 +13,7 @@
 #
 
 class Rule < ApplicationRecord
-  RULE_TYPES = %w(payment activity package).freeze
+  RULE_TYPES = %w[payment activity package].freeze
   belongs_to :package, optional: true, inverse_of: :rules
   belongs_to :payment_rule, optional: true, inverse_of: :rule
 
@@ -85,9 +85,7 @@ class Rule < ApplicationRecord
       rules = payment_rule.packages.flat_map(&:rules).select(&:package_kind?)
       var_names << rules.flat_map(&:formulas).map(&:code)
     end
-    if decision_tables.any?
-      var_names << decision_tables.map(&:out_headers)
-    end
+    var_names << decision_tables.map(&:out_headers) if decision_tables.any?
     var_names.flatten.uniq.reject(&:nil?).sort
   end
 
@@ -132,10 +130,11 @@ class Rule < ApplicationRecord
     "Rule##{id}-#{kind}-#{name}"
   end
 
-  def extra_facts(activity, entity_facts)
+  def extra_facts(_activity, entity_facts)
     return {} unless decision_tables.any?
 
-    extra_facts = decision_tables.map { |decision_table| decision_table.extra_facts(entity_facts) }.compact || [{}]
+    extra_facts = decision_tables.map { |decision_table| decision_table.extra_facts(entity_facts) }.compact
+    extra_facts ||= [{}]
     extra_facts.reduce({}, :merge)
   end
 
