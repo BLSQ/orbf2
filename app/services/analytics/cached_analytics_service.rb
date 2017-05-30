@@ -1,5 +1,7 @@
 module Analytics
   class CachedAnalyticsService
+    MONTH_TO_QUARTER = { 1 => 1, 2 => 1, 3 => 1, 4 => 2, 5 => 2, 6 => 2, 7 => 3, 8 => 3, 9 => 3, 10 => 4, 11 => 4, 12 => 4 }.freeze
+
     def initialize(org_units, org_units_by_package, values, aggregation_per_data_elements)
       @values = values
       @org_units = org_units
@@ -17,8 +19,11 @@ module Analytics
 
       values = package.activities.map do |activity|
         facts = activity.activity_states.select(&:external_reference?).map do |activity_state|
-          formatted_period = "#{date.year}#{date.month.to_s.rjust(2, '0')}"
-          activity_values = @values_by_data_element_and_period[[activity_state.external_reference, formatted_period]] || []
+          activity_values = []
+          formatted_periods(date, package).map do |formatted_period|
+            activity_values += @values_by_data_element_and_period[[activity_state.external_reference, formatted_period]] || []
+          end
+
           activity_values = activity_values.select { |v| org_unit_ids.include?(v.org_unit) }
 
           [activity_state.state.code, aggregation(activity_values, activity_state)]
@@ -39,6 +44,14 @@ module Analytics
       values
     end
 
+    def formatted_periods(date, package)
+      if package.frequency == "monthly"
+        ["#{date.year}#{date.month.to_s.rjust(2, '0')}"]
+      else
+        ["#{date.year}#{date.month.to_s.rjust(2, '0')}",
+         "#{date.year}Q#{MONTH_TO_QUARTER[date.month]}"]
+      end
+    end
 
     def aggregation(activity_values, activity_state)
       aggregation_type = @aggregation_per_data_elements[activity_state.external_reference] || "SUM"
