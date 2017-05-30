@@ -100,7 +100,7 @@ module Rules
       safe_div = lambda do |*args|
         dividend = args[0]
         divisor = args[1]
-        divisor > 0 ? (dividend / divisor) : 0
+        divisor > 0 ? (dividend.to_f / divisor.to_f) : 0
       end
       between = ->(lower, score, greater) { lower <= score && score <= greater }
 
@@ -110,7 +110,7 @@ module Rules
       calculator.add_function(:score_table, :numeric, score_table)
       calculator.add_function(:avg, :numeric, avg_function)
       calculator.add_function(:sum, :numeric, sum_function)
-      calculator.add_function(:safe_div, :numeric, sum_function)
+      calculator.add_function(:safe_div, :numeric, safe_div)
       calculator
    end
  end
