@@ -22,6 +22,10 @@ module Decision
       end
       hash
     end
+
+    def [](key)
+      @row[key]
+    end
   end
 
   class Table
@@ -45,8 +49,15 @@ module Decision
       nil
     end
 
-    def headers(type)
-      @headers.select { |header| header.start_with?(type.to_s) }.map { |h| h.split(":")[1] }
+    def headers(type = nil)
+      if type
+        @headers.select { |header| header.start_with?(type.to_s) }.map { |h| h.split(":")[1] }
+      else
+        @headers
+      end
+    end
+    def rules
+      @rules
     end
   end
 end

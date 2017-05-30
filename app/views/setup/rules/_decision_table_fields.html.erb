@@ -24,12 +24,38 @@
      <%end %>
    </td>
    <td>
-     <a href="#" data-toggle="collapse" data-target="#decision-table-data">Edit data</a>
+     <a href="#" data-toggle="collapse" data-target="#decision-table-data-edit">Edit data</a> |
+     <a href="#" data-toggle="collapse" data-target="#decision-table-data-show">Show data</a>
    </td>
  </tr>
  </tbody>
 </table>
-<div id="decision-table-data" class="collapse">
+<div id="decision-table-data-edit" class="collapse">
   <%= f.input :content, as: :text %>
 </div>
+
+<% if f.object%>
+<div id="decision-table-data-show" class="collapse">
+  <table class="table">
+    <thead>
+      <tr>
+      <% f.object.decision_table.headers.each do |header|%>
+        <th><%= header %></th>
+      <% end%>
+      <tr>
+    </thead>
+    <tbody>
+      <% f.object.decision_table.rules.each do |rule| %>
+      <tr>
+          <% f.object.decision_table.headers.each do |header|%>
+           <td><%= rule[header] %></td>
+          <% end %>
+      </tr>
+      <% end %>
+    </tbody>
+  </thead>
+
+</table>
+</div>
+<% end %>
 </div>

@@ -18,8 +18,6 @@ class DecisionTable < ApplicationRecord
     decision_table.find(entity_facts)
   end
 
-  private
-
   def decision_table
     @decision_table ||= Decision::Table.new(content || 'in:nothing,out:nothing_too')
   end
