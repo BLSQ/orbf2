@@ -35,10 +35,19 @@ shared_context "basic_context" do
     )
 
     activity_2 = project.activities.build(
-      project: project,
-      name: "Clients sous traitement ARV suivi pendant les 6 premiers mois", activity_states_attributes: [
-        { name: "Clients sous traitement ARV suivi pendant les 6 premiers mois - decl", state: claimed_state, external_reference: "cl-ext-2" },
-        { name: "tarif for Clients sous traitement ARV suivi pendant les 6 premiers mois ", state: tarif_state, external_reference: "tarif-ext-2" }
+      project:                    project,
+      name:                       "Clients sous traitement ARV suivi pendant les 6 premiers mois",
+      activity_states_attributes: [
+        {
+          name:               "Clients sous traitement ARV suivi pendant les 6 premiers mois - decl",
+          state:              claimed_state,
+          external_reference: "cl-ext-2"
+        },
+        {
+          name:               "tarif for Clients sous traitement ARV suivi pendant les 6 premiers mois",
+          state:              tarif_state,
+          external_reference: "tarif-ext-2"
+        }
       ]
     )
 
@@ -47,42 +56,43 @@ shared_context "basic_context" do
     project.packages[2].activities = [activity_1, activity_2]
     project.packages[3].activities = [activity_1, activity_2]
 
-    default_quantity_states = State.where(name: %w(Claimed Verified Tarif)).to_a
+    project.packages[0].activity_rule.decision_tables.build(content: fixture_content(:scorpio, "decision_table.csv"))
+
+    default_quantity_states = State.where(name: %w[Claimed Verified Tarif]).to_a
     default_quality_states = State.where(name: ["Claimed", "Verified", "Max. Score"]).to_a
     default_performance_states = State.where(name: ["Claimed", "Max. Score", "Budget"]).to_a
     suffix = ""
     update_package_with_dhis2(
       project.packages[0], suffix, default_quantity_states,
       [clinic_group],
-      %w(FTRrcoaog83 P3jJH5Tu5VC FQ2o8UBlcrS M62VHgYT2n0)
+      %w[FTRrcoaog83 P3jJH5Tu5VC FQ2o8UBlcrS M62VHgYT2n0]
     )
     update_package_with_dhis2(
       project.packages[1], suffix, default_quantity_states,
       [hospital_group],
-      %w(FTRrcoaog83 P3jJH5Tu5VC FQ2o8UBlcrS M62VHgYT2n0)
+      %w[FTRrcoaog83 P3jJH5Tu5VC FQ2o8UBlcrS M62VHgYT2n0]
     )
     update_package_with_dhis2(
       project.packages[2], suffix, default_quality_states,
       [clinic_group, hospital_group],
-      %w(p4K11MFEWtw wWy5TE9cQ0V r6nrJANOqMw a0WhmKHnZ6J nXJJZNVAy0Y hnwWyM4gDSg CecywZWejT3 bVkFujnp3F2)
+      %w[p4K11MFEWtw wWy5TE9cQ0V r6nrJANOqMw a0WhmKHnZ6J nXJJZNVAy0Y hnwWyM4gDSg CecywZWejT3 bVkFujnp3F2]
     )
 
     update_package_with_dhis2(
       project.packages[3], suffix, default_performance_states,
       [admin_group],
-      %w(p4K11MFEWtw wWy5TE9cQ0V r6nrJANOqMw a0WhmKHnZ6J nXJJZNVAy0Y hnwWyM4gDSg CecywZWejT3 bVkFujnp3F2)
+      %w[p4K11MFEWtw wWy5TE9cQ0V r6nrJANOqMw a0WhmKHnZ6J nXJJZNVAy0Y hnwWyM4gDSg CecywZWejT3 bVkFujnp3F2]
     )
     project.dump_validations
     project.save!
     project
   end
 
-
-    def update_package_with_dhis2(package, suffix, states, groups, _acitivity_ids)
-      package.name += suffix
-      package.states = states
-      groups.each_with_index do |group, index|
-        package.package_entity_groups[index].assign_attributes(group)
-      end
+  def update_package_with_dhis2(package, suffix, states, groups, _acitivity_ids)
+    package.name += suffix
+    package.states = states
+    groups.each_with_index do |group, index|
+      package.package_entity_groups[index].assign_attributes(group)
     end
+  end
 end

@@ -23,7 +23,7 @@ class Pyramid
     org_unit_groups = dhis2.organisation_unit_groups
                            .list(fields: "id,displayName", page_size: 20_000)
     org_units = dhis2.organisation_units
-                     .list(fields: "id,displayName,organisationUnitGroups", page_size: 50_000)
+                     .list(fields: "id,displayName,path,organisationUnitGroups", page_size: 50_000)
     org_unit_group_sets = dhis2.organisation_unit_group_sets
                                .list(fields: "id,displayName", page_size: 20_000)
 
@@ -68,6 +68,12 @@ class Pyramid
   def org_units_in_all_groups(group_ids)
     entities_in_groups = group_ids.map { |group_id| org_units_in_group(group_id) }
     entities_in_groups.reduce(&:intersection)
+  end
+
+  def org_unit_parents(org_unit_id)
+    ou = org_unit(org_unit_id)
+    return [ou] unless ou.path
+    ou.path.split("/").reject(&:empty?).map { |parent_id| org_unit(parent_id) }
   end
 
   def find_sibling_organisation_unit_groups(group_id)

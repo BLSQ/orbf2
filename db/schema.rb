@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170522090523) do
+ActiveRecord::Schema.define(version: 20170530071049) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -50,6 +50,12 @@ ActiveRecord::Schema.define(version: 20170522090523) do
     t.index ["activity_id"], name: "index_activity_states_on_activity_id", using: :btree
     t.index ["external_reference", "activity_id"], name: "index_activity_states_on_external_reference_and_activity_id", unique: true, using: :btree
     t.index ["state_id"], name: "index_activity_states_on_state_id", using: :btree
+  end
+
+  create_table "decision_tables", force: :cascade do |t|
+    t.integer "rule_id"
+    t.text    "content"
+    t.index ["rule_id"], name: "index_decision_tables_on_rule_id", using: :btree
   end
 
   create_table "dhis2_snapshots", force: :cascade do |t|
@@ -220,6 +226,7 @@ ActiveRecord::Schema.define(version: 20170522090523) do
   add_foreign_key "activity_packages", "packages"
   add_foreign_key "activity_states", "activities"
   add_foreign_key "activity_states", "states"
+  add_foreign_key "decision_tables", "rules"
   add_foreign_key "dhis2_snapshots", "project_anchors"
   add_foreign_key "entity_groups", "projects"
   add_foreign_key "formula_mappings", "activities"

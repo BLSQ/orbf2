@@ -1,0 +1,35 @@
+<div class="nested-fields">
+ <table class="table">
+   <thead>
+    <tr>
+      <th>In</th>
+      <th>Out</th>
+      <th>Decision table data</th>
+    </tr>
+  <thead>
+  <tbody>
+  <tr>
+    <td>
+      <%if f.object%>
+        <% f.object.in_headers.each do |header|%>
+          <li><%= header %></li>
+        <%end %>
+      <%end %>
+   </td>
+   <td>
+     <%if f.object%>
+       <% f.object.out_headers.each do |header|%>
+         <li><%= header %></li>
+       <%end %>
+     <%end %>
+   </td>
+   <td>
+     <a href="#" data-toggle="collapse" data-target="#decision-table-data">Edit data</a>
+   </td>
+ </tr>
+ </tbody>
+</table>
+<div id="decision-table-data" class="collapse">
+  <%= f.input :content, as: :text %>
+</div>
+</div>

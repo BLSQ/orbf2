@@ -59,8 +59,11 @@ end
     params.require(:rule)
           .permit(:name,
                   :kind,
-                  formulas_attributes: [
-                    :id, :code, :description, :expression, :_destroy
+                  formulas_attributes:        %i[
+                    id code description expression _destroy
+                  ],
+                  decision_tables_attributes: %i[
+                    id content
                   ])
   end
 end

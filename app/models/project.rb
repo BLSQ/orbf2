@@ -55,31 +55,33 @@ class Project < ApplicationRecord
         state: []
       },
       rules:                 {
-        formulas:     {
-          rule: [:formulas],
+        decision_tables: [],
+        formulas:        {
+          rule:             [:formulas],
           formula_mappings: []
         },
-        payment_rule: {}
+        payment_rule:    {}
       }
     }
 
     includes(
       packages:      package_includes,
       activities:    {
-        activity_states: [:state],
-        activity_packages: { package: package_includes}
+        activity_states:   [:state],
+        activity_packages: { package: package_includes }
       },
       payment_rules: {
         package_payment_rules: {
           package: package_includes
         },
         packages:              package_includes,
-        rule: {
-          formulas:     {
-            rule: [:formulas],
+        rule:                  {
+          decision_tables: [],
+          formulas:        {
+            rule:             [:formulas],
             formula_mappings: []
           },
-          payment_rule: {}
+          payment_rule:    {}
         }
       }
     )
@@ -119,6 +121,7 @@ class Project < ApplicationRecord
           package_entity_groups: [],
           package_states:        [],
           rules:                 [
+            :decision_tables,
             formulas: [:formula_mappings]
           ],
           activity_packages:     []
@@ -126,6 +129,7 @@ class Project < ApplicationRecord
         payment_rules: {
           package_payment_rules: [],
           rule:                  [
+            :decision_tables,
             :formulas
           ]
         }
