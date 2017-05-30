@@ -19,23 +19,24 @@ Rails.application.routes.draw do
       get "/projects/", to: "setup#index", as: "project_anchor"
       get "/projects/:project_id", to: "setup#index", as: "project"
       resources :seeds, only: [:index] if Rails.env.development? || Rails.env.dev?
-      resources :projects, only: [:create, :update] do
-        resources :invoices, only: [:new, :create]
-        resources :formula_mappings, only: [:new, :create]
+      resources :projects, only: %i[create update] do
+        resources :snapshots, only: [:create]
+        resources :invoices, only: %i[new create]
+        resources :formula_mappings, only: %i[new create]
 
-        resources :activities, only: [:new, :create, :edit, :update, :mass_creation] do
+        resources :activities, only: %i[new create edit update mass_creation] do
           collection do
             get :mass_creation
             post :confirm_mass_creation
           end
         end
         resources :publish_drafts, only: [:create]
-        resource :main_entity_group, only: [:create, :update]
-        resources :packages, only: [:new, :create, :update, :edit] do
-          resources :rules, only: [:new, :create, :update, :edit]
+        resource :main_entity_group, only: %i[create update]
+        resources :packages, only: %i[new create update edit] do
+          resources :rules, only: %i[new create update edit]
         end
-        resources :incentives, only: [:new, :create, :update]
-        resources :rules, only: [:new, :create, :update, :edit], controller: "project_rules"
+        resources :incentives, only: %i[new create update]
+        resources :rules, only: %i[new create update edit], controller: "project_rules"
         resources :autocomplete, only: [] do
           collection do
             get :organisation_unit_group
