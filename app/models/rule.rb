@@ -18,8 +18,10 @@ class Rule < ApplicationRecord
   belongs_to :payment_rule, optional: true, inverse_of: :rule
 
   has_many :formulas, dependent: :destroy, inverse_of: :rule
+  has_many :decision_tables, dependent: :destroy, inverse_of: :rule
 
   accepts_nested_attributes_for :formulas, reject_if: :all_blank, allow_destroy: true
+  accepts_nested_attributes_for :decision_tables, reject_if: :all_blank, allow_destroy: true
 
   validates :kind, presence: true, inclusion: {
     in:      RULE_TYPES,
@@ -83,6 +85,9 @@ class Rule < ApplicationRecord
       rules = payment_rule.packages.flat_map(&:rules).select(&:package_kind?)
       var_names << rules.flat_map(&:formulas).map(&:code)
     end
+    if decision_tables.any?
+      var_names << decision_tables.map(&:out_headers)
+    end
     var_names.flatten.uniq.reject(&:nil?).sort
   end
 
@@ -127,9 +132,18 @@ class Rule < ApplicationRecord
     "Rule##{id}-#{kind}-#{name}"
   end
 
+  def extra_facts(activity, entity_facts)
+    return {} unless decision_tables.any?
+
+    extra_facts = decision_tables.map { |decision_table| decision_table.extra_facts(entity_facts) }.compact || [{}]
+    extra_facts.reduce({}, :merge)
+  end
+
   private
 
   def to_fake_facts(states)
-    Hash[states.map { |state| [state.code.to_sym, "10"] }]
+    facts = states.map { |state| [state.code.to_sym, "10"] }.to_h
+    org_unit_facts = decision_tables.flat_map(&:out_headers).map { |header| [header.to_sym, "10"] }.to_h
+    facts.merge org_unit_facts
   end
 end

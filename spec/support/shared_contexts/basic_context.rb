@@ -47,6 +47,8 @@ shared_context "basic_context" do
     project.packages[2].activities = [activity_1, activity_2]
     project.packages[3].activities = [activity_1, activity_2]
 
+project.packages[0].activity_rule.decision_tables.build(content: fixture_content(:scorpio, "decision_table.csv"))
+
     default_quantity_states = State.where(name: %w(Claimed Verified Tarif)).to_a
     default_quality_states = State.where(name: ["Claimed", "Verified", "Max. Score"]).to_a
     default_performance_states = State.where(name: ["Claimed", "Max. Score", "Budget"]).to_a

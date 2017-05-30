@@ -61,6 +61,10 @@ end
                   :kind,
                   formulas_attributes: [
                     :id, :code, :description, :expression, :_destroy
-                  ])
+                  ],
+                  decision_tables_attributes: [
+                    :id, :content
+                  ]
+                  )
   end
 end

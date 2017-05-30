@@ -43,7 +43,7 @@ RSpec.describe Dhis2SnapshotWorker do
     expect(Dhis2Snapshot.all.count).to eq Dhis2Snapshot::KINDS.size
 
     pyramid = project_anchor.pyramid_for(Time.now)
-    expect(pyramid.org_units.size).to eq 1336
+    expect(pyramid.org_units.size).to eq 1332
     expect(pyramid.org_unit_groups.size).to eq 14
 
     data_compound = project_anchor.data_compound_for(Time.now)

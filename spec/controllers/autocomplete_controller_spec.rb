@@ -129,7 +129,7 @@ RSpec.describe Setup::AutocompleteController, type: :controller do
       expect(options.size).to eq 14
       expect(options.first["type"]).to eq "option"
       expect(options.first["value"]).to eq "CXw2yu5fodb"
-      expect(options.first["label"]).to include("CHC (194/1336)")
+      expect(options.first["label"]).to include("CHC (194/1332)")
     end
   end
 end

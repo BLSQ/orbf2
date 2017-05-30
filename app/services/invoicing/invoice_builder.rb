@@ -24,6 +24,7 @@ module Invoicing
       activity_tarification_facts = tarification_service.tarif(entity, date, activity, values)
 
       facts_and_rules = {}
+                        .merge(package.activity_rule.extra_facts(activity, entity.facts))
                         .merge(package.activity_rule.to_facts)
                         .merge(activity_tarification_facts)
                         .merge(values.to_facts)

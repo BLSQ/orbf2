@@ -9,14 +9,14 @@ module Decision
     end
 
     def matches?(hash)
-      headers("in:").all? { |header| hash[header] == @row[header] || @row[header].nil?}
+      headers("in:").all? { |header| hash[header] == @row[header] || @row[header].nil? }
     end
 
     def headers(type)
-      @headers.select {|header| header.start_with?(type)}
+      @headers.select { |header| header.start_with?(type) }
     end
 
-    def apply(hash)
+    def apply(hash = {})
       headers("out:").each do |header|
         hash[header.slice(4..-1)] = @row[header]
       end
@@ -40,9 +40,13 @@ module Decision
       end.to_h
       @rules.each do |rule|
         next unless rule.matches?(hash)
-        return rule.apply(hash)
+        return rule.apply
       end
       nil
+    end
+
+    def headers(type)
+      @headers.select { |header| header.start_with?(type.to_s) }.map {|h| h.split(":")[1]}
     end
   end
 end

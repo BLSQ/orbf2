@@ -41,7 +41,7 @@ module WebmockDhis2Helpers
   end
 
   def stub_dhis2_all_orgunits(project)
-    stub_request(:get, "#{project.dhis2_url}/api/organisationUnits?fields=id,displayName,organisationUnitGroups&pageSize=50000")
+    stub_request(:get, "#{project.dhis2_url}/api/organisationUnits?fields=id,displayName,path,organisationUnitGroups&pageSize=50000")
       .to_return(
         status: 200,
         body:   fixture_content(:dhis2, "all_organisation_units_with_groups.json")

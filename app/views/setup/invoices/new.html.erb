@@ -12,7 +12,9 @@
 <%end%>
 
 <%if invoicing_request.invoices && invoicing_request.invoices.any? %>
-  <%= @org_unit_summary %>
+  <% @org_unit_summaries.each do |summary|%>
+    <%= summary %> <br>
+  <%end%>
   <br>
   <br>
   <br>

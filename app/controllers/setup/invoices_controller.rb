@@ -33,7 +33,11 @@ class Setup::InvoicesController < PrivateController
                fetch_values(project, org_units_by_package.values.flatten.map(&:id))
             end
 
-    @org_unit_summary = org_unit.name + " : " + pyramid.org_unit_groups_of(org_unit).map(&:name).join(", ")
+    @org_unit_summaries = [
+      org_unit.name,
+      "parents : " + pyramid.org_unit_parents(org_unit.id).map(&:name).join(" > "),
+      "groups : " + pyramid.org_unit_groups_of(org_unit).map(&:name).join(", ")
+    ]
 
     indicators_expressions = fetch_indicators_expressions(project)
     invoicing_request.invoices = calculate_invoices(
@@ -95,7 +99,7 @@ class Setup::InvoicesController < PrivateController
   def calculate_invoices(invoicing_request, org_unit, org_units_by_package, values, indicators_expressions, aggregation_per_data_elements)
     values += Analytics::IndicatorCalculator.new.calculate(indicators_expressions, values)
 
-    entity = Analytics::Entity.new(org_unit.id, org_unit.name, org_unit.organisation_unit_groups.map { |n| n["id"] })
+    entity = Analytics::Entity.new(org_unit.id, org_unit.name, org_unit.organisation_unit_groups.map { |n| n["id"] }, to_facts(org_unit))
     project_finder = ConstantProjectFinder.new(
       Hash[invoicing_request.quarter_dates.map { |date| [date, invoicing_request.project] }]
     )
@@ -139,6 +143,12 @@ class Setup::InvoicesController < PrivateController
     }
     values = dhis2.data_value_sets.list(values_query)
     values.data_values ? values.values : []
+  end
+
+  def to_facts(org_unit)
+    parent_ids = org_unit.path.split("/").reject(&:empty?)
+    facts = parent_ids.each_with_index.map { |parent_id, index| ["level_#{index + 1}", parent_id] }.to_h
+    facts
   end
 
   def invoice_params
