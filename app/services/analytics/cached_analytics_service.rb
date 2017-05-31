@@ -13,7 +13,6 @@ module Analytics
     def entities; end
 
     def activity_and_values(package, date)
-      puts "activity_and_values(#{package.name}, #{date}) => #{@org_units_by_package[package].size} #{@org_units_by_package[package].map(&:name)}"
 
       org_unit_ids = @org_units_by_package[package].map(&:id)
 
@@ -56,7 +55,6 @@ module Analytics
     def aggregation(activity_values, activity_state)
       aggregation_type = @aggregation_per_data_elements[activity_state.external_reference] || "SUM"
       values_for_activity = activity_values.map { |v| v["value"] }.map(&:to_f)
-      puts "#{activity_state.external_reference} : activity_values #{activity_values.size}"
 
       case aggregation_type
       when "MIN"
