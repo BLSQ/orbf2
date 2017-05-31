@@ -6,17 +6,17 @@ class InvoicesForEntitiesWorker
   OrgUnitAndPackages = Struct.new(:org_unit, :org_units_by_package) do
   end
 
-  def perform(project_anchor_id, year, quarter, org_unit_ids)
+  def perform(project_anchor_id, year, quarter, org_unit_ids, options = {})
     profile("InvoicesForEntitiesWorker") do
-      do_perform(project_anchor_id, year, quarter, org_unit_ids)
+      do_perform(project_anchor_id, year, quarter, org_unit_ids, options)
     end
   end
 
   def do_perform(project_anchor_id, year, quarter, org_unit_ids, arg_options = {})
     default_options = {
-      publisher_ids:    %w[dummy dhis2],
-      mock_values:      false,
-      force_project_id: nil,
+      publisher_ids:          %w[dummy dhis2],
+      mock_values:            false,
+      force_project_id:       nil,
       allow_fresh_dhis2_data: false
     }
     options = default_options.merge(arg_options)
