@@ -5,9 +5,9 @@ class Setup::InvoicesController < PrivateController
   def new
     @invoicing_request = InvoicingRequest.new(
       project: current_project,
-      year:    Date.today.to_date.year,
-      quarter: (Date.today.to_date.month / 4) + 1,
-      entity:  "foYdyvZdi5e"
+      year:    params[:year] || Date.today.to_date.year,
+      quarter: params[:quarter] || (Date.today.to_date.month / 4) + 1,
+      entity:  params[:entity]
     )
   end
 
@@ -27,15 +27,36 @@ class Setup::InvoicesController < PrivateController
       "groups : " + pyramid.org_unit_groups_of(org_unit).map(&:name).join(", ")
     ]
 
+    if params[:push_to_dhis2]
+      InvoiceForProjectAnchorWorker.perform_async(
+        project.project_anchor_id,
+        invoicing_request.year,
+        invoicing_request.quarter,
+        [org_unit.id]
+      )
+      flash[:alert] = "Worker scheduled for #{org_unit.name} : #{invoicing_request.year}Q#{invoicing_request.quarter}"
+      render(:new)
+      return
+    end
+
+    options = {
+      publisher_ids: [],
+      mock_values:   invoicing_request.mock_values == "1"
+    }
+
+    if params[:simulate_draft]
+      options = options.merge(
+        force_project_id:       project.id,
+        allow_fresh_dhis2_data: true
+      )
+    end
+
     invoicing_request.invoices = InvoicesForEntitiesWorker.new.do_perform(
       project.project_anchor_id,
       invoicing_request.year,
       invoicing_request.quarter,
       [org_unit.id],
-      publisher_ids:          [],
-      mock_values:            invoicing_request.mock_values == "1",
-      force_project_id:       project.id,
-      allow_fresh_dhis2_data: true
+      options
     )[org_unit.id]
 
     render :new

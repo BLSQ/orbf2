@@ -29,6 +29,15 @@ class Setup::AutocompleteController < PrivateController
     render_sol_items(pyramid.organisation_unit_group_sets)
   end
 
+  def organisation_units
+    pyramid = Pyramid.from(current_project)
+    if params[:id]
+      render_sol_items([pyramid.org_unit(params[:id])], params[:id])
+    else
+      render_sol_items(filter_ilike(pyramid.org_units, params[:term]), params[:term])
+    end
+  end
+
   private
 
   def filter_ilike(elements, name)
