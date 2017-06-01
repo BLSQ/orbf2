@@ -3,8 +3,7 @@ class InvoicesForEntitiesWorker
   include Sidekiq::Worker
   include Support::Profiling
 
-  OrgUnitAndPackages = Struct.new(:org_unit, :org_units_by_package) do
-  end
+  OrgUnitAndPackages = Struct.new(:org_unit, :org_units_by_package)
 
   def perform(project_anchor_id, year, quarter, org_unit_ids, options = {})
     profile("InvoicesForEntitiesWorker") do
