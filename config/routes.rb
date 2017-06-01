@@ -39,6 +39,7 @@ Rails.application.routes.draw do
         resources :rules, only: %i[new create update edit], controller: "project_rules"
         resources :autocomplete, only: [] do
           collection do
+            get :organisation_units
             get :organisation_unit_group
             get :organisation_unit_group_sets
             get :data_elements

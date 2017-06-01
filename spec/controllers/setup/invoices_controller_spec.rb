@@ -35,7 +35,8 @@ RSpec.describe Setup::InvoicesController, type: :controller do
           entity:  org_unit_id,
           year:    "2017",
           quarter: "1"
-        }
+        },
+        simulate_draft: true
       }
 
       expect(response).to have_http_status(:success)
@@ -52,7 +53,8 @@ RSpec.describe Setup::InvoicesController, type: :controller do
           year:        "2017",
           quarter:     "1",
           mock_values: "1"
-        }
+        },
+        simulate_draft: true
       }
 
       expect(response).to have_http_status(:success)
