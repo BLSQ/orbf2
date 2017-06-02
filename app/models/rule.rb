@@ -55,6 +55,10 @@ class Rule < ApplicationRecord
     Rules::Solver.new.validate_formulas(self) if name
   end
 
+  def formula(code)
+    formulas.find {|f| f.code == code}
+  end
+
   def package_formula_uniqness
     formula_by_codes = formulas.group_by(&:code)
     if package_kind? && package.project

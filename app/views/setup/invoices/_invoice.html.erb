@@ -7,19 +7,32 @@
   <table class="table invoice num-span-table table-striped">
     <thead>
       <tr>
+
       <%package.invoice_details.each do |detail| %>
+
          <th><%=detail.humanize %> </th>
       <%end%>
     </tr>
     </thead>
 
     <tbody>
+    <% states = State.all.index_by(&:code) %>
     <%results.each do |result|%>
       <tr>
        <% package.invoice_details.each do |detail|%>
-       <td title="<%=result.solution.to_json%><br>">
-         <span class="<%= 'num-span' if result.solution[detail].is_a? Numeric %>"><%= d_to_s(result.solution[detail]) %></span>
+       <% classes = [] %>
+       <% classes.push "formula-input" if states[detail] %>
+       <% classes.push "formula-output" if result.package.activity_rule.formula(detail)&.formula_mapping(result.activity) %>
+
+       <% hint = states[detail] ? [result.activity.activity_state(states[detail]).external_reference,result.activity.activity_state(states[detail]).name] : [
+         result.package.activity_rule.formula(detail)&.expression,
+         result.package.activity_rule.formula(detail)&.formula_mapping(result.activity)&.external_reference
+         ] %>
+       <td title="<%= hint.join("- \t") %> - <%=result.solution.to_json%> ">
+         <span class="<%= 'num-span' if result.solution[detail].is_a? Numeric %> <%= classes.join(" ") %>"><%= d_to_s(result.solution[detail]) %></span>
       </td>
+
+
        <% end%>
      </tr>
     <%end%>
