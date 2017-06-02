@@ -26,7 +26,7 @@ RSpec.describe Setup::FormulaMappingsController, type: :controller do
     end
 
     it "should display an edit screen" do
-      get :new, params: { project_id: project.id }
+      get :new, params: { project_id: project.id, mode: :all }
       counts_by_kind = assigns(:formula_mappings).mappings.each_with_object(Hash.new(0)) { |e, h| h[e.kind] += 1 }
 
       expect(counts_by_kind).to eq("activity" => 24, "package" => 9, "payment" => 6)
@@ -40,7 +40,7 @@ RSpec.describe Setup::FormulaMappingsController, type: :controller do
     #  kind               :string           not null
 
     it "should create formula_mappings" do
-      get :new, params: { project_id: project.id }
+      get :new, params: { project_id: project.id, mode: :all }
       built = assigns(:formula_mappings).mappings.find { |mapping| mapping.external_reference.blank? }
       before = FormulaMapping.count
 
@@ -61,15 +61,16 @@ RSpec.describe Setup::FormulaMappingsController, type: :controller do
     end
 
     it "should delete form" do
-      get :new, params: { project_id: project.id }
+      get :new, params: { project_id: project.id, mode: :all }
       existing = assigns(:formula_mappings).mappings.find { |mapping| mapping.external_reference.present? }
       before = FormulaMapping.count
       post :create, params: {
         project_id:       project.id,
+        mode:             :all,
         formula_mappings: [
-          { id:         existing.id,
-            formula_id: existing.formula_id,
-            kind:       existing.kind,
+          { id:                 existing.id,
+            formula_id:         existing.formula_id,
+            kind:               existing.kind,
             external_reference: "" }
         ]
       }

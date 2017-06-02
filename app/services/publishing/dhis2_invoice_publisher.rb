@@ -4,7 +4,9 @@ module Publishing
       values = to_values(project, invoices)
       puts "about to publish #{values.size} values to dhis2"
       return if values.empty?
-      project.dhis2_connection.data_value_sets.create(values)
+      status = project.dhis2_connection.data_value_sets.create(values)
+      puts status.raw_status.to_json
+      status
     end
 
     def to_values(_project, invoices)
