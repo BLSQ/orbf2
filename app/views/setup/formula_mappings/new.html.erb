@@ -16,7 +16,7 @@ This might cause infinite loop or data loss.</p>
 <b style="color:red">Either create another data element or remove unnecessary mappings or adapt the activity: </b>
 <ul>
   <% @problems.each do |problem| %>
-    <li><%= problem.join("\t") %>
+    <li><b><%= problem.second.humanize %></b> : <%= problem.join("\t").gsub(problem.second,"") %>
   <%end%>
 </ul>
   <br>

@@ -22,7 +22,6 @@ class Setup::FormulaMappingsController < PrivateController
 
   private
 
-
   def check_problems
     project = current_project
     in_references = project.activities.flat_map(&:activity_states).map(&:external_reference)
@@ -30,11 +29,14 @@ class Setup::FormulaMappingsController < PrivateController
 
     bad_references = in_references & out_references
 
+    @problems = bad_references.map do |bad_reference|
+      as = project.activities.flat_map(&:activity_states).select { |as| as.external_reference == bad_reference }.first
+      fm = project.formula_mappings.select { |fm| fm.external_reference == bad_reference }.first
+      [bad_reference, "MAPPED IN AND OUT", as.activity.name, as.state.name, fm.formula.code, fm.activity.name]
+    end
 
-    @problems = bad_references.map  do |bad_reference|
-      as = project.activities.flat_map(&:activity_states).select {|as| as.external_reference == bad_reference }.first
-      fm = project.formula_mappings.select {|fm| fm.external_reference == bad_reference }.first
-      [bad_reference, as.activity.name, as.state.name, fm.formula.code, fm.activity.name ]
+    @problems += project.formula_mappings.group_by(&:external_reference).select { |_k, v| v.size > 1 }.map do |k, v|
+      [k, "MAPPED OUT MULTIPLE TIMES", v.map { |fm| [fm.kind, fm.activity&.name, fm.formula.code] }].flatten
     end
 
     @to_check = @problems.map(&:first)
@@ -46,7 +48,7 @@ class Setup::FormulaMappingsController < PrivateController
       activity_only: { package: false, payment: false },
       package_only: { activity: false, payment: false },
       payment_only: { package: false, activity: false },
-      all: { },
+      all: {},
       nil => { missing_only: true }
     }
     mode_options[params[:mode] ? params[:mode].to_sym : nil]
