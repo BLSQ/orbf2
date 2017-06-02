@@ -32,7 +32,7 @@ class Setup::InvoicesController < PrivateController
     ]
 
     if params[:push_to_dhis2]
-      InvoiceForProjectAnchorWorker.new.perform(
+      InvoiceForProjectAnchorWorker.perform_async(
         project.project_anchor_id,
         invoicing_request.year,
         invoicing_request.quarter,
