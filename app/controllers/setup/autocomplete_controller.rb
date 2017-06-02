@@ -12,6 +12,7 @@ class Setup::AutocompleteController < PrivateController
   def data_elements
     data_compound = DataCompound.from(current_project)
     if params[:id]
+      expires_in 3.minutes
       render_sol_items([data_compound.data_element(params[:id])], params[:id])
     else
       render_sol_items(filter_ilike(data_compound.data_elements, params[:term]), params[:term])

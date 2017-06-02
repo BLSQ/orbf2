@@ -13,17 +13,20 @@ class Setup::FormulaMappingsController < PrivateController
 
     @formula_mappings = build_formula_mappings(to_options)
 
+
     @formula_mappings.mappings.each do |mapping|
       mapping.save! if mapping.valid?
       mapping.destroy! if mapping.external_reference.blank? && mapping.id
     end
+    @formula_mappings.mappings = @formula_mappings.mappings.reject(&:destroyed?)
+
     render :new
   end
 
   private
 
   def check_problems
-    project = current_project
+    project = current_project(project_scope: :fully_loaded)
     in_references = project.activities.flat_map(&:activity_states).map(&:external_reference)
     out_references = project.formula_mappings.map(&:external_reference)
 
@@ -71,8 +74,12 @@ class Setup::FormulaMappingsController < PrivateController
               activity: activity,
               kind:     rule.kind
             )
-            mapping.external_reference = external_reference(mapping_by_key[[formula.id, activity.id]]) || mapping.external_reference
-            missing?(options, mapping)
+            mapping = missing?(options, mapping)
+            if mapping
+              mapping.external_reference = external_reference(mapping_by_key[[formula.id, activity.id]]) unless mapping_by_key.empty?
+            end
+            mapping
+
           end
         end
       end
@@ -87,8 +94,11 @@ class Setup::FormulaMappingsController < PrivateController
         mapping = formula.find_or_build_mapping(
           kind: rule.kind
         )
-        mapping.external_reference = external_reference(mapping_by_key[[formula.id, 0]]) || mapping.external_reference
-        missing?(options, mapping)
+        mapping = missing?(options, mapping)
+        if mapping
+          mapping.external_reference = external_reference(mapping_by_key[[formula.id, 0]]) unless mapping_by_key.empty?
+        end
+        mapping
       end
     end
 
@@ -101,6 +111,6 @@ class Setup::FormulaMappingsController < PrivateController
   end
 
   def external_reference(param)
-    param ? param[:external_reference] : nil
+    param ? param[:external_reference]  : nil
   end
 end

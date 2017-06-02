@@ -24,7 +24,7 @@
        <% classes.push "formula-input" if states[detail] %>
        <% classes.push "formula-output" if result.package.activity_rule.formula(detail)&.formula_mapping(result.activity) %>
 
-       <% hint = states[detail] ? [result.activity.activity_state(states[detail]).external_reference,result.activity.activity_state(states[detail]).name] : [
+       <% hint = states[detail] ? [result.activity.activity_state(states[detail])&.external_reference,result.activity.activity_state(states[detail])&.name] : [
          result.package.activity_rule.formula(detail)&.expression,
          result.package.activity_rule.formula(detail)&.formula_mapping(result.activity)&.external_reference,
          @datacompound.data_element(result.package.activity_rule.formula(detail)&.formula_mapping(result.activity)&.external_reference)&.name

@@ -63,16 +63,17 @@ RSpec.describe Setup::FormulaMappingsController, type: :controller do
     it "should delete form" do
       get :new, params: { project_id: project.id, mode: :all }
       existing = assigns(:formula_mappings).mappings.find { |mapping| mapping.external_reference.present? }
+      mappings = assigns(:formula_mappings).mappings.select { |mapping| mapping.external_reference.present? }
       before = FormulaMapping.count
       post :create, params: {
         project_id:       project.id,
         mode:             :all,
-        formula_mappings: [
-          { id:                 existing.id,
-            formula_id:         existing.formula_id,
-            kind:               existing.kind,
-            external_reference: "" }
-        ]
+        formula_mappings: mappings.map do |mapping|
+          { id:                 mapping.id,
+            formula_id:         mapping.formula_id,
+            kind:               mapping.kind,
+            external_reference: existing == mapping ? "" : mapping.external_reference  }
+        end
       }
 
       after = FormulaMapping.count
