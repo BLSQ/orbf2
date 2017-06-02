@@ -26,7 +26,8 @@
 
        <% hint = states[detail] ? [result.activity.activity_state(states[detail]).external_reference,result.activity.activity_state(states[detail]).name] : [
          result.package.activity_rule.formula(detail)&.expression,
-         result.package.activity_rule.formula(detail)&.formula_mapping(result.activity)&.external_reference
+         result.package.activity_rule.formula(detail)&.formula_mapping(result.activity)&.external_reference,
+         @datacompound.data_element(result.package.activity_rule.formula(detail)&.formula_mapping(result.activity)&.external_reference)&.name
          ] %>
        <td title="<%= hint.join("- \t") %> - <%=result.solution.to_json%> ">
          <span class="<%= 'num-span' if result.solution[detail].is_a? Numeric %> <%= classes.join(" ") %>"><%= d_to_s(result.solution[detail]) %></span>
@@ -50,7 +51,10 @@
            <div class="col-md-3">
              <%=item.humanize %> :
           </div>
-          <div class="col-md-4" title="<%=package_result.solution.to_json%>">
+             <% classes = [] %>
+             <% external_reference = package_result.package.package_rule.formula(item)&.formula_mapping&.external_reference %>
+             <% classes.push "formula-output" if external_reference %>
+          <div class="col-md-4 <%= classes.join(" ") %>" title="<%= package_result.package.package_rule.formula(item)&.expression %> - <%= external_reference %> - <%= @datacompound.data_element(external_reference)&.name %> - <%=package_result.solution.to_json%>">
             <b><%= d_to_s(package_result.solution[item])%></b>
           </div>
         </div>
@@ -67,7 +71,10 @@
            <div class="col-md-3">
              <%=formula.code.humanize %> :
           </div>
-          <div class="col-md-4">
+          <% classes = [] %>
+          <% external_reference = formula.formula_mapping&.external_reference %>
+          <% classes.push "formula-output" if external_reference %>
+          <div class="col-md-4 <%= classes.join(" ") %>" title="<%= formula.expression %> - <%= external_reference %> - <%= @datacompound.data_element(external_reference)&.name %>">
             <b><%= d_to_s( invoice.payment_result.solution[formula.code])%></b>
           </div>
         </div>

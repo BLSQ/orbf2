@@ -19,6 +19,10 @@ class Setup::InvoicesController < PrivateController
     pyramid = project.project_anchor.nearest_pyramid_for(invoicing_request.end_date_as_date)
     pyramid ||= Pyramid.from(project)
 
+    @datacompound = project.project_anchor.nearest_data_compound_for(invoicing_request.end_date_as_date)
+    @datacompound ||= DataCompound.from(project)
+
+
     org_unit = pyramid.org_unit(invoicing_request.entity)
 
     @org_unit_summaries = [
