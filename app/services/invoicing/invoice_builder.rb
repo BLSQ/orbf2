@@ -137,6 +137,7 @@ module Invoicing
       end
 
       quarter_entity_results = calculate_package_results(quarter_details_results.values.flatten)
+      quarter_entity_results.each do |r| r.frequency= "quaterly" end
 
       begin
         project = project_finder.find_project(current_project, current_quarter_end)

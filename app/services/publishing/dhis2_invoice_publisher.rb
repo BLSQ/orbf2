@@ -11,7 +11,7 @@ module Publishing
     end
 
     def to_values(_project, invoices)
-      activity_values(invoices) + package_values(invoices) + payment_values(invoices)
+      (activity_values(invoices) + package_values(invoices) + payment_values(invoices)).compact
     end
 
     def payment_values(invoices)
@@ -34,6 +34,8 @@ module Publishing
         invoice.package_results.map do |package_result|
           package_result.package.package_rule.formulas.select {|f| f.formula_mapping}.map do |formula|
             mapping = formula.formula_mapping
+            next if package_result.frequency!=nil && package_result.frequency != package_result.package.frequency
+
             {
               dataElement: mapping.external_reference,
               orgUnit:     invoice.entity.id,

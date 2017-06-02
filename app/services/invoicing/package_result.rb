@@ -1,7 +1,9 @@
 module Invoicing
   class PackageResult < Struct.new(:package, :solution)
+    attr_accessor :frequency
+
     def to_s
-      "#{package.name} #{solution}"
+      "#{package.name} #{frequency} #{solution}"
     end
 
     def to_json(options)
