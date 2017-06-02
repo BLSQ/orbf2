@@ -1,6 +1,6 @@
 
 <div class="formula-filters">
-<%= link_to "Missing", new_setup_project_formula_mapping_path(formula_mappings.project, mode: :missing_only), class: "btn btn-default" %>
+<%= link_to "Missing & problematic", new_setup_project_formula_mapping_path(formula_mappings.project, mode: :missing_only), class: "btn btn-default" %>
 <%= link_to "Activity", new_setup_project_formula_mapping_path(formula_mappings.project, mode: :activity_only), class: "btn btn-default" %>
 <%= link_to "Package", new_setup_project_formula_mapping_path(formula_mappings.project, mode: :package_only), class: "btn btn-default" %>
 <%= link_to "Payment", new_setup_project_formula_mapping_path(formula_mappings.project, mode: :payment_only), class: "btn btn-default" %>
@@ -8,6 +8,20 @@
 
 <%= link_to 'Trigger a data element dhis2 snapshot', setup_project_snapshots_path(formula_mappings.project), class: 'btn btn-default pull-right', method: :post %>
 </div>
+<br>
+<%if @problems %>
+<div>
+<p>The following data elements has been mapped as input in activity state and ouput as formula mappings
+This might cause infinite loop or data loss.</p>
+<b style="color:red">Either create another data element or remove unnecessary mappings or adapt the activity: </b>
+<ul>
+  <% @problems.each do |problem| %>
+    <li><%= problem.join("\t") %>
+  <%end%>
+</ul>
+  <br>
+  </div>
+<%end%>
 
 <div class="formula-mappings">
 <%= simple_form_for(formula_mappings,  url: setup_project_formula_mappings_path(formula_mappings.project, formula_mappings), method: :post) do |f| %>

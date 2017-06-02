@@ -4,10 +4,13 @@ class Setup::FormulaMappingsController < PrivateController
   helper_method :formula_mappings
 
   def new
+    check_problems
     @formula_mappings = build_formula_mappings(to_options)
   end
 
   def create
+    check_problems
+
     @formula_mappings = build_formula_mappings(to_options)
 
     @formula_mappings.mappings.each do |mapping|
@@ -18,6 +21,24 @@ class Setup::FormulaMappingsController < PrivateController
   end
 
   private
+
+
+  def check_problems
+    project = current_project
+    in_references = project.activities.flat_map(&:activity_states).map(&:external_reference)
+    out_references = project.formula_mappings.map(&:external_reference)
+
+    bad_references = in_references & out_references
+
+
+    @problems = bad_references.map  do |bad_reference|
+      as = project.activities.flat_map(&:activity_states).select {|as| as.external_reference == bad_reference }.first
+      fm = project.formula_mappings.select {|fm| fm.external_reference == bad_reference }.first
+      [bad_reference, as.activity.name, as.state.name, fm.formula.code, fm.activity.name ]
+    end
+
+    @to_check = @problems.map(&:first)
+  end
 
   def to_options
     mode_options = {
@@ -37,7 +58,7 @@ class Setup::FormulaMappingsController < PrivateController
     mappings = []
     project = current_project(project_scope: :fully_loaded)
     mapping_by_key = params[:formula_mappings] ? params[:formula_mappings].index_by { |mapping| [mapping[:formula_id].to_i, mapping[:activity_id].to_i] } : {}
-    puts mapping_by_key
+
     if options[:activity]
       activity_rules = project.packages.flat_map(&:rules).select(&:activity_kind?)
 
@@ -49,7 +70,7 @@ class Setup::FormulaMappingsController < PrivateController
               kind:     rule.kind
             )
             mapping.external_reference = external_reference(mapping_by_key[[formula.id, activity.id]]) || mapping.external_reference
-            options[:missing_only] && mapping.id ? nil : mapping
+            missing?(options, mapping)
           end
         end
       end
@@ -64,13 +85,17 @@ class Setup::FormulaMappingsController < PrivateController
         mapping = formula.find_or_build_mapping(
           kind: rule.kind
         )
-
         mapping.external_reference = external_reference(mapping_by_key[[formula.id, 0]]) || mapping.external_reference
-        options[:missing_only] && mapping.id ? nil : mapping
+        missing?(options, mapping)
       end
     end
 
     FormulaMappings.new(mappings: mappings.flatten.compact, project: project, mode: params[:mode])
+  end
+
+  def missing?(options, mapping)
+    return mapping if @to_check.include?(mapping.external_reference)
+    options[:missing_only] && mapping.id ? nil : mapping
   end
 
   def external_reference(param)

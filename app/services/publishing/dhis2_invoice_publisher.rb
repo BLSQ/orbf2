@@ -5,6 +5,7 @@ module Publishing
       puts "about to publish #{values.size} values to dhis2"
       return if values.empty?
       status = project.dhis2_connection.data_value_sets.create(values)
+      puts values.to_json
       puts status.raw_status.to_json
       status
     end

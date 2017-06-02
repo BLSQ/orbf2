@@ -42,7 +42,7 @@ http://127.0.0.1:3000/setup/seeds
 get a fresh copy
 
 ```
-heroku pg:pull DATABASE_URL scorpiocopy --app scorpio-dev
+heroku pg:pull DATABASE_URL scorpiocopy --app orbf2-prod
 ```
 
 note that you need a pg 9.6.1 version

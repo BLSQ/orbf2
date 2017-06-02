@@ -273,6 +273,11 @@ class Project < ApplicationRecord
     end
   end
 
+  def formula_mappings
+    rules = packages.map(&:rules) + payment_rules.map(&:rule)
+    rules.flatten.flat_map(&:formulas).flat_map(&:formula_mappings)
+  end
+
   def dump_validation_rule(rule)
     puts "------"
     puts rule.to_json
