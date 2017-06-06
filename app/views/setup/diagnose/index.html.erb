@@ -14,7 +14,7 @@
 <% contracted_entities.each do |org_unit| %>
 <% matching_packages = project.packages.select { |package| package.apply_for_org_unit(org_unit) } %>
 <tr>
-  <td><%= org_unit.name %></td>
+  <td><a name="<%=org_unit.id%>"><%= org_unit.name %></td>
   <td>
     <% if matching_packages.size < minimum_packages%>
     <span class='icon-danger'>
@@ -26,7 +26,14 @@
   </td>
 
   <% project.packages.each do |package| %>
-  <td><%= package.apply_for_org_unit(org_unit) ? ("<i class='glyphicon glyphicon-ok' title=\""+package.name+"\"></i>").html_safe : ("<i class='glyphicon glyphicon-minus' title=\""+package.name+"\"></i>").html_safe%></td>
+  <td>
+    <%= package.apply_for_org_unit(org_unit) ? ("<i class='glyphicon glyphicon-ok' title=\""+package.name+"\"></i>").html_safe : ("<i class='glyphicon glyphicon-minus' title=\""+package.name+"\"></i>").html_safe%>
+
+      <br>
+      <% (package.linked_org_units(org_unit, pyramid) - [org_unit]).each do |linked_org| %>
+        <a href="#<%=linked_org.id%>"><%= linked_org.name %></a><br>
+      <%end%>
+  </td>
   <% end%>
 </tr>
 <%end%>
