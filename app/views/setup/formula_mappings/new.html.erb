@@ -9,7 +9,7 @@
 <%= link_to 'Trigger a data element dhis2 snapshot', setup_project_snapshots_path(formula_mappings.project), class: 'btn btn-default pull-right', method: :post %>
 </div>
 <br>
-<%if @problems %>
+<%if @problems && @problems.any? %>
 <div>
 <p>The following data elements has been mapped as input in activity state and ouput as formula mappings
 This might cause infinite loop or data loss.</p>
