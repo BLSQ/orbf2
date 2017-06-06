@@ -7,6 +7,7 @@ module Publishing
       status = project.dhis2_connection.data_value_sets.create(values)
       puts values.to_json
       puts status.raw_status.to_json
+      project.project_anchor.dhis2_logs.create(sent: values, status: status.raw_status)
       status
     end
 
