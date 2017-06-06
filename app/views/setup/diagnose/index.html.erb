@@ -14,7 +14,7 @@
 <% contracted_entities.each do |org_unit| %>
 <% matching_packages = project.packages.select { |package| package.apply_for_org_unit(org_unit) } %>
 <tr>
-  <td><a name="<%=org_unit.id%>"><%= org_unit.name %></td>
+  <td title="<%=pyramid.org_unit_parents(org_unit.id).map(&:name).join(" > ") %>"><a name="<%=org_unit.id%>"><%= org_unit.name %></td>
   <td>
     <% if matching_packages.size < minimum_packages%>
     <span class='icon-danger'>
