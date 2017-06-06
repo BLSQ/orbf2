@@ -32,6 +32,7 @@ Rails.application.routes.draw do
         end
         resources :publish_drafts, only: [:create]
         resource :main_entity_group, only: %i[create update]
+        resources :diagnose, only: [:index]
         resources :packages, only: %i[new create update edit] do
           resources :rules, only: %i[new create update edit]
         end

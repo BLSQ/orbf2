@@ -1,0 +1,34 @@
+<h1>Diagnose</h1>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Contracted org unit</th>
+      <th>Matching packages</th>
+      <% project.packages.each do |package| %>
+      <th><%= package.name %></th>
+      <%end%>
+    </tr>
+  </thead>
+<tbody>
+<% contracted_entities.each do |org_unit| %>
+<% matching_packages = project.packages.select { |package| package.apply_for_org_unit(org_unit) } %>
+<tr>
+  <td><%= org_unit.name %></td>
+  <td>
+    <% if matching_packages.size < minimum_packages%>
+    <span class='icon-danger'>
+      <b><%= matching_packages.size %></b>
+    </span>
+    <%else%>
+      <%= matching_packages.size %>
+    <%end%>
+  </td>
+
+  <% project.packages.each do |package| %>
+  <td><%= package.apply_for_org_unit(org_unit) ? ("<i class='glyphicon glyphicon-ok' title=\""+package.name+"\"></i>").html_safe : ("<i class='glyphicon glyphicon-minus' title=\""+package.name+"\"></i>").html_safe%></td>
+  <% end%>
+</tr>
+<%end%>
+</tbody>
+</table>
