@@ -67,7 +67,7 @@ class Package < ApplicationRecord
 
   def linked_org_units(org_unit, pyramid)
     if kind_multi?
-      pyramid.org_units_in_same_group(org_unit, ogs_reference).to_a
+      (pyramid.org_units_in_same_group(org_unit, ogs_reference).to_a + [org_unit]).uniq
     else
       [org_unit]
     end
