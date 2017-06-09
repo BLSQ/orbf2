@@ -42,7 +42,7 @@
    </tbody>
   </table>
 
-<button data-toggle="collapse" data-target="#activity-descriptors-<%= package.id %>">Show activity descriptors</button>
+<button class="pull-right btn btn-default" data-toggle="collapse" data-target="#activity-descriptors-<%= package.id %>">Show activity descriptors</button>
   <div id="activity-descriptors-<%= package.id %>" class="collapse">
   <pre>
     activityDescriptors = [
@@ -62,6 +62,15 @@
     },
     <% end %>
     ]
+
+    packageDescriptors = [
+    <% package.package_rule.formulas.each do |formula| %>
+      <% if formula.formula_mapping %>
+        <%= formula.code %>: "<%= formula.formula_mapping&.external_reference%>",
+      <%end%>
+    <% end %>
+    ]
+
   </pre>
   </div>
     <% if invoice.package_results %>
