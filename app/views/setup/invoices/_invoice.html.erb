@@ -2,7 +2,9 @@
 <% if invoice.activity_results %>
   <% invoice.activity_results.flatten.group_by(&:package).map do |package, results| %>
   <a name="<%= (package.name+"-"+invoice.date.strftime('%Y-%m')).underscore%>"></a>
-  <h2><%= package.name %> at <%=invoice.date%>  </h2>
+  <h2><%= package.name %> at <%=invoice.date.strftime('%Y-%m')%>  </h2>
+
+  <%= package.linked_org_units(@org_unit, @pyramid).map(&:name).join(" and ") %>
 
   <table class="table invoice num-span-table table-striped">
     <thead>
@@ -17,7 +19,7 @@
 
     <tbody>
     <% states = State.all.index_by(&:code) %>
-    <%results.each do |result|%>
+    <%results.sort_by{|r| r.activity.id }.each do |result|%>
       <tr>
        <% package.invoice_details.each do |detail|%>
        <% classes = [] %>
