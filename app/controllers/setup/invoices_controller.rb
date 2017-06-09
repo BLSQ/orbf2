@@ -27,6 +27,8 @@ class Setup::InvoicesController < PrivateController
     org_unit = pyramid.org_unit(invoicing_request.entity)
     @org_unit = org_unit
 
+    render :new and return unless org_unit
+
     @org_unit_summaries = [
       org_unit.name,
       "parents : " + pyramid.org_unit_parents(org_unit.id).map(&:name).join(" > "),

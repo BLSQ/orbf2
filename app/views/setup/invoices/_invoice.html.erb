@@ -42,7 +42,28 @@
    </tbody>
   </table>
 
-
+<button data-toggle="collapse" data-target="#activity-descriptors-<%= package.id %>">Show activity descriptors</button>
+  <div id="activity-descriptors-<%= package.id %>" class="collapse">
+  <pre>
+    activityDescriptors = [
+    <% package.activities.each do |activity| %>
+    {
+          name: "<%=activity.name %>",
+       <% package.states.each do |state|%>
+        <%if activity.activity_state(state)&.external_reference.present? %>
+          <%= state.code %>: "<%= activity.activity_state(state)&.external_reference%>",
+        <%end%>
+       <% end%>
+       <% package.activity_rule.formulas.each do |formula| %>
+        <% if formula.formula_mapping(activity) %>
+          <%= formula.code %>: "<%= formula.formula_mapping(activity)&.external_reference%>",
+        <%end%>
+       <% end%>
+    },
+    <% end %>
+    ]
+  </pre>
+  </div>
     <% if invoice.package_results %>
 
     <div class="container">
