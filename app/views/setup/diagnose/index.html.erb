@@ -34,10 +34,10 @@
       <% package_groups = package.package_entity_groups.map(&:organisation_unit_group_ext_ref) %>
       <% used_group = orgs.flat_map(&:organisation_unit_groups).map{|g|g["id"]}.select {|group| package_groups.include?(group) }%>
       <% if used_group.size >1 && package.apply_for_org_unit(org_unit)  %>
-        <span class="label label-danger">WARN</span> probable miss configuration multiple primary ? : <%= used_group.size %>
+        <span class="label label-danger">WARN</span> probable miss configuration multiple primary ? : <%= used_group.size %><br>
       <%end%>
       <% if orgs.size > 10  %>
-        <span class="label label-danger">WARN</span> probable miss configuration too much linked entities %>
+        <span class="label label-danger">WARN</span> probable miss configuration too much linked entities %> <br>
       <%end%>
       <%if orgs.size > 0 %>
         <%if orgs.size > 1 %>
