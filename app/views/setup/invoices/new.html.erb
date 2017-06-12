@@ -36,11 +36,53 @@
   <br>
   <br>
   <br>
+  <h1>Invoice Summary</h1>
+  <table class="table">
+    <thead>
+       <tr>
+         <th>Package</th>
+         <th>Month</th>
+         <th>Formula</th>
+         <th>Amount</th>
+    </thead>
+    <tbody>
       <% invoicing_request.invoices.each do |invoice| %>
        <% invoice.activity_results.flatten.group_by(&:package).map do |package, results| %>
-        <li><a href="#<%= (package.name+"-"+invoice.date.strftime('%Y-%m')).underscore%>"><%= package.name %> at <%=invoice.date.strftime('%Y/%m')%></a></li>
+          <% if invoice.package_results %>
+            <% package.package_rule.formulas.map(&:code).map do |item| %>
+              <%package_result = invoice.package_results.find { |pr| pr.package == package }%>
+              <%next unless package_result.solution[item]%>
+                <tr>
+                   <td>
+                     <a href="#<%= (package.name+"-"+invoice.date.strftime('%Y-%m')).underscore%>"><%= package.name %></a>
+                   </td>
+                   <td><%=invoice.date.strftime('%Y-%m') %></td>
+                   <td>
+                     <%=item.humanize %>
+                  </td>
+                  <td>
+                    <span class="num-span"><%= d_to_s(package_result.solution[item])%></span>
+                  </td>
+                </tr>
+            <%end%>
+          <%end%>
         <%end%>
+          <%if invoice.payment_result %>
+              <%invoice.payment_result.payment_rule.rule.formulas.map do |formula|%>
+                <tr>
+                   <td></td>
+                   <td>Payment</td>
+                   <td><%=formula.code.humanize %></td>
+                   <td>
+                    <span class="num-span"><%= d_to_s( invoice.payment_result.solution[formula.code])%></span>
+                  </td>
+                </tr>
+              <%end%>
+          <%end%>
       <%end%>
+
+    </tbody>
+  </table>
   <h3> Invoice details </h3>
   <%= render partial: "invoice", collection: invoicing_request.invoices, :as => :invoice  %>
 
