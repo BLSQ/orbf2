@@ -18,6 +18,7 @@ class Pyramid
 
   def self.from(project)
     pyramid = project.project_anchor.nearest_pyramid_for(Time.now.utc)
+
     return pyramid if pyramid
     dhis2 = project.dhis2_connection
     org_unit_groups = dhis2.organisation_unit_groups
@@ -62,7 +63,10 @@ class Pyramid
     groupset_group_ids = org_unit_group_set(group_set_id).organisation_unit_groups.map { |e| e["id"] }
     org_unit_group_ids = org_unit.organisation_unit_groups.map { |e| e["id"] }
     group_id = (groupset_group_ids & org_unit_group_ids).first
-    org_units_in_group(group_id)
+
+    orgs = org_units_in_group(group_id)
+    puts "warn #org_units_in_same_group(#{org_unit.id} - #{org_unit.display_name}, #{group_set_id}) : large number of org units in the same group #{orgs.size} " if orgs.size > 100
+    orgs
   end
 
   def org_units_in_all_groups(group_ids)

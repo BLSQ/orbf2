@@ -27,6 +27,12 @@ module Scorpio
     config.log_level = ENV["LOG_LEVEL"] || :info
     # Do not swallow errors in after_commit/after_rollback callbacks.
     config.active_record.raise_in_transactional_callbacks = true
-    config.lograge.enabled = true
+    config.lograge.enabled = ENV["LOGRAGE"] == "true"
+    config.lograge.custom_options = lambda do |event|
+      {
+        exception:        event.payload[:exception], # ["ExceptionClass", "the message"]
+        exception_object: event.payload[:exception_object] # the exception instance
+      }
+    end
   end
 end

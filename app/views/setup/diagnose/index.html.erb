@@ -30,8 +30,22 @@
     <%= package.apply_for_org_unit(org_unit) ? ("<i class='glyphicon glyphicon-ok' title=\""+package.name+"\"></i>").html_safe : ("<i class='glyphicon glyphicon-minus' title=\""+package.name+"\"></i>").html_safe%>
 
       <br>
-      <% (package.linked_org_units(org_unit, pyramid) - [org_unit]).each do |linked_org| %>
-        <a href="#<%=linked_org.id%>"><%= linked_org.name %></a><br>
+      <% orgs = (package.linked_org_units(org_unit, pyramid) - [org_unit]) %>
+      <% package_groups = package.package_entity_groups.map(&:organisation_unit_group_ext_ref) %>
+      <% used_group = orgs.flat_map(&:organisation_unit_groups).map{|g|g["id"]}.select {|group| package_groups.include?(group) }%>
+      <% if used_group.size >1 && package.apply_for_org_unit(org_unit)  %>
+        <span class="label label-danger">WARN</span> probable miss configuration multiple primary ? : <%= used_group.size %>
+      <%end%>
+      <% if orgs.size > 10  %>
+        <span class="label label-danger">WARN</span> probable miss configuration too much linked entities %>
+      <%end%>
+      <%if orgs.size > 0 %>
+        <%if orgs.size > 1 %>
+          Linked <%= orgs.size %> entities<br>
+        <%end%>
+        <% orgs.first(10).each do |linked_org| %>
+          <a href="#<%=linked_org.id%>"><%= linked_org.name %></a><br>
+        <%end%>
       <%end%>
   </td>
   <% end%>
