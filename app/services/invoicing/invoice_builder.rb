@@ -42,7 +42,7 @@ module Invoicing
           variables["#{k}_values".to_sym] = solution_to_array(results, k).join(" , ")
         end
 
-        facts_and_rules = {remoteness_bonus: 0}
+        facts_and_rules = { remoteness_bonus: 0 }
         package.package_rule.formulas.each do |formula|
           facts_and_rules[formula.code] = string_template(formula, variables)
         end
@@ -56,7 +56,7 @@ module Invoicing
       results.map do |r|
         begin
           BigDecimal.new(r.solution[k])
-          "%.10f" % r.solution[k]
+          format("%.10f", r.solution[k])
         rescue
           nil
         end
@@ -70,8 +70,76 @@ module Invoicing
       raise e
     end
 
+    def generate_monthly_payments(project, entity, invoices, invoicing_request)
+      monthly_payments_invoices = []
+      invoicing_request.quarter_dates.each_with_index do |month, index|
+        monthly_invoices = invoices.flatten.select { |invoice| invoice.date == month }
+
+        monthly_rules = project.payment_rules.select(&:monthly?).select { |p| p.apply_for?(entity) }
+
+        monthly_rules.map do |payment_rule|
+          all_package_results = monthly_invoices.first.package_results
+          if monthly_invoices.size > 1
+            all_package_results += monthly_invoices.last.package_results.select { |pr| pr.frequency.nil? }
+          end
+
+          package_results = all_package_results.select do |pr|
+            payment_rule.packages.map(&:name).include?(pr.package.name)
+          end
+          variables = {}
+          payment_rule.packages.each do |package|
+            previous_monthly_invoices = invoices.flatten.select { |invoice| invoice.date <= month }
+            previous_months_values = previous_monthly_invoices.flat_map(&:package_results)
+
+            package.package_rule.formulas.each do |formula|
+              previous_months_values_for_package = previous_months_values.select {|pr| pr.package == formula.rule.package }.select { |pr| pr.frequency.nil? }
+              vals = solution_to_array(previous_months_values_for_package, formula.code).reject(&:nil?).reject(&:empty?)
+
+              variables["#{formula.code}_values".to_sym] = vals.join(" , ") || "0"
+            end
+          end
+
+          puts "************ variables _values \n#{variables}"
+          extra_facts = { month_in_quarter: index + 1 }
+
+          package_facts_and_rules = {}
+          package_results.each do |package_result|
+            package_facts_and_rules = package_facts_and_rules.merge(package_result.solution)
+          end
+          payment_rule.packages.each do |package|
+            package.package_rule.formulas.each do |formula|
+              puts " #{package.name} #{formula.code} default to 0" unless package_facts_and_rules[formula.code]
+              package_facts_and_rules[formula.code] ||= 0
+            end
+          end
+          payment_facts = payment_rule.rule.formulas.map { |formula| [formula.code.to_sym, string_template(formula, variables)] }.to_h
+          package_facts_and_rules = package_facts_and_rules.merge(payment_facts)
+          package_facts_and_rules = package_facts_and_rules.merge(extra_facts)
+          payment_result = PaymentResult.new(
+            payment_rule,
+            solver.solve!("payment rule", package_facts_and_rules, true)
+          )
+          payment_result.solution.each do |k, v|
+            puts "#{k} = #{v}"
+          end
+
+          monthly_payments_invoices.push(
+            MonthlyInvoice.new(
+              monthly_invoices.first.date,
+              entity,
+              monthly_invoices.first.project,
+              [],
+              [],
+              payment_result
+            )
+          )
+        end
+      end
+      monthly_payments_invoices
+    end
+
     def calculate_payments(project, entity, all_package_results)
-      project.payment_rules.each do |payment_rule|
+      project.payment_rules.select(&:quarterly?).each do |payment_rule|
         package_results = all_package_results.select do |pr|
           payment_rule.packages.map(&:name).include?(pr.package.name)
         end
@@ -87,8 +155,8 @@ module Invoicing
         package_facts_and_rules = package_facts_and_rules.merge(payment_rule.rule.to_facts)
 
         return PaymentResult.new(
-           payment_rule,
-           solver.solve!("payment rule", package_facts_and_rules, false)
+          payment_rule,
+          solver.solve!("payment rule", package_facts_and_rules, false)
         )
       end
       nil
@@ -109,7 +177,6 @@ module Invoicing
         raise InvoicingError, "should have at least one activity_results" if activity_results.empty?
         package_results = calculate_package_results(activity_results)
         raise InvoicingError, "should have at least one package_results" if package_results.empty?
-        # No payments in monthly ?
         return Invoicing::MonthlyInvoice.new(date, entity, project, activity_results, package_results, nil)
       rescue => e
         Invoicing::MonthlyInvoice.new(date, entity, project, activity_results, package_results, nil).dump_invoice
@@ -137,7 +204,7 @@ module Invoicing
       end
 
       quarter_entity_results = calculate_package_results(quarter_details_results.values.flatten)
-      quarter_entity_results.each do |r| r.frequency= "quaterly" end
+      quarter_entity_results.each { |r| r.frequency = "quaterly" }
 
       begin
         project = project_finder.find_project(current_project, current_quarter_end)
@@ -163,7 +230,7 @@ module Invoicing
     end
 
     def d_to_s(decimal)
-      return "%.2f" % decimal if decimal.is_a? Numeric
+      return format("%.2f", decimal) if decimal.is_a? Numeric
       decimal
     end
   end

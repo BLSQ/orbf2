@@ -95,7 +95,7 @@
     <%end%>
   <%end%>
   <%if invoice.payment_result %>
-  <h2>Payments</h2>
+  <h2>Payments <%= invoice.date %></h2>
 
     <div class="container">
       <%invoice.payment_result.payment_rule.rule.formulas.map do |formula|%>
@@ -111,6 +111,7 @@
           </div>
         </div>
       <%end%>
+    </div>
   <%end%>
 
 <%end%>

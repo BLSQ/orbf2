@@ -120,17 +120,36 @@ class InvoicesForEntitiesWorker
   end
 
   def calculate_invoices(invoicing_request, org_unit, analytics_service, project_finder)
-    entity = Analytics::Entity.new(org_unit.id, org_unit.name, org_unit.organisation_unit_groups.map { |n| n["id"] }, to_facts(org_unit))
     invoice_builder = Invoicing::InvoiceBuilder.new(project_finder, Tarification::TarificationService.new)
-
+    entity = to_entity(org_unit)
     invoices = []
     invoicing_request.quarter_dates.each do |month|
-      monthly_invoice = invoice_builder.generate_monthly_entity_invoice(invoicing_request.project, entity, analytics_service, month)
+      monthly_invoice = invoice_builder.generate_monthly_entity_invoice(
+        invoicing_request.project,
+        entity,
+        analytics_service,
+        month
+      )
       monthly_invoice.dump_invoice
       invoices << monthly_invoice
     end
-    quarterly_invoices = invoice_builder.generate_quarterly_entity_invoice(invoicing_request.project, entity, analytics_service, invoicing_request.end_date_as_date)
+    quarterly_invoices = invoice_builder.generate_quarterly_entity_invoice(
+      invoicing_request.project,
+      entity,
+      analytics_service,
+      invoicing_request.end_date_as_date
+    )
     invoices << quarterly_invoices
+
+    payments_invoices = invoice_builder.generate_monthly_payments(
+      invoicing_request.project,
+      entity,
+      invoices,
+      invoicing_request
+    )
+
+    invoices << payments_invoices
+
     invoices.flatten
   end
 
@@ -208,6 +227,14 @@ class InvoicesForEntitiesWorker
       end
     end
     values
+  end
+
+  def to_entity(org_unit)
+    Analytics::Entity.new(
+      org_unit.id,
+      org_unit.name,
+      org_unit.organisation_unit_groups.map { |n| n["id"] }, to_facts(org_unit)
+    )
   end
 
   def to_facts(org_unit)

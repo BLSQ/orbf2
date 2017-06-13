@@ -88,6 +88,7 @@ class Rule < ApplicationRecord
     elsif payment_kind?
       rules = payment_rule.packages.flat_map(&:rules).select(&:package_kind?)
       var_names << rules.flat_map(&:formulas).map(&:code)
+      var_names << available_variables_for_values.map { |code| "%{#{code}}" }
     end
     var_names << decision_tables.map(&:out_headers) if decision_tables.any?
     var_names.flatten.uniq.reject(&:nil?).sort
@@ -97,6 +98,9 @@ class Rule < ApplicationRecord
     var_names = []
     if kind == "package" && package.activity_rule
       var_names << package.activity_rule.formulas.map(&:code).map { |code| "#{code}_values" }
+    end
+    if kind == "payment" && payment_rule.monthly?
+      var_names << payment_rule.packages.flat_map(&:package_rule).map(&:formulas).flatten.map(&:code).map { |code| "#{code}_values" }
     end
     var_names.flatten
   end

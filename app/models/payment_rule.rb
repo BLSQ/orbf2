@@ -23,6 +23,14 @@ class PaymentRule < ApplicationRecord
     message: "%{value} is not a valid see #{FREQUENCIES.join(',')}"
   }
 
+  def quarterly?
+    for_frequency("quaterly")
+  end
+
+  def monthly?
+    for_frequency("monthly")
+  end
+
   def for_frequency(frequency_to_apply)
     frequency_to_apply == frequency
   end
