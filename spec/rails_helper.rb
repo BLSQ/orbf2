@@ -87,3 +87,5 @@ module RSpec
     end
   end
 end
+
+require "paper_trail/frameworks/rspec"
