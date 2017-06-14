@@ -14,6 +14,7 @@ class EntityGroup < ApplicationRecord
   belongs_to :project
   validates :external_reference, presence: true
   validates :name, presence: true
+  has_paper_trail
 
   def find_sibling_organisation_unit_groups
     dhis2 = project.dhis2_connection

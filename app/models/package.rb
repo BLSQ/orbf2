@@ -41,7 +41,8 @@ class Package < ApplicationRecord
   accepts_nested_attributes_for :states
 
   attr_accessor :invoice_details
-
+  has_paper_trail
+  
   def invoice_details
     states.select(&:activity_level?).map(&:code) + activity_rule.formulas.map(&:code) + ["activity_name"]
   end

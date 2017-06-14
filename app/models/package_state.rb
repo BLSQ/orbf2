@@ -15,4 +15,5 @@
 class PackageState < ApplicationRecord
   belongs_to :package
   belongs_to :state
+  has_paper_trail
 end

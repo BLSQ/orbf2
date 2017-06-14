@@ -1,5 +1,6 @@
 class DecisionTable < ApplicationRecord
   belongs_to :rule, inverse_of: :formulas
+  has_paper_trail
 
   def in_headers
     decision_table.headers(:in)

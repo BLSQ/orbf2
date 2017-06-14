@@ -14,7 +14,8 @@ class Activity < ApplicationRecord
   belongs_to :project, inverse_of: :activities
   has_many :activity_states, dependent: :destroy
   has_many :activity_packages, dependent: :destroy
-
+  has_paper_trail
+  
   accepts_nested_attributes_for :activity_states, allow_destroy: true
 
   validates :name, presence: true

@@ -12,4 +12,5 @@
 class PackagePaymentRule < ApplicationRecord
   belongs_to :package
   belongs_to :package_payment_rules, inverse_of: :rule
+  has_paper_trail
 end

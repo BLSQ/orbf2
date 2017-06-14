@@ -32,7 +32,8 @@ class Rule < ApplicationRecord
   validate :formulas, :formulas_are_coherent
 
   validate :formulas, :package_formula_uniqness
-
+  has_paper_trail
+  
   def activity_kind?
     kind == "activity"
   end

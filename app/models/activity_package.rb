@@ -13,4 +13,5 @@
 class ActivityPackage < ApplicationRecord
   belongs_to :package
   belongs_to :activity
+  has_paper_trail
 end

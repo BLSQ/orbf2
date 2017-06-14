@@ -17,7 +17,8 @@
 class ActivityState < ApplicationRecord
   belongs_to :activity, inverse_of: :activity_states
   belongs_to :state
-
+  has_paper_trail
+  
   validates :state_id, presence: { message: "Select a state or remove this activity from the list" }
   validates :external_reference, presence: true, if: :kind_data_element?
   validates :name, presence: true

@@ -24,7 +24,8 @@ class Formula < ApplicationRecord
   validates :description, presence: true
   validates :expression, presence: true
   validate :expression, :expression_is_valid
-
+  has_paper_trail
+  
   def expression_is_valid
     Rules::Solver.new.validate_expression(self) if code && description
   end
