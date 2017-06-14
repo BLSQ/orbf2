@@ -101,6 +101,7 @@ class Rule < ApplicationRecord
     end
     if kind == "payment" && payment_rule.monthly?
       var_names << payment_rule.packages.flat_map(&:package_rule).map(&:formulas).flatten.map(&:code).map { |code| "#{code}_values" }
+      var_names << payment_rule.rule.formulas.map(&:code).map {|code| "#{code}_previous_values"}
     end
     var_names.flatten
   end

@@ -86,20 +86,10 @@ module Invoicing
           package_results = all_package_results.select do |pr|
             payment_rule.packages.map(&:name).include?(pr.package.name)
           end
-          variables = {}
-          payment_rule.packages.each do |package|
-            previous_monthly_invoices = invoices.flatten.select { |invoice| invoice.date <= month }
-            previous_months_values = previous_monthly_invoices.flat_map(&:package_results)
 
-            package.package_rule.formulas.each do |formula|
-              previous_months_values_for_package = previous_months_values.select {|pr| pr.package == formula.rule.package }.select { |pr| pr.frequency.nil? }
-              vals = solution_to_array(previous_months_values_for_package, formula.code).reject(&:nil?).reject(&:empty?)
+          variables = payment_variables(payment_rule, invoices, month)
+          variables = variables.merge(payment_previous_variables(payment_rule, monthly_payments_invoices))
 
-              variables["#{formula.code}_values".to_sym] = vals.join(" , ") || "0"
-            end
-          end
-
-          puts "************ variables _values \n#{variables}"
           extra_facts = { month_in_quarter: index + 1 }
 
           package_facts_and_rules = {}
@@ -112,12 +102,15 @@ module Invoicing
               package_facts_and_rules[formula.code] ||= 0
             end
           end
-          payment_facts = payment_rule.rule.formulas.map { |formula| [formula.code.to_sym, string_template(formula, variables)] }.to_h
+          payment_facts = payment_rule.rule.formulas.map do |formula|
+            [formula.code.to_sym, string_template(formula, variables)]
+          end.to_h
           package_facts_and_rules = package_facts_and_rules.merge(payment_facts)
           package_facts_and_rules = package_facts_and_rules.merge(extra_facts)
           payment_result = PaymentResult.new(
             payment_rule,
-            solver.solve!("payment rule", package_facts_and_rules, true)
+            solver.solve!("payment rule", package_facts_and_rules, true),
+            variables
           )
           payment_result.solution.each do |k, v|
             puts "#{k} = #{v}"
@@ -136,6 +129,33 @@ module Invoicing
         end
       end
       monthly_payments_invoices
+    end
+
+    def payment_variables(payment_rule, invoices, month)
+      variables = {}
+      payment_rule.packages.each do |package|
+        previous_monthly_invoices = invoices.flatten.select { |invoice| invoice.date <= month }
+        previous_months_values = previous_monthly_invoices.flat_map(&:package_results)
+
+        package.package_rule.formulas.each do |formula|
+          previous_months_values_for_package = previous_months_values.select { |pr| pr.package == formula.rule.package }.select { |pr| pr.frequency.nil? }
+          vals = solution_to_array(previous_months_values_for_package, formula.code).reject(&:nil?).reject(&:empty?)
+
+          variables["#{formula.code}_values".to_sym] = vals.join(" , ") || "0"
+        end
+      end
+      puts "************ variables _values \n#{variables}"
+      variables
+    end
+
+    def payment_previous_variables(payment_rule, monthly_payments_invoices)
+      variables = {}
+      payment_rule.rule.formulas.each do |formula|
+        vals = solution_to_array(monthly_payments_invoices.select {|i| i.payment_result.payment_rule == payment_rule}.map(&:payment_result), formula.code)
+        vals = vals.reject(&:nil?).reject(&:empty?)
+        variables["#{formula.code}_previous_values".to_sym] = vals.any? ? vals.join(" , ") : "0"
+      end
+      variables
     end
 
     def calculate_payments(project, entity, all_package_results)

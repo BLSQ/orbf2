@@ -106,7 +106,7 @@
           <% classes = [] %>
           <% external_reference = formula.formula_mapping&.external_reference %>
           <% classes.push "formula-output" if external_reference %>
-          <div class="col-md-4 <%= classes.join(" ") %>" title="<%= formula.expression %> - <%= external_reference %> - <%= @datacompound.data_element(external_reference)&.name %>">
+          <div class="col-md-4 <%= classes.join(" ") %>" title="<%= formula.expression %> - <%= external_reference %> - <%= @datacompound.data_element(external_reference)&.name %> - <%= invoice.payment_result.variables %>">
             <b><%= d_to_s( invoice.payment_result.solution[formula.code])%></b>
           </div>
         </div>
