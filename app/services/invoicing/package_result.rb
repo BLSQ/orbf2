@@ -1,5 +1,5 @@
 module Invoicing
-  class PackageResult < Struct.new(:package, :solution)
+  class PackageResult < Struct.new(:package, :solution, :variables)
     attr_accessor :frequency
 
     def to_s

@@ -31,7 +31,7 @@ module Invoicing
                         .merge("activity_name" => "'#{activity.name.tr("'", ' ')}'")
       solution = solver.solve!(activity.name.to_s, facts_and_rules)
 
-      ActivityResult.new(package, activity, solution, date)
+      ActivityResult.new(package, activity, solution, date, facts_and_rules)
     end
 
     def calculate_package_results(activity_results)
@@ -48,7 +48,7 @@ module Invoicing
         end
         solution_package = solver.solve!("sum activities for #{package.name}", facts_and_rules)
 
-        PackageResult.new(package, solution_package)
+        PackageResult.new(package, solution_package, facts_and_rules)
       end
     end
 
@@ -110,11 +110,8 @@ module Invoicing
           payment_result = PaymentResult.new(
             payment_rule,
             solver.solve!("payment rule", package_facts_and_rules, true),
-            variables
+            package_facts_and_rules
           )
-          payment_result.solution.each do |k, v|
-            puts "#{k} = #{v}"
-          end
 
           monthly_payments_invoices.push(
             MonthlyInvoice.new(
@@ -140,11 +137,9 @@ module Invoicing
         package.package_rule.formulas.each do |formula|
           previous_months_values_for_package = previous_months_values.select { |pr| pr.package == formula.rule.package }.select { |pr| pr.frequency.nil? }
           vals = solution_to_array(previous_months_values_for_package, formula.code).reject(&:nil?).reject(&:empty?)
-
           variables["#{formula.code}_values".to_sym] = vals.join(" , ") || "0"
         end
       end
-      puts "************ variables _values \n#{variables}"
       variables
     end
 
