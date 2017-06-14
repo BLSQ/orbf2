@@ -18,6 +18,7 @@ Rails.application.routes.draw do
     namespace :setup do
       get "/projects/", to: "setup#index", as: "project_anchor"
       get "/projects/:project_id", to: "setup#index", as: "project"
+      get "/versions/", to: "index", as: "version"
       resources :seeds, only: [:index] if Rails.env.development? || Rails.env.dev?
       resources :projects, only: %i[create update] do
         resources :snapshots, only: [:create]
