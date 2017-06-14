@@ -1,4 +1,6 @@
 class Setup::ProjectsController < PrivateController
+  before_action :set_paper_trail_whodunnit
+
   def create
     project_anchor = current_program.project_anchor || current_program.build_project_anchor
     raise "can't create a new one, need to update existing one" unless current_program.project_anchor.projects.empty?

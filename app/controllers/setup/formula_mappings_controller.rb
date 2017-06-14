@@ -2,7 +2,8 @@
 class Setup::FormulaMappingsController < PrivateController
   attr_reader :formula_mappings
   helper_method :formula_mappings
-
+  before_action :set_paper_trail_whodunnit
+  
   def new
     check_problems
     @formula_mappings = build_formula_mappings(to_options)
