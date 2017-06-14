@@ -67,6 +67,8 @@ class Setup::InvoicesController < PrivateController
       options
     )[org_unit.id]
 
+    invoicing_request.invoices = invoicing_request.invoices.sort_by {|i| i.date}
+
     render :new
   end
 

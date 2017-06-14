@@ -13,7 +13,7 @@
 
 
 <label class="control-label string"> Available variables names for expressions</label>
-<pre> <%= rule.available_variables.join("    ") %> </pre>
+<pre><%= rule.available_variables.each_slice(3).map {|slice| slice.join("    ")}.join("\n") %></pre>
 
 <% unless rule.errors.full_messages.empty? %>
 <div class="alert alert-danger">

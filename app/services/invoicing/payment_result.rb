@@ -1,5 +1,5 @@
 module Invoicing
-  class PaymentResult < Struct.new(:payment_rule, :solution)
+  class PaymentResult < Struct.new(:payment_rule, :solution, :variables)
     def to_s
       "#{payment_rule.name}  #{solution}"
     end

@@ -2,7 +2,7 @@
 <h1><%= rule_name(project_rule.rule) %></h1>
 
 <%= f.association :packages, collection: project_rule.project.packages, as: :check_boxes %>
-
+<%= f.input :frequency , collection: PaymentRule::FREQUENCIES %>
 <%= f.simple_fields_for :rule do |rule_form| %>
   <%= render "setup/rules/form", f: rule_form, rule: project_rule.rule%>
 <% end %>

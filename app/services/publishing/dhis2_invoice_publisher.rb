@@ -22,7 +22,7 @@ module Publishing
           {
             dataElement: mapping.external_reference,
             orgUnit:     invoice.entity.id,
-            period:      format_to_dhis_period(invoice.date, "quaterly"),
+            period:      format_to_dhis_period(invoice.date, invoice.payment_result.payment_rule.frequency),
             value:       invoice.payment_result.solution[formula.code],
             comment:     "$-#{formula.code}-#{invoice.payment_result.payment_rule.rule.name}"
           }
