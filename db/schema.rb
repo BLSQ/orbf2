@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170613165843) do
+ActiveRecord::Schema.define(version: 20170615121015) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -108,14 +108,6 @@ ActiveRecord::Schema.define(version: 20170613165843) do
     t.index ["rule_id"], name: "index_formulas_on_rule_id", using: :btree
   end
 
-  create_table "indicators", force: :cascade do |t|
-    t.string   "name"
-    t.float    "price"
-    t.string   "dhis2_verified_id"
-    t.datetime "created_at",        null: false
-    t.datetime "updated_at",        null: false
-  end
-
   create_table "package_entity_groups", force: :cascade do |t|
     t.string   "name"
     t.integer  "package_id"
@@ -162,9 +154,10 @@ ActiveRecord::Schema.define(version: 20170613165843) do
   end
 
   create_table "payment_rules", force: :cascade do |t|
-    t.integer  "project_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.integer  "project_id",                       null: false
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
+    t.string   "frequency",  default: "quarterly", null: false
     t.index ["project_id"], name: "index_payment_rules_on_project_id", using: :btree
   end
 
@@ -251,9 +244,10 @@ ActiveRecord::Schema.define(version: 20170613165843) do
     t.integer  "item_id",        null: false
     t.string   "event",          null: false
     t.string   "whodunnit"
-    t.text     "object"
+    t.text     "old_object"
     t.datetime "created_at"
     t.integer  "transaction_id"
+    t.jsonb    "object"
     t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id", using: :btree
     t.index ["transaction_id"], name: "index_versions_on_transaction_id", using: :btree
   end
