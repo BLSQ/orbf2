@@ -18,13 +18,12 @@ Rails.application.routes.draw do
     namespace :setup do
       get "/projects/", to: "setup#index", as: "project_anchor"
       get "/projects/:project_id", to: "setup#index", as: "project"
-      get "/versions/", to: "index", as: "version"
       resources :seeds, only: [:index] if Rails.env.development? || Rails.env.dev?
       resources :projects, only: %i[create update] do
         resources :snapshots, only: [:create]
         resources :invoices, only: %i[new create]
         resources :formula_mappings, only: %i[new create]
-
+        resources :changes, only: [:index]
         resources :activities, only: %i[new create edit update mass_creation] do
           collection do
             get :mass_creation
