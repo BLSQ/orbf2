@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170615121015) do
+ActiveRecord::Schema.define(version: 20170615124943) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -248,7 +248,11 @@ ActiveRecord::Schema.define(version: 20170615121015) do
     t.datetime "created_at"
     t.integer  "transaction_id"
     t.jsonb    "object"
+    t.integer  "program_id"
+    t.integer  "project_id"
     t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id", using: :btree
+    t.index ["program_id"], name: "index_versions_on_program_id", using: :btree
+    t.index ["project_id"], name: "index_versions_on_project_id", using: :btree
     t.index ["transaction_id"], name: "index_versions_on_transaction_id", using: :btree
   end
 
@@ -277,4 +281,6 @@ ActiveRecord::Schema.define(version: 20170615121015) do
   add_foreign_key "rules", "packages"
   add_foreign_key "rules", "payment_rules"
   add_foreign_key "users", "programs"
+  add_foreign_key "versions", "programs"
+  add_foreign_key "versions", "projects"
 end
