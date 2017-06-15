@@ -11,5 +11,5 @@
 class Program < ApplicationRecord
   has_one :project_anchor, inverse_of: :program, dependent: :destroy
   has_many :users
-
+  has_many :versions
 end
