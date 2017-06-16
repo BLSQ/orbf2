@@ -59,20 +59,6 @@
             <th>Month <%= index + 1 %><br><%= month.strftime('%Y-%m') %></th>
           <%end%>
      </thead>
-
-    <% payments_formulas.each do |formula| %>
-    <tr>
-        <td><%= formula.rule.name %></td>
-        <td><%= formula.code.humanize %></td>
-        <% invoicing_request.quarter_dates.each do |month| %>
-          <% quarter_payments =  payments.select { |invoice| invoice.date == month } %>
-          <td>
-             <span class="num-span"><%= quarter_payments.map { |invoice| invoice.payment_result.solution[formula.code]}.compact.first %></span>
-          </td>
-        <%end%>
-    </tr>
-    <% end %>
-
     <% package_formulas.each do |formula| %>
     <tr>
         <td> <%= formula.rule.package.name %></td>
@@ -89,10 +75,22 @@
         <%end%>
     </tr>
     <% end %>
+    <% payments_formulas.each do |formula| %>
+    <tr>
+        <td><%= formula.rule.name %></td>
+        <td><%= formula.code.humanize %></td>
+        <% invoicing_request.quarter_dates.each do |month| %>
+          <% quarter_payments =  payments.select { |invoice| invoice.date == month } %>
+          <td>
+             <span class="num-span"><%= quarter_payments.map { |invoice| invoice.payment_result.solution[formula.code]}.compact.first %></span>
+          </td>
+        <%end%>
+    </tr>
+    <% end %>
   </table>
 
 
-  <h3> Invoice details </h3>
+  <h1> Invoice details </h1>
   <%= render partial: "invoice", collection: invoicing_request.invoices, :as => :invoice  %>
 
   <br>
