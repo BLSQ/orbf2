@@ -1,6 +1,11 @@
 require "rails_helper"
 
 RSpec.describe Rule, kind: :model do
+
+  it 'enables paper trail' do
+    is_expected.to be_versioned
+  end
+
   let(:quantity_package) {
     p = build(:package)
     p.states <<  State.where(name: %w(Claimed Verified Tarif)).to_a

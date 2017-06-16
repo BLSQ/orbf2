@@ -15,6 +15,10 @@ require "rails_helper"
 
 RSpec.describe Formula, type: :model do
 
+  it 'enables paper trail' do
+    is_expected.to be_versioned
+  end
+
   def new_formula(args)
     rule = Rule.new
     Formula.new(args.merge(code: args[:code] || "sample_expression", description: "description", rule: rule))
