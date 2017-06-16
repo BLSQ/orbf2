@@ -37,52 +37,61 @@
   <br>
   <br>
   <h1>Invoice Summary</h1>
-  <table class="table">
-    <thead>
-       <tr>
-         <th>Package</th>
-         <th>Month</th>
-         <th>Formula</th>
-         <th>Amount</th>
-    </thead>
-    <tbody>
-      <% invoicing_request.invoices.each do |invoice| %>
-       <% invoice.activity_results.flatten.group_by(&:package).map do |package, results| %>
-          <% if invoice.package_results %>
-            <% package.package_rule.formulas.map(&:code).map do |item| %>
-              <%package_result = invoice.package_results.find { |pr| pr.package == package }%>
-              <%next unless package_result.solution[item]%>
-                <tr>
-                   <td>
-                     <a href="#<%= (package.name+"-"+invoice.date.strftime('%Y-%m')).underscore%>"><%= package.name %></a>
-                   </td>
-                   <td><%=invoice.date.strftime('%Y-%m') %></td>
-                   <td>
-                     <%=item.humanize %>
-                  </td>
-                  <td>
-                    <span class="num-span"><%= d_to_s(package_result.solution[item])%></span>
-                  </td>
-                </tr>
-            <%end%>
-          <%end%>
-        <%end%>
-          <%if invoice.payment_result %>
-              <%invoice.payment_result.payment_rule.rule.formulas.map do |formula|%>
-                <tr>
-                   <td>Payment</td>
-                   <td><%= invoice.date.strftime('%Y-%m') %> </td>
-                   <td title="<%=formula.expression%>"><%=formula.code.humanize %></td>
-                   <td>
-                    <span class="num-span"><%= d_to_s( invoice.payment_result.solution[formula.code])%></span>
-                  </td>
-                </tr>
-              <%end%>
-          <%end%>
-      <%end%>
+  <% payments =  invoicing_request.invoices.select{ |invoice| invoice.payment_result}
+     payments_formulas = payments.flat_map { |invoice| invoice.payment_result.payment_rule.rule.formulas }.uniq
+   %>
 
-    </tbody>
+  <% package_invoices = invoicing_request.invoices.select{ |invoice| invoice.package_results.any? } %>
+  <% package_formulas =  package_invoices
+                                                  .flat_map(&:package_results)
+                                                  .map(&:package)
+                                                  .map(&:package_rule)
+                                                  .flat_map(&:formulas)
+                                                  .uniq
+  %>
+
+   <table class="table">
+     <thead>
+        <tr>
+          <th></th>
+          <th>Formula</th>
+          <%invoicing_request.quarter_dates.each_with_index do |month, index| %>
+            <th>Month <%= index + 1 %><br><%= month.strftime('%Y-%m') %></th>
+          <%end%>
+     </thead>
+
+    <% payments_formulas.each do |formula| %>
+    <tr>
+        <td><%= formula.rule.name %></td>
+        <td><%= formula.code.humanize %></td>
+        <% invoicing_request.quarter_dates.each do |month| %>
+          <% quarter_payments =  payments.select { |invoice| invoice.date == month } %>
+          <td>
+             <span class="num-span"><%= quarter_payments.map { |invoice| invoice.payment_result.solution[formula.code]}.compact.first %></span>
+          </td>
+        <%end%>
+    </tr>
+    <% end %>
+
+    <% package_formulas.each do |formula| %>
+    <tr>
+        <td> <%= formula.rule.package.name %></td>
+        <td><%= formula.code.humanize %></td>
+        <% invoicing_request.quarter_dates.each do |month| %>
+          <% quarter_package_result =  package_invoices.select { |invoice| invoice.date == month }
+                                                       .flat_map(&:package_results)
+                                                       .select {|r| r.package == formula.rule.package }
+                                                       .compact.first
+           %>
+          <td>
+            <span class="num-span"><%= quarter_package_result.solution[formula.code] if quarter_package_result %></span>
+          </td>
+        <%end%>
+    </tr>
+    <% end %>
   </table>
+
+
   <h3> Invoice details </h3>
   <%= render partial: "invoice", collection: invoicing_request.invoices, :as => :invoice  %>
 
@@ -91,8 +100,9 @@
   <br>
   <% values = Publishing::Dhis2InvoicePublisher.new.to_values(invoicing_request.project, invoicing_request.invoices)%>
   <% if values && values.any? %>
-    <h3> Dhis2 values </h3>
-    <pre>
+    <h3 > Dhis2 values </h3>
+    <button class="btn btn-default" data-toggle="collapse" data-target="#dhis2-values">Show values</button>
+    <pre id="dhis2-values" class="collapse" >
       <%= JSON.pretty_generate(values) %>
     </pre>
   <%end%>
