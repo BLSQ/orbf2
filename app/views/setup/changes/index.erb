@@ -12,10 +12,10 @@
 	<tbody>
 	<% @versions.each do |version| %>
 		<tr>
-			<td><%= version.item_type %></td>
-			<td><%= version.event %></td>
-			<td> <%= version.whodunnit %></td>
-			<td> <%= version.object %></td>
+			<td><%= version[:item_type] %></td>
+      <td> <%= version[:email] %></td>
+      <td><%= version[:event] %></td>
+			<td> <%= version[:object] %></td>
 		</tr>
 	<% end%>
 	</tbody>
