@@ -21,3 +21,13 @@
 //= require bootstrap-datepicker
 //= require cocoon
 //= require_tree .
+
+$(document).ready(function() {
+  $(".popper").popover({
+    container: "body",
+    html: true,
+    content: function() {
+      return $(this).find(".popper-content").html();
+    }
+  });
+});

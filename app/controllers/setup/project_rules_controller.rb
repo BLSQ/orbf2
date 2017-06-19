@@ -49,6 +49,7 @@ class Setup::ProjectRulesController < PrivateController
   def rule_params
     params.require(:payment_rule)
           .permit(
+            :frequency,
             package_ids:     [],
             rule_attributes: [
               :id,

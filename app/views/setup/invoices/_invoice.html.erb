@@ -29,10 +29,30 @@
        <% hint = states[detail] ? [result.activity.activity_state(states[detail])&.external_reference,result.activity.activity_state(states[detail])&.name] : [
          result.package.activity_rule.formula(detail)&.expression,
          result.package.activity_rule.formula(detail)&.formula_mapping(result.activity)&.external_reference,
-         @datacompound.data_element(result.package.activity_rule.formula(detail)&.formula_mapping(result.activity)&.external_reference)&.name
+         @datacompound.data_element(result.package.activity_rule.formula(detail)&.formula_mapping(result.activity)&.external_reference)&.name,
          ] %>
-       <td title="<%= hint.join("- \t") %> - <%=result.solution.to_json%> ">
+       <td class="popper" data-toggle="popover" data-placement="bottom">
          <span class="<%= 'num-span' if result.solution[detail].is_a? Numeric %> <%= classes.join(" ") %>"><%= d_to_s(result.solution[detail]) %></span>
+         <div class="popper-content hide">
+           Mapping :
+           <ul>
+             <% hint.each do |hint| %>
+               <%= hint %></br>
+             <%end%>
+           </ul>
+           Solution :
+           <ul>
+           <% result.solution.each do |k,v|%>
+            <b><%= k %></b> = <%= v %> </br>
+           <% end %>
+           </ul>
+           Initial equation and facts :
+           <ul>
+           <% result.variables.each do |k,v|%>
+            <b><%= k %></b> = <%= v %> </br>
+           <% end %>
+           </ul>
+           </div>
       </td>
 
 
@@ -86,8 +106,31 @@
              <% classes = [] %>
              <% external_reference = package_result.package.package_rule.formula(item)&.formula_mapping&.external_reference %>
              <% classes.push "formula-output" if external_reference %>
-          <div class="col-md-4 <%= classes.join(" ") %>" title="<%= package_result.package.package_rule.formula(item)&.expression %> - <%= external_reference %> - <%= @datacompound.data_element(external_reference)&.name %> - <%=package_result.solution.to_json%>">
+          <div class="col-md-4 popper <%= classes.join(" ") %>" data-toggle="popover" data-placement="bottom">
             <b><%= d_to_s(package_result.solution[item])%></b>
+
+            <div class="popper-content hide">
+              Mapping :
+              <ul>
+                <%= package_result.package.package_rule.formula(item)&.expression %> <br>
+                <%= external_reference %> <br>
+                <%= @datacompound.data_element(external_reference)&.name %> <br>
+              </ul>
+              Solution :
+              <ul>
+              <% package_result.solution.each do |k,v|%>
+               <b><%= k %></b> = <%= v %> </br>
+              <% end %>
+              </ul>
+              Initial equation and facts :
+              <ul>
+              <% package_result.variables.each do |k,v|%>
+               <b><%= k %></b> = <%= v %> </br>
+              <% end %>
+              </ul>
+              </div>
+
+
           </div>
         </div>
     <%end%>
@@ -95,7 +138,7 @@
     <%end%>
   <%end%>
   <%if invoice.payment_result %>
-  <h2>Payments</h2>
+  <h2>Payments <%= invoice.date %></h2>
 
     <div class="container">
       <%invoice.payment_result.payment_rule.rule.formulas.map do |formula|%>
@@ -106,11 +149,34 @@
           <% classes = [] %>
           <% external_reference = formula.formula_mapping&.external_reference %>
           <% classes.push "formula-output" if external_reference %>
-          <div class="col-md-4 <%= classes.join(" ") %>" title="<%= formula.expression %> - <%= external_reference %> - <%= @datacompound.data_element(external_reference)&.name %>">
+          <div class="col-md-4 popper <%= classes.join(" ") %>" data-toggle="popover" data-placement="bottom">
             <b><%= d_to_s( invoice.payment_result.solution[formula.code])%></b>
+
+            <div class="popper-content hide">
+              Mapping :
+              <ul>
+                <%= formula.expression %> <br>
+                <%= external_reference %> <br>
+                <%= @datacompound.data_element(external_reference)&.name %> <br>
+              </ul>
+              Solution :
+              <ul>
+              <% invoice.payment_result.solution.each do |k,v|%>
+               <b><%= k %></b> = <%= v %> </br>
+              <% end %>
+              </ul>
+              Initial equation and facts :
+              <ul>
+              <% invoice.payment_result.variables.each do |k,v|%>
+               <b><%= k %></b> = <%= v %> </br>
+              <% end %>
+              </ul>
+              </div>
+
           </div>
         </div>
       <%end%>
+    </div>
   <%end%>
 
 <%end%>

@@ -1,5 +1,6 @@
 <tr>
     <td><%= project_rule.rule.name %></td>
+    <td><%= project_rule.frequency %></td>
     <td>
       <div class="col-md-8">
           <%= render partial: "rule_formulas", locals: { formulas: project_rule.rule.formulas, readonly: readonly }%>
