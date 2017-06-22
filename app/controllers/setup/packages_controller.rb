@@ -1,7 +1,7 @@
 class Setup::PackagesController < PrivateController
   helper_method :package
   attr_reader :package
-  before_action :set_paper_trail_whodunnit
+
   
   def edit
     @package = current_project.packages.find(params[:id])

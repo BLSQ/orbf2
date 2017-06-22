@@ -1,7 +1,6 @@
 class Setup::ProjectRulesController < PrivateController
   helper_method :project_rule
   attr_reader :project_rule
-  before_action :set_paper_trail_whodunnit
   
   def new
     @project_rule = current_project.payment_rules.build(rule_attributes: { kind: "payment" })

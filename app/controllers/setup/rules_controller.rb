@@ -1,7 +1,6 @@
 class Setup::RulesController < PrivateController
   helper_method :rule
   attr_reader :rule
-  before_action :set_paper_trail_whodunnit
   
   def new
     if current_package.missing_rules_kind.empty?

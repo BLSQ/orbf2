@@ -2,7 +2,6 @@ class Setup::ActivitiesController < PrivateController
   helper_method :states, :activity
 
   attr_reader :activity, :states
-  before_action :set_paper_trail_whodunnit
   
   def new
     @activity = current_project.activities.build
