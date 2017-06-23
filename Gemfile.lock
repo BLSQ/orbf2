@@ -88,6 +88,7 @@ GEM
       responders
       warden (~> 1.2.3)
     diff-lcs (1.2.5)
+    differ (0.1.2)
     docile (1.1.5)
     domain_name (0.5.20161129)
       unf (>= 0.0.5, < 1.0.0)
@@ -393,6 +394,7 @@ DEPENDENCIES
   dentaku
   devise (~> 4.2.0)
   dhis2!
+  differ
   easy_diff
   factory_girl_rails (= 4.0)
   faker
