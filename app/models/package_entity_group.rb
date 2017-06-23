@@ -11,5 +11,7 @@
 #
 
 class PackageEntityGroup < ApplicationRecord
+  include PaperTrailed
+
   belongs_to :package
 end

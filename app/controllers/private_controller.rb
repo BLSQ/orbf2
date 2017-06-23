@@ -12,7 +12,7 @@ class PrivateController < ApplicationController
     current_user.program
   end
 
-  def current_project(options =  {raise_if_published: true})
+  def current_project(options = { raise_if_published: true })
     @current_project ||= current_project_anchor.projects.send(options[:project_scope] || :no_includes).find(params[:project_id]) if params[:project_id]
     unless @current_project.nil?
       raise ReadonlyProjectError, "No more editable project is published" if @current_project.published? && options[:raise_if_published]
@@ -27,5 +27,14 @@ class PrivateController < ApplicationController
   def not_editable
     flash[:failure] = "Sorry this project has been published you can't edit it anymore"
     redirect_to setup_project_path(params[:project_id])
+  end
+
+  def info_for_paper_trail
+    project = current_project(project_scope: :fully_loaded)
+    if project
+      return { program_id: project.project_anchor.program_id, project_id: project.id }
+    else
+      return { program_id: current_user.program.id }
+    end
   end
 end

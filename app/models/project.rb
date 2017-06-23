@@ -18,6 +18,8 @@
 #
 
 class Project < ApplicationRecord
+  include PaperTrailed
+
   validates :name, presence: true
 
   validates :dhis2_url, presence: true, url: true
@@ -32,8 +34,7 @@ class Project < ApplicationRecord
   belongs_to :original, foreign_key: "original_id", optional: true, class_name: Project.name
   has_many :clones, foreign_key: "original_id", class_name: Project.name, dependent: :destroy
   has_many :versions
-  has_paper_trail
-  
+
   def self.no_includes
     current_scope
   end
@@ -316,5 +317,9 @@ class Project < ApplicationRecord
       end
     end
     missing_activity_states
+  end
+
+  def states
+    State.all
   end
 end

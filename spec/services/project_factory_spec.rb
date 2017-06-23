@@ -17,7 +17,9 @@ describe ProjectFactory do
       State,
       Program,
       ProjectAnchor,
-      Dhis2Snapshot
+      Dhis2Snapshot,
+      Version,
+      PaperTrail::Version
     ].map(&:name).map(&:to_sym)
     count_before = count_all_models
 

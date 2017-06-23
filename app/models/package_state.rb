@@ -13,7 +13,7 @@
 #
 
 class PackageState < ApplicationRecord
+  include PaperTrailed
   belongs_to :package
   belongs_to :state
-  has_paper_trail
 end

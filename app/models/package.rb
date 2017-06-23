@@ -15,6 +15,8 @@
 #
 
 class Package < ApplicationRecord
+  include PaperTrailed
+
   FREQUENCIES = %w(monthly quarterly).freeze
   KINDS = %w(single multi-groupset).freeze
   belongs_to :project, inverse_of: :packages
@@ -41,8 +43,8 @@ class Package < ApplicationRecord
   accepts_nested_attributes_for :states
 
   attr_accessor :invoice_details
-  has_paper_trail
-  
+
+
   def invoice_details
     states.select(&:activity_level?).map(&:code) + activity_rule.formulas.map(&:code) + ["activity_name"]
   end

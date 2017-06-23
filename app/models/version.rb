@@ -24,10 +24,12 @@ class Version < PaperTrail::Version
   def build_diffs
     changeset.map do |attribute_name, changes|
       next if attribute_name == "updated_at"
-      diff = if changes.first.lines.size > 10
-               Differ.diff_by_line(changes.last, changes.first)
+      next unless changes
+
+      diff = if changes.last.to_s.lines.size > 10
+               Differ.diff_by_line(changes.last.to_s, changes.first.to_s)
              else
-               Differ.diff_by_word(changes.last, changes.first)
+               Differ.diff_by_word(changes.last.to_s, changes.first.to_s)
              end
       [
         attribute_name,
