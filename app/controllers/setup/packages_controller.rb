@@ -2,7 +2,6 @@ class Setup::PackagesController < PrivateController
   helper_method :package
   attr_reader :package
 
-  
   def edit
     @package = current_project.packages.find(params[:id])
     render :edit
