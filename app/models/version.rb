@@ -23,7 +23,7 @@ class Version < PaperTrail::Version
 
   def build_diffs
     changeset.map do |attribute_name, changes|
-      next if ["updated_at", "password"].include?(attribute_name)
+      next if %w[updated_at password].include?(attribute_name)
       next unless changes
 
       diff = if changes.last.to_s.lines.size > 10

@@ -1,11 +1,9 @@
 class DecisionTable < ApplicationRecord
   include PaperTrailed
-  include PaperTrailed
   delegate :project_id, to: :rule
   delegate :program_id, to: :rule
 
   belongs_to :rule, inverse_of: :formulas
-
 
   def in_headers
     decision_table.headers(:in)
@@ -25,6 +23,6 @@ class DecisionTable < ApplicationRecord
   end
 
   def decision_table
-    @decision_table ||= Decision::Table.new(content || 'in:nothing,out:nothing_too')
+    @decision_table ||= Decision::Table.new(content || "in:nothing,out:nothing_too")
   end
 end

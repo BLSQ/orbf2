@@ -66,7 +66,7 @@ class Rule < ApplicationRecord
   delegate :program_id, to: :project
 
   def project
-    if activity_kind? ||  package_kind?
+    if activity_kind? || package_kind?
       package.project
     elsif payment_kind?
       payment_rule.project
@@ -160,8 +160,6 @@ class Rule < ApplicationRecord
     extra_facts ||= [{}]
     extra_facts.reduce({}, :merge)
   end
-
-
 
   private
 

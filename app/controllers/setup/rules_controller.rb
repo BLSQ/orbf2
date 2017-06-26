@@ -1,7 +1,7 @@
 class Setup::RulesController < PrivateController
   helper_method :rule
   attr_reader :rule
-  
+
   def new
     if current_package.missing_rules_kind.empty?
       flash[:alert] = "Sorry you can't create a new rule for the package, edit existing one."

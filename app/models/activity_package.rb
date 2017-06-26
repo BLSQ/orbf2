@@ -17,5 +17,4 @@ class ActivityPackage < ApplicationRecord
 
   belongs_to :package
   belongs_to :activity
-
 end

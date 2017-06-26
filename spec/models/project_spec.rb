@@ -23,7 +23,7 @@ RSpec.describe Project, type: :model do
   include_context "basic_context"
   include WebmockDhis2Helpers
 
-  it 'enables paper trail' do
+  it "enables paper trail" do
     is_expected.to be_versioned
   end
 

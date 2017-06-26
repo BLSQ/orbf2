@@ -18,7 +18,7 @@
 #
 
 class Project < ApplicationRecord
-  has_paper_trail meta: { project_id:  :id, program_id: :program_id, item_type: "Project", item_id: :id }
+  has_paper_trail meta: { project_id: :id, program_id: :program_id, item_type: "Project", item_id: :id }
   delegate :program_id, to: :project_anchor
 
   validates :name, presence: true
@@ -37,7 +37,7 @@ class Project < ApplicationRecord
 
   # see PaperTrailed meta
   def project_id
-    self.id
+    id
   end
 
   def item_type
@@ -140,9 +140,9 @@ class Project < ApplicationRecord
         },
         payment_rules: {
           package_payment_rules: [],
-          rule:                  [
-            :decision_tables,
-            :formulas
+          rule:                  %i[
+            decision_tables
+            formulas
           ]
         }
       } # do |original, kopy|
@@ -191,7 +191,7 @@ class Project < ApplicationRecord
 
   def export_to_json
     to_json(
-      except:  [:created_at, :updated_at, :password, :user],
+      except:  %i[created_at updated_at password user],
       include: {
         payment_rules: {
           rule: {
@@ -201,7 +201,7 @@ class Project < ApplicationRecord
           }
         },
         packages:      {
-          except:  [:created_at, :updated_at],
+          except:  %i[created_at updated_at],
           include: {
             rules: {
               include: {

@@ -14,8 +14,7 @@
 require "rails_helper"
 
 RSpec.describe Formula, type: :model do
-
-  it 'enables paper trail' do
+  it "enables paper trail" do
     is_expected.to be_versioned
   end
 
@@ -25,7 +24,6 @@ RSpec.describe Formula, type: :model do
   end
 
   describe "Code validation" do
-
     it "should accept snake_case" do
       formula = new_formula(code: "snake_case", expression: "45")
       formula.valid?
@@ -40,7 +38,6 @@ RSpec.describe Formula, type: :model do
   end
 
   describe "Expression validation" do
-
     it "should accept activity expression" do
       formula = new_formula(expression: "variable - 456")
       expect(formula.valid?).to be true
