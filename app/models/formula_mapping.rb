@@ -12,8 +12,8 @@
 class FormulaMapping < ApplicationRecord
   include PaperTrailed
 
-  delegate :project_id, to: :activity
-  delegate :program_id, to: :activity
+  delegate :project_id, to: :formula
+  delegate :program_id, to: :formula
 
 
   validates :kind, presence: true, inclusion: {

@@ -15,5 +15,5 @@ class PackagePaymentRule < ApplicationRecord
   delegate :program_id, to: :package
 
   belongs_to :package
-  belongs_to :package_payment_rules, inverse_of: :rule
+  belongs_to :payment_rule, inverse_of: :package_payment_rules
 end

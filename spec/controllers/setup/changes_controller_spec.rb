@@ -26,8 +26,9 @@ RSpec.describe Setup::ChangesController, type: :controller do
 
     describe "#new" do
       it "should display a form for current project with a few default" do
-        project.update_attributes(dhis2_url: "http://new.url.be")
         with_versioning do
+          project
+          project.update_attributes(dhis2_url: "http://new.url.be")
           project.entity_group.update_attributes(name: "updategroup")
         end
         get :index, params: { project_id: project.id }
