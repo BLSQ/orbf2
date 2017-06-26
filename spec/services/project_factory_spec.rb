@@ -18,6 +18,7 @@ describe ProjectFactory do
       Program,
       ProjectAnchor,
       Dhis2Snapshot,
+      Dhis2Log,
       Version,
       PaperTrail::Version
     ].map(&:name).map(&:to_sym)
