@@ -20,7 +20,8 @@ describe ProjectFactory do
       Dhis2Snapshot,
       Dhis2Log,
       Version,
-      PaperTrail::Version
+      PaperTrail::Version,
+      PaperTrail::VersionAssociation
     ].map(&:name).map(&:to_sym)
     count_before = count_all_models
 

@@ -16,6 +16,7 @@
 
 class Package < ApplicationRecord
   include PaperTrailed
+  delegate :program_id, to: :package
 
   FREQUENCIES = %w(monthly quarterly).freeze
   KINDS = %w(single multi-groupset).freeze

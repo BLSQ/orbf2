@@ -61,6 +61,18 @@ class Rule < ApplicationRecord
     formulas.find { |f| f.code == code }
   end
 
+  # see PaperTrailed
+  delegate :project_id, to: :project
+  delegate :program_id, to: :project
+
+  def project
+    if activity_kind? ||  package_kind?
+      package.project
+    elsif payment_kind?
+      payment_rule.project
+    end
+  end
+
   def package_formula_uniqness
     formula_by_codes = formulas.group_by(&:code)
     if package_kind? && package.project
@@ -148,6 +160,8 @@ class Rule < ApplicationRecord
     extra_facts ||= [{}]
     extra_facts.reduce({}, :merge)
   end
+
+
 
   private
 

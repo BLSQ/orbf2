@@ -28,13 +28,4 @@ class PrivateController < ApplicationController
     flash[:failure] = "Sorry this project has been published you can't edit it anymore"
     redirect_to setup_project_path(params[:project_id])
   end
-
-  def info_for_paper_trail
-    project = current_project(project_scope: :fully_loaded)
-    if project
-      return { program_id: project.project_anchor.program_id, project_id: project.id }
-    else
-      return { program_id: current_user.program.id }
-    end
-  end
 end

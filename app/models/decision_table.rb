@@ -1,5 +1,9 @@
 class DecisionTable < ApplicationRecord
   include PaperTrailed
+  include PaperTrailed
+  delegate :project_id, to: :rule
+  delegate :program_id, to: :rule
+
   belongs_to :rule, inverse_of: :formulas
 
 

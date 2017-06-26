@@ -12,6 +12,7 @@
 
 class Activity < ApplicationRecord
   include PaperTrailed
+  delegate :program_id, to: :project
 
   belongs_to :project, inverse_of: :activities
   has_many :activity_states, dependent: :destroy

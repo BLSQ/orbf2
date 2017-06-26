@@ -13,6 +13,9 @@
 
 class Formula < ApplicationRecord
   include PaperTrailed
+  delegate :project_id, to: :rule
+  delegate :program_id, to: :rule
+
   belongs_to :rule, inverse_of: :formulas
 
   has_many :formula_mappings, dependent: :destroy, inverse_of: :formula

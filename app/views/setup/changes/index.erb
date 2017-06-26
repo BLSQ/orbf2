@@ -15,7 +15,7 @@
 		<tr>
 			<td><%= version.item_type %>-<%=version.item_id%></td>
       <td><%= version.event %></td>
-      <td><%= version.author.email %></td>
+      <td><%= version.author ? version.author.email : "System" %></td>
       <td><%= time_ago_in_words(version.created_at) %> </td>
 			<td>
         <% version.diffs.each do |attribute_name, change| %>

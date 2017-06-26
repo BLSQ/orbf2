@@ -18,10 +18,10 @@
 #
 
 class Project < ApplicationRecord
-  include PaperTrailed
+  has_paper_trail meta: { project_id:  :id, program_id: :program_id, item_type: "Project", item_id: :id }
+  delegate :program_id, to: :project_anchor
 
   validates :name, presence: true
-
   validates :dhis2_url, presence: true, url: true
   validates :user, presence: true
   validates :password, presence: true
@@ -34,6 +34,15 @@ class Project < ApplicationRecord
   belongs_to :original, foreign_key: "original_id", optional: true, class_name: Project.name
   has_many :clones, foreign_key: "original_id", class_name: Project.name, dependent: :destroy
   has_many :versions
+
+  # see PaperTrailed meta
+  def project_id
+    self.id
+  end
+
+  def item_type
+    "Project"
+  end
 
   def self.no_includes
     current_scope

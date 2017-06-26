@@ -2,7 +2,7 @@
 class Setup::FormulaMappingsController < PrivateController
   attr_reader :formula_mappings
   helper_method :formula_mappings
-  
+
   def new
     check_problems
     @formula_mappings = build_formula_mappings(to_options)
@@ -12,7 +12,6 @@ class Setup::FormulaMappingsController < PrivateController
     check_problems
 
     @formula_mappings = build_formula_mappings(to_options)
-
 
     @formula_mappings.mappings.each do |mapping|
       mapping.save! if mapping.valid?
@@ -79,7 +78,6 @@ class Setup::FormulaMappingsController < PrivateController
               mapping.external_reference = external_reference(mapping_by_key[[formula.id, activity.id]]) unless mapping_by_key.empty?
             end
             mapping
-
           end
         end
       end
@@ -111,6 +109,6 @@ class Setup::FormulaMappingsController < PrivateController
   end
 
   def external_reference(param)
-    param ? param[:external_reference]  : nil
+    param ? param[:external_reference] : nil
   end
 end

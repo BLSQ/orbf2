@@ -12,6 +12,10 @@
 class FormulaMapping < ApplicationRecord
   include PaperTrailed
 
+  delegate :project_id, to: :activity
+  delegate :program_id, to: :activity
+
+
   validates :kind, presence: true, inclusion: {
     in:      Rule::RULE_TYPES,
     message: "%{value} is not a valid see #{Rule::RULE_TYPES.join(',')}"

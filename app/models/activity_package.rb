@@ -12,6 +12,8 @@
 
 class ActivityPackage < ApplicationRecord
   include PaperTrailed
+  delegate :project_id, to: :package
+  delegate :program_id, to: :package
 
   belongs_to :package
   belongs_to :activity

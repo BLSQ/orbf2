@@ -89,8 +89,4 @@ class Setup::AutocompleteController < PrivateController
     end
     render json: @items
   end
-
-  def info_for_paper_trail
-    {}
-  end
 end

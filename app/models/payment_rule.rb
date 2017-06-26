@@ -10,6 +10,7 @@
 
 class PaymentRule < ApplicationRecord
   include PaperTrailed
+  delegate :program_id, to: :project
 
   FREQUENCIES = %w[monthly quarterly].freeze
 

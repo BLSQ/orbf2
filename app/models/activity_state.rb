@@ -16,6 +16,8 @@
 
 class ActivityState < ApplicationRecord
   include PaperTrailed
+  delegate :project_id, to: :activity
+  delegate :program_id, to: :activity
 
   belongs_to :activity, inverse_of: :activity_states
   belongs_to :state
