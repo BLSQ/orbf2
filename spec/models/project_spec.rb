@@ -23,6 +23,10 @@ RSpec.describe Project, type: :model do
   include_context "basic_context"
   include WebmockDhis2Helpers
 
+  it "enables paper trail" do
+    is_expected.to be_versioned
+  end
+
   let!(:project) { create(:project, project_anchor: program.build_project_anchor) }
 
   it "should validate url " do

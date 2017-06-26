@@ -18,8 +18,10 @@
 #
 
 class Project < ApplicationRecord
-  validates :name, presence: true
+  has_paper_trail meta: { project_id: :id, program_id: :program_id, item_type: "Project", item_id: :id }
+  delegate :program_id, to: :project_anchor
 
+  validates :name, presence: true
   validates :dhis2_url, presence: true, url: true
   validates :user, presence: true
   validates :password, presence: true
@@ -31,6 +33,16 @@ class Project < ApplicationRecord
   belongs_to :project_anchor
   belongs_to :original, foreign_key: "original_id", optional: true, class_name: Project.name
   has_many :clones, foreign_key: "original_id", class_name: Project.name, dependent: :destroy
+  has_many :versions
+
+  # see PaperTrailed meta
+  def project_id
+    id
+  end
+
+  def item_type
+    "Project"
+  end
 
   def self.no_includes
     current_scope
@@ -128,9 +140,9 @@ class Project < ApplicationRecord
         },
         payment_rules: {
           package_payment_rules: [],
-          rule:                  [
-            :decision_tables,
-            :formulas
+          rule:                  %i[
+            decision_tables
+            formulas
           ]
         }
       } # do |original, kopy|
@@ -179,7 +191,7 @@ class Project < ApplicationRecord
 
   def export_to_json
     to_json(
-      except:  [:created_at, :updated_at, :password, :user],
+      except:  %i[created_at updated_at password user],
       include: {
         payment_rules: {
           rule: {
@@ -189,7 +201,7 @@ class Project < ApplicationRecord
           }
         },
         packages:      {
-          except:  [:created_at, :updated_at],
+          except:  %i[created_at updated_at],
           include: {
             rules: {
               include: {
@@ -314,5 +326,9 @@ class Project < ApplicationRecord
       end
     end
     missing_activity_states
+  end
+
+  def states
+    State.all
   end
 end

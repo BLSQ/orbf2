@@ -65,3 +65,11 @@ textarea {
 .popover{
     max-width: 100%; /* Max Width of the popover (depending on the container!) */
 }
+
+del.differ {
+  background-color: rgba( red, .2);
+}
+
+ins.differ {
+  background-color: rgba( lightgreen, .2);
+}

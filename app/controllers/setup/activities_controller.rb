@@ -1,6 +1,5 @@
 class Setup::ActivitiesController < PrivateController
   helper_method :states, :activity
-
   attr_reader :activity, :states
 
   def new
@@ -25,7 +24,6 @@ class Setup::ActivitiesController < PrivateController
     @activity.update_attributes(params_activity)
     handle_action(:edit)
   end
-
 
   def mass_creation
     @missing_activity_states = current_project.missing_activity_states
@@ -56,21 +54,21 @@ class Setup::ActivitiesController < PrivateController
       end
       flash[:notice] = "Assign states to desired data elements "
       render template
-  elsif params[:commit] && params[:commit].starts_with?("Add indicators")
-        data_compound = DataCompound.from(current_project)
-        existing_element_ids = @activity.activity_states.map(&:external_reference)
-        selectable_element_ids = params[:indicators] - existing_element_ids
-        data_elements = selectable_element_ids.map { |element_id| data_compound.indicator(element_id) }
+    elsif params[:commit] && params[:commit].starts_with?("Add indicators")
+      data_compound = DataCompound.from(current_project)
+      existing_element_ids = @activity.activity_states.map(&:external_reference)
+      selectable_element_ids = params[:indicators] - existing_element_ids
+      data_elements = selectable_element_ids.map { |element_id| data_compound.indicator(element_id) }
 
-        data_elements.each do |element|
-          @activity.activity_states.build(
-            external_reference: element.id,
-            name:               element.name,
-            kind:               "indicator"
-          )
-        end
-        flash[:notice] = "Assign states to desired indicators"
-        render template
+      data_elements.each do |element|
+        @activity.activity_states.build(
+          external_reference: element.id,
+          name:               element.name,
+          kind:               "indicator"
+        )
+      end
+      flash[:notice] = "Assign states to desired indicators"
+      render template
     elsif @activity.invalid?
       flash[:failure] = "Some validation errors occured"
       render template
@@ -86,14 +84,14 @@ class Setup::ActivitiesController < PrivateController
   def params_activity
     params.require(:activity).permit(
       :name,
-      activity_states_attributes: [
-        :id,
-        :state_id,
-        :name,
-        :external_reference,
-        :kind,
-        :formula,
-        :_destroy
+      activity_states_attributes: %i[
+        id
+        state_id
+        name
+        external_reference
+        kind
+        formula
+        _destroy
       ]
     )
   end

@@ -15,8 +15,11 @@
 #
 
 class Package < ApplicationRecord
-  FREQUENCIES = %w(monthly quarterly).freeze
-  KINDS = %w(single multi-groupset).freeze
+  include PaperTrailed
+  delegate :program_id, to: :project
+
+  FREQUENCIES = %w[monthly quarterly].freeze
+  KINDS = %w[single multi-groupset].freeze
   belongs_to :project, inverse_of: :packages
   has_many :package_entity_groups, dependent: :destroy
   has_many :package_states, dependent: :destroy
@@ -55,7 +58,7 @@ class Package < ApplicationRecord
   end
 
   def missing_rules_kind
-    supported_rules_kind = %w(activity package)
+    supported_rules_kind = %w[activity package]
     supported_rules_kind.delete("activity") if activity_rule
     supported_rules_kind.delete("package") if package_rule
     supported_rules_kind
@@ -74,7 +77,6 @@ class Package < ApplicationRecord
   end
 
   def apply_for_org_unit(org_unit)
-
     group_ids = org_unit.organisation_unit_groups.map { |g| g["id"] }
     apply_to = package_entity_groups.any? { |group| group_ids.include?(group.organisation_unit_group_ext_ref) }
     apply_to

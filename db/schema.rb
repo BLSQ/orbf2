@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170613055923) do
+ActiveRecord::Schema.define(version: 20170623061841) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -231,6 +231,32 @@ ActiveRecord::Schema.define(version: 20170613055923) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
   end
 
+  create_table "version_associations", force: :cascade do |t|
+    t.integer "version_id"
+    t.string  "foreign_key_name", null: false
+    t.integer "foreign_key_id"
+    t.index ["foreign_key_name", "foreign_key_id"], name: "index_version_associations_on_foreign_key", using: :btree
+    t.index ["version_id"], name: "index_version_associations_on_version_id", using: :btree
+  end
+
+  create_table "versions", force: :cascade do |t|
+    t.string   "item_type",      null: false
+    t.integer  "item_id",        null: false
+    t.string   "event",          null: false
+    t.string   "whodunnit"
+    t.text     "old_object"
+    t.datetime "created_at"
+    t.integer  "transaction_id"
+    t.jsonb    "object"
+    t.integer  "program_id"
+    t.integer  "project_id"
+    t.jsonb    "object_changes"
+    t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id", using: :btree
+    t.index ["program_id"], name: "index_versions_on_program_id", using: :btree
+    t.index ["project_id"], name: "index_versions_on_project_id", using: :btree
+    t.index ["transaction_id"], name: "index_versions_on_transaction_id", using: :btree
+  end
+
   add_foreign_key "activities", "projects"
   add_foreign_key "activity_packages", "activities"
   add_foreign_key "activity_packages", "packages"
@@ -256,4 +282,6 @@ ActiveRecord::Schema.define(version: 20170613055923) do
   add_foreign_key "rules", "packages"
   add_foreign_key "rules", "payment_rules"
   add_foreign_key "users", "programs"
+  add_foreign_key "versions", "programs"
+  add_foreign_key "versions", "projects"
 end

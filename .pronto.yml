@@ -1,3 +1,4 @@
 all:
   exclude:
     - 'bin/**/*'
+    - db/migrate/**

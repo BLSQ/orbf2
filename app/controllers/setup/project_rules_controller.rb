@@ -44,7 +44,6 @@ class Setup::ProjectRulesController < PrivateController
 
   private
 
-
   def rule_params
     params.require(:payment_rule)
           .permit(
@@ -53,7 +52,7 @@ class Setup::ProjectRulesController < PrivateController
             rule_attributes: [
               :id,
               :name,
-              formulas_attributes: [:id, :code, :description, :expression, :_destroy]
+              formulas_attributes: %i[id code description expression _destroy]
             ]
           )
   end

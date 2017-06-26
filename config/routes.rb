@@ -23,7 +23,7 @@ Rails.application.routes.draw do
         resources :snapshots, only: [:create]
         resources :invoices, only: %i[new create]
         resources :formula_mappings, only: %i[new create]
-
+        resources :changes, only: [:index]
         resources :activities, only: %i[new create edit update mass_creation] do
           collection do
             get :mass_creation

@@ -88,6 +88,7 @@ GEM
       responders
       warden (~> 1.2.3)
     diff-lcs (1.2.5)
+    differ (0.1.2)
     docile (1.1.5)
     domain_name (0.5.20161129)
       unf (>= 0.0.5, < 1.0.0)
@@ -171,6 +172,9 @@ GEM
     octokit (4.7.0)
       sawyer (~> 0.8.0, >= 0.5.3)
     orm_adapter (0.5.0)
+    paper_trail (7.0.3)
+      activerecord (>= 4.0, < 5.2)
+      request_store (~> 1.1)
     parallel (1.11.2)
     parser (2.4.0.0)
       ast (~> 2.2)
@@ -254,6 +258,7 @@ GEM
       ffi (>= 0.5.0)
     redis (3.3.3)
     remotipart (1.3.1)
+    request_store (1.3.2)
     responders (2.3.0)
       railties (>= 4.2.0, < 5.1)
     rest-client (2.0.0)
@@ -389,6 +394,7 @@ DEPENDENCIES
   dentaku
   devise (~> 4.2.0)
   dhis2!
+  differ
   easy_diff
   factory_girl_rails (= 4.0)
   faker
@@ -402,6 +408,7 @@ DEPENDENCIES
   listen (~> 3.0.5)
   lograge
   memory_profiler
+  paper_trail
   pg (~> 0.18)
   pronto
   pronto-flay

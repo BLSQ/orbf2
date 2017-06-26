@@ -9,6 +9,9 @@
 #
 
 class PaymentRule < ApplicationRecord
+  include PaperTrailed
+  delegate :program_id, to: :project
+
   FREQUENCIES = %w[monthly quarterly].freeze
 
   belongs_to :project, inverse_of: :payment_rules

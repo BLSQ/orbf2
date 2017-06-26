@@ -11,9 +11,12 @@
 #
 
 class EntityGroup < ApplicationRecord
+  include PaperTrailed
   belongs_to :project
   validates :external_reference, presence: true
   validates :name, presence: true
+
+  delegate :program_id, to: :project
 
   def find_sibling_organisation_unit_groups
     dhis2 = project.dhis2_connection

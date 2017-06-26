@@ -1,0 +1,32 @@
+
+<h1>Show changes</h1>
+<table class="table">
+  <thead>
+    <tr>
+      <th>What</th>
+      <th>Event</th>
+      <th>Auteur</th>
+      <th>When</th>
+      <th>Change</th>
+    </tr>
+  </thead>
+	<tbody>
+	<% @versions.each do |version| %>
+		<tr>
+			<td><%= version.item_type %>-<%=version.item_id%></td>
+      <td><%= version.event %></td>
+      <td><%= version.author ? version.author.email : "System" %></td>
+      <td><%= time_ago_in_words(version.created_at) %> </td>
+			<td>
+        <% version.diffs.each do |attribute_name, change| %>
+           <%= attribute_name %> <br>
+           <ul>
+             <%= change.diff.format_as(:html).html_safe %>
+          </ul>
+        <%end%>
+     </td>
+		</tr>
+
+	<% end%>
+	</tbody>
+</table>

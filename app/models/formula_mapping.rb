@@ -9,15 +9,19 @@
 #  kind               :string           not null
 #
 
-class FormulaMapping  < ApplicationRecord
-    validates :kind, presence: true, inclusion: {
-      in:      Rule::RULE_TYPES,
-      message: "%{value} is not a valid see #{Rule::RULE_TYPES.join(',')}"
-    }
+class FormulaMapping < ApplicationRecord
+  include PaperTrailed
 
-    validates :external_reference, presence: true
-    belongs_to :formula, inverse_of: :formula_mappings
-    belongs_to :activity
+  delegate :project_id, to: :formula
+  delegate :program_id, to: :formula
 
 
+  validates :kind, presence: true, inclusion: {
+    in:      Rule::RULE_TYPES,
+    message: "%{value} is not a valid see #{Rule::RULE_TYPES.join(',')}"
+  }
+
+  validates :external_reference, presence: true
+  belongs_to :formula, inverse_of: :formula_mappings
+  belongs_to :activity
 end

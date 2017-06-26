@@ -34,7 +34,7 @@ class Setup::ProjectsController < PrivateController
     params.require(:project).permit(:name, :dhis2_url, :password, :user, :bypass_ssl)
   end
 
-  def current_project(options =  {raise_if_published: true})
+  def current_project(options = { raise_if_published: true })
     @current_project ||= current_project_anchor.projects.find(params[:id]) if params[:id]
     unless @current_project.nil?
       raise ReadonlyProjectError, "No more editable project is published" if @current_project.published? && options[:raise_if_published]

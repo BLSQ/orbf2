@@ -13,6 +13,8 @@
 #
 
 class Rule < ApplicationRecord
+  include PaperTrailed
+
   RULE_TYPES = %w[payment activity package].freeze
   belongs_to :package, optional: true, inverse_of: :rules
   belongs_to :payment_rule, optional: true, inverse_of: :rule
@@ -56,7 +58,19 @@ class Rule < ApplicationRecord
   end
 
   def formula(code)
-    formulas.find {|f| f.code == code}
+    formulas.find { |f| f.code == code }
+  end
+
+  # see PaperTrailed
+  delegate :project_id, to: :project
+  delegate :program_id, to: :project
+
+  def project
+    if activity_kind? || package_kind?
+      package.project
+    elsif payment_kind?
+      payment_rule.project
+    end
   end
 
   def package_formula_uniqness
@@ -101,7 +115,7 @@ class Rule < ApplicationRecord
     end
     if kind == "payment" && payment_rule.monthly?
       var_names << payment_rule.packages.flat_map(&:package_rule).map(&:formulas).flatten.map(&:code).map { |code| "#{code}_values" }
-      var_names << payment_rule.rule.formulas.map(&:code).map {|code| "#{code}_previous_values"}
+      var_names << payment_rule.rule.formulas.map(&:code).map { |code| "#{code}_previous_values" }
     end
     var_names.flatten
   end

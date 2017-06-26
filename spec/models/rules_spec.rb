@@ -1,17 +1,21 @@
 require "rails_helper"
 
 RSpec.describe Rule, kind: :model do
-  let(:quantity_package) {
+  it "enables paper trail" do
+    is_expected.to be_versioned
+  end
+
+  let(:quantity_package) do
     p = build(:package)
-    p.states <<  State.where(name: %w(Claimed Verified Tarif)).to_a
+    p.states << State.where(name: %w[Claimed Verified Tarif]).to_a
     p
-  }
-  let(:quality_package) {
+  end
+  let(:quality_package) do
     p = build(:package)
     p.states << State.where(name: ["Claimed", "Verified", "Max. Score"]).to_a
 
     p
-  }
+  end
   let(:valid_activity_quantity_rule) do
     rule = quantity_package.rules.build(
       name: "Quantité PMA",

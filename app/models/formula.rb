@@ -12,6 +12,10 @@
 #
 
 class Formula < ApplicationRecord
+  include PaperTrailed
+  delegate :project_id, to: :rule
+  delegate :program_id, to: :rule
+
   belongs_to :rule, inverse_of: :formulas
 
   has_many :formula_mappings, dependent: :destroy, inverse_of: :formula
@@ -29,7 +33,6 @@ class Formula < ApplicationRecord
     Rules::Solver.new.validate_expression(self) if code && description
   end
 
-
   def dependencies
     values_dependencies = rule.available_variables_for_values.select do |values|
       expression && expression.include?("%{#{values}}")
@@ -38,7 +41,10 @@ class Formula < ApplicationRecord
   end
 
   def find_or_build_mapping(mapping_attributes)
-    existing_mapping = formula_mappings.detect {|mapping| mapping.kind == mapping_attributes[:kind] && ( mapping_attributes[:activity] ? mapping.activity == mapping_attributes[:activity] : true)}
+    existing_mapping = formula_mappings.detect do |mapping|
+      mapping.kind == mapping_attributes[:kind] &&
+        (mapping_attributes[:activity] ? mapping.activity == mapping_attributes[:activity] : true)
+    end
     existing_mapping || formula_mappings.build(mapping_attributes)
   end
 
@@ -47,7 +53,6 @@ class Formula < ApplicationRecord
   end
 
   def formula_mapping(activity = nil)
-    formula_mappings.find {|mapping| mapping.activity == activity }
+    formula_mappings.find { |mapping| mapping.activity == activity }
   end
-
 end
