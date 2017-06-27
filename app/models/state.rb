@@ -12,6 +12,7 @@
 
 class State < ApplicationRecord
   validates :name, presence: true
+  belongs_to :project, inverse_of: :states
 
   def self.configurables(conf = "")
     if conf == ""

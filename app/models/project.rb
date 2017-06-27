@@ -26,6 +26,8 @@ class Project < ApplicationRecord
   validates :user, presence: true
   validates :password, presence: true
 
+  has_many :states, dependent: :destroy
+
   has_many :payment_rules, dependent: :destroy
   has_one :entity_group, dependent: :destroy
   has_many :packages, dependent: :destroy
@@ -326,9 +328,5 @@ class Project < ApplicationRecord
       end
     end
     missing_activity_states
-  end
-
-  def states
-    State.all
   end
 end
