@@ -11,7 +11,7 @@ class InvoicingRequest
   }.freeze
 
   def start_date_as_date
-    Date.parse("#{year}-#{(QUARTER_TO_MONTH[quarter.to_i]-2)}-01")
+    Date.parse("#{year}-#{(QUARTER_TO_MONTH[quarter.to_i] - 2)}-01")
   end
 
   def end_date_as_date

@@ -6,8 +6,6 @@ module Invoicing
       "#{package.name} #{frequency} #{solution}"
     end
 
-    def to_json(options)
-      to_h.to_json(options)
-    end
+    delegate :to_json, to: :to_h
   end
 end

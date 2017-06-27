@@ -3,12 +3,10 @@ class UrlValidator < ActiveModel::EachValidator
     return if value.blank?
     begin
       uri = URI.parse(value)
-      resp = uri.kind_of?(URI::HTTP)
+      resp = uri.is_a?(URI::HTTP)
     rescue URI::InvalidURIError
       resp = false
     end
-    unless resp == true
-      record.errors[attribute] << (options[:message] || "is not an url")
-    end
+    record.errors[attribute] << (options[:message] || "is not an url") unless resp == true
   end
 end

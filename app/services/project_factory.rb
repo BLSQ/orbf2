@@ -44,10 +44,10 @@ class ProjectFactory
           ]
         )
       ],
-      %w(claimed verified
+      %w[claimed verified
          difference_percentage quantity
          tarif amount
-         activity_name quantity_total_pma)
+         activity_name quantity_total_pma]
     )
 
     package_quantity_pca = new_package(
@@ -88,14 +88,14 @@ class ProjectFactory
           ]
         )
       ],
-      %w(claimed verified difference_percentage quantity tarif amount activity_name quantity_total_pca)
+      %w[claimed verified difference_percentage quantity tarif amount activity_name quantity_total_pca]
 
     )
 
     package_quality = new_package(
       "Quality",
       "quarterly",
-      %w(hospital_group_id fosa_group_id),
+      %w[hospital_group_id fosa_group_id],
       [
         Rule.new(
           name:     "Quality assessment",
@@ -140,7 +140,7 @@ class ProjectFactory
           ]
         )
       ],
-      %w(attributed_points max_points quality_technical_score_value activity_name)
+      %w[attributed_points max_points quality_technical_score_value activity_name]
 
     )
 
@@ -197,10 +197,10 @@ class ProjectFactory
           ]
         )
       ],
-      %w(claimed verified
+      %w[claimed verified
          difference_percentage quantity
          tarif amount
-         activity_name quantity_total)
+         activity_name quantity_total]
     )
 
     project.packages = [package_quantity_pma, package_quantity_pca, package_quality, package_perfomance_admin]
@@ -229,14 +229,14 @@ class ProjectFactory
       }
     )
     [package_quantity_pma, package_quality].each do |package|
-        payment_pma.package_payment_rules.build(package: package)
-        payment_pma.packages << package
+      payment_pma.package_payment_rules.build(package: package)
+      payment_pma.packages << package
     end
 
     package_quality.package_rule.formulas.each do |formula|
-      formula.formula_mappings.build(kind: formula.rule.kind, external_reference:"ext-#{formula.code}")
+      formula.formula_mappings.build(kind: formula.rule.kind, external_reference: "ext-#{formula.code}")
     end
-    #project.payment_rules.first.rule.payment_rule = project.payment_rules.first
+    # project.payment_rules.first.rule.payment_rule = project.payment_rules.first
 
     payment_pca = project.payment_rules.build(
       rule_attributes: {
@@ -262,10 +262,9 @@ class ProjectFactory
       }
     )
     [package_quantity_pca, package_quality].each do |package|
-        payment_pca.package_payment_rules.build(package: package)
-        payment_pca.packages << package
+      payment_pca.package_payment_rules.build(package: package)
+      payment_pca.packages << package
     end
-
 
     project
   end

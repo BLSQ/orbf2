@@ -1,6 +1,6 @@
 module Publishing
   class DummyInvoicePublisher
-    def publish(project, invoices)
+    def publish(_project, invoices)
       invoices.each do |invoice|
         invoice.dump_invoice(true)
         puts invoice.lines.join("\n")

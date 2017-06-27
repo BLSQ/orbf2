@@ -35,7 +35,7 @@ class CreateMissingDhis2ElementsWorker
       activity.activity_states.create(state: state, name: element.name, external_reference: element.id)
     end
 
-    # TODO package level state
+    # TODO: package level state
 
     SynchroniseDegDsWorker.perform_async(project_anchor_id)
   end

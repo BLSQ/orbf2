@@ -40,9 +40,8 @@ module Analytics
         ]
       end
       period_orgunits = values.map { |value| [value.period, value.org_unit] }.uniq
-      indicator_values  = parsed_expressions.map do |indicator_id, expressions_to_sum|
+      indicator_values = parsed_expressions.map do |indicator_id, expressions_to_sum|
         period_orgunits.map do |period, orgunit|
-
           # handle the dhjgLt7EYmu.se1qWfbtkmx part of {dhjgLt7EYmu.se1qWfbtkmx}+#{xtVtnuWBBLB}
           values_for_entity = expressions_to_sum.map do |expression|
             indexed_values[
@@ -55,7 +54,7 @@ module Analytics
 
           # handle the xtVtnuWBBLB part of {dhjgLt7EYmu.se1qWfbtkmx}+#{xtVtnuWBBLB}
           values_for_entity += expressions_to_sum.select { |e| e[:category_combo].nil? }
-                                                .map do |expression|
+                                                 .map do |expression|
             indexed_values_without_category[
               [expression[:data_element],
                period,
@@ -64,7 +63,7 @@ module Analytics
           end
           values_for_entity = values_for_entity.flatten.compact
           value = values_for_entity.map { |v| v["value"].to_f }.sum
-          #puts "calculating #{indicator_id} for pe:#{period} ou:#{orgunit}  => #{value} (#{expressions_to_sum}) <= #{values_for_entity}"
+          # puts "calculating #{indicator_id} for pe:#{period} ou:#{orgunit}  => #{value} (#{expressions_to_sum}) <= #{values_for_entity}"
           OpenStruct.new(
             data_element:          indicator_id,
             period:                period,

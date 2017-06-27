@@ -47,6 +47,6 @@ class Setup::IncentivesController < PrivateController
                   :start_date,
                   :end_date,
                   entity_groups:                  [],
-                  activity_incentives_attributes: [:value, :name, :external_reference])
+                  activity_incentives_attributes: %i[value name external_reference])
   end
 end

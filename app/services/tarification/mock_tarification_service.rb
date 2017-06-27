@@ -1,6 +1,6 @@
 module Tarification
   class MockTarificationService
-    def tarif(entity, date, activity, values)
+    def tarif(entity, date, activity, _values)
       tarif = nil
       if activity.id < 50
         # quantité PMA

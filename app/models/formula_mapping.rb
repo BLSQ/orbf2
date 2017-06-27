@@ -15,7 +15,6 @@ class FormulaMapping < ApplicationRecord
   delegate :project_id, to: :formula
   delegate :program_id, to: :formula
 
-
   validates :kind, presence: true, inclusion: {
     in:      Rule::RULE_TYPES,
     message: "%{value} is not a valid see #{Rule::RULE_TYPES.join(',')}"

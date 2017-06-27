@@ -56,8 +56,7 @@ module Decision
         @headers
       end
     end
-    def rules
-      @rules
-    end
+
+    attr_reader :rules
   end
 end

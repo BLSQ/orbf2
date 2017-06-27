@@ -28,7 +28,7 @@ class ProjectAnchor < ApplicationRecord
   end
 
   def nearest_pyramid_for(date)
-    kinds = %i(organisation_units organisation_unit_groups organisation_unit_group_sets)
+    kinds = %i[organisation_units organisation_unit_groups organisation_unit_group_sets]
     pyramid_snapshots = dhis2_snapshots.select("id, year, month, kind").where(kind: kinds)
 
     candidates = pyramid_snapshots.sort_by { |snap| [snap.kind, [snap.year, snap.month].join("-")] }
@@ -45,7 +45,7 @@ class ProjectAnchor < ApplicationRecord
   end
 
   def nearest_data_compound_for(date)
-    kinds = %i(data_elements data_element_groups indicators)
+    kinds = %i[data_elements data_element_groups indicators]
     pyramid_snapshots = dhis2_snapshots.select("id, year, month, kind").where(kind: kinds)
 
     candidates = pyramid_snapshots.sort_by { |snap| [snap.kind, [snap.year, snap.month].join("-")] }
@@ -71,14 +71,15 @@ class ProjectAnchor < ApplicationRecord
     past_candidate = past_candidates.first
     return past_candidate if past_candidate
     futur_candidates = snapshots.select { |snapshot| snapshot.snapshoted_at > date }
-                                .sort_by { |snapshot|
-                                  snapshot.snapshoted_at.to_time - time }
+                                .sort_by do |snapshot|
+                                  snapshot.snapshoted_at.to_time - time
+                                end
 
     futur_candidates.first
   end
 
   def pyramid_for(date)
-    kinds = %i(organisation_units organisation_unit_groups organisation_unit_group_sets)
+    kinds = %i[organisation_units organisation_unit_groups organisation_unit_group_sets]
     pyramid_snapshots = dhis2_snapshots
                         .where(kind: kinds)
                         .where(month: date.month)
@@ -119,7 +120,7 @@ class ProjectAnchor < ApplicationRecord
 
   def data_compound_for(date)
     snapshots = dhis2_snapshots
-                .where(kind: %i(data_elements data_element_groups indicators))
+                .where(kind: %i[data_elements data_element_groups indicators])
                 .where(month: date.month)
                 .where(year: date.year)
 

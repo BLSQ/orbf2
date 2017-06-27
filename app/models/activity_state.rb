@@ -26,18 +26,18 @@ class ActivityState < ApplicationRecord
   validates :external_reference, presence: true, if: :kind_data_element?
   validates :name, presence: true
 
-  validates_uniqueness_of :state_id, scope: [:activity_id]
+  validates :state_id, uniqueness: { scope: [:activity_id] }
 
   def kind_data_element?
-    kind == 'data_element'
+    kind == "data_element"
   end
 
   def kind_formula?
-    kind == 'formula'
+    kind == "formula"
   end
 
   def kind_indicator?
-    kind == 'indicator'
+    kind == "indicator"
   end
 
   def to_unified_h
@@ -48,5 +48,4 @@ class ActivityState < ApplicationRecord
       state:              state_id
     }
   end
-
 end

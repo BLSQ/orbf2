@@ -23,11 +23,10 @@ class Setup::InvoicesController < PrivateController
     @datacompound = project.project_anchor.nearest_data_compound_for(invoicing_request.end_date_as_date)
     @datacompound ||= DataCompound.from(project)
 
-
     org_unit = pyramid.org_unit(invoicing_request.entity)
     @org_unit = org_unit
 
-    render :new and return unless org_unit
+    render(:new) && return unless org_unit
 
     @org_unit_summaries = [
       org_unit.name,
@@ -67,7 +66,7 @@ class Setup::InvoicesController < PrivateController
       options
     )[org_unit.id]
 
-    invoicing_request.invoices = invoicing_request.invoices.sort_by {|i| i.date}
+    invoicing_request.invoices = invoicing_request.invoices.sort_by(&:date)
 
     render :new
   end

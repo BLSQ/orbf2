@@ -9,19 +9,11 @@ class ActivityIncentive
     @activity ||= ActivityForm.new
   end
 
-  def external_reference=(external_reference)
-    self.activity.external_reference = external_reference
-  end
+  delegate :external_reference=, to: :activity
 
-  def external_reference
-    self.activity.external_reference
-  end
+  delegate :external_reference, to: :activity
 
-  def name=(name)
-    self.activity.name = name
-  end
+  delegate :name=, to: :activity
 
-  def name
-    self.activity.name
-  end
+  delegate :name, to: :activity
 end

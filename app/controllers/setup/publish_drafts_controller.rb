@@ -5,7 +5,8 @@ class Setup::PublishDraftsController < PrivateController
     redirect_to setup_project_path(new_project.id)
   end
 
-private
+  private
+
   def project_params
     params.require(:project).permit(:publish_date)
   end

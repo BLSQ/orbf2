@@ -59,14 +59,13 @@ class Step
              model:  step_package.todo? ? nil : project.packages)
   end
 
-
-def self.invoicing(project, step_package, step_rules)
-  step_rules_todo = rules_todo(project, step_package)
-  Step.new(name:   "Invoicing",
-           status: step_rules_todo ? :todo : :done,
-           kind:   :invoicing,
-           model:  project)
-end
+  def self.invoicing(project, step_package, _step_rules)
+    step_rules_todo = rules_todo(project, step_package)
+    Step.new(name:   "Invoicing",
+             status: step_rules_todo ? :todo : :done,
+             kind:   :invoicing,
+             model:  project)
+  end
 
   def self.incentives(project, step_package, step_rules)
     step_rules_todo = rules_todo(project, step_package)

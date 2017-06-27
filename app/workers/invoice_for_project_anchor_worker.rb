@@ -2,9 +2,8 @@
 class InvoiceForProjectAnchorWorker
   include Sidekiq::Worker
 
-  def perform(project_anchor_id, year, quarter,  selected_org_unit_ids = nil, options = {})
-
-    default_options =  {
+  def perform(project_anchor_id, year, quarter, selected_org_unit_ids = nil, options = {})
+    default_options = {
       slice_size: 25
     }
 
@@ -16,12 +15,10 @@ class InvoiceForProjectAnchorWorker
 
     puts "contracted_entities #{contracted_entities.size}"
 
-    if selected_org_unit_ids
-      contracted_entities = contracted_entities & selected_org_unit_ids
-    end
+    contracted_entities &= selected_org_unit_ids if selected_org_unit_ids
 
     contracted_entities.each_slice(options[:slice_size]).each do |org_unit_ids|
-      #currently not doing it async but might be needed
+      # currently not doing it async but might be needed
       InvoicesForEntitiesWorker.new.perform(project_anchor_id, year, quarter, org_unit_ids, options)
     end
   end

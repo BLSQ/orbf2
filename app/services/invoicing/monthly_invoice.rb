@@ -1,15 +1,11 @@
 module Invoicing
   class MonthlyInvoice < Struct.new(:date, :entity, :project, :activity_results, :package_results, :payment_result)
-
-
     def puts(message = "")
       @lines ||= []
       @lines << message
     end
 
-    def lines
-      @lines
-    end
+    attr_reader :lines
 
     def dump_invoice(debug = false)
       return unless debug
@@ -28,7 +24,7 @@ module Invoicing
             next unless package_result.solution[item]
             [item, d_to_s(item, package_result.solution[item])].join("=")
           end
-          puts "#{package_line.compact.join("\n")}"
+          puts package_line.compact.join("\n").to_s
         end
       end
 
@@ -42,13 +38,11 @@ module Invoicing
       puts
     end
 
-    def d_to_s(item, decimal)
-      return "%.2f" % decimal if decimal.is_a? Numeric
+    def d_to_s(_item, decimal)
+      return format("%.2f", decimal) if decimal.is_a? Numeric
       decimal
     end
 
-    def to_json(options)
-      to_h.to_json(options)
-    end
+    delegate :to_json, to: :to_h
   end
 end

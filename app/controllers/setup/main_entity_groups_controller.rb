@@ -1,6 +1,5 @@
 class Setup::MainEntityGroupsController < PrivateController
   def create
-
     unless current_project
       flash[:alert] = "Please configure your dhis2 settings first !"
       return redirect_to(root_path)

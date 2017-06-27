@@ -13,7 +13,6 @@ module Analytics
     def entities; end
 
     def activity_and_values(package, date)
-
       org_unit_ids = @org_units_by_package[package].map(&:id)
 
       values = package.activities.map do |activity|

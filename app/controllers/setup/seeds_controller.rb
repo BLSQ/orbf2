@@ -21,7 +21,7 @@ class Setup::SeedsController < PrivateController
     hospital_group = { name: "Hospital",       organisation_unit_group_ext_ref: "tDZVQ1WtwpA" }
     clinic_group = {   name: "Clinic",         organisation_unit_group_ext_ref: "RXL3lPSK8oG" }
     admin_group = {    name: "Administrative", organisation_unit_group_ext_ref: "w0gFTTmsUcF" }
-    default_quantity_states = State.where(name: %w(Claimed Verified Tarif)).to_a
+    default_quantity_states = State.where(name: %w[Claimed Verified Tarif]).to_a
     default_quality_states = State.where(name: ["Claimed", "Verified", "Max. Score"]).to_a
     default_performance_states = State.where(name: ["Claimed", "Max. Score", "Budget"]).to_a
 
@@ -30,23 +30,23 @@ class Setup::SeedsController < PrivateController
     update_package_with_dhis2(
       project.packages[0], suffix, default_quantity_states,
       [clinic_group],
-      %w(FTRrcoaog83 P3jJH5Tu5VC FQ2o8UBlcrS M62VHgYT2n0)
+      %w[FTRrcoaog83 P3jJH5Tu5VC FQ2o8UBlcrS M62VHgYT2n0]
     )
     update_package_with_dhis2(
       project.packages[1], suffix, default_quantity_states,
       [hospital_group],
-      %w(FTRrcoaog83 P3jJH5Tu5VC FQ2o8UBlcrS M62VHgYT2n0)
+      %w[FTRrcoaog83 P3jJH5Tu5VC FQ2o8UBlcrS M62VHgYT2n0]
     )
     update_package_with_dhis2(
       project.packages[2], suffix, default_quality_states,
       [clinic_group, hospital_group],
-      %w(p4K11MFEWtw wWy5TE9cQ0V r6nrJANOqMw a0WhmKHnZ6J nXJJZNVAy0Y hnwWyM4gDSg CecywZWejT3 bVkFujnp3F2)
+      %w[p4K11MFEWtw wWy5TE9cQ0V r6nrJANOqMw a0WhmKHnZ6J nXJJZNVAy0Y hnwWyM4gDSg CecywZWejT3 bVkFujnp3F2]
     )
 
     update_package_with_dhis2(
       project.packages[3], suffix, default_performance_states,
       [admin_group],
-      %w(p4K11MFEWtw wWy5TE9cQ0V r6nrJANOqMw a0WhmKHnZ6J nXJJZNVAy0Y hnwWyM4gDSg CecywZWejT3 bVkFujnp3F2)
+      %w[p4K11MFEWtw wWy5TE9cQ0V r6nrJANOqMw a0WhmKHnZ6J nXJJZNVAy0Y hnwWyM4gDSg CecywZWejT3 bVkFujnp3F2]
     )
 
     project.packages.each(&:save!)

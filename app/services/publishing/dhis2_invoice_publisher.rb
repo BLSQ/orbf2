@@ -16,8 +16,8 @@ module Publishing
     end
 
     def payment_values(invoices)
-      invoices.select{ |invoice| invoice.payment_result}.map do |invoice|
-        invoice.payment_result.payment_rule.rule.formulas.select {|f| f.formula_mapping }.map do |formula|
+      invoices.select(&:payment_result).map do |invoice|
+        invoice.payment_result.payment_rule.rule.formulas.select(&:formula_mapping).map do |formula|
           mapping = formula.formula_mapping
           {
             dataElement: mapping.external_reference,
@@ -33,9 +33,9 @@ module Publishing
     def package_values(invoices)
       invoices.map do |invoice|
         invoice.package_results.map do |package_result|
-          package_result.package.package_rule.formulas.select {|f| f.formula_mapping}.map do |formula|
+          package_result.package.package_rule.formulas.select(&:formula_mapping).map do |formula|
             mapping = formula.formula_mapping
-            next if package_result.frequency!=nil && package_result.frequency != package_result.package.frequency
+            next if !package_result.frequency.nil? && package_result.frequency != package_result.package.frequency
 
             {
               dataElement: mapping.external_reference,
@@ -59,7 +59,7 @@ module Publishing
               mapping = formula.formula_mapping(activity)
               {
                 dataElement: mapping.external_reference,
-                orgUnit:      invoice.entity.id,
+                orgUnit:     invoice.entity.id,
                 period:      format_to_dhis_period(activity_result.date, package.frequency),
                 value:       activity_result.solution[formula.code],
                 comment:     "A-#{formula.code}-#{activity.name}"
@@ -105,6 +105,5 @@ module Publishing
       raise if month.to_i > 12 || month.to_i < 1
       MONTH_TO_QUARTER[month.to_i]
     end
-
   end
 end
