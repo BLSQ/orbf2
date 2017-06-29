@@ -17,7 +17,7 @@ RSpec.describe Setup::SetupController, type: :controller do
     it "should display steps when Dhis2 not set" do
       get :index
       expect(response).to have_http_status(:success)
-      expect(setup.steps.size).to eq 8
+      expect(setup.steps.size).to eq 9
       expect(setup.steps.all?(&:todo?)).to eq true
     end
 
@@ -45,7 +45,7 @@ RSpec.describe Setup::SetupController, type: :controller do
       project
       get :index, project_id: project.id
       expect(response).to have_http_status(:success)
-      expect(setup.steps.map(&:todo?)).to eq [false, true, true, true, true, true, true, true]
+      expect(setup.steps.map(&:todo?)).to eq [false, true, true, true, true, true, true, true, true]
     end
 
     it "should display packages group when main entity group" do
@@ -54,7 +54,7 @@ RSpec.describe Setup::SetupController, type: :controller do
 
       get :index, project_id: project.id
       expect(response).to have_http_status(:success)
-      expect(setup.steps.map(&:todo?)).to eq [false, false, true, true, true, true, true, true]
+      expect(setup.steps.map(&:todo?)).to eq [false, false, true, true, true, true, true, true, true]
     end
 
     it "should display rules group packages exist" do
@@ -72,7 +72,7 @@ RSpec.describe Setup::SetupController, type: :controller do
 
       get :index, project_id: project.id
       expect(response).to have_http_status(:success)
-      expect(setup.steps.map(&:todo?)).to eq [false, false, true, true, true, true, true, true]
+      expect(setup.steps.map(&:todo?)).to eq [false, false, true, true, true, true, true, true, true]
     end
   end
 end

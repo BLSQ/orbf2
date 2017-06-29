@@ -5,7 +5,8 @@ class Step
   def self.get_steps(project)
     step_connection = connection(project.project_anchor)
     step_entities = entities(project, step_connection)
-    step_activities = activities(project, step_entities)
+    step_states = states(project, step_entities)
+    step_activities = activities(project, step_states)
     step_packages = packages(project, step_activities, step_connection)
     step_rules = rules(project, step_packages)
     step_incentives = incentives(project, step_packages, step_rules)
@@ -14,6 +15,7 @@ class Step
 
     [step_connection,
      step_entities,
+     step_states,
      step_activities,
      step_packages,
      step_rules,
@@ -37,11 +39,18 @@ class Step
              model:  step_connection.todo? ? nil : project.entity_group || project.build_entity_group)
   end
 
-  def self.activities(project, step_entities)
+  def self.states(project, step_entities)
+    Step.new(name:   "States",
+             status: step_entities.todo? || project.states.empty? ? :todo : :done,
+             kind:   :states,
+             model:  project)
+  end
+
+  def self.activities(project, step_states)
     Step.new(name:   "Activities",
-             status: step_entities.todo? || project.activities.empty? ? :todo : :done,
+             status: step_states.todo? || project.activities.empty? ? :todo : :done,
              kind:   :activities,
-             model:  step_entities.todo? ? nil : project.activities)
+             model:  step_states.todo? ? nil : project.activities)
   end
 
   def self.packages(project, step_activities, step_connection)

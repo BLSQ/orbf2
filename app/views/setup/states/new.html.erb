@@ -1,0 +1,4 @@
+<h1>Create a new state</h1>
+<%= simple_form_for(state,  url: setup_project_states_path(state.project), method: :post) do |f| %>
+  <%= render 'form', f: f %>
+<% end %>
