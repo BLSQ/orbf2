@@ -35,10 +35,8 @@ shared_context "basic_context" do
       project.states.build(state)
     end
 
-    claimed_state = project.states.find_by(name: "Claimed")
-    verified_state = project.states.find_by(name: "Verified")
-    tarif_state = project.states.find_by(name: "Tarif")
-    max_score_state = project.states.find_by(name: "Max. Score")
+    claimed_state = project.states.find {|s| s.name == "Claimed"}
+    tarif_state = project.states.find {|s| s.name == "Tarif"}
 
     activity_1 = project.activities.build(
       project: project,
@@ -73,8 +71,9 @@ shared_context "basic_context" do
     project.packages[0].activity_rule.decision_tables.build(content: fixture_content(:scorpio, "decision_table.csv"))
 
     default_quantity_states = project.states.select { |s| %w[Claimed Verified Tarif].include?(s.name) }.to_a
-    default_quality_states = project.states.select { |s| %w[Claimed Verified Max. Score].include?(s.name) }.to_a
+    default_quality_states = project.states.select { |s| ["Claimed","Verified","Max. Score"].include?(s.name) }.to_a
     default_performance_states = project.states.select { |s| ["Claimed", "Max. Score", "Budget"].include?(s.name) }.to_a
+
     suffix = ""
     update_package_with_dhis2(
       project.packages[0], suffix, default_quantity_states,
