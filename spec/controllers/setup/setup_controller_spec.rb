@@ -30,6 +30,9 @@ RSpec.describe Setup::SetupController, type: :controller do
       user.program = program
       user.save!
       user.reload
+      ["Price"].each do |state_name|
+        project.states.create(name: state_name, configurable: true)
+      end
       project
     end
 
@@ -54,7 +57,7 @@ RSpec.describe Setup::SetupController, type: :controller do
 
       get :index, project_id: project.id
       expect(response).to have_http_status(:success)
-      expect(setup.steps.map(&:todo?)).to eq [false, false, true, true, true, true, true, true, true]
+      expect(setup.steps.map(&:todo?)).to eq [false, false, false, true, true, true, true, true, true]
     end
 
     it "should display rules group packages exist" do
@@ -72,7 +75,7 @@ RSpec.describe Setup::SetupController, type: :controller do
 
       get :index, project_id: project.id
       expect(response).to have_http_status(:success)
-      expect(setup.steps.map(&:todo?)).to eq [false, false, true, true, true, true, true, true, true]
+      expect(setup.steps.map(&:todo?)).to eq [false, false, false, true, true, true, true, true, true]
     end
   end
 end

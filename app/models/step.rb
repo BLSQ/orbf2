@@ -2,7 +2,7 @@ class Step
   include ActiveModel::Model
   attr_accessor(:name, :status, :hint, :kind, :highlighted, :model)
 
-  def self.get_steps(project)
+  def self.steps(project)
     step_connection = connection(project.project_anchor)
     step_entities = entities(project, step_connection)
     step_states = states(project, step_entities)
@@ -21,7 +21,7 @@ class Step
      step_rules,
      step_incentives,
      step_invoicing,
-     step_publish]
+     step_publish].compact
   end
 
   def self.connection(current_project_anchor)
@@ -77,6 +77,7 @@ class Step
   end
 
   def self.incentives(project, step_package, step_rules)
+    return nil if project.states.configurables(true).none? && project.states.any?
     step_rules_todo = rules_todo(project, step_package)
     Step.new(name:   "Incentive Configuration",
              status: step_rules_todo ? :todo : :done,
