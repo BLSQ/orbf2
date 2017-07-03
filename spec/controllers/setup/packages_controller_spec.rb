@@ -54,7 +54,7 @@ RSpec.describe Setup::PackagesController, type: :controller do
 
       post :create, params: {
         "project_id"    => project.id,
-        "data_elements" => { State.find_by(name: "Tarif").id.to_s => { external_reference: "FTRrcoaog83" } },
+        "data_elements" => { project.state(:tarif).id.to_s => { external_reference: "FTRrcoaog83" } },
         "package"       => {
           "name"          => "azeaze",
           "state_ids"     => state_ids,

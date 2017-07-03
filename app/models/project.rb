@@ -46,6 +46,10 @@ class Project < ApplicationRecord
     "Project"
   end
 
+  def state(code)
+    states.find {|state| state.code == code.to_s}
+  end
+
   def self.no_includes
     current_scope
   end

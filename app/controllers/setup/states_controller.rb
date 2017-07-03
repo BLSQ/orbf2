@@ -5,7 +5,7 @@ class Setup::StatesController < PrivateController
   def create
     @state = current_project.states.build(state_params)
     if @state.save
-      flash[:notice] = "Rule created !"
+      flash[:notice] = "State created !"
       redirect_to(root_path)
     else
       render action: "new"
