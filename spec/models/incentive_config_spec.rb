@@ -8,14 +8,14 @@ RSpec.describe IncentiveConfig, type: :model do
     let(:project) { full_project }
     let(:incentives) do
       incentive_config = IncentiveConfig.new
-      incentive_config.state = project.states.find_by(name: %w(Tarif))
+      incentive_config.state = project.states.find_by(name: %w[Tarif])
       incentive_config.project = ProjectFactory.new.build(
         dhis2_url:  "https://play.dhis2.org/demo",
         user:       "admin",
         password:   "district",
         bypass_ssl: false
       )
-      default_quantity_states = project.states.where(name: %w(Claimed Verified Tarif)).to_a
+      default_quantity_states = project.states.where(name: %w[Claimed Verified Tarif]).to_a
       incentive_config.package = incentive_config.project.packages[0]
       incentive_config.package.states << default_quantity_states
       incentive_config.start_date = "2016-01"
@@ -30,7 +30,7 @@ RSpec.describe IncentiveConfig, type: :model do
     end
 
     it "should reject states belong to project configurable states" do
-      incentives.state = project.states.find_by(name: %w(Budget))
+      incentives.state = project.states.find_by(name: %w[Budget])
       incentives.valid?
       expect(incentives.errors.full_messages).to eq ["State Budget is not associated to selected package. Quantity PMA has Tarif states"]
     end

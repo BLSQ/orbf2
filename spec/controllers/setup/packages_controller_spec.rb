@@ -19,7 +19,7 @@ RSpec.describe Setup::PackagesController, type: :controller do
     end
     let(:project) do
       project = build :project
-      ["claimed", "declared","tarif"].each do |state_name|
+      %w[claimed declared tarif].each do |state_name|
         project.states.build(name: state_name)
       end
       project.project_anchor = program.build_project_anchor
