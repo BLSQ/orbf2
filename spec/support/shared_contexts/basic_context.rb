@@ -21,10 +21,22 @@ shared_context "basic_context" do
     clinic_group = {   name: "Clinic",         organisation_unit_group_ext_ref: "RXL3lPSK8oG" }
     admin_group = {    name: "Administrative", organisation_unit_group_ext_ref: "w0gFTTmsUcF" }
 
-    claimed_state = State.find_by(name: "Claimed")
-    verified_state = State.find_by(name: "Verified")
-    tarif_state = State.find_by(name: "Tarif")
-    max_score_state = State.find_by(name: "Max. Score")
+    [
+      { name: "Claimed",           configurable: false,  level: "activity" },
+      { name: "Verified",          configurable: false,  level: "activity" },
+      { name: "Validated",         configurable: false,  level: "activity" },
+      { name: "Max. Score",        configurable: true,   level: "activity" },
+      { name: "Tarif",             configurable: true,   level: "activity" },
+      { name: "Budget",            configurable: true,   level: "package"  },
+      { name: "Remoteness Bonus",  configurable: false,  level: "package" },
+      { name: "Applicable Points", configurable: false, level: "activity" },
+      { name: "Waiver",            configurable: false, level: "activity" }
+    ].each do |state|
+      project.states.build(state)
+    end
+
+    claimed_state = project.states.find { |s| s.name == "Claimed" }
+    tarif_state = project.states.find { |s| s.name == "Tarif" }
 
     activity_1 = project.activities.build(
       project: project,
@@ -58,9 +70,10 @@ shared_context "basic_context" do
 
     project.packages[0].activity_rule.decision_tables.build(content: fixture_content(:scorpio, "decision_table.csv"))
 
-    default_quantity_states = State.where(name: %w[Claimed Verified Tarif]).to_a
-    default_quality_states = State.where(name: ["Claimed", "Verified", "Max. Score"]).to_a
-    default_performance_states = State.where(name: ["Claimed", "Max. Score", "Budget"]).to_a
+    default_quantity_states = project.states.select { |s| %w[Claimed Verified Tarif].include?(s.name) }.to_a
+    default_quality_states = project.states.select { |s| ["Claimed", "Verified", "Max. Score"].include?(s.name) }.to_a
+    default_performance_states = project.states.select { |s| ["Claimed", "Max. Score", "Budget"].include?(s.name) }.to_a
+
     suffix = ""
     update_package_with_dhis2(
       project.packages[0], suffix, default_quantity_states,

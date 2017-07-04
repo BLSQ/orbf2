@@ -21,6 +21,7 @@ Rails.application.routes.draw do
       resources :seeds, only: [:index] if Rails.env.development? || Rails.env.dev?
       resources :projects, only: %i[create update] do
         resources :snapshots, only: [:create]
+        resources :states, only: %i[new create]
         resources :invoices, only: %i[new create]
         resources :formula_mappings, only: %i[new create]
         resources :changes, only: [:index]

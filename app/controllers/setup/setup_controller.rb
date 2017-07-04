@@ -20,7 +20,7 @@ class Setup
         @project = current_project_anchor.projects.fully_loaded.find(params[:project_id])
       end
       project&.publish_date = Time.zone.today.to_date.strftime("%Y-%m-%d")
-      @setup = Setup.new(Step.get_steps(project))
+      @setup = Setup.new(Step.steps(project))
     end
   end
 end

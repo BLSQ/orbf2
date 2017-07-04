@@ -12,6 +12,9 @@
 
 class State < ApplicationRecord
   validates :name, presence: true
+  belongs_to :project, inverse_of: :states
+
+  validates :name, uniqueness: { scope: :project_id, message: "should be unique per project" }
 
   def self.configurables(conf = "")
     if conf == ""

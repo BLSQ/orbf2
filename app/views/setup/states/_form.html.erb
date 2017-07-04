@@ -1,0 +1,7 @@
+
+
+<%= f.input :name %>
+<%= f.input :configurable %>
+<p>leave uncheck if defined by decision table</p>
+<%= f.button :submit, class: "btn btn-success" %>
+<%= link_to "Cancel and back to setup", root_path(state.project) ,class: "btn btn-default"%>

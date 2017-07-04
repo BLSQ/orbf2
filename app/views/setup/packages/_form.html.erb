@@ -32,9 +32,9 @@
 </div>
 
 
-<%= f.association :states, collection: State.configurables(), as: :check_boxes %>
+<%= f.association :states, collection: package.project.states, as: :check_boxes %>
 
-<% State.where(level: "package").each do |state| %>
+<% package.project.states.where(level: "package").each do |state| %>
 <div class="row">
     <div class="col-md-6">
       <div class="form-group">

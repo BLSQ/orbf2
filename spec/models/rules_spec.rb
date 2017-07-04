@@ -4,16 +4,22 @@ RSpec.describe Rule, kind: :model do
   it "enables paper trail" do
     is_expected.to be_versioned
   end
+  let(:project) do
+    project = build(:project)
+    %w[Claimed Verified Tarif].each do |state_name|
+      project.states.build(name: state_name)
+    end
+    project
+  end
 
   let(:quantity_package) do
-    p = build(:package)
-    p.states << State.where(name: %w[Claimed Verified Tarif]).to_a
+    p = project.packages.build
+    p.states << p.project.states.select { |state| %w[Claimed Verified Tarif].include?(state.name) }.to_a
     p
   end
   let(:quality_package) do
-    p = build(:package)
-    p.states << State.where(name: ["Claimed", "Verified", "Max. Score"]).to_a
-
+    p = project.packages.build
+    p.states << p.project.states.select { |state| ["Claimed", "Verified", "Max. Score"].include?(state.name) }.to_a
     p
   end
   let(:valid_activity_quantity_rule) do

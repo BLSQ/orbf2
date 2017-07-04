@@ -19,6 +19,9 @@ RSpec.describe Setup::PackagesController, type: :controller do
     end
     let(:project) do
       project = build :project
+      %w[claimed declared tarif].each do |state_name|
+        project.states.build(name: state_name)
+      end
       project.project_anchor = program.build_project_anchor
       project.save!
       user.program = program
@@ -37,7 +40,7 @@ RSpec.describe Setup::PackagesController, type: :controller do
     it "should create a package based on params" do
       project
 
-      state_ids = State.all.map(&:id).map(&:to_s).slice(0, 3)
+      state_ids = project.states.map(&:id).map(&:to_s).slice(0, 3)
       expect(state_ids.size).to eql 3
       stub_request(:post, "#{project.dhis2_url}/api/metadata")
         .with(body: "{\"dataElementGroups\":[{\"name\":\"azeaze\",\"shortName\":\"azeaze\",\"code\":\"azeaze\",\"dataElements\":[{\"id\":\"FTRrcoaog83\"}]}]}")
@@ -51,7 +54,7 @@ RSpec.describe Setup::PackagesController, type: :controller do
 
       post :create, params: {
         "project_id"    => project.id,
-        "data_elements" => { State.find_by(name: "Tarif").id.to_s => { external_reference: "FTRrcoaog83" } },
+        "data_elements" => { project.state(:tarif).id.to_s => { external_reference: "FTRrcoaog83" } },
         "package"       => {
           "name"          => "azeaze",
           "state_ids"     => state_ids,

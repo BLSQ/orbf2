@@ -2,10 +2,11 @@ class Step
   include ActiveModel::Model
   attr_accessor(:name, :status, :hint, :kind, :highlighted, :model)
 
-  def self.get_steps(project)
+  def self.steps(project)
     step_connection = connection(project.project_anchor)
     step_entities = entities(project, step_connection)
-    step_activities = activities(project, step_entities)
+    step_states = states(project, step_entities)
+    step_activities = activities(project, step_states)
     step_packages = packages(project, step_activities, step_connection)
     step_rules = rules(project, step_packages)
     step_incentives = incentives(project, step_packages, step_rules)
@@ -14,12 +15,13 @@ class Step
 
     [step_connection,
      step_entities,
+     step_states,
      step_activities,
      step_packages,
      step_rules,
      step_incentives,
      step_invoicing,
-     step_publish]
+     step_publish].compact
   end
 
   def self.connection(current_project_anchor)
@@ -37,11 +39,18 @@ class Step
              model:  step_connection.todo? ? nil : project.entity_group || project.build_entity_group)
   end
 
-  def self.activities(project, step_entities)
+  def self.states(project, step_entities)
+    Step.new(name:   "States",
+             status: step_entities.todo? || project.states.empty? ? :todo : :done,
+             kind:   :states,
+             model:  project)
+  end
+
+  def self.activities(project, step_states)
     Step.new(name:   "Activities",
-             status: step_entities.todo? || project.activities.empty? ? :todo : :done,
+             status: step_states.todo? || project.activities.empty? ? :todo : :done,
              kind:   :activities,
-             model:  step_entities.todo? ? nil : project.activities)
+             model:  step_states.todo? ? nil : project.activities)
   end
 
   def self.packages(project, step_activities, step_connection)
@@ -68,6 +77,7 @@ class Step
   end
 
   def self.incentives(project, step_package, step_rules)
+    return nil if project.states.configurables(true).none? && project.states.any?
     step_rules_todo = rules_todo(project, step_package)
     Step.new(name:   "Incentive Configuration",
              status: step_rules_todo ? :todo : :done,

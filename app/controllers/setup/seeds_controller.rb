@@ -21,9 +21,9 @@ class Setup::SeedsController < PrivateController
     hospital_group = { name: "Hospital",       organisation_unit_group_ext_ref: "tDZVQ1WtwpA" }
     clinic_group = {   name: "Clinic",         organisation_unit_group_ext_ref: "RXL3lPSK8oG" }
     admin_group = {    name: "Administrative", organisation_unit_group_ext_ref: "w0gFTTmsUcF" }
-    default_quantity_states = State.where(name: %w[Claimed Verified Tarif]).to_a
-    default_quality_states = State.where(name: ["Claimed", "Verified", "Max. Score"]).to_a
-    default_performance_states = State.where(name: ["Claimed", "Max. Score", "Budget"]).to_a
+    default_quantity_states = project.states.where(name: %w[Claimed Verified Tarif]).to_a
+    default_quality_states = project.states.where(name: ["Claimed", "Verified", "Max. Score"]).to_a
+    default_performance_states = project.states.where(name: ["Claimed", "Max. Score", "Budget"]).to_a
 
     project.name = "Sierra Leone"
 
