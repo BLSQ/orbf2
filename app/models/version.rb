@@ -1,14 +1,20 @@
 # == Schema Information
 #
-# Table name: activities
+# Table name: versions
 #
-#  id         :integer          not null, primary key
-#  item_type  :string           not null
-#  item_id    :integer          not null
-#  event  	  :string           not null
-#  whodunnit  :string
-#  object     :jsonb
-#  created_at :datetime         not null
+#  id             :integer          not null, primary key
+#  item_type      :string           not null
+#  item_id        :integer          not null
+#  event          :string           not null
+#  whodunnit      :string
+#  old_object     :text
+#  created_at     :datetime
+#  transaction_id :integer
+#  object         :jsonb
+#  program_id     :integer
+#  project_id     :integer
+#  object_changes :jsonb
+#
 
 class Version < PaperTrail::Version
   belongs_to :program

@@ -33,6 +33,14 @@ RailsAdmin.config do |config|
     end
   end
 
+  config.model "Dhis2Log" do
+    list do
+      field :id
+      field :status
+      field :created_at
+      field :project_anchor
+    end
+  end
   if ENV["ADMIN_PASSWORD"]
   config.authorize_with do
     authenticate_or_request_with_http_basic("Authentication") do |username, password|

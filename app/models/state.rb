@@ -8,6 +8,7 @@
 #  updated_at   :datetime         not null
 #  configurable :boolean          default(FALSE), not null
 #  level        :string           default("activity"), not null
+#  project_id   :integer          not null
 #
 
 class State < ApplicationRecord

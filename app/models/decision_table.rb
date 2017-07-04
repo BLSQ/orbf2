@@ -1,3 +1,12 @@
+# == Schema Information
+#
+# Table name: decision_tables
+#
+#  id      :integer          not null, primary key
+#  rule_id :integer
+#  content :text
+#
+
 class DecisionTable < ApplicationRecord
   include PaperTrailed
   delegate :project_id, to: :rule
