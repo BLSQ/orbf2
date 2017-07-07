@@ -14,7 +14,6 @@ describe ProjectFactory do
     no_duplications = [
       ActiveRecord::SchemaMigration,
       User,
-      State,
       Program,
       ProjectAnchor,
       Dhis2Snapshot,
@@ -46,10 +45,8 @@ describe ProjectFactory do
 
     new_draft = project.publish(Date.today.to_date)
 
-    expect(new_draft.changelog.size).to eq 3
+    expect(new_draft.changelog.size).to(eq(12))
   end
-
-
 
   def count_all_models
     descendants = ActiveRecord::Base.descendants.reject(&:abstract_class?)

@@ -15,12 +15,12 @@ module Invoicing
       raise InvoicingError, "No package for #{entity.name} #{entity.groups} vs supported groups #{project.packages.flat_map(&:package_entity_groups).map(&:organisation_unit_group_ext_ref).uniq}" if selected_packages.empty?
       selected_packages.map do |package|
         analytics_service.activity_and_values(package, date).map do |activity, values|
-          calculate_activity_results_monthly(entity, date, frequency, package, activity, values)
+          calculate_activity_results_monthly(entity, date, package, activity, values)
         end
       end
     end
 
-    def calculate_activity_results_monthly(entity, date, _frequency, package, activity, values)
+    def calculate_activity_results_monthly(entity, date, package, activity, values)
       activity_tarification_facts = tarification_service.tarif(entity, date, activity, values)
 
       facts_and_rules = {}
@@ -29,6 +29,12 @@ module Invoicing
                         .merge(activity_tarification_facts)
                         .merge(values.to_facts)
                         .merge("activity_name" => "'#{activity.name.tr("'", ' ')}'")
+
+      package.activity_rule.formulas.each do |formula|
+        template_values = values.variables.map { |k, v| [k.to_sym, to_string(v)] }.to_h
+        facts_and_rules[formula.code] = string_template(formula, template_values)
+      end
+
       solution = solver.solve!(activity.name.to_s, facts_and_rules)
 
       ActivityResult.new(package, activity, solution, date, facts_and_rules)
@@ -61,6 +67,17 @@ module Invoicing
           nil
         end
       end
+    end
+
+    def to_string(array)
+      array.map do |r|
+        begin
+          BigDecimal.new(r)
+          format("%.10f", r)
+        rescue
+          nil
+        end
+      end.join(" , ")
     end
 
     def string_template(formula, variables)

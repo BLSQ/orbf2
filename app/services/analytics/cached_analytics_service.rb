@@ -1,7 +1,5 @@
 module Analytics
   class CachedAnalyticsService
-    MONTH_TO_QUARTER = { 1 => 1, 2 => 1, 3 => 1, 4 => 2, 5 => 2, 6 => 2, 7 => 3, 8 => 3, 9 => 3, 10 => 4, 11 => 4, 12 => 4 }.freeze
-
     def initialize(org_units, org_units_by_package, values, aggregation_per_data_elements)
       @values = values
       @org_units = org_units
@@ -13,6 +11,7 @@ module Analytics
     def entities; end
 
     def activity_and_values(package, date)
+      year_month = Periods.year_month(date)
       org_unit_ids = @org_units_by_package[package].map(&:id)
 
       values = package.activities.map do |activity|
@@ -36,18 +35,34 @@ module Analytics
           facts[state.code] ||= 0
         end
 
-        [activity, Values.new(date, facts)]
+        variables = activity.activity_states.select(&:external_reference?).map do |activity_state|
+          previous_activity_values = []
+          previous_periods(year_month, package).map do |period|
+            previous_activity_values += @values_by_data_element_and_period[[activity_state.external_reference, period.to_dhis2]]|| []
+          end
+          previous_activity_values = previous_activity_values.select { |v| org_unit_ids.include?(v.org_unit) }.map(&:value)
+
+          previous_activity_values = [0] if previous_activity_values.empty?
+          ["#{activity_state.state.code}_previous_values", previous_activity_values]
+        end.to_h
+
+        [activity, Values.new(date, facts, variables)]
       end
 
       values
     end
 
+    def previous_periods(year_month, package)
+      year_months = package.project.cycle_yearly? ? year_month.to_year.months : year_month.to_quarter.months
+      year_months.select { |period| period < year_month }
+    end
+
     def formatted_periods(date, package)
+      year_month = Periods.year_month(date)
       if package.frequency == "monthly"
-        ["#{date.year}#{date.month.to_s.rjust(2, '0')}"]
+        [year_month.to_dhis2]
       else
-        ["#{date.year}#{date.month.to_s.rjust(2, '0')}",
-         "#{date.year}Q#{MONTH_TO_QUARTER[date.month]}"]
+        [year_month, year_month.to_quarter].map(&:to_dhis2)
       end
     end
 

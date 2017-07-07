@@ -8,7 +8,7 @@
         <small><%= package.states.map{ |state| state.name }.join(', ') %></small>
     </td>
     <td>
-      <% package.activity_packages.map{ |ap| ap.activity.name }.each do |activity_name| %>
+      <% package.activity_packages.map{ |ap| ap.activity.name }.sort.each do |activity_name| %>
         <li><small><%= activity_name %></small></li>
       <%end%>
     </td>

@@ -45,7 +45,7 @@ class ActivityState < ApplicationRecord
       stable_id:          stable_id,
       name:               name,
       external_reference: external_reference,
-      state:              state_id
+      state:              state.code
     }
   end
 end

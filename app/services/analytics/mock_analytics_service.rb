@@ -109,7 +109,7 @@ module Analytics
     end
 
     def new_values(claimed = 0.0, verified = 0.0, validated = 0.0)
-      Analytics::Values.new(nil, claimed: claimed, verified: verified, validated: validated, max_score: 10.0)
+      Analytics::Values.new(nil, { claimed: claimed, verified: verified, validated: validated, max_score: 10.0 }, {})
     end
 
     def for_quarter(value)

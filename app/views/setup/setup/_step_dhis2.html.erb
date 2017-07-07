@@ -1,5 +1,6 @@
 <%= simple_form_for([:setup,step.model]) do |f| %>
   <%= f.input :name %>
+  <%= f.input :cycle, collection: Project::CYCLES %>
   <%= f.input :dhis2_url, placeholder: "eg : https://play.dhis2.org/demo" %>
   <%= f.input :user, input_html: { autocomplete: "off" }  %>
   <%= f.input :password, input_html: { autocomplete: "off" } %>

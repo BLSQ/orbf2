@@ -96,6 +96,7 @@ class Rule < ApplicationRecord
     if activity_kind?
       var_names << package.states.select(&:activity_level?).map(&:code) if package
       var_names << formulas.map(&:code)
+      var_names << available_variables_for_values.map { |code| "%{#{code}}" }
     elsif package_kind?
       var_names << package.states.select(&:package_level?).map(&:code) if package
       var_names << available_variables_for_values.map { |code| "%{#{code}}" }
@@ -110,10 +111,13 @@ class Rule < ApplicationRecord
 
   def available_variables_for_values
     var_names = []
-    if kind == "package" && package.activity_rule
+    if activity_kind?
+      var_names << package.states.select(&:activity_level?).map { |state| "#{state.code}_previous_values" }
+    end
+    if package_kind? && package.activity_rule
       var_names << package.activity_rule.formulas.map(&:code).map { |code| "#{code}_values" }
     end
-    if kind == "payment" && payment_rule.monthly?
+    if payment_kind? && payment_rule.monthly?
       var_names << payment_rule.packages.flat_map(&:package_rule).map(&:formulas).flatten.map(&:code).map { |code| "#{code}_values" }
       var_names << payment_rule.rule.formulas.map(&:code).map { |code| "#{code}_previous_values" }
     end
