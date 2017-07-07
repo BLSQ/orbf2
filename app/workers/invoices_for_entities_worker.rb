@@ -28,7 +28,11 @@ class InvoicesForEntitiesWorker
     invoicing_request.project = project_finder.find_project(nil, invoicing_request.end_date_as_date)
 
     org_unit_and_packages = fetch_org_units_by_package(invoicing_request, org_unit_ids, options)
-    analytics_service_by_org_unit_id = analytics_services_by_org_unit_id(invoicing_request, org_unit_and_packages, options)
+    analytics_service_by_org_unit_id = analytics_services_by_org_unit_id(
+      invoicing_request,
+      org_unit_and_packages,
+      options
+    )
 
     invoices = {}
     org_unit_and_packages.each do |org_unit_and_package|
@@ -172,7 +176,10 @@ class InvoicesForEntitiesWorker
   end
 
   def fetch_indicators_expressions(invoicing_request, options)
-    indicator_ids = invoicing_request.project.activities.flat_map(&:activity_states).select(&:kind_indicator?).map(&:external_reference)
+    indicator_ids = invoicing_request.project.activities
+                                     .flat_map(&:activity_states)
+                                     .select(&:kind_indicator?)
+                                     .map(&:external_reference)
     return {} if indicator_ids.empty?
     data_compound = invoicing_request.project.project_anchor.nearest_data_compound_for(invoicing_request.end_date_as_date)
     data_compound ||= DataCompound.from(invoicing_request.project) if options[:allow_fresh_dhis2_data]
@@ -188,7 +195,12 @@ class InvoicesForEntitiesWorker
     dhis2 = invoicing_request.project.dhis2_connection
     packages = invoicing_request.project.packages
     dataset_ids = packages.flat_map(&:package_states).map(&:ds_external_reference).reject(&:nil?)
-    org_unit_ids = org_unit_and_packages.flat_map(&:org_units_by_package).flat_map(&:values).flatten.flat_map(&:id).uniq
+    org_unit_ids = org_unit_and_packages
+                   .flat_map(&:org_units_by_package)
+                   .flat_map(&:values)
+                   .flatten
+                   .flat_map(&:id)
+                   .uniq
     values_query = {
       organisation_unit: org_unit_ids,
       data_sets:         dataset_ids,
@@ -196,8 +208,9 @@ class InvoicesForEntitiesWorker
       end_date:          invoicing_request.end_date_as_date,
       children:          false
     }
+    # fetch more data for have access to _previous_values
     if invoicing_request.project.cycle_yearly?
-      year = Periods.year_month(invoicing_request.start_date_as_date).to_year;
+      year = Periods.year_month(invoicing_request.start_date_as_date).to_year
       values_query[:start_date] = year.start_date
       values_query[:end_date] = year.end_date
     end

@@ -15,15 +15,16 @@ module Periods
       @months ||= (1..12).map { |month| YearMonth.new(@yyyy, month) }
     end
 
-    def <=>(other_year)
-      to_dhis2 <=> other_year.to_dhis2
+    def <=>(other)
+      to_dhis2 <=> other.to_dhis2
     end
 
-    def eql?(other)
+    def equal?(other)
       self.class == other.class && self == other
     end
 
     alias eql? equal?
+
     delegate :hash, to: :to_dhis2
 
     def year
@@ -41,6 +42,7 @@ module Periods
     def to_dhis2
       @yyyy.to_s
     end
+
     alias to_s to_dhis2
 
     def inspect

@@ -25,10 +25,6 @@ module Periods
       Date::MONTHNAMES[month]
     end
 
-    def period_string
-      "#{@year} - #{@month}"
-    end
-
     def start_date
       @start_date ||= Date.parse("#{year}-#{@month}-01")
     end
@@ -50,9 +46,9 @@ module Periods
     end
 
     alias to_s to_dhis2
+
     def inspect
       self.class.name + "-" + to_dhis2
     end
-
   end
 end

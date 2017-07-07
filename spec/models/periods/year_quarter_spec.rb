@@ -41,6 +41,9 @@ describe Periods::YearQuarter do
       expect(Periods::YearQuarter.from_year_month(2016, 11).to_s).to eq "2016Q4"
       expect(Periods::YearQuarter.from_year_month(2016, 12).to_s).to eq "2016Q4"
     end
+    it "should be immutable" do
+      expect { year_quarter.months.delete_at(1) }.to raise_error("can't modify frozen Array")
+    end
   end
 
   describe "#quarter" do

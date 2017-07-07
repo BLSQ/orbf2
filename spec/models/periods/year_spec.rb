@@ -24,4 +24,9 @@ describe Periods::Year do
   it "should have non verbose inspect" do
     expect(year.inspect).to eq "Periods::Year-2016"
   end
+
+  it "should start and end date" do
+    expect(year.start_date.to_s).to eq "2016-01-01"
+    expect(year.end_date.to_s).to eq "2016-12-31"
+  end
 end

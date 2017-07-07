@@ -1,7 +1,6 @@
 require "rails_helper"
 
 describe Periods do
-
   it "should parse yyyy" do
     expect(Periods.from_dhis2_period("2016")).to eq Periods::Year.new(2016)
   end
@@ -11,6 +10,6 @@ describe Periods do
   end
 
   it "should parse yyyymm" do
-    expect(Periods.from_dhis2_period("201610")).to eq Periods::YearMonth.new("2016",10)
+    expect(Periods.from_dhis2_period("201610")).to eq Periods::YearMonth.new("2016", 10)
   end
 end
