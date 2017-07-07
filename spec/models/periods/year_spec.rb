@@ -20,4 +20,8 @@ describe Periods::Year do
   it "should implement to_s" do
     expect(year.to_s).to eq("2016")
   end
+
+  it "should have non verbose inspect" do
+    expect(year.inspect).to eq "Periods::Year-2016"
+  end
 end

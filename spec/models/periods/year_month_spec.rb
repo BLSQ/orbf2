@@ -26,4 +26,8 @@ describe Periods::YearMonth do
     expect(year_month_minus1 < year_month).to eq true
     expect(year_month < year_month).to eq false
   end
+
+  it "should have non verbose inspect" do
+    expect(year_month.inspect).to eq "Periods::YearMonth-201603"
+  end
 end

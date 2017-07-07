@@ -97,6 +97,8 @@ class Rule < ApplicationRecord
       var_names << package.states.select(&:activity_level?).map(&:code) if package
       var_names << formulas.map(&:code)
       var_names << available_variables_for_values.map { |code| "%{#{code}}" }
+      var_names << "quarter_of_year"
+      var_names << "month_of_year"
     elsif package_kind?
       var_names << package.states.select(&:package_level?).map(&:code) if package
       var_names << available_variables_for_values.map { |code| "%{#{code}}" }
@@ -169,6 +171,7 @@ class Rule < ApplicationRecord
 
   def to_fake_facts(states)
     facts = states.map { |state| [state.code.to_sym, "10"] }.to_h
+    facts[:quarter_of_year] = 3
     org_unit_facts = decision_tables.flat_map(&:out_headers).map { |header| [header.to_sym, "10"] }.to_h
     facts.merge org_unit_facts
   end

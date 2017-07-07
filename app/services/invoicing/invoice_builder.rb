@@ -22,12 +22,17 @@ module Invoicing
 
     def calculate_activity_results_monthly(entity, date, package, activity, values)
       activity_tarification_facts = tarification_service.tarif(entity, date, activity, values)
+      year_month = Periods.year_month(date)
 
       facts_and_rules = {}
                         .merge(package.activity_rule.extra_facts(activity, entity.facts))
                         .merge(package.activity_rule.to_facts)
                         .merge(activity_tarification_facts)
                         .merge(values.to_facts)
+                        .merge(
+                          quarter_of_year: year_month.to_quarter.quarter,
+                          month_of_year:   year_month.month
+                        )
                         .merge("activity_name" => "'#{activity.name.tr("'", ' ')}'")
 
       package.activity_rule.formulas.each do |formula|

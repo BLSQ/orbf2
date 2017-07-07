@@ -104,6 +104,12 @@ module Rules
       end
       between = ->(lower, score, greater) { lower <= score && score <= greater }
 
+      access = lambda do |*args|
+        array = args[0..-2]
+        index = args[-1]
+        array[index]
+      end
+
       calculator = Dentaku::Calculator.new
       calculator.add_function(:between, :logical, between)
       calculator.add_function(:abs, :number, ->(number) { number.abs })
@@ -111,6 +117,7 @@ module Rules
       calculator.add_function(:avg, :numeric, avg_function)
       calculator.add_function(:sum, :numeric, sum_function)
       calculator.add_function(:safe_div, :numeric, safe_div)
+      calculator.add_function(:access, :numeric, access)
       calculator
    end
  end
