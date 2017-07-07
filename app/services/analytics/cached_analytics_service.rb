@@ -15,35 +15,24 @@ module Analytics
       org_unit_ids = @org_units_by_package[package].map(&:id)
 
       values = package.activities.map do |activity|
-        facts = activity.activity_states.select(&:external_reference?).map do |activity_state|
-          activity_values = []
-          formatted_periods(date, package).map do |formatted_period|
-            activity_values += @values_by_data_element_and_period[[activity_state.external_reference, formatted_period]] || []
-          end
-
-          activity_values = activity_values.select { |v| org_unit_ids.include?(v.org_unit) }
-
-          [activity_state.state.code, aggregation(activity_values, activity_state)]
-        end.to_h
+        facts = facts_for_period(activity, periods(year_month, package), org_unit_ids)
 
         activity.activity_states.select(&:kind_formula?).each do |activity_state|
           facts[activity_state.state.code] = activity_state.formula
         end
 
         package.states.each do |state|
-          # puts " !!!\t#{activity.name}\twarn defaulting to 0\t#{state.code}" unless facts[state.code]
           facts[state.code] ||= 0
         end
 
+        previous_facts = previous_periods(year_month, package).map do |period|
+          facts_for_period(activity, [period], org_unit_ids)
+        end
         variables = activity.activity_states.select(&:external_reference?).map do |activity_state|
-          previous_activity_values = []
-          previous_periods(year_month, package).map do |period|
-            previous_activity_values += @values_by_data_element_and_period[[activity_state.external_reference, period.to_dhis2]]|| []
-          end
-          previous_activity_values = previous_activity_values.select { |v| org_unit_ids.include?(v.org_unit) }.map(&:value)
-
-          previous_activity_values = [0] if previous_activity_values.empty?
-          ["#{activity_state.state.code}_previous_values", previous_activity_values]
+          [
+            "#{activity_state.state.code}_previous_values",
+            previous_facts.map { |fact| fact[activity_state.state.code] || 0 }
+          ]
         end.to_h
 
         [activity, Values.new(date, facts, variables)]
@@ -52,17 +41,33 @@ module Analytics
       values
     end
 
-    def previous_periods(year_month, package)
-      year_months = package.project.cycle_yearly? ? year_month.to_year.months : year_month.to_quarter.months
-      year_months.select { |period| period < year_month }
+    def facts_for_period(activity, periods, org_unit_ids)
+      activity.activity_states.select(&:external_reference?).map do |activity_state|
+        activity_values = []
+        periods.map do |formatted_period|
+          activity_values += @values_by_data_element_and_period[[activity_state.external_reference, formatted_period.to_dhis2]] || []
+        end
+        activity_values = activity_values.select { |v| org_unit_ids.include?(v.org_unit) }
+        [activity_state.state.code, aggregation(activity_values, activity_state)]
+      end.to_h
     end
 
-    def formatted_periods(date, package)
-      year_month = Periods.year_month(date)
+    def previous_periods(year_month, package)
       if package.frequency == "monthly"
-        [year_month.to_dhis2]
+        year_months = package.project.cycle_yearly? ? year_month.to_year.months : year_month.to_quarter.months
+        year_months.select { |period| period < year_month }
       else
-        [year_month, year_month.to_quarter].map(&:to_dhis2)
+        year_quarter = year_month.to_quarter
+        year_quarters = package.project.cycle_yearly? ? year_month.to_year.quarters : []
+        year_quarters.select { |period| period < year_quarter }
+      end
+    end
+
+    def periods(year_month, package)
+      if package.frequency == "monthly"
+        [year_month]
+      else
+        [year_month, year_month.to_quarter]
       end
     end
 

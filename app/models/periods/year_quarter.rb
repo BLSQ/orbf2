@@ -1,5 +1,6 @@
 module Periods
   class YearQuarter
+    include Comparable
     attr_reader :yyyyqq, :quarter, :year, :months
 
     def initialize(yyyyqq)

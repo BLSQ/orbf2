@@ -189,7 +189,6 @@ class InvoicesForEntitiesWorker
     packages = invoicing_request.project.packages
     dataset_ids = packages.flat_map(&:package_states).map(&:ds_external_reference).reject(&:nil?)
     org_unit_ids = org_unit_and_packages.flat_map(&:org_units_by_package).flat_map(&:values).flatten.flat_map(&:id).uniq
-
     values_query = {
       organisation_unit: org_unit_ids,
       data_sets:         dataset_ids,
@@ -197,6 +196,12 @@ class InvoicesForEntitiesWorker
       end_date:          invoicing_request.end_date_as_date,
       children:          false
     }
+    if invoicing_request.project.cycle_yearly?
+      year = Periods.year_month(invoicing_request.start_date_as_date).to_year;
+      values_query[:start_date] = year.start_date
+      values_query[:end_date] = year.end_date
+    end
+
     values = dhis2.data_value_sets.list(values_query)
     values.data_values ? values.values : []
   end

@@ -75,7 +75,7 @@ module Invoicing
           BigDecimal.new(r)
           format("%.10f", r)
         rescue
-          nil
+          format("%.10f", r)
         end
       end.join(" , ")
     end
