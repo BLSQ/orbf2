@@ -184,7 +184,7 @@ class InvoicesForEntitiesWorker
     data_compound = invoicing_request.project.project_anchor.nearest_data_compound_for(invoicing_request.end_date_as_date)
     data_compound ||= DataCompound.from(invoicing_request.project) if options[:allow_fresh_dhis2_data]
     indicators = data_compound.indicators(indicator_ids)
-    Hash[indicators.map { |indicator| [indicator.id, Analytics::IndicatorCalculator.parse_expression(indicator.numerator)] }]
+    indicators.map { |indicator| [indicator.id, Analytics::IndicatorCalculator.parse_expression(indicator.numerator)] }.to_h
   end
 
   def fetch_values(invoicing_request, org_unit_and_packages, options)
@@ -257,7 +257,8 @@ class InvoicesForEntitiesWorker
 
   def to_facts(org_unit)
     parent_ids = org_unit.path.split("/").reject(&:empty?)
-    facts = parent_ids.each_with_index.map { |parent_id, index| ["level_#{index + 1}", parent_id] }.to_h
-    facts
+    parent_ids.each_with_index
+              .map { |parent_id, index| ["level_#{index + 1}", parent_id] }
+              .to_h
   end
 end

@@ -30,4 +30,9 @@ describe Periods::YearMonth do
   it "should have non verbose inspect" do
     expect(year_month.inspect).to eq "Periods::YearMonth-201603"
   end
+
+  it "should allow to navigate to corresponding Periods::Year" do
+    expect(year_month.to_year.months).to include(year_month)
+    expect(year_month.to_year).to eq(Periods.from_dhis2_period("2016"))
+  end
 end

@@ -233,7 +233,7 @@ class Project < ApplicationRecord
 
   def to_unified_h
     {
-      states: states.map(&:to_unified_h).map { |h| [h[:stable_id], h] }.to_h,
+      states:        states.map(&:to_unified_h).map { |h| [h[:stable_id], h] }.to_h,
       entity_group:  {
         external_reference: entity_group ? entity_group.external_reference : "",
         name:               entity_group ? entity_group.name : ""
