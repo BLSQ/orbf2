@@ -284,7 +284,7 @@ module Invoicing
 
       package_results = calculate_package_results(activity_results)
 
-      payment_result =[]
+      payment_result = nil
       if package_results.empty?
         payment_result = calculate_payments(project, entity, package_results)
       end
