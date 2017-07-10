@@ -58,20 +58,20 @@ class InvoicesForEntitiesWorker
 
   def project_finder(project_anchor, invoicing_request, options)
     profile("load Project") do
+      month_drafts = []
+      months = invoicing_request.quarter_dates + [invoicing_request.year_quarter.to_year.end_date]
       if options[:force_project_id]
         draft = project_anchor.projects.fully_loaded.find(options[:force_project_id])
-        ConstantProjectFinder.new(
-          Hash[invoicing_request.quarter_dates.map { |date| [date, draft] }]
-        )
+        month_drafts = months.map { |date| [date, draft] }
       else
-        ConstantProjectFinder.new(
-          Hash[invoicing_request.quarter_dates.map do |date|
-                 project = project_anchor.projects.fully_loaded.for_date(date) || project_anchor.latest_draft
-                 [date, project]
-               end
-          ]
-        )
+        month_drafts = months.map do |date|
+          project = project_anchor.projects.fully_loaded.for_date(date) || project_anchor.latest_draft
+          [date, project]
+        end
       end
+      ConstantProjectFinder.new(
+        month_drafts.to_h
+      )
     end
   end
 
@@ -128,14 +128,18 @@ class InvoicesForEntitiesWorker
     entity = to_entity(org_unit)
     invoices = []
     invoicing_request.quarter_dates.each do |month|
-      monthly_invoice = invoice_builder.generate_monthly_entity_invoice(
-        invoicing_request.project,
-        entity,
-        analytics_service,
-        month
-      )
-      monthly_invoice.dump_invoice
-      invoices << monthly_invoice
+      begin
+        monthly_invoice = invoice_builder.generate_monthly_entity_invoice(
+          invoicing_request.project,
+          entity,
+          analytics_service,
+          month
+        )
+        monthly_invoice.dump_invoice
+        invoices << monthly_invoice
+      rescue => e
+        puts "WARN : generate_monthly_entity_invoice : #{e.message}"
+      end
     end
     quarterly_invoices = invoice_builder.generate_quarterly_entity_invoice(
       invoicing_request.project,
@@ -144,6 +148,14 @@ class InvoicesForEntitiesWorker
       invoicing_request.end_date_as_date
     )
     invoices << quarterly_invoices
+
+    yearly_invoices = invoice_builder.generate_yearly_entity_invoice(
+      invoicing_request.project,
+      entity,
+      analytics_service,
+      invoicing_request.end_date_as_date
+    )
+    invoices << yearly_invoices
 
     payments_invoices = invoice_builder.generate_monthly_payments(
       invoicing_request.project,
@@ -222,7 +234,9 @@ class InvoicesForEntitiesWorker
   def mock_values(invoicing_request, org_units_by_package)
     values = []
     org_units_by_package.each do |package, org_units|
-      invoicing_request.quarter_dates.map { |date| "#{date.year}#{date.month.to_s.rjust(2, '0')}" }.each do |period|
+      periods = invoicing_request.year_quarter.months.map(&:to_dhis2)
+      periods += [invoicing_request.year_quarter.to_year.to_dhis2] if package.frequency == "yearly"
+      periods.each do |period|
         package.activities.each do |activity|
           package.states.each do |state|
             org_units.each do |org_unit_to_mock|

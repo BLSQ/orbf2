@@ -53,7 +53,9 @@ module Analytics
     end
 
     def previous_periods(year_month, package)
-      if package.frequency == "monthly"
+      if package.frequency == "yearly"
+        []
+      elsif package.frequency == "monthly"
         year_months = package.project.cycle_yearly? ? year_month.to_year.months : year_month.to_quarter.months
         year_months.select { |period| period < year_month }
       else
@@ -66,8 +68,10 @@ module Analytics
     def periods(year_month, package)
       if package.frequency == "monthly"
         [year_month]
-      else
+      elsif package.frequency == "quarterly"
         [year_month, year_month.to_quarter]
+      elsif package.frequency == "yearly"
+        [year_month.to_year]
       end
     end
 

@@ -34,7 +34,7 @@ class Dhis2SnapshotWorker
     snapshot.dhis2_version = dhis2_version
     snapshot.save!
 
-    puts "Dhis2SnapshotWorker #{kind} : for project anchor #{new_snapshot ? 'created' : 'updated'} #{year} #{month} : #{project.project_anchor.id} #{data.size} done!"
+    puts "Dhis2SnapshotWorker #{kind} : for project anchor #{new_snapshot ? 'created' : 'updated'} #{year} #{month} : #{project.project_anchor.id} #{project.name} #{data.size} done!"
 
     snapshot
   end

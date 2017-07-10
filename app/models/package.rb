@@ -18,7 +18,7 @@ class Package < ApplicationRecord
   include PaperTrailed
   delegate :program_id, to: :project
 
-  FREQUENCIES = %w[monthly quarterly].freeze
+  FREQUENCIES = %w[monthly quarterly yearly].freeze
   KINDS = %w[single multi-groupset].freeze
   belongs_to :project, inverse_of: :packages
   has_many :package_entity_groups, dependent: :destroy
@@ -65,7 +65,14 @@ class Package < ApplicationRecord
   end
 
   def apply_for(entity)
-    package_entity_groups.any? { |group| entity.groups.include?(group.organisation_unit_group_ext_ref) }
+
+    apply = configured? && package_entity_groups.any? { |group| entity.groups.include?(group.organisation_unit_group_ext_ref) }
+    puts "#{name} : #{configured?} && #{apply}"
+    apply
+  end
+
+  def configured?
+    activity_rule && package_rule
   end
 
   def linked_org_units(org_unit, pyramid)

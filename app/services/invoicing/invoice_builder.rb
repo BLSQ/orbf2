@@ -12,7 +12,7 @@ module Invoicing
       selected_packages = project.packages.select do |package|
         package.for_frequency(frequency) && package.apply_for(entity)
       end
-      raise InvoicingError, "No package for #{entity.name} #{entity.groups} vs supported groups #{project.packages.flat_map(&:package_entity_groups).map(&:organisation_unit_group_ext_ref).uniq}" if selected_packages.empty?
+      puts "No package for #{entity.name} #{entity.groups} vs supported groups #{project.packages.flat_map(&:package_entity_groups).map(&:organisation_unit_group_ext_ref).uniq}" if selected_packages.empty?
       selected_packages.map do |package|
         analytics_service.activity_and_values(package, date).map do |activity, values|
           calculate_activity_results_monthly(entity, date, package, activity, values)
@@ -229,15 +229,19 @@ module Invoicing
       quarterly_package_results = {}
       quarter_dates.each do |month|
         project = project_finder.find_project(current_project, month)
-        activity_monthly_results = calculate_activity_results(
-          analytics_service,
-          project,
-          entity,
-          month,
-          "monthly"
-        )
-        quarter_details_results[month] = activity_monthly_results
-        quarterly_package_results[month] = calculate_package_results(activity_monthly_results)
+        begin
+          activity_monthly_results = calculate_activity_results(
+            analytics_service,
+            project,
+            entity,
+            month,
+            "monthly"
+          )
+          quarter_details_results[month] = activity_monthly_results
+          quarterly_package_results[month] = calculate_package_results(activity_monthly_results)
+        rescue => e
+          puts "WARN : generate_monthly_entity_invoice : #{e.message}"
+        end
       end
 
       quarter_entity_results = calculate_package_results(quarter_details_results.values.flatten)
@@ -255,15 +259,38 @@ module Invoicing
 
         package_results = calculate_package_results(activity_results)
         package_results.concat(quarter_entity_results)
-
-        raise "should have at least one package_results" if package_results.empty?
-        payment_result = calculate_payments(project, entity, package_results)
+        payment_result = nil
+        if package_results.empty?
+          payment_result = calculate_payments(project, entity, package_results)
+        end
         invoice = MonthlyInvoice.new(date, entity, project, activity_results, package_results, payment_result)
         invoice.dump_invoice
         invoice
       rescue => e
         raise e
       end
+    end
+
+    def generate_yearly_entity_invoice(current_project, entity, analytics_service, date)
+      year = Periods.year_month(date).to_year
+      project = project_finder.find_project(current_project, year.end_date)
+      activity_results = calculate_activity_results(
+        analytics_service,
+        project,
+        entity,
+        year.end_date,
+        "yearly"
+      )
+
+      package_results = calculate_package_results(activity_results)
+
+      payment_result =[]
+      if package_results.empty?
+        payment_result = calculate_payments(project, entity, package_results)
+      end
+      invoice = MonthlyInvoice.new(date, entity, project, activity_results, package_results, payment_result)
+      invoice.dump_invoice
+      invoice
     end
 
     def d_to_s(decimal)
