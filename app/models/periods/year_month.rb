@@ -25,6 +25,10 @@ module Periods
       Date::MONTHNAMES[month]
     end
 
+    def minus_years(years)
+      YearMonth.new(year - years, month)
+    end
+
     def start_date
       @start_date ||= Date.parse("#{year}-#{@month}-01")
     end

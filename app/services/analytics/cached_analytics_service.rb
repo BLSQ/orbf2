@@ -25,17 +25,10 @@ module Analytics
           facts[state.code] ||= 0
         end
 
-        previous_facts = previous_periods(year_month, package).map do |period|
-          facts_for_period(activity, [period], org_unit_ids)
-        end
-        variables = activity.activity_states.select(&:external_reference?).map do |activity_state|
-          [
-            "#{activity_state.state.code}_previous_values",
-            previous_facts.map { |fact| fact[activity_state.state.code] || 0 }
-          ]
-        end.to_h
+        previous_cycle_variables = build_cycle_variables(package, activity, year_month, org_unit_ids)
+        previous_year_variables = build_previous_year_variables(package, activity, year_month, org_unit_ids)
 
-        [activity, Values.new(date, facts, variables)]
+        [activity, Values.new(date, facts, previous_cycle_variables.merge(previous_year_variables))]
       end
 
       values
@@ -49,6 +42,38 @@ module Analytics
         end
         activity_values = activity_values.select { |v| org_unit_ids.include?(v.org_unit) }
         [activity_state.state.code, aggregation(activity_values, activity_state)]
+      end.to_h
+    end
+
+    def build_previous_year_variables(package, activity, year_month, org_unit_ids)
+      previous_facts = previous_periods(year_month.minus_year(1), package).map do |period|
+        facts_for_period(activity, [period], org_unit_ids)
+      end
+
+      activity.activity_states.each do |activity_state|
+        variables["#{activity_state.state.code}_previous_year_values"] ||= [0]
+      end
+
+      package.states.each do |state|
+        variables["#{state.code}_previous_year_values"] ||= [0]
+      end
+
+      variables
+    end
+
+
+    def build_cycle_variables(package, activity, year_month, org_unit_ids)
+
+      previous_facts = previous_periods(year_month, package).map do |period|
+        facts_for_period(activity, [period], org_unit_ids)
+      end
+
+      activities_states = activity.activity_states.select(&:external_reference?)
+      variables = activities_states.map do |activity_state|
+        [
+          "#{activity_state.state.code}_current_cycle_values",
+          previous_facts.map { |fact| fact[activity_state.state.code] || 0 }
+        ]
       end.to_h
     end
 

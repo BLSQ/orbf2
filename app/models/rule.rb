@@ -111,10 +111,20 @@ class Rule < ApplicationRecord
     var_names.flatten.uniq.reject(&:nil?).sort
   end
 
+  def used_available_variables
+    used_variables_for_values
+  end
+
+  def used_variables_for_values
+    formulas.map(&:values_dependencies).flatten
+  end
+
   def available_variables_for_values
     var_names = []
     if activity_kind?
-      var_names << package.states.select(&:activity_level?).map { |state| "#{state.code}_previous_values" }
+      activity_level_states = package.states.select(&:activity_level?)
+      var_names << activity_level_states.map { |state| "#{state.code}_previous_year_values" }
+      var_names << activity_level_states.map { |state| "#{state.code}_current_cycle_values" }
     end
     if package_kind? && package.activity_rule
       var_names << package.activity_rule.formulas.map(&:code).map { |code| "#{code}_values" }
@@ -165,7 +175,7 @@ class Rule < ApplicationRecord
     extra_facts = decision_tables.map { |decision_table| decision_table.extra_facts(entity_facts) }.compact
     extra_facts ||= [{}]
     final_facts = extra_facts.reduce({}, :merge)
-    raise "#{name} : no value found for #{entity_facts} in decision table #{decision_tables.map(&:content).join("\n")}"  if final_facts.empty?
+    raise "#{name} : no value found for #{entity_facts} in decision table #{decision_tables.map(&:content).join("\n")}" if final_facts.empty?
     final_facts
   end
 
