@@ -271,8 +271,9 @@ class InvoicesForEntitiesWorker
 
   def to_facts(org_unit)
     parent_ids = org_unit.path.split("/").reject(&:empty?)
-    parent_ids.each_with_index
+    facts = parent_ids.each_with_index
               .map { |parent_id, index| ["level_#{index + 1}", parent_id] }
               .to_h
+    facts
   end
 end

@@ -14,6 +14,16 @@ class DecisionTable < ApplicationRecord
 
   belongs_to :rule, inverse_of: :formulas
 
+  validate :in_headers_belong_to_facts
+
+  def in_headers_belong_to_facts
+    in_headers.each do |header|
+      unless %w[level_1 level_2 level_3 level_4 level_5 level_6].include?(header)
+        errors[:content] << "Not in available org unit facts !"
+      end
+    end
+  end
+
   def in_headers
     decision_table.headers(:in)
   end

@@ -160,11 +160,13 @@ class Rule < ApplicationRecord
   end
 
   def extra_facts(_activity, entity_facts)
-    return {} unless decision_tables.any?
+    return {} if decision_tables.empty?
 
     extra_facts = decision_tables.map { |decision_table| decision_table.extra_facts(entity_facts) }.compact
     extra_facts ||= [{}]
-    extra_facts.reduce({}, :merge)
+    final_facts = extra_facts.reduce({}, :merge)
+    raise "#{name} : no value found for #{entity_facts} in decision table #{decision_tables.map(&:content).join("\n")}"  if final_facts.empty?
+    final_facts
   end
 
   private

@@ -38,6 +38,12 @@ module Decision
       end
     end
 
+    def find!(raw_hash)
+      values = find(raw_hash)
+      raise "no extra facts for #{raw_hash} in #{@headers}" unless values
+      values
+    end
+
     def find(raw_hash)
       hash = raw_hash.map do |k, v|
         ["in:#{k}", v]

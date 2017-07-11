@@ -23,9 +23,10 @@ module Invoicing
     def calculate_activity_results_monthly(entity, date, package, activity, values)
       activity_tarification_facts = tarification_service.tarif(entity, date, activity, values)
       year_month = Periods.year_month(date)
+      entity_facts_and_decision_tables = package.activity_rule.extra_facts(activity, entity.facts)
 
       facts_and_rules = {}
-                        .merge(package.activity_rule.extra_facts(activity, entity.facts))
+                        .merge(entity_facts_and_decision_tables)
                         .merge(package.activity_rule.to_facts)
                         .merge(activity_tarification_facts)
                         .merge(values.to_facts)
