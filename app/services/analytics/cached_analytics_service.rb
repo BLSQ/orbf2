@@ -46,7 +46,8 @@ module Analytics
     end
 
     def build_previous_year_variables(package, activity, year_month, org_unit_ids)
-      previous_facts = previous_periods(year_month.minus_year(1), package).map do |period|
+      variables = {}
+      previous_facts = previous_periods(year_month.minus_years(1), package).map do |period|
         facts_for_period(activity, [period], org_unit_ids)
       end
 
@@ -63,6 +64,7 @@ module Analytics
 
 
     def build_cycle_variables(package, activity, year_month, org_unit_ids)
+      variables = {}
 
       previous_facts = previous_periods(year_month, package).map do |period|
         facts_for_period(activity, [period], org_unit_ids)

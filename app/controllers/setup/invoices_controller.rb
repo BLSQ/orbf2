@@ -31,7 +31,8 @@ class Setup::InvoicesController < PrivateController
     @org_unit_summaries = [
       org_unit.name,
       "parents : " + pyramid.org_unit_parents(org_unit.id).map(&:name).join(" > "),
-      "groups : " + pyramid.org_unit_groups_of(org_unit).compact.map(&:name).join(", ")
+      "groups : " + pyramid.org_unit_groups_of(org_unit).compact.map(&:name).join(", "),
+      "periods : " + project.periods(invoicing_request.year_quarter).map(&:to_dhis2).join(", ")
     ]
 
     if params[:push_to_dhis2]

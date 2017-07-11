@@ -57,6 +57,32 @@ class Package < ApplicationRecord
     activities.flat_map(&:activity_states).select { |activity_state| activity_state.state == state }
   end
 
+  def periods(year_month, with_previous_year = true)
+    periods = []
+    if frequency == "monthly"
+      periods << year_month
+    elsif frequency == "quarterly"
+      quarter = year_month.to_quarter
+      periods << quarter
+      periods << quarter.months
+    end
+    if frequency == "yearly" || project.cycle_yearly?
+      year = year_month.to_year
+      periods << year.months
+      periods << year.quarters
+      periods << year
+    else
+      raise "not supported"
+    end
+
+    if with_previous_year && activity_rule.used_variables_for_values.any? {|variable| variable.ends_with?("previous_year_values") }
+      previous_year = year_month.minus_years(1).to_year
+      periods  << previous_year.months.map {|yq| periods(yq, false) }
+    end
+
+    periods.flatten.uniq
+  end
+
   def missing_rules_kind
     supported_rules_kind = %w[activity package]
     supported_rules_kind.delete("activity") if activity_rule
