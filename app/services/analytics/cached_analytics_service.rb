@@ -67,9 +67,9 @@ module Analytics
 
     def periods(year_month, package)
       if package.frequency == "monthly"
-        [year_month]
+        [year_month, year_month.to_year]
       elsif package.frequency == "quarterly"
-        [year_month, year_month.to_quarter]
+        [year_month, year_month.to_quarter, year_month.to_year]
       elsif package.frequency == "yearly"
         [year_month.to_year]
       end
