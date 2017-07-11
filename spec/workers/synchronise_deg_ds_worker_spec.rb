@@ -75,6 +75,7 @@ RSpec.describe SynchroniseDegDsWorker do
     all_dataset.each do |ds|
       stub_create_dataset(ds)
       stub_find_dataset_by_name(ds)
+      stub_update_data_element_sets
     end
     stub_data_elements_in_dataset("cl-ext-1")
     stub_data_elements_in_dataset("cl-ext-2")
@@ -93,6 +94,11 @@ RSpec.describe SynchroniseDegDsWorker do
     stub_request(:post, "http://play.dhis2.org/demo/api/metadata")
       .with(body: deg)
       .to_return(status: 200, body: "", headers: {})
+  end
+
+  def stub_update_data_element_sets
+    stub_request(:put, "http://play.dhis2.org/demo/api/dataSets/").
+           to_return(:status => 200, :body => "", :headers => {})
   end
 
   def stub_find_data_element_group_by_name(deg)

@@ -68,14 +68,26 @@ class SynchroniseDegDsWorker
           { id: data_element_id }
         end }
     ]
+    ds.first[:data_set_elements] = ds.first[:data_elements].map do |de|
+      { "data_element" => de }
+    end
     dhis2 = package.project.dhis2_connection
     status = dhis2.data_sets.create(ds)
     created_ds = dhis2.data_sets.find_by(name: ds_name)
+    puts JSON.pretty_generate(created_ds.to_h)
+    created_ds[:data_set_elements] = ds.first[:data_elements].map do |de|
+      { "data_element" => de }
+    end
+    created_ds.update
     raise "dataset not created #{ds_name} : #{ds} : #{status.inspect}" unless created_ds
     # due to v2.20 compat, looks data_elements is not always taken into accounts
     data_element_ids.map do |data_element_id|
-      puts "adding element #{data_element_id} to #{created_ds.id} #{created_ds.name}"
-      created_ds.add_relation(:dataElements, data_element_id)
+      begin
+        puts "adding element #{data_element_id} to #{created_ds.id} #{created_ds.name}"
+        created_ds.add_relation(:dataElements, data_element_id)
+      rescue => e
+        puts "failed to associate data_element_id with dataset #{e.message}"
+      end
     end
     return created_ds
   rescue RestClient::Exception => e
