@@ -13,7 +13,6 @@ module Analytics
     def activity_and_values(package, date)
       year_month = Periods.year_month(date)
       org_unit_ids = @org_units_by_package[package].map(&:id)
-
       values = package.activities.map do |activity|
         facts = facts_for_period(activity, periods(year_month, package), org_unit_ids)
 
@@ -25,12 +24,12 @@ module Analytics
           facts[state.code] ||= 0
         end
 
-        previous_cycle_variables = build_cycle_variables(package, activity, year_month, org_unit_ids)
-        previous_year_variables = build_previous_year_variables(package, activity, year_month, org_unit_ids)
-
-        [activity, Values.new(date, facts, previous_cycle_variables.merge(previous_year_variables))]
+        current_cycle_variables = build_cycle_variables(package, activity, year_month, org_unit_ids)
+        previous_year_variables = package.use_previous_year_values? ? build_previous_year_variables(package, activity, year_month, org_unit_ids) : {}
+        variables = current_cycle_variables.merge(previous_year_variables)
+        puts "#{year_month} #{activity.name} #{variables}"
+        [activity, Values.new(date, facts, variables)]
       end
-
       values
     end
 
@@ -47,8 +46,15 @@ module Analytics
 
     def build_previous_year_variables(package, activity, year_month, org_unit_ids)
       variables = {}
-      previous_facts = previous_periods(year_month.minus_years(1), package).map do |period|
-        facts_for_period(activity, [period], org_unit_ids)
+
+      previous_facts = package.previous_year_periods(year_month).map do |period|
+        [period, facts_for_period(activity, [period], org_unit_ids)]
+      end.to_h
+
+      activity.activity_states.map do |activity_state|
+        vals = previous_facts.values.compact.map { |fact| fact[activity_state.state.code] }.compact
+        vals = [0] if vals.empty?
+        variables["#{activity_state.state.code}_previous_year_values"] = vals
       end
 
       activity.activity_states.each do |activity_state|
@@ -61,7 +67,6 @@ module Analytics
 
       variables
     end
-
 
     def build_cycle_variables(package, activity, year_month, org_unit_ids)
       variables = {}

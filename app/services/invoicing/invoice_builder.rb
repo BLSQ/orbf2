@@ -101,7 +101,7 @@ module Invoicing
         monthly_rules = project.payment_rules.select(&:monthly?).select { |p| p.apply_for?(entity) }
 
         monthly_rules.map do |payment_rule|
-          all_package_results = monthly_invoices.first.package_results
+          all_package_results = monthly_invoices.empty? ? [] : monthly_invoices.first.package_results
           if monthly_invoices.size > 1
             all_package_results += monthly_invoices.last.package_results.select { |pr| pr.frequency.nil? }
           end
@@ -242,6 +242,7 @@ module Invoicing
           quarterly_package_results[month] = calculate_package_results(activity_monthly_results)
         rescue => e
           puts "WARN : generate_monthly_entity_invoice : #{e.message}"
+          puts "#{e.backtrace.join("\n")}"
         end
       end
 

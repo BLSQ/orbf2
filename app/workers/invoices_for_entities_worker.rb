@@ -213,19 +213,17 @@ class InvoicesForEntitiesWorker
                    .flatten
                    .flat_map(&:id)
                    .uniq
+
+    data_range = invoicing_request.project.date_range(invoicing_request.year_quarter)
+
     values_query = {
       organisation_unit: org_unit_ids,
       data_sets:         dataset_ids,
-      start_date:        invoicing_request.start_date_as_date,
-      end_date:          invoicing_request.end_date_as_date,
+      start_date:        data_range.first,
+      end_date:          data_range.last,
       children:          false
     }
-    # fetch more data for have access to _previous_values
-    if invoicing_request.project.cycle_yearly?
-      year = Periods.year_month(invoicing_request.start_date_as_date).to_year
-      values_query[:start_date] = year.start_date
-      values_query[:end_date] = year.end_date
-    end
+
 
     values = dhis2.data_value_sets.list(values_query)
     values.data_values ? values.values : []

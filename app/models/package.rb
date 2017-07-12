@@ -71,15 +71,24 @@ class Package < ApplicationRecord
       periods << year.months
       periods << year.quarters
       periods << year
-    else
-      raise "not supported"
     end
 
-    if with_previous_year && activity_rule.used_variables_for_values.any? {|variable| variable.ends_with?("previous_year_values") }
+    if with_previous_year
+      periods << previous_year_periods(year_month)
+    end
+    periods.flatten.uniq
+  end
+
+  def use_previous_year_values?
+    activity_rule && activity_rule.used_variables_for_values.any? { |variable| variable.ends_with?("previous_year_values") }
+  end
+
+  def previous_year_periods(year_month)
+    periods = []
+    if use_previous_year_values?
       previous_year = year_month.minus_years(1).to_year
-      periods  << previous_year.months.map {|yq| periods(yq, false) }
+      periods << previous_year.months.map { |yq| periods(yq, false) }
     end
-
     periods.flatten.uniq
   end
 
@@ -91,7 +100,6 @@ class Package < ApplicationRecord
   end
 
   def apply_for(entity)
-
     apply = configured? && package_entity_groups.any? { |group| entity.groups.include?(group.organisation_unit_group_ext_ref) }
     puts "#{name} : #{configured?} && #{apply}"
     apply

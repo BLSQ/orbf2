@@ -63,6 +63,7 @@ class SynchroniseDegDsWorker
       { name:          ds_name,
         short_name:    ds_code,
         code:          ds_code,
+        period_type:   package.frequency.capitalize,
         display_name:  ds_name,
         data_elements: data_element_ids.map do |data_element_id|
           { id: data_element_id }

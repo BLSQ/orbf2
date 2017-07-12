@@ -128,18 +128,25 @@ RSpec.describe Rule, kind: :model do
 
   describe "#available_variables" do
     it "should return " do
-      expect(valid_package_quantity_rule.available_variables).to eq [
-        "%{claimed_previous_values}",
-        "%{tarif_previous_values}",
-        "%{verified_previous_values}",
-        "amount",
-        "claimed",
-        "difference_percentage",
-        "month_of_year",
-        "quantity",
-        "quarter_of_year",
-        "tarif", "verified"
-      ]
+      expect(valid_package_quantity_rule.available_variables).to(
+        eq(
+          [
+            "%{claimed_current_cycle_values}",
+            "%{claimed_previous_year_values}",
+            "%{tarif_current_cycle_values}",
+            "%{tarif_previous_year_values}",
+            "%{verified_current_cycle_values}",
+            "%{verified_previous_year_values}",
+            "amount",
+            "claimed",
+            "difference_percentage",
+            "month_of_year",
+            "quantity",
+            "quarter_of_year",
+            "tarif", "verified"
+          ]
+        ), valid_package_quantity_rule.available_variables
+      )
     end
   end
   describe "validation of formulas" do
