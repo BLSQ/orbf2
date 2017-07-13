@@ -27,7 +27,7 @@ module Analytics
         current_cycle_variables = build_cycle_variables(package, activity, year_month, org_unit_ids)
         previous_year_variables = package.use_previous_year_values? ? build_previous_year_variables(package, activity, year_month, org_unit_ids) : {}
         variables = current_cycle_variables.merge(previous_year_variables)
-        puts "#{year_month} #{activity.name} #{variables}"
+        #puts "#{year_month} #{activity.name} #{variables}"
         [activity, Values.new(date, facts, variables)]
       end
       values

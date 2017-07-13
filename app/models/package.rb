@@ -100,9 +100,7 @@ class Package < ApplicationRecord
   end
 
   def apply_for(entity)
-    apply = configured? && package_entity_groups.any? { |group| entity.groups.include?(group.organisation_unit_group_ext_ref) }
-    puts "#{name} : #{configured?} && #{apply}"
-    apply
+    configured? && package_entity_groups.any? { |group| entity.groups.include?(group.organisation_unit_group_ext_ref) }
   end
 
   def configured?

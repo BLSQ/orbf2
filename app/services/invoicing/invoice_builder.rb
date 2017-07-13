@@ -97,14 +97,13 @@ module Invoicing
       monthly_payments_invoices = []
       invoicing_request.quarter_dates.each_with_index do |month, index|
         monthly_invoices = invoices.flatten.select { |invoice| invoice.date == month }
-
         monthly_rules = project.payment_rules.select(&:monthly?).select { |p| p.apply_for?(entity) }
 
         monthly_rules.map do |payment_rule|
-          all_package_results = monthly_invoices.empty? ? [] : monthly_invoices.first.package_results
-          if monthly_invoices.size > 1
-            all_package_results += monthly_invoices.last.package_results.select { |pr| pr.frequency.nil? }
-          end
+
+          all_package_results = monthly_invoices.empty? ? [] : monthly_invoices.flat_map(&:package_results).select { |pr|
+            pr.frequency.nil?
+          }
 
           package_results = all_package_results.select do |pr|
             payment_rule.packages.map(&:name).include?(pr.package.name)
@@ -119,6 +118,8 @@ module Invoicing
           package_results.each do |package_result|
             package_facts_and_rules = package_facts_and_rules.merge(package_result.solution)
           end
+
+
           payment_rule.packages.each do |package|
             package.package_rule.formulas.each do |formula|
               puts " #{package.name} #{formula.code} default to 0" unless package_facts_and_rules[formula.code]
