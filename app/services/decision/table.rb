@@ -26,6 +26,13 @@ module Decision
     def [](key)
       @row[key]
     end
+
+    def to_s
+      @row
+    end
+    def inspect
+      to_s
+    end
   end
 
   class Table
@@ -64,5 +71,12 @@ module Decision
     end
 
     attr_reader :rules
+
+    def to_s
+      @rules.to_s
+    end
+    def inspect
+      to_s
+    end
   end
 end
