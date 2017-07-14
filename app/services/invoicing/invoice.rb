@@ -38,6 +38,14 @@ module Invoicing
       puts
     end
 
+    def inspect
+      to_s
+    end
+
+    def to_s
+      "Invoice-#{date}-#{package_results&.first&.package&.name}"
+    end
+
     def d_to_s(_item, decimal)
       return format("%.2f", decimal) if decimal.is_a? Numeric
       decimal

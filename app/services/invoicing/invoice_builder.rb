@@ -96,20 +96,19 @@ module Invoicing
     def generate_monthly_payments(project, entity, invoices, invoicing_request)
       monthly_payments_invoices = []
       invoicing_request.quarter_dates.each_with_index do |month, index|
-        monthly_invoices = invoices.flatten.select { |invoice| invoice.date == month.to_date }
+        monthly_invoices = invoices.flatten.select { |invoice| invoice.date == month }
         monthly_rules = project.payment_rules.select(&:monthly?).select { |p| p.apply_for?(entity) }
 
         monthly_rules.map do |payment_rule|
-          all_package_results = monthly_invoices.empty? ? [] : monthly_invoices.first.package_results
-          if monthly_invoices.size > 1
-            all_package_results += monthly_invoices.last.package_results.select { |pr| pr.frequency.nil? }
+
+          all_package_results = monthly_invoices.empty? ? [] : monthly_invoices.flat_map(&:package_results).select { |pr|
+            pr.frequency.nil?
+          }
+
+          package_results = all_package_results.select do |pr|
+            payment_rule.packages.map(&:name).include?(pr.package.name)
           end
 
-          package_results = all_package_results
-          #.select do |pr|
-          #  payment_rule.packages.map(&:name).include?(pr.package.name)
-          #end
-          byebug if month.to_s == "2016-12-31"
           variables = payment_variables(payment_rule, invoices, month)
           variables = variables.merge(payment_previous_variables(payment_rule, monthly_payments_invoices))
 
@@ -120,6 +119,8 @@ module Invoicing
             puts "results for #{package_result.package.name}"
             package_facts_and_rules = package_facts_and_rules.merge(package_result.solution)
           end
+
+
           payment_rule.packages.each do |package|
             package.package_rule.formulas.each do |formula|
               puts " #{package.name} #{formula.code} default to 0" unless package_facts_and_rules[formula.code]
@@ -242,9 +243,7 @@ module Invoicing
           quarter_details_results[year_month.end_date] = activity_monthly_results
           quarterly_package_results[year_month.end_date] = calculate_package_results(activity_monthly_results)
         rescue => e
-          byebug
-          puts "WARN : generate_monthly_entity_invoice : #{e.message}"
-          puts e.backtrace.join("\n").to_s
+          puts "WARN : generate_monthly_entity_invoice : #{e.class } : #{e.message} : \n#{e.backtrace.join("\n").to_s}"
         end
       end
 
