@@ -14,7 +14,11 @@ module Analytics
       year_month = Periods.year_month(date)
       org_unit_ids = @org_units_by_package[package].map(&:id)
       values = package.activities.map do |activity|
-        facts = facts_for_period(activity, periods(year_month, package), org_unit_ids)
+        facts = facts_for_period(
+          activity,
+          package.current_values_periods(year_month),
+          org_unit_ids
+        )
 
         activity.activity_states.select(&:kind_formula?).each do |activity_state|
           facts[activity_state.state.code] = activity_state.formula
@@ -27,7 +31,7 @@ module Analytics
         current_cycle_variables = build_cycle_variables(package, activity, year_month, org_unit_ids)
         previous_year_variables = package.use_previous_year_values? ? build_previous_year_variables(package, activity, year_month, org_unit_ids) : {}
         variables = current_cycle_variables.merge(previous_year_variables)
-        puts "#{year_month} #{activity.name} #{variables}"
+        #puts "#{year_month} #{activity.name} #{variables}"
         [activity, Values.new(date, facts, variables)]
       end
       values
@@ -69,42 +73,17 @@ module Analytics
     end
 
     def build_cycle_variables(package, activity, year_month, org_unit_ids)
-      variables = {}
-
-      previous_facts = previous_periods(year_month, package).map do |period|
+      previous_facts = package.current_cycle_periods(year_month).map do |period|
         facts_for_period(activity, [period], org_unit_ids)
       end
 
       activities_states = activity.activity_states.select(&:external_reference?)
-      variables = activities_states.map do |activity_state|
+      activities_states.map do |activity_state|
         [
           "#{activity_state.state.code}_current_cycle_values",
           previous_facts.map { |fact| fact[activity_state.state.code] || 0 }
         ]
       end.to_h
-    end
-
-    def previous_periods(year_month, package)
-      if package.frequency == "yearly"
-        []
-      elsif package.frequency == "monthly"
-        year_months = package.project.cycle_yearly? ? year_month.to_year.months : year_month.to_quarter.months
-        year_months.select { |period| period < year_month }
-      else
-        year_quarter = year_month.to_quarter
-        year_quarters = package.project.cycle_yearly? ? year_month.to_year.quarters : []
-        year_quarters.select { |period| period < year_quarter }
-      end
-    end
-
-    def periods(year_month, package)
-      if package.frequency == "monthly"
-        [year_month, year_month.to_year]
-      elsif package.frequency == "quarterly"
-        [year_month, year_month.to_quarter, year_month.to_year]
-      elsif package.frequency == "yearly"
-        [year_month.to_year]
-      end
     end
 
     def aggregation(activity_values, activity_state)

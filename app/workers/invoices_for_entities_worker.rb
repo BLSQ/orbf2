@@ -224,7 +224,6 @@ class InvoicesForEntitiesWorker
       children:          false
     }
 
-
     values = dhis2.data_value_sets.list(values_query)
     values.data_values ? values.values : []
   end
@@ -270,8 +269,8 @@ class InvoicesForEntitiesWorker
   def to_facts(org_unit)
     parent_ids = org_unit.path.split("/").reject(&:empty?)
     facts = parent_ids.each_with_index
-              .map { |parent_id, index| ["level_#{index + 1}", parent_id] }
-              .to_h
+                      .map { |parent_id, index| ["level_#{index + 1}", parent_id] }
+                      .to_h
     facts
   end
 end

@@ -27,13 +27,13 @@ RSpec.describe SynchroniseDegDsWorker do
   let(:maxscore_quality_deg) { "{\"dataElementGroups\":[{\"name\":\"Max. Scores - Quality\",\"shortName\":\"max_score-Quality\",\"code\":\"max_score-Quality\",\"dataElements\":[]}]}" }
   let(:maxscore_quality_dataset) { "{\"dataSets\":[{\"name\":\"Max. Scores - Quality\",\"shortName\":\"max_score-Quality\",\"code\":\"max_score-Quality\",\"periodType\":\"Monthly\",\"dataElements\":[],\"organisationUnits\":[],\"categoryCombo\":{\"id\":\"p0KPaWEg3cf\",\"name\":\"default\"}}]}" }
 
-  let(:claimed_perf_deg) { "{\"dataElementGroups\":[{\"name\":\"Claimeds - Performance Adm\",\"shortName\":\"claimed-Performance Adm\",\"code\":\"claimed-Performance Adm\",\"dataElements\":[{\"id\":\"cl-ext-1\"},{\"id\":\"cl-ext-2\"}]}]}"}
-  let(:claimed_perf_dataset) {"{\"dataSets\":[{\"name\":\"Claimeds - Performance Adm\",\"shortName\":\"claimed-Performance Adm\",\"code\":\"claimed-Performance Adm\",\"periodType\":\"Monthly\",\"dataElements\":[],\"organisationUnits\":[],\"categoryCombo\":{\"id\":\"p0KPaWEg3cf\",\"name\":\"default\"}}]}"}
+  let(:claimed_perf_deg) { "{\"dataElementGroups\":[{\"name\":\"Claimeds - Performance Adm\",\"shortName\":\"claimed-Performance Adm\",\"code\":\"claimed-Performance Adm\",\"dataElements\":[{\"id\":\"cl-ext-1\"},{\"id\":\"cl-ext-2\"}]}]}" }
+  let(:claimed_perf_dataset) { "{\"dataSets\":[{\"name\":\"Claimeds - Performance Adm\",\"shortName\":\"claimed-Performance Adm\",\"code\":\"claimed-Performance Adm\",\"periodType\":\"Monthly\",\"dataElements\":[],\"organisationUnits\":[],\"categoryCombo\":{\"id\":\"p0KPaWEg3cf\",\"name\":\"default\"}}]}" }
 
-  let(:max_score_perf_deg) {"{\"dataElementGroups\":[{\"name\":\"Max. Scores - Performance Adm\",\"shortName\":\"max_score-Performance Adm\",\"code\":\"max_score-Performance Adm\",\"dataElements\":[]}]}"}
-  let(:max_score_perf_dataset) {"{\"dataSets\":[{\"name\":\"Max. Scores - Performance Adm\",\"shortName\":\"max_score-Performance Adm\",\"code\":\"max_score-Performance Adm\",\"periodType\":\"Monthly\",\"dataElements\":[],\"organisationUnits\":[],\"categoryCombo\":{\"id\":\"p0KPaWEg3cf\",\"name\":\"default\"}}]}"}
-  let(:budget_perf_deg) {"{\"dataElementGroups\":[{\"name\":\"Budgets - Performance Adm\",\"shortName\":\"budget-Performance Adm\",\"code\":\"budget-Performance Adm\",\"dataElements\":[]}]}"}
-  let(:budget_perf_dataset) {"{\"dataSets\":[{\"name\":\"Budgets - Performance Adm\",\"shortName\":\"budget-Performance Adm\",\"code\":\"budget-Performance Adm\",\"periodType\":\"Monthly\",\"dataElements\":[],\"organisationUnits\":[],\"categoryCombo\":{\"id\":\"p0KPaWEg3cf\",\"name\":\"default\"}}]}"}
+  let(:max_score_perf_deg) { "{\"dataElementGroups\":[{\"name\":\"Max. Scores - Performance Adm\",\"shortName\":\"max_score-Performance Adm\",\"code\":\"max_score-Performance Adm\",\"dataElements\":[]}]}" }
+  let(:max_score_perf_dataset) { "{\"dataSets\":[{\"name\":\"Max. Scores - Performance Adm\",\"shortName\":\"max_score-Performance Adm\",\"code\":\"max_score-Performance Adm\",\"periodType\":\"Monthly\",\"dataElements\":[],\"organisationUnits\":[],\"categoryCombo\":{\"id\":\"p0KPaWEg3cf\",\"name\":\"default\"}}]}" }
+  let(:budget_perf_deg) { "{\"dataElementGroups\":[{\"name\":\"Budgets - Performance Adm\",\"shortName\":\"budget-Performance Adm\",\"code\":\"budget-Performance Adm\",\"dataElements\":[]}]}" }
+  let(:budget_perf_dataset) { "{\"dataSets\":[{\"name\":\"Budgets - Performance Adm\",\"shortName\":\"budget-Performance Adm\",\"code\":\"budget-Performance Adm\",\"periodType\":\"Monthly\",\"dataElements\":[],\"organisationUnits\":[],\"categoryCombo\":{\"id\":\"p0KPaWEg3cf\",\"name\":\"default\"}}]}" }
   let(:all_deg) do
     [claimed_deg, verified_deg,
      tarif_deg,
@@ -45,8 +45,7 @@ RSpec.describe SynchroniseDegDsWorker do
      maxscore_quality_deg,
      claimed_perf_deg,
      max_score_perf_deg,
-     budget_perf_deg
-   ]
+     budget_perf_deg]
   end
 
   let(:all_dataset) do
@@ -61,8 +60,7 @@ RSpec.describe SynchroniseDegDsWorker do
      maxscore_quality_dataset,
      claimed_perf_dataset,
      max_score_perf_dataset,
-     budget_perf_dataset
-   ]
+     budget_perf_dataset]
   end
 
   it "should create" do
@@ -97,8 +95,8 @@ RSpec.describe SynchroniseDegDsWorker do
   end
 
   def stub_update_data_element_sets
-    stub_request(:put, "http://play.dhis2.org/demo/api/dataSets/").
-           to_return(:status => 200, :body => "", :headers => {})
+    stub_request(:put, "http://play.dhis2.org/demo/api/dataSets/")
+      .to_return(status: 200, body: "", headers: {})
   end
 
   def stub_find_data_element_group_by_name(deg)

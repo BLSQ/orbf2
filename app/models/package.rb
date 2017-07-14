@@ -57,6 +57,29 @@ class Package < ApplicationRecord
     activities.flat_map(&:activity_states).select { |activity_state| activity_state.state == state }
   end
 
+  def current_cycle_periods(year_month)
+    if frequency == "yearly"
+      []
+    elsif frequency == "monthly"
+      year_months = project.cycle_yearly? ? year_month.to_year.months : year_month.to_quarter.months
+      year_months.select { |period| period < year_month }
+    else
+      year_quarter = year_month.to_quarter
+      year_quarters = project.cycle_yearly? ? year_month.to_year.quarters : []
+      year_quarters.select { |period| period < year_quarter }
+    end
+  end
+
+  def current_values_periods(year_month)
+    if frequency == "monthly"
+      [year_month, year_month.to_year]
+    elsif frequency == "quarterly"
+      [year_month, year_month.to_quarter, year_month.to_year]
+    elsif frequency == "yearly"
+      [year_month.to_year]
+    end
+  end
+
   def periods(year_month, with_previous_year = true)
     periods = []
     if frequency == "monthly"

@@ -1,5 +1,5 @@
 module Invoicing
-  class MonthlyInvoice < Struct.new(:date, :entity, :project, :activity_results, :package_results, :payment_result)
+  class Invoice < Struct.new(:date, :entity, :project, :activity_results, :package_results, :payment_result)
     def puts(message = "")
       @lines ||= []
       @lines << message
