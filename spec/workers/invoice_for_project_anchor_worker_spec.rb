@@ -24,6 +24,7 @@ RSpec.describe InvoicesForEntitiesWorker do
       expression:  "avg(%{verified_previous_year_values})",
       description: "last year verified payment"
     )
+    self
   end
 
   def with_cycle_values(project)
@@ -32,7 +33,30 @@ RSpec.describe InvoicesForEntitiesWorker do
       expression:  "avg(%{verified_current_cycle_values})",
       description: "current cycle verified payment"
     )
+    self
   end
+
+  def with_monthly_payment_rule(project)
+    payment_rule = project.payment_rules.create!(
+      packages:        [project.packages[0], project.packages[2]],
+      frequency:       "monthly",
+      rule_attributes: {
+        name:                "monthly payments",
+        kind:                "payment",
+        formulas_attributes: [
+          {
+            code:        "payment",
+            expression:  "quantity_total_pma + quality_technical_score_value * (sum(quantity_total_pma, %{quantity_total_pma_values})) ",
+            description: "doc monthly payment"
+          }
+        ]
+      }
+    )
+
+    puts "added payment for  #{payment_rule.packages.map(&:name)}"
+
+    self
+ end
 
   def create_snaphots(project)
     return if project.project_anchor.dhis2_snapshots.any?
@@ -87,6 +111,7 @@ RSpec.describe InvoicesForEntitiesWorker do
 
     with_last_year_verified_values(project)
     with_cycle_values(project)
+    with_monthly_payment_rule(project)
     with_activities_and_formula_mappings(project)
 
     refs = project.activities

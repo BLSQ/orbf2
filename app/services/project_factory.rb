@@ -22,7 +22,7 @@ class ProjectFactory
             ),
             new_formula(
               :quantity,
-              "IF(difference_percentage < 5, verified , 0.0)",
+              "IF(difference_percentage < 50, verified , 0.0)",
               "Quantity for PBF payment"
             ),
             new_formula(

@@ -140,7 +140,7 @@ shared_context "basic_context" do
             kind: rule.kind
           )
           mapping.external_reference = "#{rule.kind}-#{formula.code}"
-          mapping
+          mapping.save!
         end
       end
 
@@ -151,6 +151,7 @@ shared_context "basic_context" do
         as.external_reference = "ref--#{as.activity.name}-#{as.state.code}"
         as.save!
       end
+      self
     end
 
   def update_package_with_dhis2(package, suffix, states, groups, _acitivity_ids)
