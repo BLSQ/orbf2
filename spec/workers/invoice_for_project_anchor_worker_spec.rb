@@ -7,87 +7,64 @@ RSpec.describe InvoicesForEntitiesWorker do
 
   let(:program) { create :program }
 
-  let(:project) do
+  let!(:project) do
     project = full_project
     project.save!
     user.save!
     user.program = program
+    with_activities_and_formula_mappings(project)
+    create_snaphots(project)
     project
   end
 
-  def create_snaphots
-    project
-    stub_organisation_unit_group_sets
-    stub_organisation_unit_groups
-    stub_organisation_units
-    stub_data_elements
-    stub_data_elements_groups
-    stub_system_info
-    stub_indicators
+  def create_snaphots(project)
+    return if project.project_anchor.dhis2_snapshots.any?
+    stub_organisation_unit_group_sets(project)
+    stub_organisation_unit_groups(project)
+    stub_organisation_units(project)
+    stub_data_elements(project)
+    stub_data_elements_groups(project)
+    stub_system_info(project)
+    stub_indicators(project)
+
     Dhis2SnapshotWorker.new.perform(project.project_anchor.id)
   end
 
   it "should perform" do
-    create_snaphots
     project.entity_group.external_reference = "MAs88nJc9nL"
     project.entity_group.save!
 
     stub_dhis2_values
-    stub_export_values
+    stub_export_values("invoice_zero_all.json")
 
     InvoiceForProjectAnchorWorker.new.perform(project.project_anchor.id, 2015, 1)
   end
 
   it "should perform for subset of contracted_entities" do
-    create_snaphots
     project.entity_group.external_reference = "MAs88nJc9nL"
     project.entity_group.save!
 
     stub_dhis2_values
-    stub_export_values_limited
+    stub_export_values("invoice_zero_single.json")
 
     InvoiceForProjectAnchorWorker.new.perform(project.project_anchor.id, 2015, 1, ["vRC0stJ5y9Q"])
   end
 
   it "should perform for yearly project cycle" do
-    create_snaphots
     project.update_attributes(cycle: "yearly")
     project.entity_group.external_reference = "MAs88nJc9nL"
     project.entity_group.save!
 
     stub_dhis2_values_yearly
-    stub_export_values_limited
+    stub_export_values("invoice_zero_single.json")
 
     InvoiceForProjectAnchorWorker.new.perform(project.project_anchor.id, 2015, 1, ["vRC0stJ5y9Q"])
   end
 
   it "should perform for yearly project cycle and appropriate values" do
-    create_snaphots
     project.update_attributes(cycle: "yearly")
     project.entity_group.external_reference = "MAs88nJc9nL"
     project.entity_group.save!
-
-    project.packages.each do |package|
-      package.states.each do |state|
-        package.activities.each_with_index do |activity, index|
-          activity_state = activity.activity_states.find_by(state: state)
-          next if activity_state
-          activity.activity_states.create!(
-            state:              state,
-            name:               "#{activity.name}-#{state.code}",
-            external_reference: "ref--#{activity.name}-#{state.code}"
-          )
-        end
-      end
-    end
-
-    project.activities
-           .flat_map(&:activity_states)
-           .sort_by(&:name)
-           .each_with_index do |as, index|
-      as.external_reference = "ref-#{index}"
-      as.save!
-    end
 
     refs = project.activities
                   .flat_map(&:activity_states)
@@ -106,7 +83,7 @@ RSpec.describe InvoicesForEntitiesWorker do
     end
 
     stub_dhis2_values_yearly(JSON.pretty_generate("dataValues": values))
-    stub_export_values_limited
+    stub_export_values("invoice_yearly.json")
 
     InvoiceForProjectAnchorWorker.new.perform(project.project_anchor.id, 2015, 1, ["vRC0stJ5y9Q"])
   end
@@ -121,36 +98,10 @@ RSpec.describe InvoicesForEntitiesWorker do
       .to_return(status: 200, body: values, headers: {})
   end
 
-  def stub_export_values_limited
+  def stub_export_values(expected_fixture)
+    puts "Stubbing dataValueSets with #{expected_fixture}"
     stub_request(:post, "http://play.dhis2.org/demo/api/dataValueSets")
-      .with(body: JSON.generate(
-        "dataValues" => [
-          { "dataElement" => "ext-attributed_points", "orgUnit" => "vRC0stJ5y9Q", "period" => "2015Q1", "value" => "0.0", "comment" => "P-attributed_points-Quality" },
-          { "dataElement" => "ext-max_points", "orgUnit" => "vRC0stJ5y9Q", "period" => "2015Q1", "value" => "0.0", "comment" => "P-max_points-Quality" },
-          { "dataElement" => "ext-quality_technical_score_value", "orgUnit" => "vRC0stJ5y9Q", "period" => "2015Q1", "value" => 0, "comment" => "P-quality_technical_score_value-Quality" }
-        ]
-      )).to_return(status: 200, body: "", headers: {})
-  end
-
-  def stub_export_values
-    stub_request(:post, "http://play.dhis2.org/demo/api/dataValueSets")
-      .with(body:
-                  JSON.generate(
-                    "dataValues" => [
-                      { "dataElement" => "ext-attributed_points", "orgUnit" => "bM4Ky73uMao", "period" => "2015Q1", "value" => "0.0", "comment" => "P-attributed_points-Quality" },
-                      { "dataElement" => "ext-max_points", "orgUnit" => "bM4Ky73uMao", "period" => "2015Q1", "value" => "0.0", "comment" => "P-max_points-Quality" },
-                      { "dataElement" => "ext-quality_technical_score_value", "orgUnit" => "bM4Ky73uMao", "period" => "2015Q1", "value" => 0, "comment" => "P-quality_technical_score_value-Quality" },
-                      { "dataElement" => "ext-attributed_points", "orgUnit" => "jk1TtiBM5hz", "period" => "2015Q1", "value" => "0.0", "comment" => "P-attributed_points-Quality" },
-                      { "dataElement" => "ext-max_points", "orgUnit" => "jk1TtiBM5hz", "period" => "2015Q1", "value" => "0.0", "comment" => "P-max_points-Quality" },
-                      { "dataElement" => "ext-quality_technical_score_value", "orgUnit" => "jk1TtiBM5hz", "period" => "2015Q1", "value" => 0, "comment" => "P-quality_technical_score_value-Quality" },
-                      { "dataElement" => "ext-attributed_points", "orgUnit" => "uROAmk9ymNE", "period" => "2015Q1", "value" => "0.0", "comment" => "P-attributed_points-Quality" },
-                      { "dataElement" => "ext-max_points", "orgUnit" => "uROAmk9ymNE", "period" => "2015Q1", "value" => "0.0", "comment" => "P-max_points-Quality" },
-                      { "dataElement" => "ext-quality_technical_score_value", "orgUnit" => "uROAmk9ymNE", "period" => "2015Q1", "value" => 0, "comment" => "P-quality_technical_score_value-Quality" },
-                      { "dataElement" => "ext-attributed_points", "orgUnit" => "vRC0stJ5y9Q", "period" => "2015Q1", "value" => "0.0", "comment" => "P-attributed_points-Quality" },
-                      { "dataElement" => "ext-max_points", "orgUnit" => "vRC0stJ5y9Q", "period" => "2015Q1", "value" => "0.0", "comment" => "P-max_points-Quality" },
-                      { "dataElement" => "ext-quality_technical_score_value", "orgUnit" => "vRC0stJ5y9Q", "period" => "2015Q1", "value" => 0, "comment" => "P-quality_technical_score_value-Quality" }
-                    ]
-                  ))
+      .with(body: JSON.generate(JSON.parse(fixture_content(:scorpio, expected_fixture))))
       .to_return(status: 200, body: "", headers: {})
   end
 end
