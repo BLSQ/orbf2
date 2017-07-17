@@ -122,7 +122,7 @@ class Rule < ApplicationRecord
   def available_variables_for_values
     var_names = []
     if activity_kind?
-      activity_level_states = package.states.select(&:activity_level?)
+      activity_level_states = package.package_states.map(&:state).select(&:activity_level?)
       var_names << activity_level_states.map { |state| "#{state.code}_previous_year_values" }
       var_names << activity_level_states.map { |state| "#{state.code}_current_cycle_values" }
     end
