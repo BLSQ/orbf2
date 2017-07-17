@@ -1,11 +1,5 @@
 {
   "dataValues": [{
-    "dataElement": "Vaccination-verified_last_year_average",
-    "orgUnit": "vRC0stJ5y9Q",
-    "period": "201501",
-    "value": "1.588235294117647059",
-    "comment": "A-verified_last_year_average-Vaccination"
-  }, {
     "dataElement": "Vaccination-difference_percentage",
     "orgUnit": "vRC0stJ5y9Q",
     "period": "201501",
@@ -24,11 +18,17 @@
     "value": 0,
     "comment": "A-amount-Vaccination"
   }, {
-    "dataElement": "Clients sous traitement ARV suivi pendant les 6 premiers mois-verified_last_year_average",
+    "dataElement": "Vaccination-verified_last_year_average",
     "orgUnit": "vRC0stJ5y9Q",
     "period": "201501",
-    "value": "0.705882352941176471",
-    "comment": "A-verified_last_year_average-Clients sous traitement ARV suivi pendant les 6 premiers mois"
+    "value": "1.588235294117647059",
+    "comment": "A-verified_last_year_average-Vaccination"
+  }, {
+    "dataElement": "Vaccination-verified_current_cycle_average",
+    "orgUnit": "vRC0stJ5y9Q",
+    "period": "201501",
+    "value": null,
+    "comment": "A-verified_current_cycle_average-Vaccination"
   }, {
     "dataElement": "Clients sous traitement ARV suivi pendant les 6 premiers mois-difference_percentage",
     "orgUnit": "vRC0stJ5y9Q",
@@ -48,11 +48,17 @@
     "value": 0,
     "comment": "A-amount-Clients sous traitement ARV suivi pendant les 6 premiers mois"
   }, {
-    "dataElement": "Vaccination-verified_last_year_average",
+    "dataElement": "Clients sous traitement ARV suivi pendant les 6 premiers mois-verified_last_year_average",
     "orgUnit": "vRC0stJ5y9Q",
-    "period": "201502",
-    "value": "1.588235294117647059",
-    "comment": "A-verified_last_year_average-Vaccination"
+    "period": "201501",
+    "value": "0.705882352941176471",
+    "comment": "A-verified_last_year_average-Clients sous traitement ARV suivi pendant les 6 premiers mois"
+  }, {
+    "dataElement": "Clients sous traitement ARV suivi pendant les 6 premiers mois-verified_current_cycle_average",
+    "orgUnit": "vRC0stJ5y9Q",
+    "period": "201501",
+    "value": null,
+    "comment": "A-verified_current_cycle_average-Clients sous traitement ARV suivi pendant les 6 premiers mois"
   }, {
     "dataElement": "Vaccination-difference_percentage",
     "orgUnit": "vRC0stJ5y9Q",
@@ -72,11 +78,17 @@
     "value": 0,
     "comment": "A-amount-Vaccination"
   }, {
-    "dataElement": "Clients sous traitement ARV suivi pendant les 6 premiers mois-verified_last_year_average",
+    "dataElement": "Vaccination-verified_last_year_average",
     "orgUnit": "vRC0stJ5y9Q",
     "period": "201502",
-    "value": "0.705882352941176471",
-    "comment": "A-verified_last_year_average-Clients sous traitement ARV suivi pendant les 6 premiers mois"
+    "value": "1.588235294117647059",
+    "comment": "A-verified_last_year_average-Vaccination"
+  }, {
+    "dataElement": "Vaccination-verified_current_cycle_average",
+    "orgUnit": "vRC0stJ5y9Q",
+    "period": "201502",
+    "value": "0.0",
+    "comment": "A-verified_current_cycle_average-Vaccination"
   }, {
     "dataElement": "Clients sous traitement ARV suivi pendant les 6 premiers mois-difference_percentage",
     "orgUnit": "vRC0stJ5y9Q",
@@ -96,11 +108,17 @@
     "value": 0,
     "comment": "A-amount-Clients sous traitement ARV suivi pendant les 6 premiers mois"
   }, {
-    "dataElement": "Vaccination-verified_last_year_average",
+    "dataElement": "Clients sous traitement ARV suivi pendant les 6 premiers mois-verified_last_year_average",
     "orgUnit": "vRC0stJ5y9Q",
-    "period": "201503",
-    "value": "1.588235294117647059",
-    "comment": "A-verified_last_year_average-Vaccination"
+    "period": "201502",
+    "value": "0.705882352941176471",
+    "comment": "A-verified_last_year_average-Clients sous traitement ARV suivi pendant les 6 premiers mois"
+  }, {
+    "dataElement": "Clients sous traitement ARV suivi pendant les 6 premiers mois-verified_current_cycle_average",
+    "orgUnit": "vRC0stJ5y9Q",
+    "period": "201502",
+    "value": "0.0",
+    "comment": "A-verified_current_cycle_average-Clients sous traitement ARV suivi pendant les 6 premiers mois"
   }, {
     "dataElement": "Vaccination-difference_percentage",
     "orgUnit": "vRC0stJ5y9Q",
@@ -120,11 +138,17 @@
     "value": 0,
     "comment": "A-amount-Vaccination"
   }, {
-    "dataElement": "Clients sous traitement ARV suivi pendant les 6 premiers mois-verified_last_year_average",
+    "dataElement": "Vaccination-verified_last_year_average",
     "orgUnit": "vRC0stJ5y9Q",
     "period": "201503",
-    "value": "0.705882352941176471",
-    "comment": "A-verified_last_year_average-Clients sous traitement ARV suivi pendant les 6 premiers mois"
+    "value": "1.588235294117647059",
+    "comment": "A-verified_last_year_average-Vaccination"
+  }, {
+    "dataElement": "Vaccination-verified_current_cycle_average",
+    "orgUnit": "vRC0stJ5y9Q",
+    "period": "201503",
+    "value": "0.0",
+    "comment": "A-verified_current_cycle_average-Vaccination"
   }, {
     "dataElement": "Clients sous traitement ARV suivi pendant les 6 premiers mois-difference_percentage",
     "orgUnit": "vRC0stJ5y9Q",
@@ -143,6 +167,18 @@
     "period": "201503",
     "value": 0,
     "comment": "A-amount-Clients sous traitement ARV suivi pendant les 6 premiers mois"
+  }, {
+    "dataElement": "Clients sous traitement ARV suivi pendant les 6 premiers mois-verified_last_year_average",
+    "orgUnit": "vRC0stJ5y9Q",
+    "period": "201503",
+    "value": "0.705882352941176471",
+    "comment": "A-verified_last_year_average-Clients sous traitement ARV suivi pendant les 6 premiers mois"
+  }, {
+    "dataElement": "Clients sous traitement ARV suivi pendant les 6 premiers mois-verified_current_cycle_average",
+    "orgUnit": "vRC0stJ5y9Q",
+    "period": "201503",
+    "value": "0.0",
+    "comment": "A-verified_current_cycle_average-Clients sous traitement ARV suivi pendant les 6 premiers mois"
   }, {
     "dataElement": "Vaccination-attributed_points",
     "orgUnit": "vRC0stJ5y9Q",

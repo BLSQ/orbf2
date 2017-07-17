@@ -26,6 +26,14 @@ RSpec.describe InvoicesForEntitiesWorker do
     )
   end
 
+  def with_cycle_values(project)
+    project.packages.first.activity_rule.formulas.create(
+      code:        "verified_current_cycle_average",
+      expression:  "avg(%{verified_current_cycle_values})",
+      description: "current cycle verified payment"
+    )
+  end
+
   def create_snaphots(project)
     return if project.project_anchor.dhis2_snapshots.any?
     stub_organisation_unit_group_sets(project)
@@ -78,6 +86,7 @@ RSpec.describe InvoicesForEntitiesWorker do
     project.entity_group.save!
 
     with_last_year_verified_values(project)
+    with_cycle_values(project)
     with_activities_and_formula_mappings(project)
 
     refs = project.activities
