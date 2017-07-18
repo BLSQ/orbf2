@@ -36,4 +36,8 @@ class State < ApplicationRecord
   def activity_level?
     level == "activity"
   end
+
+  def to_unified_h
+    { name: name }
+  end
 end

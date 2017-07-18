@@ -15,6 +15,7 @@
 #  publish_date      :datetime
 #  project_anchor_id :integer
 #  original_id       :integer
+#  cycle             :string           default("quaterly"), not null
 #
 
 require "rails_helper"

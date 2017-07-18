@@ -4,8 +4,10 @@
   <a name="<%= (package.name+"-"+invoice.date.strftime('%Y-%m')).underscore%>"></a>
   <h2><%= package.name %> at <%=invoice.date.strftime('%Y-%m')%>  </h2>
 
-  <%= package.linked_org_units(@org_unit, @pyramid).map(&:name).join(" and ") %>
-
+  org unit(s) : <%= package.linked_org_units(@org_unit, @pyramid).map(&:name).join(" and ") %><br>
+  <%  periods = package.periods(Periods.year_month(invoice.date)) %>
+  date range : <%= periods.map { |period| [period.start_date, period.end_date] }.flatten.minmax.map(&:to_s).join(' <i class="fa fa-arrow-right" aria-hidden="true"></i> ').html_safe %> <br>
+  periods : <%= periods.map(&:to_dhis2).join(", ") %><br>
   <table class="table invoice num-span-table table-striped">
     <thead>
       <tr>
@@ -18,7 +20,7 @@
     </thead>
 
     <tbody>
-    <% states = State.all.index_by(&:code) %>
+    <% states = package.states.index_by(&:code) %>
     <%results.sort_by{|r| r.activity.id }.each do |result|%>
       <tr>
        <% package.invoice_details.each do |detail|%>

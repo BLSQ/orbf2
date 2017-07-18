@@ -28,7 +28,11 @@ class InvoicesForEntitiesWorker
     invoicing_request.project = project_finder.find_project(nil, invoicing_request.end_date_as_date)
 
     org_unit_and_packages = fetch_org_units_by_package(invoicing_request, org_unit_ids, options)
-    analytics_service_by_org_unit_id = analytics_services_by_org_unit_id(invoicing_request, org_unit_and_packages, options)
+    analytics_service_by_org_unit_id = analytics_services_by_org_unit_id(
+      invoicing_request,
+      org_unit_and_packages,
+      options
+    )
 
     invoices = {}
     org_unit_and_packages.each do |org_unit_and_package|
@@ -54,20 +58,20 @@ class InvoicesForEntitiesWorker
 
   def project_finder(project_anchor, invoicing_request, options)
     profile("load Project") do
+      month_drafts = []
+      months = invoicing_request.quarter_dates + [invoicing_request.year_quarter.to_year.end_date]
       if options[:force_project_id]
         draft = project_anchor.projects.fully_loaded.find(options[:force_project_id])
-        ConstantProjectFinder.new(
-          Hash[invoicing_request.quarter_dates.map { |date| [date, draft] }]
-        )
+        month_drafts = months.map { |date| [date, draft] }
       else
-        ConstantProjectFinder.new(
-          Hash[invoicing_request.quarter_dates.map do |date|
-                 project = project_anchor.projects.fully_loaded.for_date(date) || project_anchor.latest_draft
-                 [date, project]
-               end
-          ]
-        )
+        month_drafts = months.map do |date|
+          project = project_anchor.projects.fully_loaded.for_date(date) || project_anchor.latest_draft
+          [date, project]
+        end
       end
+      ConstantProjectFinder.new(
+        month_drafts.to_h
+      )
     end
   end
 
@@ -124,14 +128,18 @@ class InvoicesForEntitiesWorker
     entity = to_entity(org_unit)
     invoices = []
     invoicing_request.quarter_dates.each do |month|
-      monthly_invoice = invoice_builder.generate_monthly_entity_invoice(
-        invoicing_request.project,
-        entity,
-        analytics_service,
-        month
-      )
-      monthly_invoice.dump_invoice
-      invoices << monthly_invoice
+      begin
+        monthly_invoice = invoice_builder.generate_monthly_entity_invoice(
+          invoicing_request.project,
+          entity,
+          analytics_service,
+          month
+        )
+        monthly_invoice.dump_invoice
+        invoices << monthly_invoice
+      rescue => e
+        puts "WARN : generate_monthly_entity_invoice : #{e.message}"
+      end
     end
     quarterly_invoices = invoice_builder.generate_quarterly_entity_invoice(
       invoicing_request.project,
@@ -140,6 +148,14 @@ class InvoicesForEntitiesWorker
       invoicing_request.end_date_as_date
     )
     invoices << quarterly_invoices
+
+    yearly_invoices = invoice_builder.generate_yearly_entity_invoice(
+      invoicing_request.project,
+      entity,
+      analytics_service,
+      invoicing_request.end_date_as_date
+    )
+    invoices << yearly_invoices
 
     payments_invoices = invoice_builder.generate_monthly_payments(
       invoicing_request.project,
@@ -172,12 +188,15 @@ class InvoicesForEntitiesWorker
   end
 
   def fetch_indicators_expressions(invoicing_request, options)
-    indicator_ids = invoicing_request.project.activities.flat_map(&:activity_states).select(&:kind_indicator?).map(&:external_reference)
+    indicator_ids = invoicing_request.project.activities
+                                     .flat_map(&:activity_states)
+                                     .select(&:kind_indicator?)
+                                     .map(&:external_reference)
     return {} if indicator_ids.empty?
     data_compound = invoicing_request.project.project_anchor.nearest_data_compound_for(invoicing_request.end_date_as_date)
     data_compound ||= DataCompound.from(invoicing_request.project) if options[:allow_fresh_dhis2_data]
     indicators = data_compound.indicators(indicator_ids)
-    Hash[indicators.map { |indicator| [indicator.id, Analytics::IndicatorCalculator.parse_expression(indicator.numerator)] }]
+    indicators.map { |indicator| [indicator.id, Analytics::IndicatorCalculator.parse_expression(indicator.numerator)] }.to_h
   end
 
   def fetch_values(invoicing_request, org_unit_and_packages, options)
@@ -188,15 +207,23 @@ class InvoicesForEntitiesWorker
     dhis2 = invoicing_request.project.dhis2_connection
     packages = invoicing_request.project.packages
     dataset_ids = packages.flat_map(&:package_states).map(&:ds_external_reference).reject(&:nil?)
-    org_unit_ids = org_unit_and_packages.flat_map(&:org_units_by_package).flat_map(&:values).flatten.flat_map(&:id).uniq
+    org_unit_ids = org_unit_and_packages
+                   .flat_map(&:org_units_by_package)
+                   .flat_map(&:values)
+                   .flatten
+                   .flat_map(&:id)
+                   .uniq
+
+    data_range = invoicing_request.project.date_range(invoicing_request.year_quarter)
 
     values_query = {
       organisation_unit: org_unit_ids,
       data_sets:         dataset_ids,
-      start_date:        invoicing_request.start_date_as_date,
-      end_date:          invoicing_request.end_date_as_date,
+      start_date:        data_range.first,
+      end_date:          data_range.last,
       children:          false
     }
+
     values = dhis2.data_value_sets.list(values_query)
     values.data_values ? values.values : []
   end
@@ -204,7 +231,9 @@ class InvoicesForEntitiesWorker
   def mock_values(invoicing_request, org_units_by_package)
     values = []
     org_units_by_package.each do |package, org_units|
-      invoicing_request.quarter_dates.map { |date| "#{date.year}#{date.month.to_s.rjust(2, '0')}" }.each do |period|
+      periods = invoicing_request.year_quarter.months.map(&:to_dhis2)
+      periods += [invoicing_request.year_quarter.to_year.to_dhis2] if package.frequency == "yearly"
+      periods.each do |period|
         package.activities.each do |activity|
           package.states.each do |state|
             org_units.each do |org_unit_to_mock|
@@ -239,7 +268,9 @@ class InvoicesForEntitiesWorker
 
   def to_facts(org_unit)
     parent_ids = org_unit.path.split("/").reject(&:empty?)
-    facts = parent_ids.each_with_index.map { |parent_id, index| ["level_#{index + 1}", parent_id] }.to_h
+    facts = parent_ids.each_with_index
+                      .map { |parent_id, index| ["level_#{index + 1}", parent_id] }
+                      .to_h
     facts
   end
 end

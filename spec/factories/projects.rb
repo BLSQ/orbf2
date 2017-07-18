@@ -15,6 +15,7 @@
 #  publish_date      :datetime
 #  project_anchor_id :integer
 #  original_id       :integer
+#  cycle             :string           default("quaterly"), not null
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

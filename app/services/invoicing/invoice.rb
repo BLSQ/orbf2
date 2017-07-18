@@ -1,5 +1,5 @@
 module Invoicing
-  class MonthlyInvoice < Struct.new(:date, :entity, :project, :activity_results, :package_results, :payment_result)
+  class Invoice < Struct.new(:date, :entity, :project, :activity_results, :package_results, :payment_result)
     def puts(message = "")
       @lines ||= []
       @lines << message
@@ -36,6 +36,14 @@ module Invoicing
         puts package_line.join("\n")
       end
       puts
+    end
+
+    def inspect
+      to_s
+    end
+
+    def to_s
+      "Invoice-#{date}-#{package_results&.first&.package&.name}"
     end
 
     def d_to_s(_item, decimal)

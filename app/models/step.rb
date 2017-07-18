@@ -25,7 +25,7 @@ class Step
   end
 
   def self.connection(current_project_anchor)
-    Step.new(name:   "Dhis2 connection",
+    Step.new(name:   "Dhis2 connection & Signalitic",
              status: current_project_anchor.invalid_project? ? :todo : :done,
              kind:   :dhis2,
              model:  current_project_anchor.projects.find_by(status: "draft") ||

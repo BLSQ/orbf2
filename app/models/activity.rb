@@ -31,9 +31,7 @@ class Activity < ApplicationRecord
     {
       name:            name,
       stable_id:       stable_id,
-      activity_states: Hash[
-
-      ]
+      activity_states: activity_states.map { |as| [as.stable_id, :to_unified_h] }.to_h
     }
   end
 end

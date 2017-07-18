@@ -26,13 +26,13 @@ RSpec.describe Dhis2SnapshotWorker do
 
   it "should perform organisation_units and organisation_unit_groups snapshot and update existing when run twice" do
     project
-    stub_organisation_unit_group_sets
-    stub_organisation_unit_groups
-    stub_organisation_units
-    stub_data_elements
-    stub_data_elements_groups
-    stub_system_info
-    stub_indicators
+    stub_organisation_unit_group_sets(project)
+    stub_organisation_unit_groups(project)
+    stub_organisation_units(project)
+    stub_data_elements(project)
+    stub_data_elements_groups(project)
+    stub_system_info(project)
+    stub_indicators(project)
 
     expect(Dhis2Snapshot.all.count).to eq 0
 

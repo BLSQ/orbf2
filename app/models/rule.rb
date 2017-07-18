@@ -96,6 +96,9 @@ class Rule < ApplicationRecord
     if activity_kind?
       var_names << package.states.select(&:activity_level?).map(&:code) if package
       var_names << formulas.map(&:code)
+      var_names << available_variables_for_values.map { |code| "%{#{code}}" }
+      var_names << "quarter_of_year"
+      var_names << "month_of_year"
     elsif package_kind?
       var_names << package.states.select(&:package_level?).map(&:code) if package
       var_names << available_variables_for_values.map { |code| "%{#{code}}" }
@@ -108,12 +111,25 @@ class Rule < ApplicationRecord
     var_names.flatten.uniq.reject(&:nil?).sort
   end
 
+  def used_available_variables
+    used_variables_for_values
+  end
+
+  def used_variables_for_values
+    formulas.map(&:values_dependencies).flatten
+  end
+
   def available_variables_for_values
     var_names = []
-    if kind == "package" && package.activity_rule
+    if activity_kind?
+      activity_level_states = package.package_states.map(&:state).select(&:activity_level?)
+      var_names << activity_level_states.map { |state| "#{state.code}_previous_year_values" }
+      var_names << activity_level_states.map { |state| "#{state.code}_current_cycle_values" }
+    end
+    if package_kind? && package.activity_rule
       var_names << package.activity_rule.formulas.map(&:code).map { |code| "#{code}_values" }
     end
-    if kind == "payment" && payment_rule.monthly?
+    if payment_kind? && payment_rule.monthly?
       var_names << payment_rule.packages.flat_map(&:package_rule).map(&:formulas).flatten.map(&:code).map { |code| "#{code}_values" }
       var_names << payment_rule.rule.formulas.map(&:code).map { |code| "#{code}_previous_values" }
     end
@@ -154,17 +170,20 @@ class Rule < ApplicationRecord
   end
 
   def extra_facts(_activity, entity_facts)
-    return {} unless decision_tables.any?
+    return {} if decision_tables.empty?
 
     extra_facts = decision_tables.map { |decision_table| decision_table.extra_facts(entity_facts) }.compact
     extra_facts ||= [{}]
-    extra_facts.reduce({}, :merge)
+    final_facts = extra_facts.reduce({}, :merge)
+    raise "#{name} : no value found for #{entity_facts} in decision table #{decision_tables.map(&:decision_table).map(&:to_s).join("\n")}" if final_facts.empty?
+    final_facts
   end
 
   private
 
   def to_fake_facts(states)
     facts = states.map { |state| [state.code.to_sym, "10"] }.to_h
+    facts[:quarter_of_year] = 3
     org_unit_facts = decision_tables.flat_map(&:out_headers).map { |header| [header.to_sym, "10"] }.to_h
     facts.merge org_unit_facts
   end

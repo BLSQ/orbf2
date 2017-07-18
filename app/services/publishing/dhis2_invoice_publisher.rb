@@ -17,12 +17,13 @@ module Publishing
 
     def payment_values(invoices)
       invoices.select(&:payment_result).map do |invoice|
+        period = Periods.year_month(invoice.date)
         invoice.payment_result.payment_rule.rule.formulas.select(&:formula_mapping).map do |formula|
           mapping = formula.formula_mapping
           {
             dataElement: mapping.external_reference,
             orgUnit:     invoice.entity.id,
-            period:      format_to_dhis_period(invoice.date, invoice.payment_result.payment_rule.frequency),
+            period:      format_to_dhis_period(period, invoice.payment_result.payment_rule.frequency),
             value:       invoice.payment_result.solution[formula.code],
             comment:     "$-#{formula.code}-#{invoice.payment_result.payment_rule.rule.name}"
           }
@@ -32,6 +33,7 @@ module Publishing
 
     def package_values(invoices)
       invoices.map do |invoice|
+        period = Periods.year_month(invoice.date)
         invoice.package_results.map do |package_result|
           package_result.package.package_rule.formulas.select(&:formula_mapping).map do |formula|
             mapping = formula.formula_mapping
@@ -40,7 +42,7 @@ module Publishing
             {
               dataElement: mapping.external_reference,
               orgUnit:     invoice.entity.id,
-              period:      format_to_dhis_period(invoice.date, package_result.package.frequency),
+              period:      format_to_dhis_period(period, package_result.package.frequency),
               value:       package_result.solution[formula.code],
               comment:     "P-#{formula.code}-#{package_result.package.name}"
             }
@@ -51,6 +53,7 @@ module Publishing
 
     def activity_values(invoices)
       invoices.map do |invoice|
+        period = Periods.year_month(invoice.date)
         invoice.activity_results.map do |activity_results|
           activity_results.map do |activity_result|
             activity = activity_result.activity
@@ -60,7 +63,7 @@ module Publishing
               {
                 dataElement: mapping.external_reference,
                 orgUnit:     invoice.entity.id,
-                period:      format_to_dhis_period(activity_result.date, package.frequency),
+                period:      format_to_dhis_period(period, package.frequency),
                 value:       activity_result.solution[formula.code],
                 comment:     "A-#{formula.code}-#{activity.name}"
               }
@@ -70,40 +73,11 @@ module Publishing
       end.flatten
     end
 
-    def format_to_dhis_period(date, frequency)
-      "#{date.year}#{format_month_to_dhis2_period(date.month, frequency)}"
-    end
-
-    def format_month_to_dhis2_period(month, frequency)
-      if frequency == "monthly"
-        if month >= 10
-          month
-        else
-          "0#{month}"
-        end
-      else
-        "Q#{month_to_quarter(month)}"
-      end
-    end
-
-    MONTH_TO_QUARTER = {
-      1  => 1,
-      2  => 1,
-      3  => 1,
-      4  => 2,
-      5  => 2,
-      6  => 2,
-      7  => 3,
-      8  => 3,
-      9  => 3,
-      10 => 4,
-      11 => 4,
-      12 => 4
-    }.freeze
-
-    def month_to_quarter(month)
-      raise if month.to_i > 12 || month.to_i < 1
-      MONTH_TO_QUARTER[month.to_i]
+    def format_to_dhis_period(year_month, frequency)
+      period = year_month
+      period = period.to_year if frequency == "yearly"
+      period = period.to_quarter if frequency == "quarterly"
+      period.to_dhis2
     end
   end
 end

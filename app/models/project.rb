@@ -15,19 +15,16 @@
 #  publish_date      :datetime
 #  project_anchor_id :integer
 #  original_id       :integer
+#  cycle             :string           default("quaterly"), not null
 #
 
 class Project < ApplicationRecord
+  CYCLES = %w[quarterly yearly].freeze
+
   has_paper_trail meta: { project_id: :id, program_id: :program_id, item_type: "Project", item_id: :id }
   delegate :program_id, to: :project_anchor
 
-  validates :name, presence: true
-  validates :dhis2_url, presence: true, url: true
-  validates :user, presence: true
-  validates :password, presence: true
-
   has_many :states, dependent: :destroy
-
   has_many :payment_rules, dependent: :destroy
   has_one :entity_group, dependent: :destroy
   has_many :packages, dependent: :destroy
@@ -36,6 +33,15 @@ class Project < ApplicationRecord
   belongs_to :original, foreign_key: "original_id", optional: true, class_name: Project.name
   has_many :clones, foreign_key: "original_id", class_name: Project.name, dependent: :destroy
   has_many :versions
+
+  validates :name, presence: true
+  validates :dhis2_url, presence: true, url: true
+  validates :user, presence: true
+  validates :password, presence: true
+  validates :cycle, presence: true, inclusion: {
+    in:      CYCLES,
+    message: "%{value} is not a valid see #{CYCLES.join(',')}"
+  }
 
   # see PaperTrailed meta
   def project_id
@@ -46,8 +52,20 @@ class Project < ApplicationRecord
     "Project"
   end
 
+  def cycle_yearly?
+    cycle == "yearly"
+  end
+
   def state(code)
-    states.find {|state| state.code == code.to_s}
+    states.find { |state| state.code == code.to_s }
+  end
+
+  def periods(year_quarter)
+    packages.map { |package| year_quarter.months.map { |year_month| package.periods(year_month) } }.flatten.uniq
+  end
+
+  def date_range(year_quarter)
+    periods(year_quarter).map { |period| [period.start_date, period.end_date] }.flatten.minmax
   end
 
   def self.no_includes
@@ -131,6 +149,7 @@ class Project < ApplicationRecord
     new_project = nil
     transaction do
       new_project = deep_clone include: {
+        states:        [],
         entity_group:  [],
         activities:    {
           activity_states: []
@@ -222,6 +241,7 @@ class Project < ApplicationRecord
 
   def to_unified_h
     {
+      states:        states.map(&:to_unified_h).map { |h| [h[:stable_id], h] }.to_h,
       entity_group:  {
         external_reference: entity_group ? entity_group.external_reference : "",
         name:               entity_group ? entity_group.name : ""
@@ -248,7 +268,6 @@ class Project < ApplicationRecord
     return [] unless other_project
     diff_symbols = { "+" => :added, "-" => :removed, "~" => :modified }
     all_names = to_unified_names.merge(other_project.to_unified_names)
-
     HashDiff.diff(other_project.to_unified_h, to_unified_h).map do |hash_diff|
       operation, path, value, current = hash_diff
 
