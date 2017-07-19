@@ -97,7 +97,6 @@ class Rule < ApplicationRecord
       var_names << package.states.select(&:activity_level?).map(&:code) if package
       var_names << formulas.map(&:code)
       var_names << available_variables_for_values.map { |code| "%{#{code}}" }
-      var_names << Activity.all.map(&:code).compact
       var_names << "quarter_of_year"
       var_names << "month_of_year"
     elsif package_kind?
@@ -170,10 +169,10 @@ class Rule < ApplicationRecord
     "Rule##{id}-#{kind}-#{name}"
   end
 
-  def extra_facts(_activity, entity_facts)
+  def extra_facts(activity, entity_facts)
     return {} if decision_tables.empty?
-
-    extra_facts = decision_tables.map { |decision_table| decision_table.extra_facts(entity_facts) }.compact
+    entity_and_activity_facts = entity_facts.merge(activity_code: activity.code)
+    extra_facts = decision_tables.map { |decision_table| decision_table.extra_facts(entity_and_activity_facts) }.compact
     extra_facts ||= [{}]
     final_facts = extra_facts.reduce({}, :merge)
     raise "#{name} : no value found for #{entity_facts} in decision table #{decision_tables.map(&:decision_table).map(&:to_s).join("\n")}" if final_facts.empty?
