@@ -97,6 +97,7 @@ class Rule < ApplicationRecord
       var_names << package.states.select(&:activity_level?).map(&:code) if package
       var_names << formulas.map(&:code)
       var_names << available_variables_for_values.map { |code| "%{#{code}}" }
+      var_names << Activity.all.map(&:code).compact
       var_names << "quarter_of_year"
       var_names << "month_of_year"
     elsif package_kind?

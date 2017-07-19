@@ -8,6 +8,7 @@
 #  stable_id  :uuid             not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  code       :string
 #
 
 class Activity < ApplicationRecord
@@ -22,6 +23,10 @@ class Activity < ApplicationRecord
 
   validates :name, presence: true
   validates :activity_states, length: { minimum: 1 }
+  validates :code, allow_blank: true, format: {
+    with:    /\A[a-z_]+\z/,
+    message: ": should only contains small letters and _ like 'assisted_deliveries' or 'vaccination_under_one_year'"
+  }
 
   def activity_state(state)
     activity_states.find { |as| as.state.id == state.id }
