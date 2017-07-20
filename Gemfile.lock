@@ -1,7 +1,6 @@
 GIT
   remote: git://github.com/BLSQ/dhis2.git
-  revision: 986e2ec42cd0ad2f0a15b838b636ae2f2db11c14
-  branch: feature/add-organisation-unit-group-sets
+  revision: 72751380e3002cf71d8bd3f40bcee3281fd6fda2
   specs:
     dhis2 (2.3.5)
       rest-client
@@ -443,4 +442,4 @@ RUBY VERSION
    ruby 2.3.1p112
 
 BUNDLED WITH
-   1.14.6
+   1.15.2
