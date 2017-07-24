@@ -1,5 +1,5 @@
 <tr>
-    <td><%= link_to activity.name, edit_setup_project_activity_path(project,activity.id) %></td>
+    <td><%= link_to activity.name, edit_setup_project_activity_path(project,activity.id) %><br><small><%= activity.code %></small></td>
     <td>
       <small>
       <% activity.activity_states.each do |activity_state| %>
