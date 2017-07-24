@@ -28,6 +28,11 @@ class ActivityState < ApplicationRecord
 
   validates :state_id, uniqueness: { scope: [:activity_id] }
 
+  def external_reference=(external_reference)
+    external_reference = nil if external_reference.blank?
+    self[:external_reference] = external_reference
+  end
+
   def kind_data_element?
     kind == "data_element"
   end
