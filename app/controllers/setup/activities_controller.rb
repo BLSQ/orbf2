@@ -71,6 +71,7 @@ class Setup::ActivitiesController < PrivateController
       render template
     elsif @activity.invalid?
       flash[:failure] = "Some validation errors occured"
+      puts "invalid activity #{@activity.errors.full_messages}"
       render template
     else
       id = @activity.id
