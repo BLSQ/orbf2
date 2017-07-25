@@ -13,9 +13,16 @@
 
 class State < ApplicationRecord
   validates :name, presence: true
+  validates :code, presence: true, format: {
+    with:    Formula::REGEXP_VALIDATION,
+    message: ": should only contains lowercase letters and _ like 'quality_score' or 'claimed' vs %{value}"
+  }
   belongs_to :project, inverse_of: :states
 
-  validates :name, uniqueness: { scope: :project_id, message: "should be unique per project" }
+  validates :name, uniqueness: {
+    scope:   :project_id,
+    message: "should be unique per project"
+  }
 
   def self.configurables(conf = "")
     if conf == ""
@@ -26,7 +33,7 @@ class State < ApplicationRecord
   end
 
   def code
-    name.parameterize(separator: "_")
+    Codifier.codify(name)
   end
 
   def package_level?
