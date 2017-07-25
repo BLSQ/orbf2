@@ -151,7 +151,7 @@ RSpec.describe InvoicesForEntitiesWorker do
   end
 
   def stub_dhis2_values(values = "")
-    stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=true&endDate=2015-03-31&orgUnit=vRC0stJ5y9Q&startDate=2015-01-01")
+    stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=true&endDate=2015-12-31&orgUnit=vRC0stJ5y9Q&startDate=2015-01-01")
       .to_return(status: 200, body: values, headers: {})
   end
 
