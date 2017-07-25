@@ -84,10 +84,12 @@ class Package < ApplicationRecord
     periods = []
     if frequency == "monthly"
       periods << year_month
+      periods << year_month.to_year
     elsif frequency == "quarterly"
       quarter = year_month.to_quarter
       periods << quarter
       periods << quarter.months
+      periods << year_month.to_year
     end
     if frequency == "yearly" || project.cycle_yearly?
       year = year_month.to_year
