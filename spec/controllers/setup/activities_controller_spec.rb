@@ -17,6 +17,9 @@ RSpec.describe Setup::ActivitiesController, type: :controller do
 
     let!(:project) { full_project }
 
+    let(:state_id_1) { project.states.first.id }
+    let(:state_id_2) { project.states.second.id }
+
     it "should return form for creation of a new activity" do
       get :new, params: { project_id: project.id }
       activity = assigns(:activity)
@@ -31,65 +34,152 @@ RSpec.describe Setup::ActivitiesController, type: :controller do
       expect(activity).to eq project.activities.first
     end
 
-    it "should be possible to create 2 activity constant" do
-      state_id_1 = project.states.first.id
-      state_id_2 = project.states.second.id
+    describe "#mass_creation" do
+      it "should validate before creating " do
+        get :mass_creation, project_id: project.id
+        missing_activity_states = assigns(:missing_activity_states)
+        expect(missing_activity_states.size).to eq 2
+      end
 
-      post :create, params: {
-        project_id: project.id,
-        activity:   {
-          name:                       "activity_name",
-          activity_states_attributes: [
-            {
-              name:               "activity_state_name",
-              external_reference: "",
-              kind:               "formula",
-              formula:            "1",
-              state_id:           state_id_1
-            },
-            {
-              name:               "activity_state_name",
-              external_reference: "",
-              kind:               "formula",
-              formula:            "1",
-              state_id:           state_id_2
-            }
-          ]
-        }
-      }
-      project.activities.reload
+      it "should create asynch the missing data element " do
+        post :confirm_mass_creation, project_id: project.id
+      end
     end
 
-    it "should be possible to create a data element activity" do
-      post :create, params: {
-        project_id: project.id,
-        activity:   {
-          name:                       "activity_name",
-          activity_states_attributes: [
-            {
-              name:               "activity_state_name",
-              external_reference: "external_reference",
-              kind:               "data_element"
+    describe "#update" do
+      it "should validate before creating " do
+        expect do
+          post :update, params: {
+            project_id: project.id,
+            id:         project.activities.first.id,
+            activity:   {
+              name:                       "",
+              activity_states_attributes: [
+                {
+                  name:               "activity_state_name",
+                  external_reference: "",
+                  kind:               "data_element",
+                  formula:            "1"
+                }
+              ]
             }
-          ]
-        }
-      }
+          }
+        end.to_not change {
+                     {
+                       activity:        Activity.count,
+                       activity_states: ActivityState.count
+                     }
+                   }
+      end
     end
 
-    it "should be possible to create a indicator activity state" do
-      post :create, params: {
-        project_id: project.id,
-        activity:   {
-          name:                       "activity_name",
-          activity_states_attributes: [
-            {
-              name:               "activity_state_name",
-              external_reference: "external_reference",
-              kind:               "indicator"
+    describe "#create" do
+      it "should validate before creating" do
+        expect do
+          post :create, params: {
+            project_id: project.id,
+            activity:   {
+              name:                       "",
+              activity_states_attributes: [
+                {
+                  name:               "activity_state_name",
+                  external_reference: "",
+                  kind:               "data_element",
+                  formula:            "1"
+                }
+              ]
             }
-          ]
-        }
-      }
+          }
+        end.to_not change {
+                     {
+                       activity:        Activity.count,
+                       activity_states: ActivityState.count
+                     }
+                   }
+      end
+
+      it "should be possible to create 2 activity constant" do
+        expect do
+          post :create, params: {
+            project_id: project.id,
+            activity:   {
+              name:                       "activity_name",
+              activity_states_attributes: [
+                {
+                  name:               "activity_state_name",
+                  external_reference: "",
+                  kind:               "formula",
+                  formula:            "1",
+                  state_id:           state_id_1
+                },
+                {
+                  name:               "activity_state_name",
+                  external_reference: "",
+                  kind:               "formula",
+                  formula:            "1",
+                  state_id:           state_id_2
+                }
+              ]
+            }
+          }
+        end.to change {
+                 {
+                   activity:        Activity.count,
+                   activity_states: ActivityState.count
+                 }
+               }.from(activity: 2, activity_states: 4)
+          .to(activity: 3, activity_states: 6)
+      end
+
+      it "should be possible to create a data element activity" do
+        expect do
+          post :create, params: {
+            project_id: project.id,
+            activity:   {
+              name:                       "activity_name",
+              activity_states_attributes: [
+                {
+                  name:               "activity_state_name",
+                  external_reference: "external_reference",
+                  kind:               "data_element",
+                  state_id:           state_id_1
+                }
+              ]
+            }
+          }
+        end.to change {
+          {
+            activity:        Activity.count,
+            activity_states: ActivityState.count
+          }
+        }.from(activity: 2, activity_states: 4)
+          .to(activity: 3, activity_states: 5)
+      end
+
+      it "should be possible to create a indicator activity state" do
+        expect do
+          post :create, params: {
+            project_id: project.id,
+            activity:   {
+              name:                       "activity_name",
+              activity_states_attributes: [
+                {
+                  name:               "activity_state_name",
+                  external_reference: "external_reference",
+                  kind:               "indicator",
+                  state_id:           state_id_1
+                }
+              ]
+            }
+          }
+        end.to change {
+                 {
+                   activity:        Activity.count,
+                   activity_states: ActivityState.count
+                 }
+               }.from(activity: 2, activity_states: 4)
+          .to(activity: 3, activity_states: 5)
+      end
     end
   end
 end

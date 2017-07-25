@@ -7,19 +7,19 @@ class Setup::ActivitiesController < PrivateController
   end
 
   def create
-    @states = current_project.states.where(level: "activity")
+    @states = activity_level_states
     @activity = current_project.activities.build(params_activity)
     handle_action(:new)
   end
 
   def edit
-    @states = current_project.states.where(level: "activity")
+    @states = activity_level_states
     @activity = current_project.activities.find(params[:id])
     render(:edit)
   end
 
   def update
-    @states = current_project.states.where(level: "activity")
+    @states = activity_level_states
     @activity = current_project.activities.find(params[:id])
     @activity.update_attributes(params_activity)
     handle_action(:edit)
@@ -37,6 +37,10 @@ class Setup::ActivitiesController < PrivateController
   end
 
   private
+
+  def activity_level_states
+    current_project.states.where(level: "activity")
+  end
 
   def handle_action(template)
     if params[:commit] && params[:commit].starts_with?("Add data elements")
