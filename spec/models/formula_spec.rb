@@ -33,7 +33,7 @@ RSpec.describe Formula, type: :model do
     it "should reject upperCase" do
       formula = new_formula(code: "upperCase", expression: "45", description: "description")
       formula.valid?
-      expect(formula.errors.full_messages).to eq(["Code : should only contains small letters and _ like 'quality_score' or 'total_amount'"])
+      expect(formula.errors.full_messages).to eq(["Code : should only contains lowercase letters and _ like 'quality_score' or 'total_amount' vs upperCase"])
     end
   end
 

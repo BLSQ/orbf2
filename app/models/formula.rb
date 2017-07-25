@@ -13,6 +13,7 @@
 
 class Formula < ApplicationRecord
   include PaperTrailed
+  REGEXP_VALIDATION = /\A[a-z_0-9]+\z/
   delegate :project_id, to: :rule
   delegate :program_id, to: :rule
 
@@ -21,8 +22,8 @@ class Formula < ApplicationRecord
   has_many :formula_mappings, dependent: :destroy, inverse_of: :formula
 
   validates :code, presence: true, format: {
-    with:    /\A[a-z_]+\z/,
-    message: ": should only contains small letters and _ like 'quality_score' or 'total_amount'"
+    with:    REGEXP_VALIDATION,
+    message: ": should only contains lowercase letters and _ like 'quality_score' or 'total_amount' vs %{value}"
   }
 
   validates :description, presence: true
