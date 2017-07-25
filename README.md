@@ -1,6 +1,14 @@
-# README
+# Context
 
-# dependencies and config
+![alt text](https://bluesquarehub.files.wordpress.com/2017/01/logo-openrbf.png?w=151&h=147 "OpenRBF 2.0 ")
+
+A rule engine on top of [dhis2](https://www.dhis2.org/) developed by [Bluesquare](https://bluesquarehub.com/), to let power users describe their Results-Based Financing  scheme.
+
+More info about the tool https://bluesquarehub.com/services/openrbf-2-0/
+
+# Contributing
+
+## dependencies and config
 
 pg
 
@@ -14,7 +22,7 @@ edit if necessary
 cp config/application.template.yml config/application.yml
 ```
 
-# setup the db and seed program and project
+## setup the db and seed program and project
 
 ```
 rake db:create
