@@ -34,7 +34,7 @@ class Setup::FormulaMappingsController < PrivateController
     @problems = bad_references.map do |bad_reference|
       as = project.activities.flat_map(&:activity_states).select { |as| as.external_reference == bad_reference }.first
       fm = project.formula_mappings.select { |fm| fm.external_reference == bad_reference }.first
-      [bad_reference, "MAPPED IN AND OUT", as.activity.name, as.state.name, fm.formula.code, fm.activity.name]
+      [bad_reference, "MAPPED IN AND OUT", as.activity.name, as.state.name, fm.formula.code, fm.activity&.name]
     end
 
     @problems += project.formula_mappings.group_by(&:external_reference).select { |_k, v| v.size > 1 }.map do |k, v|
