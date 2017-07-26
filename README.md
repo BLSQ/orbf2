@@ -2,11 +2,32 @@
 
 # Context
 
-![alt text](https://bluesquarehub.files.wordpress.com/2017/01/logo-openrbf.png?w=151&h=147 "OpenRBF 2.0 ")
+![OpenRBF 2.0 logo](https://bluesquarehub.files.wordpress.com/2017/01/logo-openrbf.png?w=151&h=147 "OpenRBF 2.0 ")
 
 A rule engine on top of [dhis2](https://www.dhis2.org/) developed by [Bluesquare](https://bluesquarehub.com/), to let power users describe their Results-Based Financing  scheme.
 
 More info about the tool https://bluesquarehub.com/services/openrbf-2-0/
+
+# Using
+
+A wizard approach guiding you in the setup of projects
+
+![](./doc/steps.png)
+
+With your rules editor and visual explanation
+
+![activity rule dependency graph](./doc/activity-rule.png)
+
+![payment rule  dependency graph](./doc/payment-rule.png)
+
+each formula will be mapped to a dhis2 data element.
+
+You can easily verify your formula with the invoicing simulation form
+with a built-in invoice explainer showing you how was this amount/score calculated
+
+![invoicing explainer](./doc/invoicing-explainer.png)
+
+Every change is tracked and you publish your project draft to be used at a given period.
 
 # Contributing
 
