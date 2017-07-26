@@ -1,3 +1,5 @@
+[ ![Codeship Status for BLSQ/orbf2](https://app.codeship.com/projects/e43559e0-5368-0135-125a-62c2a1758ec6/status?branch=master)](https://app.codeship.com/projects/234954) [![Test Coverage](https://codeclimate.com/github/BLSQ/orbf2/badges/coverage.svg)](https://codeclimate.com/github/BLSQ/orbf2/coverage) [![Code Climate](https://codeclimate.com/github/BLSQ/orbf2/badges/gpa.svg)](https://codeclimate.com/github/BLSQ/orbf2)
+
 # Context
 
 ![alt text](https://bluesquarehub.files.wordpress.com/2017/01/logo-openrbf.png?w=151&h=147 "OpenRBF 2.0 ")
