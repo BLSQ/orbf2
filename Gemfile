@@ -54,6 +54,7 @@ group :development do
   gem "pronto-rubocop", require: false
   gem "pronto-simplecov", require: false
   gem "rack-mini-profiler"
+  gem "rubocop", require: false
   gem "spring"
   gem "spring-watcher-listen", "~> 2.0.0"
   gem "stackprof"
