@@ -9,7 +9,11 @@ module Decision
     end
 
     def matches?(hash)
-      headers("in:").all? { |header| hash[header] == @row[header] || @row[header].nil? }
+      headers("in:").all? { |header| hash[header] == @row[header] || @row[header] == "*" }
+    end
+
+    def specific_score(_hash)
+      headers("in:").select { |header| @row[header] == "*" }.size
     end
 
     def headers(type)
@@ -30,12 +34,15 @@ module Decision
     def to_s
       @row
     end
+
     def inspect
       to_s
     end
   end
 
   class Table
+    attr_reader :rules
+
     def initialize(csv_string)
       csv = CSV.parse(csv_string, headers: true)
       @headers = csv.headers
@@ -55,10 +62,13 @@ module Decision
       hash = raw_hash.map do |k, v|
         ["in:#{k}", v]
       end.to_h
-      @rules.each do |rule|
-        next unless rule.matches?(hash)
-        return rule.apply
+      matching_rules = @rules.select { |rule| rule.matches?(hash) }
+
+      if matching_rules.any?
+        matching_rules.sort_by { |rule| rule.specific_score(hash) }
+        return matching_rules.last.apply
       end
+
       nil
     end
 
@@ -70,11 +80,10 @@ module Decision
       end
     end
 
-    attr_reader :rules
-
     def to_s
       @rules.to_s
     end
+
     def inspect
       to_s
     end
