@@ -6,6 +6,7 @@ RailsAdmin.config do |config|
   EDITABLE_MODELS = %w(
     Program
     User
+    ProjectAnchor
   ).freeze
 
   DELETABLE_MODELS = %w(
@@ -39,6 +40,11 @@ RailsAdmin.config do |config|
       field :status
       field :created_at
       field :project_anchor
+    end
+  end
+  config.model "ProjectAnchor" do
+    edit do
+      field :token
     end
   end
   if ENV["ADMIN_PASSWORD"]

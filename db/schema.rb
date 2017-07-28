@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170724132950) do
+ActiveRecord::Schema.define(version: 20170728142037) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -174,6 +174,7 @@ ActiveRecord::Schema.define(version: 20170724132950) do
     t.integer  "program_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string   "token"
     t.index ["program_id"], name: "index_project_anchors_on_program_id", using: :btree
   end
 
