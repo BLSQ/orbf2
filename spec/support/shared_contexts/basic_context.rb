@@ -15,6 +15,8 @@ shared_context "basic_context" do
       bypass_ssl:     false,
       project_anchor: program.build_project_anchor
     )
+
+    # project.project_anchor = "123ABC"
     project.build_entity_group(name: "contracted entities", external_reference: "external_reference")
 
     hospital_group = { name: "Hospital",       organisation_unit_group_ext_ref: "tDZVQ1WtwpA" }
