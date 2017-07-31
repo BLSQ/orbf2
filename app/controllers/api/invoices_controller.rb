@@ -1,7 +1,5 @@
 module Api
   class InvoicesController < ActionController::Base
-    protect_from_forgery with: :exception
-
     def create
       project_anchor = ProjectAnchor.find_by(token: params[:token])
 
