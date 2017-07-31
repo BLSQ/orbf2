@@ -27,6 +27,7 @@ class Activity < ApplicationRecord
     with:    Formula::REGEXP_VALIDATION,
     message: ": should only contains lowercase letters and _ like 'assisted_deliveries' or 'vaccination_under_one_year' vs %{value}"
   }
+  validates :code, uniqueness: { scope: :project_id }, allow_blank: true
 
   def activity_state(state)
     activity_states.find { |as| as.state.id == state.id }

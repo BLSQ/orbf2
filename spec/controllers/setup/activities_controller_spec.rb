@@ -131,22 +131,9 @@ RSpec.describe Setup::ActivitiesController, type: :controller do
           .to(activity: 3, activity_states: 6)
       end
 
-      it "should be possible to create a data element activity" do
+      it "should be possible to create a data element activity with a code" do
         expect do
-          post :create, params: {
-            project_id: project.id,
-            activity:   {
-              name:                       "activity_name",
-              activity_states_attributes: [
-                {
-                  name:               "activity_state_name",
-                  external_reference: "external_reference",
-                  kind:               "data_element",
-                  state_id:           state_id_1
-                }
-              ]
-            }
-          }
+          create_activity_with_code_and_data_element
         end.to change {
           {
             activity:        Activity.count,
@@ -154,6 +141,15 @@ RSpec.describe Setup::ActivitiesController, type: :controller do
           }
         }.from(activity: 2, activity_states: 4)
           .to(activity: 3, activity_states: 5)
+        created_activity = Activity.all.last
+        expect(created_activity.code).to eq("activity_code")
+      end
+
+      it "should prevent duplicate activity_code in same project" do
+        create_activity_with_code_and_data_element
+        create_activity_with_code_and_data_element
+        expect(flash[:failure]).to eq("Some validation errors occured")
+        expect(assigns(:activity).errors.full_messages).to eq(["Code has already been taken"])
       end
 
       it "should be possible to create a indicator activity state" do
@@ -179,6 +175,23 @@ RSpec.describe Setup::ActivitiesController, type: :controller do
                  }
                }.from(activity: 2, activity_states: 4)
           .to(activity: 3, activity_states: 5)
+      end
+      def create_activity_with_code_and_data_element
+        post :create, params: {
+          project_id: project.id,
+          activity:   {
+            name:                       "activity_name",
+            code:                       "activity_code",
+            activity_states_attributes: [
+              {
+                name:               "activity_state_name",
+                external_reference: "external_reference",
+                kind:               "data_element",
+                state_id:           state_id_1
+              }
+            ]
+          }
+        }
       end
     end
   end
