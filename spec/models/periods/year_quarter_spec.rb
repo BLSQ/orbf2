@@ -69,6 +69,12 @@ describe Periods::YearQuarter do
     end
   end
 
+  describe "#to_quarter" do
+    it "should return itself" do
+      expect(year_quarter.to_quarter).to eq year_quarter
+    end
+  end
+
   describe "#inspect" do
     it "should have non verbose inspect" do
       expect(year_quarter.inspect).to eq "Periods::YearQuarter-2016Q2"

@@ -67,6 +67,10 @@ module Periods
       YearQuarter.new("#{year}Q#{(month / 3.0).ceil}")
     end
 
+    def to_quarter
+      self
+    end
+
     def inspect
       self.class.name + "-" + to_dhis2
     end
