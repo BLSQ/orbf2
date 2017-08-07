@@ -3,7 +3,7 @@
 class ProjectFactory
   def build(project_props = { dhis2_url: "http://play.dhis2.org/demo", user: "admin", password: "district", bypass_ssl: false })
     project = Project.new({
-      name: "LESOTHO"
+      name: "Sierra Leone PBF"
     }.merge(project_props))
 
     package_quantity_pma = new_package(
