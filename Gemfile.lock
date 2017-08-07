@@ -1,3 +1,10 @@
+GIT
+  remote: git://github.com/BLSQ/dhis2.git
+  revision: 6eb61021e7bc28b32acdb29f41929a254fb78c54
+  specs:
+    dhis2 (2.3.7)
+      rest-client
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -79,8 +86,6 @@ GEM
       railties (>= 4.1.0, < 5.1)
       responders
       warden (~> 1.2.3)
-    dhis2 (2.3.6)
-      rest-client
     diff-lcs (1.2.5)
     differ (0.1.2)
     docile (1.1.5)
@@ -387,7 +392,7 @@ DEPENDENCIES
   deep_cloneable
   dentaku
   devise (~> 4.2.0)
-  dhis2 (= 2.3.6)
+  dhis2!
   differ
   easy_diff
   factory_girl_rails (= 4.0)
@@ -438,4 +443,4 @@ RUBY VERSION
    ruby 2.3.1p112
 
 BUNDLED WITH
-   1.15.2
+   1.15.3

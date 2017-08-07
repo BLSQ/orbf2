@@ -125,7 +125,7 @@ class InvoicesForEntitiesWorker
 
   def calculate_invoices(invoicing_request, org_unit, analytics_service, project_finder)
     invoice_builder = Invoicing::InvoiceBuilder.new(project_finder, Tarification::TarificationService.new)
-    entity = to_entity(org_unit)
+    entity = Invoicing::EntityBuilder.new.to_entity(org_unit)
     invoices = []
     invoicing_request.quarter_dates.each do |month|
       begin
@@ -256,21 +256,5 @@ class InvoicesForEntitiesWorker
       end
     end
     values
-  end
-
-  def to_entity(org_unit)
-    Analytics::Entity.new(
-      org_unit.id,
-      org_unit.name,
-      org_unit.organisation_unit_groups.map { |n| n["id"] }, to_facts(org_unit)
-    )
-  end
-
-  def to_facts(org_unit)
-    parent_ids = org_unit.path.split("/").reject(&:empty?)
-    facts = parent_ids.each_with_index
-                      .map { |parent_id, index| ["level_#{index + 1}", parent_id] }
-                      .to_h
-    facts
   end
 end

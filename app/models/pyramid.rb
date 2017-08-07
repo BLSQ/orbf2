@@ -7,6 +7,7 @@ class Pyramid
 
     org_units_by_group = {}
     org_units.each do |ou|
+      ou.pyramid = self
       next unless ou.organisation_unit_groups
       ou.organisation_unit_groups.each do |group|
         org_units_by_group[group["id"]] ||= Set.new

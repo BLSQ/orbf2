@@ -55,14 +55,6 @@ RSpec.describe Formula, type: :model do
       expect(formula.errors[:expression]).to eq(["Undefined function unknown"])
     end
 
-    it "should validate formula for SUM expression" do
-      pending("need to fix this one since now dependends on package activity_rule")
-      formula = new_formula(expression: "SUM(%{amount_values})")
-
-      formula.valid?
-      expect(formula.errors[:expression]).to eq([])
-    end
-
     it "should reject dangerous expression" do
       formula = new_formula(expression: "`ls -als`")
 

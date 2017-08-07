@@ -18,9 +18,11 @@ class DecisionTable < ApplicationRecord
 
   validate :in_activity_code_exists
 
+  HEADER_PREFIXES = %w[level_1 level_2 level_3 level_4 level_5 level_6 activity_code].freeze
+
   def in_headers_belong_to_facts
     in_headers.each do |header|
-      unless %w[level_1 level_2 level_3 level_4 level_5 level_6 activity_code].include?(header)
+      unless HEADER_PREFIXES.include?(header) || header.starts_with?("groupset_code_")
         errors[:content] << "Not in available org unit facts !"
       end
     end
