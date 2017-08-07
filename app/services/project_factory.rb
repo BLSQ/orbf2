@@ -329,7 +329,6 @@ class ProjectFactory
     default_quality_states = project.states.select { |s| ["Claimed", "Verified", "Max. Score"].include?(s.name) }.to_a
     default_performance_states = project.states.select { |s| ["Claimed", "Max. Score", "Budget"].include?(s.name) }.to_a
 
-
     update_package_with_dhis2(
       project.packages[0], suffix, default_quantity_states,
       [clinic_group],
@@ -359,11 +358,15 @@ class ProjectFactory
     File.read(File.join("spec", "fixtures", type.to_s, name))
   end
 
-  def update_package_with_dhis2(package, suffix, states, groups, _acitivity_ids)
-
+  def update_package_with_dhis2(package, suffix, states, groups, activity_ids)
     package.states = states
+    package.name = suffix + package.name
     groups.each_with_index do |group, index|
       package.package_entity_groups[index].assign_attributes(group)
+    end
+    if suffix.present?
+      created_ged = package.create_data_element_group(activity_ids)
+      package.data_element_group_ext_ref = created_ged.id
     end
   end
 
