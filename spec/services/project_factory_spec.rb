@@ -9,6 +9,12 @@ describe ProjectFactory do
     expect(project.errors.full_messages).to eq []
   end
 
+  it "should be able to destroy" do
+    project = full_project
+    project.save!
+    project.destroy!
+  end
+
   it "should publish and create a draft with a copy of all the records linked to project" do
     project = full_project
     no_duplications = [
@@ -52,5 +58,4 @@ describe ProjectFactory do
     descendants = ActiveRecord::Base.descendants.reject(&:abstract_class?)
     Hash[descendants.map { |k| [k.name.to_sym, k.count] }]
   end
-
 end

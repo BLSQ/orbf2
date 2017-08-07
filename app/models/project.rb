@@ -32,7 +32,7 @@ class Project < ApplicationRecord
   belongs_to :project_anchor
   belongs_to :original, foreign_key: "original_id", optional: true, class_name: Project.name
   has_many :clones, foreign_key: "original_id", class_name: Project.name, dependent: :destroy
-  has_many :versions
+  has_many :versions, dependent: :destroy
 
   validates :name, presence: true
   validates :dhis2_url, presence: true, url: true
@@ -121,6 +121,13 @@ class Project < ApplicationRecord
         }
       }
     )
+  end
+
+  def destroy
+    payment_rules.destroy_all
+    packages.destroy_all
+    activities.destroy_all
+    super
   end
 
   def self.for_date(date)
