@@ -18,7 +18,7 @@ RSpec.describe Dhis2AnalyticsWorker do
       user:         "admin",
       password:     "district",
       bypass_ssl:   false,
-      publish_date: Time.now - 2.days,
+      publish_date: Time.current - 2.days,
       status:       "published"
     )
   end
