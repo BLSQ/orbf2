@@ -31,7 +31,7 @@ RSpec.describe Dhis2AnalyticsWorker do
   end
 
   def stub_analytics(project)
-    stub_request(:post, "#{project.dhis2_url}/api/resourceTables")
+    stub_request(:post, "#{project.dhis2_url}/api/resourceTables/analytics")
       .to_return(status: 200, body: fixture_content(:dhis2, "analytics.json"))
   end
 end
