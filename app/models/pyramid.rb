@@ -17,7 +17,7 @@ class Pyramid
   end
 
   def self.from(project)
-    pyramid = project.project_anchor.nearest_pyramid_for(Time.now.utc)
+    pyramid = project.project_anchor.nearest_pyramid_for(Time.now.utc.end_of_month)
 
     return pyramid if pyramid
     dhis2 = project.dhis2_connection
