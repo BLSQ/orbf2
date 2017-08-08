@@ -1,5 +1,5 @@
 test:
   adapter: postgresql
-  encoding: unicode  
-  database: myapp_test
+  encoding: unicode
+  database: orbf2_test
   username: postgres
