@@ -3,33 +3,26 @@ require "dentaku/calculator"
 
 module Rules
   class Solver
-    def initialize
-      Dentaku.enable_ast_cache!
-      @@calculator ||= new_calculator
-    end
+    Dentaku.enable_ast_cache!
+    @calculator ||= CalculatorFactory.new.new_calculator
 
     def solve!(message, facts_and_rules, debug = false)
-      puts "********** #{message} #{Time.new}" if debug
-      puts JSON.pretty_generate(facts_and_rules) if debug
-      start_time = Time.new.utc
+      log "********** #{message} #{Time.new}\n#{JSON.pretty_generate(facts_and_rules)}\n" if debug
       begin
         solution = calculator.solve!(facts_and_rules)
       rescue => e
-        puts JSON.pretty_generate(facts_and_rules)
-        puts e.message
-        # TODO: log stacktrace
+        log JSON.pretty_generate(facts_and_rules)
+        log e.message
         raise SolvingError.new(e.message, facts_and_rules), "Failed to solve this problem #{message} : #{e.message}"
       end
-      end_time = Time.new.utc
-      if debug
-        puts " #{Time.new} => #{solution[:elapsed_time]}"
-        puts JSON.pretty_generate([solution])
-      end
+      log JSON.pretty_generate([solution]) if debug
       solution.with_indifferent_access
     end
 
     def validate_expression(formula)
-      @@calculator.dependencies(mock_values(formula.expression, formula.rule.available_variables_for_values))
+      calculator.dependencies(
+        mock_values(formula.expression, formula.rule.available_variables_for_values)
+      )
     rescue Dentaku::TokenizerError => e
       formula.errors[:expression] << e.message
     rescue Dentaku::ParseError => e
@@ -41,15 +34,19 @@ module Rules
     end
 
     def dependencies(formula)
-      @@calculator.dependencies(mock_values(formula.expression, formula.rule.available_variables_for_values))
+      calculator.dependencies(
+        mock_values(formula.expression, formula.rule.available_variables_for_values)
+      )
     rescue => ignored
       []
     end
 
     def validate_formulas(rule)
       facts = {}.merge(rule.fake_facts)
-      rule.formulas.each { |formula| facts[formula.code] = mock_values(formula.expression, rule.available_variables_for_values) }
-      facts[:actictity_rule_name] = Solver.escapeString(rule.name)
+      rule.formulas.each do |formula|
+        facts[formula.code] = mock_values(formula.expression, rule.available_variables_for_values)
+      end
+      facts[:actictity_rule_name] = Solver.escape_string(rule.name)
 
       solve!("validate_all_formulas", facts)
     rescue Rules::SolvingError => e
@@ -60,15 +57,21 @@ module Rules
       rule.errors[:formulas] << e.message
     end
 
-    def self.escapeString(string)
+    def self.escape_string(string)
       "'#{string.tr("'", ' ')}'"
     end
 
     private
 
+    def log(message)
+      puts message
+    end
+
     def mock_values(expression, available_variables_for_values)
       variables = {}
-      available_variables_for_values.select { |name| name.ends_with?("_values") }.each do |variable_name|
+      available_variables_for_values
+        .select { |name| name.ends_with?("_values") }
+        .each do |variable_name|
         raise "please don't add extra spaces in '%{#{variable_name}}'" if variable_name.include?(" ")
         variables[variable_name.to_sym] = "1 , 2"
       end
@@ -78,47 +81,13 @@ module Rules
     end
 
     def calculator
-      @@calculator
+      self.class.shared_calculator
     end
 
-    def new_calculator
-      score_table = lambda do |*args|
-        target = args.shift
-        args.each_slice(3).find do |lower, greater, result|
-          greater.nil? || result.nil? ? true : lower <= target && target < greater
-        end.last
+    class << self
+      def shared_calculator
+        @calculator
       end
-
-      avg_function = lambda do |*args|
-        args.inject(0.0) { |sum, el| sum + el } / args.size
-      end
-
-      sum_function = lambda do |*args|
-        args.inject(0.0) { |sum, x| sum + x }
-      end
-
-      safe_div = lambda do |*args|
-        dividend = args[0]
-        divisor = args[1]
-        divisor > 0 ? (dividend.to_f / divisor.to_f) : 0
-      end
-      between = ->(lower, score, greater) { lower <= score && score <= greater }
-
-      access = lambda do |*args|
-        array = args[0..-2]
-        index = args[-1]
-        array[index]
-      end
-
-      calculator = Dentaku::Calculator.new
-      calculator.add_function(:between, :logical, between)
-      calculator.add_function(:abs, :number, ->(number) { number.abs })
-      calculator.add_function(:score_table, :numeric, score_table)
-      calculator.add_function(:avg, :numeric, avg_function)
-      calculator.add_function(:sum, :numeric, sum_function)
-      calculator.add_function(:safe_div, :numeric, safe_div)
-      calculator.add_function(:access, :numeric, access)
-      calculator
-   end
- end
+    end
+  end
 end
