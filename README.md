@@ -14,7 +14,7 @@ Created with the support of the [World Bank](http://www.worldbank.org/).
 
 Thanks to the [DHIS2](http://dhis2.org) team for their help and support
 
-![DHIS2 logo](https://www.dhis2.org/sites/all/themes/dhis/logo.png)
+![DHIS2 logo](https://bluesquarehub.files.wordpress.com/2017/03/dhis2-logo.jpg?w=80&h=80)
 
 # Using
 
