@@ -5,15 +5,16 @@ module Rules
   class CalculatorFactory
     SCORE_TABLE = lambda do |*args|
       target = args.shift
-      args.each_slice(3).find do |lower, greater, result|
+      matching_rules = args.each_slice(3).find do |lower, greater, result|
         greater.nil? || result.nil? ? true : lower <= target && target < greater
-      end.last
+      end
+      matching_rules.last
     end
 
     SAFE_DIV = lambda do |*args|
       dividend = args[0]
       divisor = args[1]
-      divisor > 0 ? (dividend.to_f / divisor.to_f) : 0
+      divisor.zero? ? 0 : (dividend.to_f / divisor.to_f)
     end
 
     ACCESS = lambda do |*args|
@@ -23,11 +24,11 @@ module Rules
     end
 
     SUM = lambda do |*args|
-      args.inject(0.0) { |sum, x| sum + x }
+      args.inject(0.0) { |acc, elem| acc + elem }
     end
 
     AVG = lambda do |*args|
-      args.inject(0.0) { |sum, el| sum + el } / args.size
+      args.inject(0.0) { |acc, elem| acc + elem } / args.size
     end
 
     BETWEEN = ->(lower, score, greater) { lower <= score && score <= greater }
@@ -42,6 +43,6 @@ module Rules
       calculator.add_function(:safe_div, :numeric, SAFE_DIV)
       calculator.add_function(:access, :numeric, ACCESS)
       calculator
-   end
+    end
   end
 end
