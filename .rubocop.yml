@@ -46,3 +46,9 @@ Documentation:
   Enabled: false
 Style/FrozenStringLiteralComment:
   Enabled: false
+# I don't think there's a good way to enforce this sometime commit_sha1 is ok sometimes user_1 is ok
+Style/VariableNumber:
+  Enabled: false
+# this one triggers a lot of false positive as orbf rules are "%{}"-based
+Style/FormatStringToken:
+  EnforcedStyle: template
