@@ -39,7 +39,7 @@ Every change is tracked and you publish your project draft to be used at a given
 
 # Contributing
 
-## dependencies and config
+## Dependencies and config
 
 First setup your local database configuration. We advise to use Postgresql as we make use of the built-in UUID format.
 
@@ -55,7 +55,7 @@ cp config/application.template.yml config/application.yml
 
 you can setup the admin password there
 
-## setup the db and seed program and project
+## Setup the db and seed program and project
 
 ```shell
 rake db:create
@@ -76,6 +76,8 @@ program.users.create(
 )
 ```
 
+(this is done inside the seed file if you are in development mode)
+
 ## Seed a project
 
 We have an example project that can be created using DHIS2 public instance (https://play.dhis2.org/demo/) to showcase a RBF project configuration:
@@ -88,12 +90,27 @@ You can access any element in the application using the admin interface at
 
 http://127.0.0.1:3000/admin
 
+# Tests
+
+Run the tests after any change:
+
+    bin/rspec
+
+# Deploying
+
+## Hosting provider
+
+We recommand Heroku to host the application, but any hosting should work as long as it support Rails & Postgresql. On heroku, deploy should be as simple as:
+
+    git push heroku master
+    heroku run rake db:create db:migrate db:seeed
+
 ## Restoring a testing or production Environment
 
-get a fresh copy
+get a fresh copy using Heroku
 
 ```
-heroku pg:pull DATABASE_URL scorpiocopy --app orbf2-prod
+heroku pg:pull DATABASE_URL orbf2 --app yourappname
 ```
 
 note that you need a pg 9.6.1 version
