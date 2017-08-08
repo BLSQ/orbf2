@@ -84,6 +84,8 @@ We have an example project that can be created using DHIS2 public instance (http
 
 http://127.0.0.1:3000/setup/seeds
 
+This will generate a "typical" RBF project with quality, quantity & payment rules for you to explore and play with.
+
 ## Admin interface
 
 You can access any element in the application using the admin interface at 
