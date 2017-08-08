@@ -325,9 +325,9 @@ class ProjectFactory
 
     project.packages[0].activity_rule.decision_tables.build(content: fixture_content(:scorpio, "decision_table.csv"))
 
-    default_quantity_states = project.states.select { |s| %w[Claimed Verified Tarif].include?(s.name) }.to_a
-    default_quality_states = project.states.select { |s| ["Claimed", "Verified", "Max. Score"].include?(s.name) }.to_a
-    default_performance_states = project.states.select { |s| ["Claimed", "Max. Score", "Budget"].include?(s.name) }.to_a
+    default_quantity_states = project.states.select { |s| %w[Claimed Verified Tarif].include?(s.name) }
+    default_quality_states = project.states.select { |s| ["Claimed", "Verified", "Max. Score"].include?(s.name) }
+    default_performance_states = project.states.select { |s| ["Claimed", "Max. Score", "Budget"].include?(s.name) }
 
     update_package_with_dhis2(
       project.packages[0], suffix, default_quantity_states,
@@ -350,7 +350,7 @@ class ProjectFactory
       [admin_group],
       %w[p4K11MFEWtw wWy5TE9cQ0V r6nrJANOqMw a0WhmKHnZ6J nXJJZNVAy0Y hnwWyM4gDSg CecywZWejT3 bVkFujnp3F2]
     )
- end
+  end
 
   private
 
@@ -364,9 +364,11 @@ class ProjectFactory
     groups.each_with_index do |group, index|
       package.package_entity_groups[index].assign_attributes(group)
     end
-    if suffix.present?
-      created_ged = package.create_data_element_group(activity_ids)
-      package.data_element_group_ext_ref = created_ged.id
+    return if suffix.blank?
+    created_ged = package.create_data_element_group(activity_ids)
+    package.data_element_group_ext_ref = created_ged.id
+    package.activities.flat_map(&:activity_states).each_with_index do |activity_state, index|
+      activity_state.external_reference = activity_ids[index]
     end
   end
 
@@ -375,10 +377,15 @@ class ProjectFactory
   end
 
   def new_package(name, frequency, groups, rules, invoice_details)
-    p = Package.new(name: name, frequency: frequency, data_element_group_ext_ref: "data_element_group_ext_ref")
-    p.package_entity_groups = groups.map { |g| PackageEntityGroup.new(name: g, organisation_unit_group_ext_ref: g) }
-    p.rules = rules
-    p.invoice_details = invoice_details
-    p
+    Package.new(
+      name:                       name,
+      frequency:                  frequency,
+      data_element_group_ext_ref: "data_element_group_ext_ref",
+      rules:                      rules,
+      invoice_details:            invoice_details,
+      package_entity_groups:      groups.map do |g|
+        PackageEntityGroup.new(name: g, organisation_unit_group_ext_ref: g)
+      end
+    )
   end
 end
