@@ -158,7 +158,13 @@ RSpec.describe InvoicesForEntitiesWorker do
   def stub_export_values(expected_fixture)
     puts "Stubbing dataValueSets with #{expected_fixture}"
     stub_request(:post, "http://play.dhis2.org/demo/api/dataValueSets")
-      .with(body: JSON.generate(JSON.parse(fixture_content(:scorpio, expected_fixture))))
+      .with { |request| sorted_datavalues(JSON.parse(fixture_content(:scorpio, expected_fixture))) == sorted_datavalues(JSON.parse(request.body)) }
       .to_return(status: 200, body: "", headers: {})
+  end
+
+  def sorted_datavalues(json)
+    sorted = json["dataValues"].sort_by { |e| [e["dataElement"],e["orgUnit"],e["period"]] }
+    puts "sorted\n #{sorted}\n\n\n"
+    sorted
   end
 end
