@@ -20,10 +20,17 @@
 
 class Project < ApplicationRecord
   CYCLES = %w[quarterly yearly].freeze
+  # keep this one at the top or might not work as expected
+  before_destroy :destroy_dependencies
 
-  has_paper_trail meta: { project_id: :id, program_id: :program_id, item_type: "Project", item_id: :id }
+  has_paper_trail meta: {
+    project_id: :id,
+    program_id: :program_id,
+    item_type:  "Project",
+    item_id:    :id
+  }
+
   delegate :program_id, to: :project_anchor
-
   has_many :states, dependent: :destroy
   has_many :payment_rules, dependent: :destroy
   has_one :entity_group, dependent: :destroy
@@ -123,13 +130,6 @@ class Project < ApplicationRecord
     )
   end
 
-  def destroy
-    payment_rules.destroy_all
-    packages.destroy_all
-    activities.destroy_all
-    super
-  end
-
   def self.for_date(date)
     where(status: "published")
       .where("projects.publish_date <= ?", date)
@@ -178,7 +178,7 @@ class Project < ApplicationRecord
           ]
         }
       } # do |original, kopy|
-      #  puts "cloning #{original} #{kopy}"
+      #  log "cloning #{original} #{kopy}"
       # end
       new_project.original = old_project
       new_project.save!
@@ -302,15 +302,15 @@ class Project < ApplicationRecord
 
   def dump_validations
     payment_rules.each do |payment_rule|
-      puts "payment_rule #{payment_rule.valid?} #{payment_rule.errors.full_messages}"
-      puts "payment_rule #{payment_rule.packages.first}"
+      log "payment_rule #{payment_rule.valid?} #{payment_rule.errors.full_messages}"
+      log "payment_rule #{payment_rule.packages.first}"
       next unless payment_rule.rule.invalid?
 
       dump_validation_rule(payment_rule.rule)
     end
     packages.each do |package|
       next unless package.invalid?
-      puts package.errors.full_messages
+      log package.errors.full_messages
       package.rules.each do |rule|
         dump_validation_rule(rule)
       end
@@ -323,26 +323,26 @@ class Project < ApplicationRecord
   end
 
   def dump_validation_rule(rule)
-    puts "------"
-    puts rule.to_json
-    puts rule.available_variables_for_values.to_json
-    puts rule.errors.full_messages
+    log "------"
+    log rule.to_json
+    log rule.available_variables_for_values.to_json
+    log rule.errors.full_messages
     rule.formulas.each do |formula|
       next unless formula.invalid?
-      puts "------* *** *"
-      puts formula.to_json
-      puts formula.errors.full_messages
-      puts rule.available_variables_for_values
+      log "------* *** *"
+      log formula.to_json
+      log formula.errors.full_messages
+      log rule.available_variables_for_values
     end
   end
 
   def dump_rules
     packages.each do |package|
-      puts "**** #{package.name} #{package.frequency}"
+      log "**** #{package.name} #{package.frequency}"
       package.rules.each do |rule|
-        puts "------ Rule #{rule.name} #{rule.kind}"
+        log "------ Rule #{rule.name} #{rule.kind}"
         rule.formulas.each do |formula|
-          puts [formula.code, formula.description, formula.expression].join("\t")
+          log [formula.code, formula.description, formula.expression].join("\t")
         end
       end
     end
@@ -358,5 +358,17 @@ class Project < ApplicationRecord
       end
     end
     missing_activity_states
+  end
+
+  private
+
+  def destroy_dependencies
+    payment_rules.destroy_all
+    packages.destroy_all
+    activities.destroy_all
+  end
+
+  def log(message)
+    Rails.logger.info message
   end
 end
