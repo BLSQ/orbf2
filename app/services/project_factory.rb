@@ -141,7 +141,6 @@ class ProjectFactory
         )
       ],
       %w[attributed_points max_points quality_technical_score_value activity_name]
-
     )
 
     package_perfomance_admin = new_package(
@@ -234,9 +233,11 @@ class ProjectFactory
     end
 
     package_quality.package_rule.formulas.each do |formula|
-      formula.formula_mappings.build(kind: formula.rule.kind, external_reference: "ext-#{formula.code}")
+      formula.formula_mappings.build(
+        kind:               formula.rule.kind,
+        external_reference: "ext-#{formula.code}"
+      )
     end
-    # project.payment_rules.first.rule.payment_rule = project.payment_rules.first
 
     payment_pca = project.payment_rules.build(
       rule_attributes: {
@@ -245,7 +246,7 @@ class ProjectFactory
         formulas_attributes: [
           {
             code:        :quality_bonus_percentage_value,
-            expression:  "IF(quality_technical_score_value > 50, (0.35 * quality_technical_score_value) + (0.30 * 10.0), 0.0) /*todo replace with survey score*/",
+            expression:  "IF(quality_technical_score_value > 50, (0.35 * quality_technical_score_value) + (0.30 * 10.0), 0.0)",
             description: "Quality bonus percentage"
           },
           {
@@ -270,7 +271,10 @@ class ProjectFactory
   end
 
   def update_links(project, suffix = "")
-    project.build_entity_group(name: "contracted entities", external_reference: "external_reference")
+    project.build_entity_group(
+      name:               "contracted entities",
+      external_reference: "external_reference"
+    )
 
     hospital_group = { name: "Hospital",       organisation_unit_group_ext_ref: "tDZVQ1WtwpA" }
     clinic_group = {   name: "Clinic",         organisation_unit_group_ext_ref: "RXL3lPSK8oG" }
@@ -323,11 +327,13 @@ class ProjectFactory
     project.packages[2].activities = [activity_1, activity_2]
     project.packages[3].activities = [activity_1, activity_2]
 
-    project.packages[0].activity_rule.decision_tables.build(content: fixture_content(:scorpio, "decision_table.csv"))
+    project.packages[0].activity_rule.decision_tables.build(
+      content: fixture_content(:scorpio, "decision_table.csv")
+    )
 
-    default_quantity_states = project.states.select { |s| %w[Claimed Verified Tarif].include?(s.name) }
-    default_quality_states = project.states.select { |s| ["Claimed", "Verified", "Max. Score"].include?(s.name) }
-    default_performance_states = project.states.select { |s| ["Claimed", "Max. Score", "Budget"].include?(s.name) }
+    default_quantity_states = states_in(project, %w[Claimed Verified Tarif])
+    default_quality_states = states_in(project,  ["Claimed", "Verified", "Max. Score"])
+    default_performance_states = states_in(project, ["Claimed", "Max. Score", "Budget"])
 
     update_package_with_dhis2(
       project.packages[0], suffix, default_quantity_states,
@@ -339,20 +345,26 @@ class ProjectFactory
       [hospital_group],
       %w[FTRrcoaog83 P3jJH5Tu5VC FQ2o8UBlcrS M62VHgYT2n0]
     )
+    activity_refs = %w[p4K11MFEWtw wWy5TE9cQ0V r6nrJANOqMw a0WhmKHnZ6J nXJJZNVAy0Y
+                       hnwWyM4gDSg CecywZWejT3 bVkFujnp3F2]
     update_package_with_dhis2(
       project.packages[2], suffix, default_quality_states,
       [clinic_group, hospital_group],
-      %w[p4K11MFEWtw wWy5TE9cQ0V r6nrJANOqMw a0WhmKHnZ6J nXJJZNVAy0Y hnwWyM4gDSg CecywZWejT3 bVkFujnp3F2]
+      activity_refs
     )
 
     update_package_with_dhis2(
       project.packages[3], suffix, default_performance_states,
       [admin_group],
-      %w[p4K11MFEWtw wWy5TE9cQ0V r6nrJANOqMw a0WhmKHnZ6J nXJJZNVAy0Y hnwWyM4gDSg CecywZWejT3 bVkFujnp3F2]
+      activity_refs
     )
   end
 
   private
+
+  def states_in(project, state_names)
+    project.states.select { |s| state_names.include?(s.name) }
+  end
 
   def fixture_content(type, name)
     File.read(File.join("spec", "fixtures", type.to_s, name))
