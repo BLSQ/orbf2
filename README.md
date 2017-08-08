@@ -105,7 +105,7 @@ Run the tests after any change:
 We recommand Heroku to host the application, but any hosting should work as long as it support Rails & Postgresql. On heroku, deploy should be as simple as:
 
     git push heroku master
-    heroku run rake db:create db:migrate db:seeed
+    heroku run rake db:create db:migrate db:seed
 
 ## Restoring a testing or production Environment
 
