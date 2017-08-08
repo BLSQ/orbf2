@@ -1,5 +1,5 @@
 test:
-  postgres:
-    adapter: postgresql
-    database: myapp_test
-    username: postgres
+  adapter: postgresql
+  encoding: unicode  
+  database: myapp_test
+  username: postgres
