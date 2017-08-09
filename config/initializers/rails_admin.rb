@@ -42,6 +42,16 @@ RailsAdmin.config do |config|
       field :project_anchor
     end
   end
+
+  config.model "Dhis2Snapshot" do
+    list do
+      field :id
+      field :kind
+      field :snapshoted_at
+      field :created_at
+      field :project_anchor
+    end
+  end
   config.model "ProjectAnchor" do
     edit do
       field :token
