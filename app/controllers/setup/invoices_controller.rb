@@ -33,7 +33,8 @@ class Setup::InvoicesController < PrivateController
       "parents : " + pyramid.org_unit_parents(org_unit.id).map(&:name).join(" > "),
       "groups : " + pyramid.org_unit_groups_of(org_unit).compact.map(&:name).join(", "),
       "date range : " + project.date_range(invoicing_request.year_quarter).map(&:to_s).join(", "),
-      "periods : " + project.periods(invoicing_request.year_quarter).map(&:to_dhis2).join(", ")
+      "periods : " + project.periods(invoicing_request.year_quarter).map(&:to_dhis2).join(", "),
+      "facts : " + Invoicing::EntityBuilder.new.to_entity(org_unit).facts.map(&:to_s).join(", ")
     ]
 
     if params[:push_to_dhis2]

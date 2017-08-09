@@ -106,19 +106,8 @@ RSpec.describe Setup::AutocompleteController, type: :controller do
       stub_all_pyramid(project)
 
       get :organisation_unit_group, params: { project_id: project.id, siblings: "true" }
-      expect(JSON.parse(response.body)).to eq(
-        [{ "type" => "option", "value" => "RXL3lPSK8oG", "label" => "Clinic" },
-         { "type" => "option", "value" => "oRVt7g429ZO", "label" => "Public facilities" },
-         { "type" => "option", "value" => "tDZVQ1WtwpA", "label" => "Hospital" },
-         { "type" => "option", "value" => "EYbopBOJWsW", "label" => "MCHP" },
-         { "type" => "option", "value" => "uYxK4wmcPqA", "label" => "CHP" },
-         { "type" => "option", "value" => "CXw2yu5fodb", "label" => "CHC" },
-         { "type" => "option", "value" => "gzcv65VyaGq", "label" => "Chiefdom" },
-         { "type" => "option", "value" => "w1Atoz18PCL", "label" => "District" }].map do |entry|
-           entry["id"] = entry["value"]
-           entry
-         end
-      )
+
+      expect(response.body).to eq('[{"type":"option","value":"RXL3lPSK8oG","id":"RXL3lPSK8oG","label":"Clinic"},{"type":"option","value":"oRVt7g429ZO","id":"oRVt7g429ZO","label":"Public facilities"},{"type":"option","value":"tDZVQ1WtwpA","id":"tDZVQ1WtwpA","label":"Hospital"},{"type":"option","value":"EYbopBOJWsW","id":"EYbopBOJWsW","label":"MCHP"},{"type":"option","value":"uYxK4wmcPqA","id":"uYxK4wmcPqA","label":"CHP"},{"type":"option","value":"CXw2yu5fodb","id":"CXw2yu5fodb","label":"CHC"},{"type":"option","value":"gzcv65VyaGq","id":"gzcv65VyaGq","label":"Chiefdom"},{"type":"option","value":"w1Atoz18PCL","id":"w1Atoz18PCL","label":"District"},{"type":"option","value":"J40PpdN4Wkk","id":"J40PpdN4Wkk","label":"Northern Area"},{"type":"option","value":"jqBqIXoXpfy","id":"jqBqIXoXpfy","label":"Southern Area"},{"type":"option","value":"b0EsAxm8Nge","id":"b0EsAxm8Nge","label":"Western Area"},{"type":"option","value":"nlX2VoouN63","id":"nlX2VoouN63","label":"Eastern Area"}]')
     end
 
     it "should autocomplete org unit groups by name" do
@@ -126,7 +115,7 @@ RSpec.describe Setup::AutocompleteController, type: :controller do
 
       get :organisation_unit_group, params: { project_id: project.id, term: "cli" }
       options = JSON.parse(response.body)
-      expect(options.size).to eq 14
+      expect(options.size).to eq 18
       expect(options.first["type"]).to eq "option"
       expect(options.first["value"]).to eq "CXw2yu5fodb"
       expect(options.first["label"]).to include("CHC (194/1332)")
