@@ -60,6 +60,10 @@ class Pyramid
     org_unit_groups(org_unit.organisation_unit_groups.map { |e| e["id"] })
   end
 
+  def belong_to_group(org_unit, group_id)
+    org_unit_groups_of(org_unit).compact.map(&:id).include?(group_id)
+  end
+
   def org_units_in_same_group(org_unit, group_set_id)
     groupset_group_ids = org_unit_group_set(group_set_id).organisation_unit_groups.map { |e| e["id"] }
     org_unit_group_ids = org_unit.organisation_unit_groups.map { |e| e["id"] }

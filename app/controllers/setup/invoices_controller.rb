@@ -37,6 +37,11 @@ class Setup::InvoicesController < PrivateController
       "facts : " + Invoicing::EntityBuilder.new.to_entity(org_unit).facts.map(&:to_s).join(", ")
     ]
 
+    unless pyramid.belong_to_group(org_unit, project.entity_group.external_reference)
+      flash[:failure] = "Warn this entity is not in the contracted entity group : #{project.entity_group.name}."
+      flash[:failure] += "Only simulation will work. Update the group and trigger a dhis2 snaphots."
+    end
+
     if params[:push_to_dhis2]
       InvoiceForProjectAnchorWorker.perform_async(
         project.project_anchor_id,

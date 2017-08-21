@@ -12,10 +12,12 @@ class InvoiceForProjectAnchorWorker
 
     request = InvoicingRequest.new(year: year, quarter: quarter)
     contracted_entities = organisation_units(project_anchor, request)
-
-    puts "contracted_entities #{contracted_entities.size}"
-
     contracted_entities &= selected_org_unit_ids if selected_org_unit_ids
+
+    puts "contracted_entities #{contracted_entities.size}"    
+    if contracted_entities.empty?
+      puts "WARN : selected_org_unit_ids #{selected_org_unit_ids} are in the contracted group !"
+    end
 
     contracted_entities.each_slice(options[:slice_size]).each do |org_unit_ids|
       # currently not doing it async but might be needed
