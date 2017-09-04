@@ -29,6 +29,12 @@ class Activity < ApplicationRecord
   }
   validates :code, uniqueness: { scope: :project_id }, allow_blank: true
 
+  before_validation :codify
+
+  def codify
+    self.code = Codifier.codify(self.name) if self.code.blank?
+  end
+
   def activity_state(state)
     activity_states.find { |as| as.state.id == state.id }
   end
