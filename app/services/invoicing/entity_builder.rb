@@ -32,12 +32,13 @@ module Invoicing
       pyramid = org_unit.pyramid
       group_set_facts = pyramid.org_unit_groups(to_group_ids(org_unit))
                                .flat_map do |group|
+        next unless group
         group.group_set_ids.map do |groupset_id|
           groupset = pyramid.org_unit_group_set(groupset_id)
           ["groupset_code_#{to_code(groupset)}", to_code(group)]
         end
       end
-      group_set_facts.reject(&:empty?).to_h
+      group_set_facts.compact.reject(&:empty?).to_h
     end
   end
 end
