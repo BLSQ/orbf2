@@ -317,7 +317,7 @@ GEM
     sawyer (0.8.1)
       addressable (>= 2.3.5, < 2.6)
       faraday (~> 0.8, < 1.0)
-    sentry-raven (2.4.0)
+    sentry-raven (2.6.3)
       faraday (>= 0.7.6, < 1.0)
     sexp_processor (4.9.0)
     shoulda-matchers (3.1.1)
@@ -430,7 +430,7 @@ DEPENDENCIES
   rubocop
   ruby-prof
   sass-rails (~> 5.0)
-  sentry-raven
+  sentry-raven (= 2.6.3)
   shoulda-matchers
   sidekiq
   sidekiq-throttled
@@ -449,4 +449,4 @@ RUBY VERSION
    ruby 2.3.1p112
 
 BUNDLED WITH
-   1.15.3
+   1.15.4
