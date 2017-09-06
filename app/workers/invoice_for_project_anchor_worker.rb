@@ -5,7 +5,7 @@ class InvoiceForProjectAnchorWorker
 
   sidekiq_throttle(
     concurrency: { limit: 3 },
-    key_suffix:  ->(project_anchor_id) { project_anchor_id }
+    key_suffix:  ->(project_anchor_id, year, quarter, selected_org_unit_ids = nil, options ={}) { project_anchor_id }
   )
 
   def perform(project_anchor_id, year, quarter, selected_org_unit_ids = nil, options = {})
