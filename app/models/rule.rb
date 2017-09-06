@@ -54,7 +54,8 @@ class Rule < ApplicationRecord
   end
 
   def formulas_are_coherent
-    Rules::Solver.new.validate_formulas(self) if name
+    @solver ||= Rules::Solver.new
+    @solver.validate_formulas(self) if name
   end
 
   def formula(code)

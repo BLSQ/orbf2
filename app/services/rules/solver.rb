@@ -3,8 +3,11 @@ require "dentaku/calculator"
 
 module Rules
   class Solver
-    Dentaku.enable_ast_cache!
-    @calculator ||= CalculatorFactory.new.new_calculator
+    attr_reader :calculator
+
+    def initialize
+      @calculator = CalculatorFactory.new.new_calculator
+    end
 
     def solve!(message, facts_and_rules, debug = false)
       log "********** #{message} #{Time.new}\n#{JSON.pretty_generate(facts_and_rules)}\n" if debug
@@ -78,16 +81,6 @@ module Rules
       expression % variables
     rescue ArgumentError => e
       raise e.message
-    end
-
-    def calculator
-      self.class.shared_calculator
-    end
-
-    class << self
-      def shared_calculator
-        @calculator
-      end
     end
   end
 end

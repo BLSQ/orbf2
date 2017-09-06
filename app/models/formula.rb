@@ -31,7 +31,8 @@ class Formula < ApplicationRecord
   validate :expression, :expression_is_valid
 
   def expression_is_valid
-    Rules::Solver.new.validate_expression(self) if code && description
+    @solver ||= Rules::Solver.new
+    @solver.validate_expression(self) if code && description
   end
 
   def dependencies
