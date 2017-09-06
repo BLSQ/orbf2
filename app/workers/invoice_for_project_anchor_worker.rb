@@ -1,6 +1,12 @@
 
 class InvoiceForProjectAnchorWorker
   include Sidekiq::Worker
+  include Sidekiq::Throttled::Worker
+
+  sidekiq_throttle(
+    concurrency: { limit: 3 },
+    key_suffix:  ->(project_anchor_id) { project_anchor_id }
+  )
 
   def perform(project_anchor_id, year, quarter, selected_org_unit_ids = nil, options = {})
     default_options = {
@@ -14,7 +20,7 @@ class InvoiceForProjectAnchorWorker
     contracted_entities = organisation_units(project_anchor, request)
     contracted_entities &= selected_org_unit_ids if selected_org_unit_ids
 
-    puts "contracted_entities #{contracted_entities.size}"    
+    puts "contracted_entities #{contracted_entities.size}"
     if contracted_entities.empty?
       puts "WARN : selected_org_unit_ids #{selected_org_unit_ids} are in the contracted group !"
     end

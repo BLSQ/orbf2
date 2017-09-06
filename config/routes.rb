@@ -1,4 +1,5 @@
 require "sidekiq/web"
+require "sidekiq/throttled/web"
 
 Rails.application.routes.draw do
   if ENV["ADMIN_PASSWORD"]
@@ -6,6 +7,7 @@ Rails.application.routes.draw do
       username == "admin" && password == ENV["ADMIN_PASSWORD"]
     end
   end
+  Sidekiq::Throttled::Web.enhance_queues_tab!
   mount Sidekiq::Web => "/sidekiq"
 
   mount RailsAdmin::Engine => "/admin", as: "rails_admin"
