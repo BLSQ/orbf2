@@ -12,6 +12,7 @@
 #
 
 class Formula < ApplicationRecord
+  FREQUENCIES = %w[monthly quarterly yearly].freeze
   include PaperTrailed
   REGEXP_VALIDATION = /\A[a-z_0-9]+\z/
   delegate :project_id, to: :rule
@@ -26,9 +27,18 @@ class Formula < ApplicationRecord
     message: ": should only contains lowercase letters and _ like 'quality_score' or 'total_amount' vs %{value}"
   }
 
+  validates :frequency, presence: false, if: Proc.new { |f| f.frequency.present? },  inclusion: {
+    in:      FREQUENCIES,
+    message: "%{value} is not a valid see #{FREQUENCIES.join(',')}"
+  }
+
   validates :description, presence: true
   validates :expression, presence: true
   validate :expression, :expression_is_valid
+
+  def frequency=(val)
+    super(val.strip)
+  end
 
   def expression_is_valid
     @solver ||= Rules::Solver.new

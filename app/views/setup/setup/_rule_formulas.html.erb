@@ -4,6 +4,7 @@
         <li title="<%= formula.code %> = <%= formula.expression %>"><%= formula.description %>
           <%if params[:debug] || readonly%>
           <div style="font: normal 10pt 'Courier New'"><%=formula.code %> = <%= formula.expression %></div>
+          <div><%= formula.frequency%></div>
           <%end%>
           </li>
         <% end %>

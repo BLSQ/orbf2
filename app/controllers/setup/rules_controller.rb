@@ -60,7 +60,7 @@ end
           .permit(:name,
                   :kind,
                   formulas_attributes:        %i[
-                    id code description expression _destroy
+                    id code description expression frequency _destroy
                   ],
                   decision_tables_attributes: %i[
                     id content
