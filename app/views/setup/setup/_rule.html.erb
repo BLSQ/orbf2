@@ -1,5 +1,8 @@
 <tr>
-    <td title="<%= package.package_entity_groups.map{ |entitygroup|  %Q(#{entitygroup.name}) }.join(', ') %> - <%= package.states.map{ |state|  %Q(#{state.name}) }.join(', ') %>"><%= package.name %></td>
+    <td title="<%= package.package_entity_groups.map{ |entitygroup|  %Q(#{entitygroup.name}) }.join(', ') %> - <%= package.states.map{ |state|  %Q(#{state.name}) }.join(', ') %>">
+    <%= package.name %><br><br>
+    <%= package.frequency %>
+    </td>
     <td valign="top">
         <div class="col-md-4">
           <%if readonly %>

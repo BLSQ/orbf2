@@ -37,6 +37,15 @@ RSpec.describe Formula, type: :model do
     end
   end
 
+  describe "frequency validation" do 
+    it "should allow empty frequency" do 
+      formula = new_formula(frequency: "", expression: "variable - 456")
+      formula.frequency=""
+      expect(formula.valid?).to be true
+      expect(formula.frequency).to be nil    
+    end
+  end
+
   describe "Expression validation" do
     it "should accept activity expression" do
       formula = new_formula(expression: "variable - 456")
