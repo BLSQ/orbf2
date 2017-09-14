@@ -23,7 +23,10 @@ module Publishing
           {
             dataElement: mapping.external_reference,
             orgUnit:     invoice.entity.id,
-            period:      format_to_dhis_period(period, formula.frequency || invoice.payment_result.payment_rule.frequency),
+            period:      format_to_dhis_period(
+              period,
+              formula.frequency || invoice.payment_result.payment_rule.frequency
+            ),
             value:       invoice.payment_result.solution[formula.code],
             comment:     "$-#{formula.code}-#{invoice.payment_result.payment_rule.rule.name}"
           }
@@ -42,7 +45,10 @@ module Publishing
             {
               dataElement: mapping.external_reference,
               orgUnit:     invoice.entity.id,
-              period:      format_to_dhis_period(period, formula.frequency || package_result.package.frequency),
+              period:      format_to_dhis_period(
+                period,
+                formula.frequency || package_result.package.frequency
+              ),
               value:       package_result.solution[formula.code],
               comment:     "P-#{formula.code}-#{package_result.package.name}"
             }
@@ -63,7 +69,10 @@ module Publishing
               {
                 dataElement: mapping.external_reference,
                 orgUnit:     invoice.entity.id,
-                period:      format_to_dhis_period(period, formula.frequency || package.frequency),
+                period:      format_to_dhis_period(
+                  period,
+                  formula.frequency || package.frequency
+                ),
                 value:       activity_result.solution[formula.code],
                 comment:     "A-#{formula.code}-#{activity.name}"
               }

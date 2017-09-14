@@ -27,7 +27,7 @@ class Formula < ApplicationRecord
     message: ": should only contains lowercase letters and _ like 'quality_score' or 'total_amount' vs %{value}"
   }
 
-  validates :frequency, presence: false, if: Proc.new { |f| f.frequency.present? },  inclusion: {
+  validates :frequency, presence: false, if: proc { |f| f.frequency.present? }, inclusion: {
     in:      FREQUENCIES,
     message: "%{value} is not a valid see #{FREQUENCIES.join(',')}"
   }
@@ -37,7 +37,8 @@ class Formula < ApplicationRecord
   validate :expression, :expression_is_valid
 
   def frequency=(val)
-    super(val.strip)
+    striped = val.strip
+    super(striped.blank? ? nil : striped)
   end
 
   def expression_is_valid
