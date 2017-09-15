@@ -61,7 +61,7 @@ RSpec.describe Setup::InvoicesController, type: :controller do
     end
 
     def stub_data_value_sets
-      stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=true&endDate=2017-12-31&orgUnit=#{org_unit_id}&startDate=2017-01-01")
+      stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&endDate=2017-12-31&orgUnit=#{org_unit_id}&startDate=2017-01-01")
         .to_return(status: 200, body: "")
     end
   end

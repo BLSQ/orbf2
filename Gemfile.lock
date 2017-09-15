@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/BLSQ/dhis2.git
-  revision: e67d56998e30722e647b92de52a0276305da2a2d
+  revision: 1db89504dde3ccd0c46500aeacde08a5b63bd405
   specs:
     dhis2 (2.3.7)
       rest-client
