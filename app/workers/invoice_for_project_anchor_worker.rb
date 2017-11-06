@@ -22,7 +22,7 @@ class InvoiceForProjectAnchorWorker
 
     puts "contracted_entities #{contracted_entities.size}"
     if contracted_entities.empty?
-      puts "WARN : selected_org_unit_ids #{selected_org_unit_ids} are in the contracted group !"
+      puts "WARN : selected_org_unit_ids '#{selected_org_unit_ids}' are in the contracted group !"
     end
 
     contracted_entities.each_slice(options[:slice_size]).each do |org_unit_ids|

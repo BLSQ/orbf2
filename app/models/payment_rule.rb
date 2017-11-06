@@ -28,7 +28,7 @@ class PaymentRule < ApplicationRecord
   }
 
   def quarterly?
-    for_frequency("quaterly")
+    for_frequency("quarterly")
   end
 
   def monthly?
