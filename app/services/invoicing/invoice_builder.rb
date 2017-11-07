@@ -12,7 +12,7 @@ module Invoicing
       selected_packages = project.packages.select do |package|
         package.for_frequency(frequency) && package.apply_for(entity)
       end
-      puts "No package for #{entity.name} #{entity.groups} vs supported groups #{project.packages.flat_map(&:package_entity_groups).map(&:organisation_unit_group_ext_ref).uniq}" if selected_packages.empty?
+      puts "No package for #{entity.name} #{entity.groups} #{frequency} vs supported groups #{project.packages.flat_map(&:package_entity_groups).map(&:organisation_unit_group_ext_ref).uniq}" if selected_packages.empty?
       selected_packages.map do |package|
         analytics_service.activity_and_values(package, date).map do |activity, values|
           calculate_activity_results_monthly(entity, date, package, activity, values)
@@ -154,7 +154,6 @@ module Invoicing
     end
 
     def payment_variables(payment_rule, invoices, month)
-
       variables = {}
       payment_rule.packages.each do |package|
         previous_monthly_invoices = invoices.flatten.select { |invoice| invoice.date <= month }
@@ -179,7 +178,7 @@ module Invoicing
       variables
     end
 
-    def calculate_payments(project, entity, all_package_results)
+    def calculate_quarterly_payments(project, entity, all_package_results)
       project.payment_rules.select(&:quarterly?).each do |payment_rule|
         package_results = all_package_results.select do |pr|
           payment_rule.packages.map(&:name).include?(pr.package.name)
@@ -197,7 +196,8 @@ module Invoicing
 
         return PaymentResult.new(
           payment_rule,
-          solver.solve!("payment rule", package_facts_and_rules, false)
+          solver.solve!("payment rule", package_facts_and_rules, false),
+          package_facts_and_rules
         )
       end
       nil
@@ -248,7 +248,7 @@ module Invoicing
       end
 
       quarter_entity_results = calculate_package_results(quarter_details_results.values.flatten)
-      quarter_entity_results.each { |r| r.frequency = "quaterly" }
+      quarter_entity_results.each { |r| r.frequency = "quarterly" }
 
       begin
         project = project_finder.find_project(current_project, year_quarter.end_date)
@@ -263,8 +263,8 @@ module Invoicing
         package_results = calculate_package_results(activity_results)
         package_results.concat(quarter_entity_results)
         payment_result = nil
-        if package_results.empty?
-          payment_result = calculate_payments(project, entity, package_results)
+        if package_results.any?
+          payment_result = calculate_quarterly_payments(project, entity, package_results)
         end
         invoice = Invoicing::Invoice.new(date, entity, project, activity_results, package_results, payment_result)
         invoice.dump_invoice
@@ -288,7 +288,7 @@ module Invoicing
       package_results = calculate_package_results(activity_results)
 
       payment_result = nil
-      if package_results.empty?
+      if package_results.any?
         payment_result = calculate_payments(project, entity, package_results)
       end
       invoice = Invoicing::Invoice.new(date, entity, project, activity_results, package_results, payment_result)

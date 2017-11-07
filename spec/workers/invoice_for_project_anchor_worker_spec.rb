@@ -5,9 +5,11 @@ RSpec.describe InvoicesForEntitiesWorker do
   include Dhis2SnapshotFixture
   include_context "basic_context"
 
+  ORG_UNIT_ID = "vRC0stJ5y9Q".freeze
+
   let(:program) { create :program }
 
-  let(:project) do
+  let!(:project) do
     project = full_project
     project.save!
     user.save!
@@ -15,8 +17,12 @@ RSpec.describe InvoicesForEntitiesWorker do
 
     with_activities_and_formula_mappings(project)
     create_snaphots(project)
+    project.entity_group.external_reference = "MAs88nJc9nL"
+    project.entity_group.save!
     project
   end
+
+  let(:worker) { InvoiceForProjectAnchorWorker.new }
 
   def with_last_year_verified_values(project)
     project.packages.first.activity_rule.formulas.create(
@@ -56,7 +62,29 @@ RSpec.describe InvoicesForEntitiesWorker do
     puts "added payment for  #{payment_rule.packages.map(&:name)}"
 
     self
- end
+  end
+
+  def generate_quarterly_values_for(project)
+    refs = project.activities
+                  .flat_map(&:activity_states)
+                  .map(&:external_reference)
+                  .uniq
+                  .reject(&:empty?).sort
+    values = refs.each_with_index.map do |data_element, index|
+      [(1..4).map do |quarter|
+        {
+          dataElement:          data_element,
+          value:                100 + (index % 2),
+          period:               "2015Q#{quarter}",
+          orgUnit:              ORG_UNIT_ID,
+          categoryOptionCombo:  "HllvX50cXC0",
+          attributeOptionCombo: "HllvX50cXC0"
+        }
+      end]
+    end
+
+    values.flatten
+  end
 
   def create_snaphots(project)
     return if project.project_anchor.dhis2_snapshots.any?
@@ -73,41 +101,59 @@ RSpec.describe InvoicesForEntitiesWorker do
     WebMock.reset!
   end
 
-  it "should perform" do
-    project.entity_group.external_reference = "MAs88nJc9nL"
+  it "should NOT on non contracted entities" do
+    project.entity_group.external_reference = "external_reference"
     project.entity_group.save!
 
-    stub_dhis2_values
-    stub_export_values("invoice_zero_all.json")
+    fetch_values_request = stub_dhis2_values
+    export_request = stub_request(:post, "http://play.dhis2.org/demo/api/dataValueSets")
 
-    InvoiceForProjectAnchorWorker.new.perform(project.project_anchor.id, 2015, 1)
+    worker.perform(project.project_anchor.id, 2015, 1)
+
+    expect(fetch_values_request).to have_been_made.times(0)
+    expect(export_request).to have_been_made.times(0)
   end
 
   it "should perform for subset of contracted_entities" do
-    project.entity_group.external_reference = "MAs88nJc9nL"
-    project.entity_group.save!
+    stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&endDate=2015-12-31&orgUnit=vRC0stJ5y9Q&startDate=2015-01-01").
+      to_return(:status => 200, :body => "", :headers => {})
 
-    stub_dhis2_values
-    stub_export_values("invoice_zero_single.json")
+    export_request = stub_export_values("invoice_zero_single.json")
 
-    InvoiceForProjectAnchorWorker.new.perform(project.project_anchor.id, 2015, 1, ["vRC0stJ5y9Q"])
+    worker.perform(project.project_anchor.id, 2015, 1, [ORG_UNIT_ID, ORG_UNIT_ID])
+
+    expect(export_request).to have_been_made.once
+  end
+
+  it "should perform for packages and payments quarterly" do
+    project.payment_rules.each do |p| p.update_attributes(frequency: "quarterly") end
+    project.packages.each do |p| p.update_attributes(frequency: "quarterly") end
+
+    with_activities_and_formula_mappings(project)
+
+    stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&endDate=2015-12-31&orgUnit=#{ORG_UNIT_ID}&startDate=2015-01-01")
+      .to_return(status: 200, body: JSON.pretty_generate("dataValues": generate_quarterly_values_for(project)))
+
+    export_request = stub_export_values("invoice_quarterly.json")
+
+    worker.perform(project.project_anchor.id, 2015, 1)
+
+    expect(export_request).to have_been_made.once
   end
 
   it "should perform for yearly project cycle" do
     project.update_attributes(cycle: "yearly")
-    project.entity_group.external_reference = "MAs88nJc9nL"
-    project.entity_group.save!
 
     stub_dhis2_values_yearly("{}", "2015-01-01")
-    stub_export_values("invoice_zero_single.json")
+    export_request = stub_export_values("invoice_zero_single.json")
 
-    InvoiceForProjectAnchorWorker.new.perform(project.project_anchor.id, 2015, 1, ["vRC0stJ5y9Q"])
+    worker.perform(project.project_anchor.id, 2015, 1, [ORG_UNIT_ID])
+
+    expect(export_request).to have_been_made.once
   end
 
   it "should perform for yearly project cycle and appropriate values" do
     project.update_attributes(cycle: "yearly")
-    project.entity_group.external_reference = "MAs88nJc9nL"
-    project.entity_group.save!
 
     with_last_year_verified_values(project)
     with_cycle_values(project)
@@ -124,7 +170,7 @@ RSpec.describe InvoicesForEntitiesWorker do
         dataElement:          data_element,
         value:                index,
         period:               "2015",
-        orgUnit:              "vRC0stJ5y9Q",
+        orgUnit:              ORG_UNIT_ID,
         categoryOptionCombo:  "HllvX50cXC0",
         attributeOptionCombo: "HllvX50cXC0"
       }, (1..12).map do |month|
@@ -132,7 +178,7 @@ RSpec.describe InvoicesForEntitiesWorker do
           dataElement:          data_element,
           value:                index,
           period:               "2014#{month}",
-          orgUnit:              "vRC0stJ5y9Q",
+          orgUnit:              ORG_UNIT_ID,
           categoryOptionCombo:  "HllvX50cXC0",
           attributeOptionCombo: "HllvX50cXC0"
         }
@@ -140,9 +186,11 @@ RSpec.describe InvoicesForEntitiesWorker do
     end
 
     stub_dhis2_values_yearly(JSON.pretty_generate("dataValues": values.flatten), "2014-01-01")
-    stub_export_values("invoice_yearly.json")
+    export_request = stub_export_values("invoice_yearly.json")
 
-    InvoiceForProjectAnchorWorker.new.perform(project.project_anchor.id, 2015, 1, ["vRC0stJ5y9Q"])
+    worker.perform(project.project_anchor.id, 2015, 1, [ORG_UNIT_ID])
+
+    expect(export_request).to have_been_made.once
   end
 
   def stub_dhis2_values_yearly(values, start_date)
@@ -163,8 +211,8 @@ RSpec.describe InvoicesForEntitiesWorker do
   end
 
   def sorted_datavalues(json)
-    sorted = json["dataValues"].sort_by { |e| [e["dataElement"],e["orgUnit"],e["period"]] }
-    puts "sorted\n #{sorted}\n\n\n"
+    sorted = json["dataValues"].sort_by { |e| [e["dataElement"], e["orgUnit"], e["period"]] }
+    # puts "sorted\n #{sorted}\n\n\n"
     sorted
   end
 end
