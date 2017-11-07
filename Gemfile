@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-ruby "2.4.1"
+ruby "2.4.2"
 
 gem "bootstrap-datepicker-rails"
 gem "bootstrap-sass", "~> 3.3.6"
