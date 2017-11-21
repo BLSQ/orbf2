@@ -120,12 +120,21 @@ class Rule < ApplicationRecord
     formulas.map(&:values_dependencies).flatten
   end
 
+  def use_previous_year_values?
+    used_variables_for_values.any? { |variable| variable.ends_with?("_previous_year_values") }
+  end
+
+  def use_previous_year_same_quarter_values?
+    used_variables_for_values.any? { |variable| variable.ends_with?("_previous_year_same_quarter_values") }
+  end
+
   def available_variables_for_values
     var_names = []
     if activity_kind?
       activity_level_states = package.package_states.map(&:state).select(&:activity_level?)
-      var_names << activity_level_states.map { |state| "#{state.code}_previous_year_values" }
-      var_names << activity_level_states.map { |state| "#{state.code}_current_cycle_values" }
+      Analytics::Timeframe.all_variables_builders.each do |timeframe|
+        var_names << activity_level_states.map { |state| "#{state.code}#{timeframe.suffix}" }
+      end
     end
     if package_kind? && package.activity_rule
       var_names << package.activity_rule.formulas.map(&:code).map { |code| "#{code}_values" }

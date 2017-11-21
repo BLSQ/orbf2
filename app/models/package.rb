@@ -57,65 +57,27 @@ class Package < ApplicationRecord
     activities.flat_map(&:activity_states).select { |activity_state| activity_state.state == state }
   end
 
-  def current_cycle_periods(year_month)
-    if frequency == "yearly"
-      []
-    elsif frequency == "monthly"
-      year_months = project.cycle_yearly? ? year_month.to_year.months : year_month.to_quarter.months
-      year_months.select { |period| period < year_month }
-    else
-      year_quarter = year_month.to_quarter
-      year_quarters = project.cycle_yearly? ? year_month.to_year.quarters : []
-      year_quarters.select { |period| period < year_quarter }
-    end
-  end
 
-  def current_values_periods(year_month)
-    if frequency == "monthly"
-      [year_month, year_month.to_year]
-    elsif frequency == "quarterly"
-      [year_month, year_month.to_quarter, year_month.to_year]
-    elsif frequency == "yearly"
-      [year_month.to_year]
-    end
-  end
+  def periods
 
-  def periods(year_month, with_previous_year = true)
-    periods = []
-    if frequency == "monthly"
-      periods << year_month
-      periods << year_month.to_year
-    elsif frequency == "quarterly"
-      quarter = year_month.to_quarter
-      periods << quarter
-      periods << quarter.months
-      periods << year_month.to_year
-    end
-    if frequency == "yearly" || project.cycle_yearly?
-      year = year_month.to_year
-      periods << year.months
-      periods << year.quarters
-      periods << year
-    end
-
-    if with_previous_year
-      periods << previous_year_periods(year_month)
-    end
-    periods.flatten.uniq
   end
 
   def use_previous_year_values?
-    activity_rule && activity_rule.used_variables_for_values.any? { |variable| variable.ends_with?("previous_year_values") }
+    activity_rule && activity_rule.use_previous_year_values?
   end
 
-  def previous_year_periods(year_month)
-    periods = []
-    if use_previous_year_values?
-      previous_year = year_month.minus_years(1).to_year
-      periods << previous_year.months.map { |yq| periods(yq, false) }
-    end
-    periods.flatten.uniq
+  def use_previous_year_same_quarter_values?
+    activity_rule && activity_rule.use_previous_year_same_quarter_values?
   end
+
+  def previous_year_same_quarter_periods(year_month)
+    start_period = year_month.minus_years(1)
+    periods = [
+      start_period.to_quarter.months,
+      start_period.to_quarter
+    ]
+    periods.flatten.uniq
+end
 
   def missing_rules_kind
     supported_rules_kind = %w[activity package]
