@@ -57,9 +57,20 @@ class Package < ApplicationRecord
     activities.flat_map(&:activity_states).select { |activity_state| activity_state.state == state }
   end
 
+  def periods(year_month)
+    return [] unless activity_rule
+    used_variables_for_values = activity_rule.used_variables_for_values
 
-  def periods
+    used_periods = Analytics::Timeframe.all.map do |timeframe|
+      next if !timeframe.suffix.nil? && used_variables_for_values.none? { |var| var.ends_with?(timeframe.suffix) }
+      p = timeframe.periods(self, year_month)
+      puts "#{timeframe.class} : #{used_variables_for_values.to_json} = > #{p.flatten.uniq.map(&:to_dhis2)}"
+      p
+    end
 
+    used_periods = used_periods.flatten.compact.uniq
+    puts " final periods :  #{used_variables_for_values} ==> #{used_periods.map(&:to_dhis2)}"
+    used_periods
   end
 
   def use_previous_year_values?
