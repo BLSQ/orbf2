@@ -120,14 +120,6 @@ class Rule < ApplicationRecord
     formulas.map(&:values_dependencies).flatten
   end
 
-  def use_previous_year_values?
-    used_variables_for_values.any? { |variable| variable.ends_with?("_previous_year_values") }
-  end
-
-  def use_previous_year_same_quarter_values?
-    used_variables_for_values.any? { |variable| variable.ends_with?("_previous_year_same_quarter_values") }
-  end
-
   def available_variables_for_values
     var_names = []
     if activity_kind?
@@ -140,7 +132,12 @@ class Rule < ApplicationRecord
       var_names << package.activity_rule.formulas.map(&:code).map { |code| "#{code}_values" }
     end
     if payment_kind? && payment_rule.monthly?
-      var_names << payment_rule.packages.flat_map(&:package_rule).map(&:formulas).flatten.map(&:code).map { |code| "#{code}_values" }
+      var_names << payment_rule.packages
+                               .flat_map(&:package_rule)
+                               .map(&:formulas)
+                               .flatten
+                               .map(&:code)
+                               .map { |code| "#{code}_values" }
       var_names << payment_rule.rule.formulas.map(&:code).map { |code| "#{code}_previous_values" }
     end
     var_names.flatten

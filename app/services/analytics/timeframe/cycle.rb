@@ -9,7 +9,11 @@ module Analytics
         if package.frequency == "yearly"
           []
         elsif package.frequency == "monthly"
-          year_months = package.project.cycle_yearly? ? year_month.to_year.months : year_month.to_quarter.months
+          year_months = if package.project.cycle_yearly?
+                          year_month.to_year.months
+                        else
+                          year_month.to_quarter.months
+                        end
           year_months.select { |period| period < year_month }
         else
           year_quarter = year_month.to_quarter
@@ -32,5 +36,5 @@ module Analytics
         end.to_h
       end
     end
-end
+  end
 end

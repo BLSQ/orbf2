@@ -61,34 +61,18 @@ class Package < ApplicationRecord
     return [] unless activity_rule
     used_variables_for_values = activity_rule.used_variables_for_values
 
-    used_periods = Analytics::Timeframe.all.map do |timeframe|
-      next if !timeframe.suffix.nil? && used_variables_for_values.none? { |var| var.ends_with?(timeframe.suffix) }
-      p = timeframe.periods(self, year_month)
-      puts "#{timeframe.class} : #{used_variables_for_values.to_json} = > #{p.flatten.uniq.map(&:to_dhis2)}"
-      p
+    used_periods = Analytics::Timeframe.all_variables_builders.map do |timeframe|
+      use_variables = used_variables_for_values.any? do |var|
+        timeframe.suffix && var.ends_with?(timeframe.suffix)
+      end
+      next unless use_variables
+      timeframe.periods(self, year_month)
     end
-
+    # whatever add the current timeframe periods
+    used_periods += Analytics::Timeframe.current.periods(self, year_month)
     used_periods = used_periods.flatten.compact.uniq
-    puts " final periods :  #{used_variables_for_values} ==> #{used_periods.map(&:to_dhis2)}"
     used_periods
   end
-
-  def use_previous_year_values?
-    activity_rule && activity_rule.use_previous_year_values?
-  end
-
-  def use_previous_year_same_quarter_values?
-    activity_rule && activity_rule.use_previous_year_same_quarter_values?
-  end
-
-  def previous_year_same_quarter_periods(year_month)
-    start_period = year_month.minus_years(1)
-    periods = [
-      start_period.to_quarter.months,
-      start_period.to_quarter
-    ]
-    periods.flatten.uniq
-end
 
   def missing_rules_kind
     supported_rules_kind = %w[activity package]
