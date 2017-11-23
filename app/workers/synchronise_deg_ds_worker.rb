@@ -21,6 +21,7 @@ class SynchroniseDegDsWorker
       data_element_ids = activity_states.select(&:kind_data_element?).map(&:external_reference).flatten.reject(&:nil?).reject(&:empty?)
       data_element_ids += indicators_data_element_references(@indicators, activity_states)
       data_element_ids = data_element_ids.uniq
+      next if data_element_ids.empty?
       puts "dataelements : #{data_element_ids}"
       created_deg = create_data_element_group(package, state, data_element_ids)
       puts "created #{created_deg}"
