@@ -124,14 +124,20 @@ class Rule < ApplicationRecord
     var_names = []
     if activity_kind?
       activity_level_states = package.package_states.map(&:state).select(&:activity_level?)
-      var_names << activity_level_states.map { |state| "#{state.code}_previous_year_values" }
-      var_names << activity_level_states.map { |state| "#{state.code}_current_cycle_values" }
+      Analytics::Timeframe.all_variables_builders.each do |timeframe|
+        var_names << activity_level_states.map { |state| "#{state.code}#{timeframe.suffix}" }
+      end
     end
     if package_kind? && package.activity_rule
       var_names << package.activity_rule.formulas.map(&:code).map { |code| "#{code}_values" }
     end
     if payment_kind? && payment_rule.monthly?
-      var_names << payment_rule.packages.flat_map(&:package_rule).map(&:formulas).flatten.map(&:code).map { |code| "#{code}_values" }
+      var_names << payment_rule.packages
+                               .flat_map(&:package_rule)
+                               .map(&:formulas)
+                               .flatten
+                               .map(&:code)
+                               .map { |code| "#{code}_values" }
       var_names << payment_rule.rule.formulas.map(&:code).map { |code| "#{code}_previous_values" }
     end
     var_names.flatten
