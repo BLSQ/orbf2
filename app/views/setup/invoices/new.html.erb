@@ -27,7 +27,7 @@
   <%= f.submit 'Simulate with published', name: "simulate_published", class: "btn btn-primary" %>
 <%end%>
 
-<%if invoicing_request.invoices && invoicing_request.invoices.any? %>
+<% if @org_unit_summaries %>
   <br>
   <br>
   <% @org_unit_summaries.each do |summary|%>
@@ -36,6 +36,9 @@
   <br>
   <br>
   <br>
+<%end%>
+
+<%if invoicing_request.invoices && invoicing_request.invoices.any? %>
   <h1>Invoice Summary</h1>
   <% payments =  invoicing_request.invoices.select{ |invoice| invoice.payment_result}
      payments_formulas = payments.flat_map { |invoice| invoice.payment_result.payment_rule.rule.formulas }.uniq
