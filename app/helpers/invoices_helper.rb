@@ -31,13 +31,11 @@ module InvoicesHelper
   end
 
   def payment_descriptor(payment_rule)
-    payment_descriptor = {
+    {
       name:     payment_rule.rule.name,
-      formulas: formulas_descriptors(payment_rule.rule)
+      formulas: formulas_descriptors(payment_rule.rule),
+      packages: payment_rule.packages.map { |package| package_descriptor(package) }
     }
-
-    payment_descriptor["packages"] = payment_rule.packages.map { |package| package_descriptor(package) }
-    payment_descriptor
   end
 
   def formulas_descriptors(rule)

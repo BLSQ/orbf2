@@ -66,6 +66,7 @@ class Setup::InvoicesController < PrivateController
       )
     end
 
+    begin
     invoicing_request.invoices = InvoicesForEntitiesWorker.new.do_perform(
       project.project_anchor_id,
       invoicing_request.year,
@@ -75,7 +76,9 @@ class Setup::InvoicesController < PrivateController
     )[org_unit.id]
 
     invoicing_request.invoices = invoicing_request.invoices.sort_by(&:date)
-
+    rescue Rules::SolvingError => e
+      flash[:alert] = "Failed to simulate invoice : #{e.class.name} #{e.message} : <br>#{e.facts_and_rules.map {|k,v| [k,v].join(" : ")}.join(" <br>")}".html_safe
+    end
     render :new
   end
 
