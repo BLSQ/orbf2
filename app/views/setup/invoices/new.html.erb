@@ -38,6 +38,14 @@
   <br>
 <%end%>
 
+  <br>
+  <br>
+
+<button class="pull-right btn btn-default" data-toggle="collapse" data-target="#rules-descriptors">Show descriptors</button>
+<div id="rules-descriptors" class="collapse">
+  <pre><%= as_pretty_json_string(project_descriptor(@current_project))%></pre>
+</div>
+
 <%if invoicing_request.invoices && invoicing_request.invoices.any? %>
   <h1>Invoice Summary</h1>
   <% payments =  invoicing_request.invoices.select{ |invoice| invoice.payment_result}

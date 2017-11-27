@@ -1,5 +1,12 @@
 
 module InvoicesHelper
+
+  def project_descriptor(project)
+    {
+      payment_rules: project.payment_rules.map {|payment_rule| payment_descriptor(payment_rule)}
+    }
+  end
+
   def package_descriptor(package)
     {
       name:       package.name,
