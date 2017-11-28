@@ -14,45 +14,59 @@ module Analytics
       year_month = Periods.year_month(date)
       org_unit_ids = @org_units_by_package[package].map(&:id)
       values = package.activities.map do |activity|
-        facts = facts_for_period(
+        [
           activity,
-          Timeframe.current.periods(package, year_month),
-          org_unit_ids
-        )
+          Values.new(
+            date,
+            build_facts(package, activity, year_month, org_unit_ids),
+            build_variables(package, activity, year_month, org_unit_ids)
+          )
+        ]
+      end
+      values
+    end
 
-        activity.activity_states.select(&:kind_formula?).each do |activity_state|
-          facts[activity_state.state.code] = activity_state.formula
-        end
+    def build_facts(package, activity, year_month, org_unit_ids)
+      facts = facts_for_period(
+        activity,
+        Timeframe.current.periods(package, year_month),
+        org_unit_ids
+      )
 
-        package.states.each do |state|
-          facts[state.code] ||= 0
-        end
+      activity.activity_states.select(&:kind_formula?).each do |activity_state|
+        facts[activity_state.state.code] = activity_state.formula
+      end
 
-        level_facts = LevelScope.new.facts_values(
-          facts,
+      package.states.each do |state|
+        facts[state.code] ||= 0
+      end
+
+      facts = facts.merge(
+        LevelScope.new.facts_values(
           @org_units_by_package[package],
           package,
           activity,
-          year_month, self
+          year_month,
+          self
         )
-        facts = facts.merge(level_facts)
+      )
+    end
 
-        variables = {}
+    def build_variables(package, activity, year_month, org_unit_ids)
+      variables = {}
 
-        Timeframe.all_variables_builders.each do |timeframe|
-          variables = variables.merge(
-            timeframe.build_variables(
-              package,
-              activity,
-              year_month,
-              org_unit_ids,
-              self
-            )
+      Timeframe.all_variables_builders.each do |timeframe|
+        variables = variables.merge(
+          timeframe.build_variables(
+            package,
+            activity,
+            year_month,
+            org_unit_ids,
+            self
           )
-        end
-        [activity, Values.new(date, facts, variables)]
+        )
       end
-      values
+      variables
     end
 
     def facts_for_period(activity, periods, org_unit_ids)
@@ -83,5 +97,5 @@ module Analytics
         raise "aggregation_type #{aggregation_type} not supported"
       end
     end
-  end
+end
 end
