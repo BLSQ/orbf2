@@ -97,5 +97,5 @@ module Analytics
         raise "aggregation_type #{aggregation_type} not supported"
       end
     end
-end
+  end
 end
