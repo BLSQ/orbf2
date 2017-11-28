@@ -50,7 +50,6 @@ describe ProjectFactory do
     project.save!
 
     new_draft = project.publish(Date.today.to_date)
-
     expect(new_draft.changelog.size).to(eq(9))
   end
 

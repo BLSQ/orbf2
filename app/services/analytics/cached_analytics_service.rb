@@ -28,6 +28,15 @@ module Analytics
           facts[state.code] ||= 0
         end
 
+        level_facts = LevelScope.new.facts_values(
+          facts,
+          @org_units_by_package[package],
+          package,
+          activity,
+          year_month, self
+        )
+        facts = facts.merge(level_facts)
+
         variables = {}
 
         Timeframe.all_variables_builders.each do |timeframe|

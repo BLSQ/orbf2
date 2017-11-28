@@ -121,6 +121,10 @@ class Rule < ApplicationRecord
     formulas.map(&:values_dependencies).flatten
   end
 
+  def dependencies
+    formulas.map(&:dependencies).uniq.flatten
+  end
+
   def available_variables_for_values
     var_names = []
     if activity_kind?
