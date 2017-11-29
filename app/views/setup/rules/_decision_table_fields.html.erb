@@ -24,18 +24,18 @@
      <%end %>
    </td>
    <td>
-     <a href="#" data-toggle="collapse" data-target="#decision-table-data-edit">Edit data</a> |
-     <a href="#" data-toggle="collapse" data-target="#decision-table-data-show">Show data</a>
+     <a href="#decision-table-data-edit-<%= f.object&.id %>" data-toggle="collapse" data-target="#decision-table-data-edit-<%= f.object&.id %>">Edit data</a> |
+     <a href="#decision-table-data-show-<%= f.object&.id %>" data-toggle="collapse" data-target="#decision-table-data-show-<%= f.object&.id %>">Show data</a>
    </td>
  </tr>
  </tbody>
 </table>
-<div id="decision-table-data-edit" class="collapse">
+<div id="decision-table-data-edit-<%= f.object&.id %>" class="collapse">
   <%= f.input :content, as: :text %>
 </div>
 
 <% if f.object%>
-<div id="decision-table-data-show" class="collapse">
+<div id="decision-table-data-show-<%= f.object&.id %>" class="collapse">
   <table class="table">
     <thead>
       <tr>
