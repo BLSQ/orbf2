@@ -42,7 +42,7 @@ module Analytics
       end
 
       facts = facts.merge(
-        LevelScope.new.facts_values(
+        Analytics::Locations::LevelScope.new.facts_values(
           @org_units_by_package[package],
           package,
           activity,

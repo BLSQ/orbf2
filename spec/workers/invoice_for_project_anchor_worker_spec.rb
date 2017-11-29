@@ -115,8 +115,8 @@ RSpec.describe InvoicesForEntitiesWorker do
   end
 
   it "should perform for subset of contracted_entities" do
-    stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&endDate=2015-12-31&orgUnit=vRC0stJ5y9Q&startDate=2015-01-01").
-      to_return(:status => 200, :body => "", :headers => {})
+    stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&endDate=2015-12-31&orgUnit=vRC0stJ5y9Q&startDate=2015-01-01")
+      .to_return(status: 200, body: "", headers: {})
 
     export_request = stub_export_values("invoice_zero_single.json")
 
@@ -137,6 +137,47 @@ RSpec.describe InvoicesForEntitiesWorker do
     export_request = stub_export_values("invoice_quarterly.json")
 
     worker.perform(project.project_anchor.id, 2015, 1)
+
+    expect(export_request).to have_been_made.once
+  end
+
+  it "should support formula with parent levels" do
+    population_state = project.states.create!(name: "population")
+    package = project.packages.first
+    package.states.push(population_state)
+    formula = package.activity_rule.formulas.create(
+      code:        "sample_parent_values",
+      description: "sample_parent_values",
+      expression:  "verified / population_level_1"
+    )
+    with_activities_and_formula_mappings(project)
+
+    org_unit_values = generate_quarterly_values_for(project)
+
+    refs = project.activities
+                  .flat_map(&:activity_states)
+                  .select { |activity_state| activity_state.state == population_state }
+                  .map(&:external_reference)
+                  .uniq
+                  .reject(&:empty?).sort
+
+    org_unit_level_1_values = refs.map do |external_reference|
+      {
+        dataElement:          external_reference,
+        value:                123,
+        period:               "2015",
+        orgUnit:              "ImspTQPwCqd",
+        categoryOptionCombo:  "HllvX50cXC0",
+        attributeOptionCombo: "HllvX50cXC0"
+      }
+    end
+
+    puts "org_unit_level_1_values #{org_unit_level_1_values.to_json}"
+    stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&endDate=2015-12-31&orgUnit=#{ORG_UNIT_ID}&startDate=2015-01-01")
+      .to_return(status: 200, body: JSON.pretty_generate("dataValues": (org_unit_values + org_unit_level_1_values)))
+
+    export_request = stub_export_values("invoice_with_parent.json")
+    worker.perform(project.project_anchor.id, 2015, 1, [ORG_UNIT_ID])
 
     expect(export_request).to have_been_made.once
   end
