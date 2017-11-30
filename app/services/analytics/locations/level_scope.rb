@@ -14,16 +14,25 @@ module Analytics
         vars = variable_states(package)
         level_dependencies.map do |state_level|
           state = vars[state_level]
-          level_org_ids = org_units_for_level(org_units, state_level)
-          if level_org_ids.size > 1
-            raise "Can't calculate multiple parents : #{level_org_ids} : #{activity.name} from #{package.name}"
-          end
-          values_for_period = service.facts_for_period(activity, [year_month, year_month.to_year], [level_org_ids.first])
+          values_for_period = service.facts_for_period(
+            activity,
+            Analytics::Timeframe.current.periods(package, year_month),
+            [parent_org_unit_id(org_units, state_level, activity, package)]
+          )
           [state_level, values_for_period[state.code]]
         end.to_h
       end
 
       private
+
+      def parent_org_unit_id(org_units, state_level, activity, package)
+        level_org_ids = org_units_for_level(org_units, state_level)
+        if level_org_ids.size > 1
+          raise "Can't calculate multiple parents : #{level_org_ids} : #{activity.name} from #{package.name}"
+        end
+
+        level_org_ids.first
+      end
 
       def org_units_for_level(org_units, state_level)
         level = state_level.last.to_i
