@@ -97,6 +97,7 @@ class Rule < ApplicationRecord
     if activity_kind?
       var_names << package.states.select(&:activity_level?).map(&:code) if package
       var_names << formulas.map(&:code)
+      var_names << Analytics::Locations::LevelScope.new.facts(package)
       var_names << available_variables_for_values.map { |code| "%{#{code}}" }
       var_names << "quarter_of_year"
       var_names << "month_of_year"
@@ -118,6 +119,10 @@ class Rule < ApplicationRecord
 
   def used_variables_for_values
     formulas.map(&:values_dependencies).flatten
+  end
+
+  def dependencies
+    formulas.map(&:dependencies).uniq.flatten
   end
 
   def available_variables_for_values
@@ -146,7 +151,10 @@ class Rule < ApplicationRecord
   def fake_facts
     if activity_kind?
       # in case we are in a clone packages a not there so go through long road package_states instead of states
-      to_fake_facts(package.package_states.map(&:state).select(&:activity_level?))
+      facts = to_fake_facts(package.package_states.map(&:state).select(&:activity_level?)).merge(
+        Analytics::Locations::LevelScope.new.to_fake_facts(package)
+      )
+      facts
     elsif package_kind?
       # in case we are in a clone packages a not there so go through long road package_states instead of states
       to_fake_facts(package.package_states.map(&:state).select(&:package_level?))

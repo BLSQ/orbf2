@@ -139,12 +139,27 @@ RSpec.describe Rule, kind: :model do
       "%{verified_previous_year_values}",
       "amount",
       "claimed",
+      "claimed_level_1",
+      "claimed_level_2",
+      "claimed_level_3",
+      "claimed_level_4",
+      "claimed_level_5",
       "difference_percentage",
       "month_of_year",
       "quantity",
       "quarter_of_year",
       "tarif",
-      "verified"
+      "tarif_level_1",
+      "tarif_level_2",
+      "tarif_level_3",
+      "tarif_level_4",
+      "tarif_level_5",
+      "verified",
+      "verified_level_1",
+      "verified_level_2",
+      "verified_level_3",
+      "verified_level_4",
+      "verified_level_5"
     ].freeze
 
     it "should return all states and scoped states " do

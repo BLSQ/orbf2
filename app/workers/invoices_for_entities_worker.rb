@@ -207,12 +207,12 @@ class InvoicesForEntitiesWorker
     dhis2 = invoicing_request.project.dhis2_connection
     packages = invoicing_request.project.packages
     dataset_ids = packages.flat_map(&:package_states).map(&:ds_external_reference).reject(&:nil?)
-    org_unit_ids = org_unit_and_packages
-                   .flat_map(&:org_units_by_package)
-                   .flat_map(&:values)
-                   .flatten
-                   .flat_map(&:id)
-                   .uniq
+    org_units = org_unit_and_packages
+                .flat_map(&:org_units_by_package)
+                .flat_map(&:values)
+                .flatten
+
+    org_unit_ids = org_units.map { |ou| ou.path.split("/").reject(&:empty?) }.flatten.uniq
 
     data_range = invoicing_request.project.date_range(invoicing_request.year_quarter)
 
