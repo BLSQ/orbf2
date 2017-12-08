@@ -223,7 +223,7 @@ class InvoicesForEntitiesWorker
       end_date:          data_range.last,
       children:          false
     }
-
+    puts "fetching values #{values_query.to_json}"
     values = dhis2.data_value_sets.list(values_query)
     values.data_values ? values.values : []
   end

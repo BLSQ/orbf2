@@ -1,10 +1,27 @@
 <tr>
+
+
     <td title="<%= package.package_entity_groups.map{ |entitygroup|  %Q(#{entitygroup.name}) }.join(', ') %> - <%= package.states.map{ |state|  %Q(#{state.name}) }.join(', ') %>">
     <%= package.name %><br><br>
-    <%= package.frequency %>
+    <%= package.frequency %><br><br>
+    <%= package.package_entity_groups.map(&:name).join(",")%>
     </td>
+
+    <td>
+    <% if package.multi_entities_rule%>
+        <%= link_to( package.multi_entities_rule.name,
+                     edit_setup_project_package_rule_path(project, package, package.multi_entities_rule) ,
+                     class: package.activity_rule.invalid? ? 'btn btn-danger' :'')
+        %>
+
+    <% elsif package.ogs_reference.present?%>
+      Keep "sum" everything or <br>
+      <%= link_to 'Create new rule', new_setup_project_package_rule_path(project, package, kind: 'multi-entities') , class: 'btn btn-default' %>
+    <% end %>
+    </td>
+
     <td valign="top">
-        <div class="col-md-4">
+        <div class="col-md-8">
           <%if readonly %>
              <%= package.activity_rule.name if package.activity_rule.present? %>
           <% else %>
@@ -17,8 +34,7 @@
                 <%= link_to 'Create new rule', new_setup_project_package_rule_path(project, package) , class: 'btn btn-warning' %>
             <% end %>
           <%end%>
-        </div>
-        <div class="col-md-8">
+
             <% if package.activity_rule.present? %>
              <%= render partial: "rule_formulas", locals: { formulas: package.activity_rule.formulas, readonly: readonly }%>
             <%end%>
@@ -26,7 +42,7 @@
     </td>
 
     <td valign="top">
-        <div class="col-md-4">
+        <div class="col-md-8">
             <%if readonly %>
               <%= package.package_rule.name  if package.package_rule.present?%>
             <% else %>
@@ -37,8 +53,6 @@
                 <%= link_to 'Create new rule', new_setup_project_package_rule_path(project, package)  , class: 'btn btn-warning' %>
               <% end %>
             <%end%>
-          </div>
-        <div class="col-md-8">
             <% if package.package_rule.present? %>
                <%= render partial: "rule_formulas", locals: { formulas: package.package_rule.formulas, readonly: readonly }%>
             <% end %>

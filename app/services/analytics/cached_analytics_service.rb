@@ -6,13 +6,14 @@ module Analytics
       @org_units_by_package = org_units_by_package
       @values_by_data_element_and_period = @values.group_by { |value| [value["data_element"], value["period"]] }
       @aggregation_per_data_elements = aggregation_per_data_elements
+      @entity_builder = Invoicing::EntityBuilder.new
     end
 
     def entities; end
 
     def activity_and_values(package, date)
       year_month = Periods.year_month(date)
-      org_unit_ids = @org_units_by_package[package].map(&:id)
+      org_unit_ids = @org_units_by_package[package].map(&:id).to_set
       values = package.activities.map do |activity|
         [
           activity,
@@ -28,6 +29,7 @@ module Analytics
 
     def build_facts(package, activity, year_month, org_unit_ids)
       facts = facts_for_period(
+        package,
         activity,
         Timeframe.current.periods(package, year_month),
         org_unit_ids
@@ -69,18 +71,34 @@ module Analytics
       variables
     end
 
-    def facts_for_period(activity, periods, org_unit_ids)
+    def facts_for_period(package, activity, periods, org_unit_ids)
+      @org_unit_facts_by_org_id ||= {}
       activity.activity_states.select(&:external_reference?).map do |activity_state|
         activity_values = []
         periods.map do |formatted_period|
-          activity_values += @values_by_data_element_and_period[[activity_state.external_reference, formatted_period.to_dhis2]] || []
+          activity_values += @values_by_data_element_and_period[
+            [activity_state.external_reference, formatted_period.to_dhis2]
+          ] || []
         end
         activity_values = activity_values.select { |v| org_unit_ids.include?(v.org_unit) }
+        if package.multi_entities_rule && org_unit_ids.size > 1
+          activity_values = activity_values.select do |v|
+            sum_if?(package, activity, v.org_unit)
+          end
+        end
         [activity_state.state.code, aggregation(activity_values, activity_state)]
       end.to_h
     end
 
+    def sum_if?(package, activity, org_unit_id)
+      @org_unit_facts_by_org_id[[package.id, activity.id, org_unit_id]] ||= @entity_builder.to_entity(@org_units_by_package[package].find { |org_unit| org_unit.id == org_unit_id }).facts
+      facts = package.multi_entities_rule.extra_facts(activity, @org_unit_facts_by_org_id[[package.id, activity.id, org_unit_id]])
+      puts " #{package.name} #{activity.name} #{facts}"
+      facts["sum_if"] == "true"
+    end
+
     def aggregation(activity_values, activity_state)
+      puts "aggregating : #{values}" if activity_values.size > 1
       aggregation_type = @aggregation_per_data_elements[activity_state.external_reference] || "SUM"
       values_for_activity = activity_values.map { |v| v["value"] }.map(&:to_f)
 

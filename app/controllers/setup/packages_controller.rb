@@ -10,6 +10,7 @@ class Setup::PackagesController < PrivateController
   def update
     @package = current_project.packages.find(params[:id])
     package.update_attributes(params_package)
+    package.kind = package.ogs_reference.present? ? "multi-groupset" : "single"
 
     update_package_constants
 

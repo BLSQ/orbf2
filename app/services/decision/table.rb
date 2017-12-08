@@ -45,7 +45,7 @@ module Decision
 
     def initialize(csv_string)
       csv = CSV.parse(csv_string, headers: true)
-      @headers = csv.headers
+      @headers = csv.headers.compact
 
       @rules = csv.map do |row|
         Rule.new(@headers, row)

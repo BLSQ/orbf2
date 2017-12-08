@@ -18,7 +18,7 @@ module Analytics
         variables = {}
 
         previous_facts = periods(package, year_month).map do |period|
-          [period, service.facts_for_period(activity, [period], org_unit_ids)]
+          [period, service.facts_for_period(package, activity, [period], org_unit_ids)]
         end.to_h
 
         activity.activity_states.map do |activity_state|

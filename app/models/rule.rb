@@ -15,7 +15,7 @@
 class Rule < ApplicationRecord
   include PaperTrailed
 
-  RULE_TYPES = %w[payment activity package].freeze
+  RULE_TYPES = %w[payment activity package multi-entities].freeze
   belongs_to :package, optional: true, inverse_of: :rules
   belongs_to :payment_rule, optional: true, inverse_of: :rule
 
@@ -30,7 +30,7 @@ class Rule < ApplicationRecord
     message: "%{value} is not a valid see #{RULE_TYPES.join(',')}"
   }
   validates :name, presence: true
-  validates :formulas, length: { minimum: 1 }
+  validates :formulas, length: { minimum: 1 }, unless: :multi_entities_kind?
   validate :formulas, :formulas_are_coherent
 
   validate :formulas, :package_formula_uniqness
@@ -45,6 +45,10 @@ class Rule < ApplicationRecord
 
   def payment_kind?
     kind == "payment"
+  end
+
+  def multi_entities_kind?
+    kind == "multi-entities"
   end
 
   def to_facts
@@ -67,7 +71,7 @@ class Rule < ApplicationRecord
   delegate :program_id, to: :project
 
   def project
-    if activity_kind? || package_kind?
+    if activity_kind? || package_kind? || multi_entities_kind?
       package.project
     elsif payment_kind?
       payment_rule.project
