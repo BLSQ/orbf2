@@ -25,6 +25,7 @@ RSpec.describe Invoicing::EntityBuilder do
       "level_2"                            => "O6uvpzGd5pu",
       "level_3"                            => "U6Kr7Gtpidn",
       "level_4"                            => "vRC0stJ5y9Q",
+      "level"                              => "4",
       "groupset_code_facility_ownership"   => "private_clinic",
       "groupset_code_facility_type"        => "clinic",
       "groupset_code_location_rural_urban" => "rural"
