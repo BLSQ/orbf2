@@ -110,7 +110,8 @@ module Analytics
         @org_units_by_package[package].find { |org_unit| org_unit.id == org_unit_id }
       ).facts
       facts = package.multi_entities_rule.extra_facts(activity, @org_unit_facts_by_org_id[[package.id, activity.id, org_unit_id]])
-      log_debug(" #{package.name} #{activity.name} #{facts} #{@org_unit_facts_by_org_id[[package.id, activity.id, org_unit_id]]}")
+      log_debug(" #{package.name} / #{activity.name} - #{activity.code} > #{facts} : #{@org_unit_facts_by_org_id[[package.id, activity.id, org_unit_id]]}")
+
       facts["sum_if"] == "true"
     end
 

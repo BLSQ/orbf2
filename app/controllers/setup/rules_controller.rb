@@ -26,7 +26,7 @@ class Setup::RulesController < PrivateController
     end
 
     @rule = current_package.rules.build(
-      rule_params.merge(kind: kind,
+      rule_params.merge(kind:    kind,
                         package: current_package)
     )
     puts @rule.valid?

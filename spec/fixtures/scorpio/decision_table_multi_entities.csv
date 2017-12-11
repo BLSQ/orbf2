@@ -1,0 +1,5 @@
+in:activity_code,in:level,in:groupset_code_facility_ownership,out:sum_if
+vaccination,4,mission,false
+clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois,3,public_facilities,false
+clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois,4,public_facilities,false
+*,*,*,true

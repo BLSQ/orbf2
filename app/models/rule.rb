@@ -163,7 +163,7 @@ class Rule < ApplicationRecord
               .merge(
                 Analytics::Locations::LevelScope.new.to_fake_facts(package)
               )
-              .merge("org_units_count" => "1", "org_units_sum_if_count" => "1" )
+              .merge("org_units_count" => "1", "org_units_sum_if_count" => "1")
       facts
     elsif package_kind?
       # in case we are in a clone packages a not there so go through long road package_states instead of states
