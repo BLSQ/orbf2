@@ -72,13 +72,14 @@ module Analytics
     end
 
     def org_units_count_facts(package, activity, org_unit_ids)
-      org_units_count = org_unit_ids.size
+      org_units_sum_if_count = org_unit_ids.size
       if package.multi_entities_rule && org_unit_ids.size > 1
-        org_units_count = org_unit_ids.count { |org_unit_id| sum_if?(package, activity, org_unit_id) }
+        org_units_sum_if_count = org_unit_ids.count do |org_unit_id|
+          sum_if?(package, activity, org_unit_id)
+        end
       end
-
       {
-        org_units_sum_if_count: org_units_count,
+        org_units_sum_if_count: org_units_sum_if_count,
         org_units_count:        org_unit_ids.size
       }
     end
@@ -106,12 +107,13 @@ module Analytics
     end
 
     def sum_if?(package, activity, org_unit_id)
-      @org_unit_facts_by_org_id[[package.id, activity.id, org_unit_id]] ||= @entity_builder.to_entity(
+      facts_key = [package.id, activity.id, org_unit_id]
+      @org_unit_facts_by_org_id[facts_key] ||= @entity_builder.to_entity(
         @org_units_by_package[package].find { |org_unit| org_unit.id == org_unit_id }
       ).facts
-      facts = package.multi_entities_rule.extra_facts(activity, @org_unit_facts_by_org_id[[package.id, activity.id, org_unit_id]])
-      log_debug(" #{package.name} / #{activity.name} - #{activity.code} > #{facts} : #{@org_unit_facts_by_org_id[[package.id, activity.id, org_unit_id]]}")
-
+      orgunit_facts = @org_unit_facts_by_org_id[facts_key]
+      facts = package.multi_entities_rule.extra_facts(activity, orgunit_facts)
+      log_debug(" #{package.name} / #{activity.name} - #{activity.code} > #{facts} : #{orgunit_facts}")
       facts["sum_if"] == "true"
     end
 
