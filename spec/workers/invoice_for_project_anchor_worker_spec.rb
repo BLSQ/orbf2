@@ -64,6 +64,31 @@ RSpec.describe InvoicesForEntitiesWorker do
     self
   end
 
+  def with_multi_entity_rule(project)
+    package = project.packages.first
+
+    package.update_attributes!(ogs_reference: "J5jldMd8OHv", kind: "multi-groupset")
+    package.package_states.each_with_index do |package_state, index|
+      package_state.update_attributes!(ds_external_reference: "ds-#{index}")
+    end
+    rule = package.rules.create!(name: "multi-entities test", kind: "multi-entities")
+    rule.decision_tables.create!(
+      content: fixture_content(:scorpio, "decision_table_multi_entities.csv")
+    )
+
+    package.activity_rule.formulas.create!(
+      code:        "org_units_count_exported",
+      description: "org_units_count_exported",
+      expression:  "org_units_count"
+    )
+
+    package.activity_rule.formulas.create!(
+      code:        "org_units_sum_if_count_exported",
+      description: "org_units_sum_if_count_exported",
+      expression:  "org_units_sum_if_count"
+    )
+  end
+
   def generate_quarterly_values_for(project)
     refs = project.activities
                   .flat_map(&:activity_states)
@@ -235,32 +260,14 @@ RSpec.describe InvoicesForEntitiesWorker do
   end
 
   it "should perform for sub contracted entities pattern" do
-    package = project.packages.first
-
-    package.update_attributes!(ogs_reference: "J5jldMd8OHv", kind: "multi-groupset")
-    package.package_states.each_with_index do |package_state, index|
-      package_state.update_attributes!(ds_external_reference: "ds-#{index}")
-    end
-    rule = package.rules.create!(name: "multi-entities test", kind: "multi-entities")
-    rule.decision_tables.create!(
-      content: fixture_content(:scorpio, "decision_table_multi_entities.csv")
-    )
-
-    package.activity_rule.formulas.create!(
-      code:        "org_units_count_exported",
-      description: "org_units_count_exported",
-      expression:  "org_units_count"
-    )
-
-    package.activity_rule.formulas.create!(
-      code:        "org_units_sum_if_count_exported",
-      description: "org_units_sum_if_count_exported",
-      expression:  "org_units_sum_if_count"
-    )
-
-    WebMock.reset!
-
+    with_multi_entity_rule(project)
     with_activities_and_formula_mappings(project)
+
+    expect(project.packages.first.activity_rule.available_variables).to include(
+      "org_units_count",
+      "org_units_sum_if_count"
+    )
+
     refs = project.activities
                   .flat_map(&:activity_states)
                   .map(&:external_reference)
