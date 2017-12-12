@@ -101,7 +101,7 @@ class Project < ApplicationRecord
         decision_tables: [],
         formulas:        {
           rule:             [:formulas],
-          formula_mappings: []
+          formula_mappings: [:activity]
         },
         payment_rule:    {}
       }
@@ -122,7 +122,7 @@ class Project < ApplicationRecord
           decision_tables: [],
           formulas:        {
             rule:             [:formulas],
-            formula_mappings: []
+            formula_mappings: [:activity]
           },
           payment_rule:    {}
         }
