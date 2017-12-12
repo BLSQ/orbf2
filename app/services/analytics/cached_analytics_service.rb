@@ -1,5 +1,10 @@
+# frozen_string_literal: true
+
 module Analytics
   class CachedAnalyticsService
+    SUM_IF_KEY = "sum_if"
+    TRUE = "true"
+
     def initialize(org_units, org_units_by_package, values, aggregation_per_data_elements)
       @values = values
       @org_units = org_units
@@ -113,12 +118,10 @@ module Analytics
       ).facts
       orgunit_facts = @org_unit_facts_by_org_id[facts_key]
       facts = package.multi_entities_rule.extra_facts(activity, orgunit_facts)
-      log_debug(" #{package.name} / #{activity.name} - #{activity.code} > #{facts} : #{orgunit_facts}")
-      facts["sum_if"] == "true"
+      facts[SUM_IF_KEY] == TRUE
     end
 
     def aggregation(activity_values, activity_state)
-      log_debug("aggregating : #{activity_values}") if activity_values.size > 1
       aggregation_type = @aggregation_per_data_elements[activity_state.external_reference] || "SUM"
       values_for_activity = activity_values.map { |v| v["value"] }.map(&:to_f)
 
@@ -134,10 +137,6 @@ module Analytics
       else
         raise "aggregation_type #{aggregation_type} not supported"
       end
-    end
-
-    def log_debug(message)
-      puts message if ENV["DEBUG"]
     end
   end
 end

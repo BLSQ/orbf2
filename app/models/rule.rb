@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: rules
@@ -14,8 +16,12 @@
 
 class Rule < ApplicationRecord
   include PaperTrailed
+  RULE_TYPE_MULTI_ENTITIES = "multi-entities".freeze
+  RULE_TYPE_ACTIVITY = "activity".freeze
+  RULE_TYPE_PACKAGE = "package".freeze
+  RULE_TYPE_PAYMENT = "payment".freeze
 
-  RULE_TYPES = %w[payment activity package multi-entities].freeze
+  RULE_TYPES = [RULE_TYPE_PAYMENT, RULE_TYPE_ACTIVITY, RULE_TYPE_PACKAGE, RULE_TYPE_MULTI_ENTITIES].freeze
   belongs_to :package, optional: true, inverse_of: :rules
   belongs_to :payment_rule, optional: true, inverse_of: :rule
 
@@ -36,19 +42,19 @@ class Rule < ApplicationRecord
   validate :formulas, :package_formula_uniqness
 
   def activity_kind?
-    kind == "activity"
+    kind == RULE_TYPE_ACTIVITY
   end
 
   def package_kind?
-    kind == "package"
+    kind == RULE_TYPE_PACKAGE
   end
 
   def payment_kind?
-    kind == "payment"
+    kind == RULE_TYPE_PAYMENT
   end
 
   def multi_entities_kind?
-    kind == "multi-entities"
+    kind == RULE_TYPE_MULTI_ENTITIES
   end
 
   def to_facts
