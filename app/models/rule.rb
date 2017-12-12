@@ -16,12 +16,16 @@
 
 class Rule < ApplicationRecord
   include PaperTrailed
-  RULE_TYPE_MULTI_ENTITIES = "multi-entities".freeze
-  RULE_TYPE_ACTIVITY = "activity".freeze
-  RULE_TYPE_PACKAGE = "package".freeze
-  RULE_TYPE_PAYMENT = "payment".freeze
+  RULE_TYPE_MULTI_ENTITIES = "multi-entities"
+  RULE_TYPE_ACTIVITY = "activity"
+  RULE_TYPE_PACKAGE = "package"
+  RULE_TYPE_PAYMENT = "payment"
 
-  RULE_TYPES = [RULE_TYPE_PAYMENT, RULE_TYPE_ACTIVITY, RULE_TYPE_PACKAGE, RULE_TYPE_MULTI_ENTITIES].freeze
+  RULE_TYPES = [
+    RULE_TYPE_PAYMENT, RULE_TYPE_ACTIVITY,
+    RULE_TYPE_PACKAGE, RULE_TYPE_MULTI_ENTITIES
+  ].freeze
+
   belongs_to :package, optional: true, inverse_of: :rules
   belongs_to :payment_rule, optional: true, inverse_of: :rule
 
