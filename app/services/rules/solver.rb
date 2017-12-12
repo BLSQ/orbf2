@@ -45,6 +45,7 @@ module Rules
     end
 
     def validate_formulas(rule)
+      return if rule.formulas.empty?
       facts = {}.merge(rule.fake_facts)
       rule.formulas.each do |formula|
         facts[formula.code] = mock_values(formula.expression, rule.available_variables_for_values)

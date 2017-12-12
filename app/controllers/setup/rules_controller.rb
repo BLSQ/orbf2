@@ -9,7 +9,7 @@ class Setup::RulesController < PrivateController
       return
     end
 
-    @rule = current_package.rules.build(kind: current_package.missing_rules_kind.first)
+    @rule = current_package.rules.build(kind: kind)
     @rule.formulas.build(rule: @rule)
   end
 
@@ -25,7 +25,10 @@ class Setup::RulesController < PrivateController
       return
     end
 
-    @rule = current_package.rules.build(rule_params.merge(kind: current_package.missing_rules_kind.first, package: current_package))
+    @rule = current_package.rules.build(
+      rule_params.merge(kind:    kind,
+                        package: current_package)
+    )
     puts @rule.valid?
     puts @rule.errors.full_messages
     if @rule.save
@@ -50,6 +53,14 @@ end
   end
 
   private
+
+  def kind
+    if params[:kind]
+      (current_package.missing_rules_kind & [params[:kind]]).first
+    else
+      current_package.missing_rules_kind.first
+    end
+  end
 
   def current_package
     @package ||= current_project.packages.find(params[:package_id])

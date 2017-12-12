@@ -57,6 +57,10 @@ class Package < ApplicationRecord
     activities.flat_map(&:activity_states).select { |activity_state| activity_state.state == state }
   end
 
+  def multi_entities?
+    kind == "multi-groupset"
+  end
+
   def periods(year_month)
     return [] unless activity_rule
     used_variables_for_values = activity_rule.used_variables_for_values
@@ -75,10 +79,7 @@ class Package < ApplicationRecord
   end
 
   def missing_rules_kind
-    supported_rules_kind = %w[activity package]
-    supported_rules_kind.delete("activity") if activity_rule
-    supported_rules_kind.delete("package") if package_rule
-    supported_rules_kind
+    %w[activity package multi-entities] - rules.map(&:kind)
   end
 
   def apply_for(entity)
@@ -107,12 +108,16 @@ class Package < ApplicationRecord
     frequency_to_apply == frequency
   end
 
+  def multi_entities_rule
+    rules.find(&:multi_entities_kind?)
+  end
+
   def package_rule
-    rules.find { |r| r.kind == "package" }
+    rules.find(&:package_kind?)
   end
 
   def activity_rule
-    rules.find { |r| r.kind == "activity" }
+    rules.find(&:activity_kind?)
   end
 
   def kind_multi?

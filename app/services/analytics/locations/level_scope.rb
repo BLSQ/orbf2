@@ -15,6 +15,7 @@ module Analytics
         level_dependencies.map do |state_level|
           state = vars[state_level]
           values_for_period = service.facts_for_period(
+            package,
             activity,
             Analytics::Timeframe.current.periods(package, year_month),
             [parent_org_unit_id(org_units, state_level, activity, package)]

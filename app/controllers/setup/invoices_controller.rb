@@ -77,14 +77,20 @@ class Setup::InvoicesController < PrivateController
 
     invoicing_request.invoices = invoicing_request.invoices.sort_by(&:date)
     rescue Rules::SolvingError => e
+      log(e)
       flash[:alert] = "Failed to simulate invoice : #{e.class.name} #{e.message} : <br>#{e.facts_and_rules.map {|k,v| [k,v].join(" : ")}.join(" <br>")}".html_safe
     rescue => e
+      log(e)
       flash[:alert] = "Failed to simulate invoice : #{e.class.name} #{e.message}"
     end
     render :new
   end
 
   private
+
+  def log(exception)
+    puts " #{exception.message} : \n#{exception.backtrace.join("\n")}"
+  end
 
   def invoice_params
     params.require(:invoicing_request)

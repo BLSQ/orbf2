@@ -26,6 +26,7 @@ module Invoicing
                         .map { |parent_id, index| ["level_#{index + 1}", parent_id] }
                         .to_h
       facts.merge(to_group_set_facts(org_unit))
+           .merge("level" => "#{parent_ids.size}")
     end
 
     def to_group_set_facts(org_unit)

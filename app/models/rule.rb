@@ -15,7 +15,7 @@
 class Rule < ApplicationRecord
   include PaperTrailed
 
-  RULE_TYPES = %w[payment activity package].freeze
+  RULE_TYPES = %w[payment activity package multi-entities].freeze
   belongs_to :package, optional: true, inverse_of: :rules
   belongs_to :payment_rule, optional: true, inverse_of: :rule
 
@@ -30,7 +30,7 @@ class Rule < ApplicationRecord
     message: "%{value} is not a valid see #{RULE_TYPES.join(',')}"
   }
   validates :name, presence: true
-  validates :formulas, length: { minimum: 1 }
+  validates :formulas, length: { minimum: 1 }, unless: :multi_entities_kind?
   validate :formulas, :formulas_are_coherent
 
   validate :formulas, :package_formula_uniqness
@@ -45,6 +45,10 @@ class Rule < ApplicationRecord
 
   def payment_kind?
     kind == "payment"
+  end
+
+  def multi_entities_kind?
+    kind == "multi-entities"
   end
 
   def to_facts
@@ -67,7 +71,7 @@ class Rule < ApplicationRecord
   delegate :program_id, to: :project
 
   def project
-    if activity_kind? || package_kind?
+    if activity_kind? || package_kind? || multi_entities_kind?
       package.project
     elsif payment_kind?
       payment_rule.project
@@ -101,6 +105,10 @@ class Rule < ApplicationRecord
       var_names << available_variables_for_values.map { |code| "%{#{code}}" }
       var_names << "quarter_of_year"
       var_names << "month_of_year"
+      if package.multi_entities?
+        var_names << "org_units_sum_if_count" if package.multi_entities_rule
+        var_names << "org_units_count"
+      end
     elsif package_kind?
       var_names << package.states.select(&:package_level?).map(&:code) if package
       var_names << available_variables_for_values.map { |code| "%{#{code}}" }
@@ -151,9 +159,11 @@ class Rule < ApplicationRecord
   def fake_facts
     if activity_kind?
       # in case we are in a clone packages a not there so go through long road package_states instead of states
-      facts = to_fake_facts(package.package_states.map(&:state).select(&:activity_level?)).merge(
-        Analytics::Locations::LevelScope.new.to_fake_facts(package)
-      )
+      facts = to_fake_facts(package.package_states.map(&:state).select(&:activity_level?))
+              .merge(
+                Analytics::Locations::LevelScope.new.to_fake_facts(package)
+              )
+              .merge("org_units_count" => "1", "org_units_sum_if_count" => "1")
       facts
     elsif package_kind?
       # in case we are in a clone packages a not there so go through long road package_states instead of states

@@ -1,8 +1,9 @@
 require "csv"
 module Decision
   class Rule
-    def initialize(headers, row)
+    def initialize(headers, row, index)
       @headers = headers
+      @index = index
       @row = headers.map do |header|
         [header, row[header] ? row[header].strip : nil]
       end.to_h
@@ -13,7 +14,9 @@ module Decision
     end
 
     def specific_score(_hash)
-      headers("in:").select { |header| @row[header] == "*" }.size
+      header_in = headers("in:")
+      star_count = header_in.select { |header| @row[header] == "*" }.size
+      [header_in.size - star_count, -1 * @index]
     end
 
     def headers(type)
@@ -45,10 +48,10 @@ module Decision
 
     def initialize(csv_string)
       csv = CSV.parse(csv_string, headers: true)
-      @headers = csv.headers
+      @headers = csv.headers.compact
 
-      @rules = csv.map do |row|
-        Rule.new(@headers, row)
+      @rules = csv.each_with_index.map do |row, index|
+        Rule.new(@headers, row, index)
       end
     end
 
@@ -65,7 +68,9 @@ module Decision
       matching_rules = @rules.select { |rule| rule.matches?(hash) }
 
       if matching_rules.any?
-        matching_rules.sort_by { |rule| rule.specific_score(hash) }
+        if matching_rules.size > 1
+          matching_rules = matching_rules.sort_by { |rule| rule.specific_score(hash) }
+        end
         return matching_rules.last.apply
       end
 

@@ -24,7 +24,7 @@ module Analytics
 
       def build_variables(package, activity, year_month, org_unit_ids, service)
         previous_facts = periods(package, year_month).map do |period|
-          service.facts_for_period(activity, [period], org_unit_ids)
+          service.facts_for_period(package, activity, [period], org_unit_ids)
         end
 
         activities_states = activity.activity_states.select(&:external_reference?)
