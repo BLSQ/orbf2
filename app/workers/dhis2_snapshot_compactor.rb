@@ -2,7 +2,8 @@
 
 class Dhis2SnapshotCompactor
   CLEANUP_INFOS = {
-    "organisation_units" => %w[client coordinates access]
+    "organisation_units" => %w[client coordinates access attribute_values users data_sets user_group_accesses],
+    "data_elements"      => %w[access client user user_group_accesses]
   }.freeze
 
   def compact!(snapshot)
@@ -13,7 +14,10 @@ class Dhis2SnapshotCompactor
   end
 
   def compact(snapshot)
-    return false unless CLEANUP_INFOS[snapshot.kind]
+    unless CLEANUP_INFOS[snapshot.kind]
+      puts "not cleanup for #{snapshot.kind} id:#{snapshot.id}"
+      return false
+    end
     clean_count = 0
     snapshot.content.each do |row|
       CLEANUP_INFOS[snapshot.kind].each do |key_to_delete|
@@ -25,5 +29,7 @@ class Dhis2SnapshotCompactor
       puts "nothing to clean for id:#{snapshot.id} #{snapshot.kind} - #{snapshot.project_anchor.program.code} - #{snapshot.snapshoted_at}"
       return false
     end
+    puts "cleaned #{clean_count}"
+    true
   end
 end
