@@ -32,8 +32,8 @@ class Dhis2SnapshotWorker
     snapshot.content = JSON.parse(data.to_json)
     snapshot.job_id = jid || "railsc"
     snapshot.dhis2_version = dhis2_version
+    Dhis2SnapshotCompactor.new.compact(snapshot)
     snapshot.save!
-
     puts "Dhis2SnapshotWorker #{kind} : for project anchor #{new_snapshot ? 'created' : 'updated'} #{year} #{month} : #{project.project_anchor.id} #{project.name} #{data.size} done!"
 
     snapshot
