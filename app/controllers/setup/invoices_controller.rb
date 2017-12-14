@@ -3,19 +3,29 @@ class Setup::InvoicesController < PrivateController
   helper_method :invoicing_request
 
   def new
+    project = current_project(project_scope: :fully_loaded) if params["calculate"]
     @invoicing_request = InvoicingRequest.new(
       project: current_project,
       year:    params[:year] || Date.today.to_date.year,
       quarter: params[:quarter] || (Date.today.to_date.month / 4) + 1,
       entity:  params[:entity]
     )
+    if params["calculate"]
+      render_invoice(project, invoicing_request)
+      return
+    end
   end
 
   def create
     project = current_project(project_scope: :fully_loaded)
 
     @invoicing_request = InvoicingRequest.new(invoice_params.merge(project: project))
+    render_invoice(project, invoicing_request)
+  end
 
+  private
+
+  def render_invoice(project, invoicing_request)
     pyramid = project.project_anchor.nearest_pyramid_for(invoicing_request.end_date_as_date)
     pyramid ||= Pyramid.from(project)
     @pyramid = pyramid
@@ -67,26 +77,24 @@ class Setup::InvoicesController < PrivateController
     end
 
     begin
-    invoicing_request.invoices = InvoicesForEntitiesWorker.new.do_perform(
-      project.project_anchor_id,
-      invoicing_request.year,
-      invoicing_request.quarter,
-      [org_unit.id],
-      options
-    )[org_unit.id]
+      invoicing_request.invoices = InvoicesForEntitiesWorker.new.do_perform(
+        project.project_anchor_id,
+        invoicing_request.year,
+        invoicing_request.quarter,
+        [org_unit.id],
+        options
+      )[org_unit.id]
 
-    invoicing_request.invoices = invoicing_request.invoices.sort_by(&:date)
+      invoicing_request.invoices = invoicing_request.invoices.sort_by(&:date)
     rescue Rules::SolvingError => e
       log(e)
-      flash[:alert] = "Failed to simulate invoice : #{e.class.name} #{e.message} : <br>#{e.facts_and_rules.map {|k,v| [k,v].join(" : ")}.join(" <br>")}".html_safe
+      flash[:alert] = "Failed to simulate invoice : #{e.class.name} #{e.message} : <br>#{e.facts_and_rules.map { |k, v| [k, v].join(' : ') }.join(' <br>')}".html_safe
     rescue => e
       log(e)
       flash[:alert] = "Failed to simulate invoice : #{e.class.name} #{e.message}"
     end
     render :new
   end
-
-  private
 
   def log(exception)
     puts " #{exception.message} : \n#{exception.backtrace.join("\n")}"

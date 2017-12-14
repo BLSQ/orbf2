@@ -33,7 +33,7 @@ class State < ApplicationRecord
   end
 
   def code
-    Codifier.codify(name)
+    @code ||= Codifier.codify(name)
   end
 
   def package_level?
