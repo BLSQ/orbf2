@@ -24,9 +24,7 @@ namespace :groups do
                                             .dhis2_snapshots
                                             .where(kind: "organisation_unit_groups")
                                             .order(id: :asc)
-    if update && !confirm?("Are you sure")
-        raise "cancel"
-    end
+    raise "cancel" if update && !confirm?("Are you sure")
     orgunit_groups_snapshots.each do |snapshot|
       puts "************* #{snapshot.year} #{snapshot.month} - #{snapshot.kind}"
       snapshot.content.each do |row|
