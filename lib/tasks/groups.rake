@@ -4,13 +4,13 @@ namespace :groups do
     STDIN.gets.chomp == "Y"
   end
 
-  def perform(update)
+  def perform(update, orgunit_id)
     # WHdJlwRgg8z    RBF Facilities
     # g5G55uqglob     Primary
     # Xm2s7GkiN2O    Private
     # yNNcJybATnM    CPA / PCA ( / CPA / PCA)
     project_anchor_id = 6
-    orgunit_id = "enzW7LnbkzO"
+
     orgunit_group_to_remove = "g3sUUjQLxlK"
     orgunit_group_to_remove_primary = "g5G55uqglob"
     orgunit_group_to_add = "yNNcJybATnM"
@@ -101,6 +101,12 @@ namespace :groups do
 
   desc "change"
   task change: :environment do
-    perform(ENV["PERFORM"] == "true")
+    orgunit_id = "enzW7LnbkzO"
+    update = ENV["PERFORM"] == "true"
+    update = false
+    %w[Pf8AScjVxL4 R6MgsXbAnKo fDwjp4uWrHR i1FYNZRrGYA tE2YEFSF82H w4WmqWqTolR RsniEGdiFvR D7MxMCNIQm5 YPjqA9F4IQV sfr0eSr3rdm
+       bbGRNib2MOH J2HlkrSqJC2 hBu1Xfv9XxV ei5Qt6lTVZx zI4Mn9rqFhu U5fBURbnnOV QjeP9QZw3Hu TrzehJ0VuZP mxoNWN70XzP uKi9NBUam2j].each do |orgunit_id|
+      perform(update, orgunit_id)
+    end
   end
 end
