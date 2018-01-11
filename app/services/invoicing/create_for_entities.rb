@@ -188,7 +188,7 @@ module Invoicing
     def fetch_values
       if options[:mock_values] == true
         puts "using mock values !"
-        return org_unit_and_packages.map { |ou| mock_values(invoicing_request, ou.org_units_by_package) }.flatten
+        return org_unit_and_packages.map { |ou| mock_values(ou.org_units_by_package) }.flatten
       end
       dhis2 = invoicing_request.project.dhis2_connection
       packages = invoicing_request.project.packages
@@ -214,9 +214,9 @@ module Invoicing
       values.data_values ? values.values : []
     end
 
-    def mock_values
+    def mock_values(_org_units_by_package)
       [].tap do |values|
-        org_units_by_package.each do |package, org_units|
+        _org_units_by_package.each do |package, org_units|
           periods = invoicing_request.year_quarter.months.map(&:to_dhis2)
           periods += [invoicing_request.year_quarter.to_year.to_dhis2] if package.frequency == "yearly"
           periods.each do |period|
