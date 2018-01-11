@@ -228,7 +228,7 @@ module Invoicing
                   value = if state.code == "tarif"
                             11
                           else
-                            6 + rand(5)
+                            rand(6...11)
                           end
                   values.push OpenStruct.new(
                     data_element: activity_state.external_reference,
