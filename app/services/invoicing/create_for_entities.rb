@@ -65,12 +65,12 @@ module Invoicing
     def analytics_services_by_org_unit_id
       @analytics_services_by_org_unit_id ||= begin
         values = profile("fetch_values for #{org_unit_and_packages.size}") do
-          fetch_values(invoicing_request, org_unit_and_packages, options)
+          fetch_values
         end
 
         # TODO: indicators might have changed over time
         indicators_expressions = profile("indicators_expressions") do
-          fetch_indicators_expressions(invoicing_request, options)
+          fetch_indicators_expressions
         end
 
         values += Analytics::IndicatorCalculator.new.calculate(indicators_expressions, values)
@@ -173,7 +173,7 @@ module Invoicing
       end
     end
 
-    def fetch_indicators_expressions(invoicing_request, options)
+    def fetch_indicators_expressions
       indicator_ids = invoicing_request.project.activities
                                        .flat_map(&:activity_states)
                                        .select(&:kind_indicator?)
@@ -185,7 +185,7 @@ module Invoicing
       indicators.each_with_object({}) { |indicator, h| h[indicator.id] = Analytics::IndicatorCalculator.parse_expression(indicator.numerator) }
     end
 
-    def fetch_values(invoicing_request, org_unit_and_packages, options)
+    def fetch_values
       if options[:mock_values] == true
         puts "using mock values !"
         return org_unit_and_packages.map { |ou| mock_values(invoicing_request, ou.org_units_by_package) }.flatten
