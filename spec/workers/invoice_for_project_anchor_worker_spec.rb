@@ -1,7 +1,7 @@
 require "rails_helper"
 require_relative "./dhis2_snapshot_fixture"
 
-RSpec.describe InvoicesForEntitiesWorker do
+RSpec.describe InvoiceForProjectAnchorWorker do
   include Dhis2SnapshotFixture
   include_context "basic_context"
 
@@ -22,7 +22,7 @@ RSpec.describe InvoicesForEntitiesWorker do
     project
   end
 
-  let(:worker) { InvoiceForProjectAnchorWorker.new }
+  let(:worker) { described_class.new }
 
   def with_last_year_verified_values(project)
     project.packages.first.activity_rule.formulas.create(
