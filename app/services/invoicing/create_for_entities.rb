@@ -111,47 +111,46 @@ module Invoicing
     def calculate_invoices(org_unit, analytics_service)
       invoice_builder = Invoicing::InvoiceBuilder.new(project_finder, Tarification::TarificationService.new)
       entity = Invoicing::EntityBuilder.new.to_entity(org_unit)
-      invoices = []
-      invoicing_request.quarter_dates.each do |month|
-        begin
-          monthly_invoice = invoice_builder.generate_monthly_entity_invoice(
-            invoicing_request.project,
-            entity,
-            analytics_service,
-            month
-          )
-          monthly_invoice.dump_invoice
-          invoices << monthly_invoice
-        rescue => e
-          puts "WARN : generate_monthly_entity_invoice : #{e.message}"
+      [].tap do |invoices|
+        invoicing_request.quarter_dates.each do |month|
+          begin
+            monthly_invoice = invoice_builder.generate_monthly_entity_invoice(
+              invoicing_request.project,
+              entity,
+              analytics_service,
+              month
+            )
+            monthly_invoice.dump_invoice
+            invoices << monthly_invoice
+          rescue => e
+            puts "WARN : generate_monthly_entity_invoice : #{e.message}"
+          end
         end
-      end
-      quarterly_invoices = invoice_builder.generate_quarterly_entity_invoice(
-        invoicing_request.project,
-        entity,
-        analytics_service,
-        invoicing_request.end_date_as_date
-      )
-      invoices << quarterly_invoices
+        quarterly_invoices = invoice_builder.generate_quarterly_entity_invoice(
+          invoicing_request.project,
+          entity,
+          analytics_service,
+          invoicing_request.end_date_as_date
+        )
+        invoices << quarterly_invoices
 
-      yearly_invoices = invoice_builder.generate_yearly_entity_invoice(
-        invoicing_request.project,
-        entity,
-        analytics_service,
-        invoicing_request.end_date_as_date
-      )
-      invoices << yearly_invoices
+        yearly_invoices = invoice_builder.generate_yearly_entity_invoice(
+          invoicing_request.project,
+          entity,
+          analytics_service,
+          invoicing_request.end_date_as_date
+        )
+        invoices << yearly_invoices
 
-      payments_invoices = invoice_builder.generate_monthly_payments(
-        invoicing_request.project,
-        entity,
-        invoices,
-        invoicing_request
-      )
+        payments_invoices = invoice_builder.generate_monthly_payments(
+          invoicing_request.project,
+          entity,
+          invoices,
+          invoicing_request
+        )
 
-      invoices << payments_invoices
-
-      invoices.flatten
+        invoices << payments_invoices
+      end.flatten
     end
 
     def org_unit_and_packages
