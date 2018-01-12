@@ -131,9 +131,9 @@ module Invoicing
               package_facts_and_rules[formula.code] ||= 0
             end
           end
-          payment_facts = payment_rule.rule.formulas.map do |formula|
-            [formula.code.to_sym, string_template(formula, variables)]
-          end.to_h
+          payment_facts = payment_rule.rule.formulas.each_with_object({}) do |formula, hash|
+            hash[formula.code.to_sym] = string_template(formula, variables)
+          end
           package_facts_and_rules = package_facts_and_rules.merge(payment_facts)
           package_facts_and_rules = package_facts_and_rules.merge(extra_facts)
           payment_result = PaymentResult.new(
@@ -222,7 +222,7 @@ module Invoicing
                         .merge("activity_name" => "'#{activity.name.tr("'", ' ')}'")
 
       package.activity_rule.formulas.each do |formula|
-        template_values = values.variables.map { |k, v| [k.to_sym, to_string(v)] }.to_h
+        template_values = values.variables.each_with_object({}) { |(k, v), h| h[k.to_sym] = to_string(v) }
         facts_and_rules[formula.code] = string_template(formula, template_values)
       end
 
@@ -233,15 +233,12 @@ module Invoicing
 
     def calculate_package_results(activity_results)
       activity_results.flatten.group_by(&:package).map do |package, results|
-        variables = {
-        }
-        results.first.solution.keys.each do |k|
-          variables["#{k}_values".to_sym] = solution_to_array(results, k).join(" , ")
+        variables = results.first.solution.each_with_object({}) do |(k,_), hash|
+          hash["#{k}_values".to_sym] = solution_to_array(results, k).join(" , ")
         end
 
-        facts_and_rules = { remoteness_bonus: 0 }
-        package.package_rule.formulas.each do |formula|
-          facts_and_rules[formula.code] = string_template(formula, variables)
+        facts_and_rules = package.package_rule.formulas.each_with_object({ remoteness_bonus: 0 }) do |formula, hash|
+          hash[formula.code] = string_template(formula, variables)
         end
         solution_package = solver.solve!("sum activities for #{package.name}", facts_and_rules)
 

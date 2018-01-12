@@ -19,7 +19,7 @@ module Analytics
     def activity_and_values(package, date)
       year_month = Periods.year_month(date)
       org_unit_ids = @org_units_by_package[package].map(&:id).to_set
-      values = package.activities.map do |activity|
+      package.activities.map do |activity|
         [
           activity,
           Values.new(
@@ -29,7 +29,6 @@ module Analytics
           )
         ]
       end
-      values
     end
 
     def build_facts(package, activity, year_month, org_unit_ids)
@@ -60,10 +59,8 @@ module Analytics
     end
 
     def build_variables(package, activity, year_month, org_unit_ids)
-      variables = {}
-
-      Timeframe.all_variables_builders.each do |timeframe|
-        variables = variables.merge(
+      Timeframe.all_variables_builders.each_with_object({}) do |timeframe, variables|
+        variables.merge!(
           timeframe.build_variables(
             package,
             activity,
@@ -73,7 +70,6 @@ module Analytics
           )
         )
       end
-      variables
     end
 
     def org_units_count_facts(package, activity, org_unit_ids)
