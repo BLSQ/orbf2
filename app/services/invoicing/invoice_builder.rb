@@ -8,7 +8,6 @@ module Invoicing
       @tarification_service = tarification_service
     end
 
-
     def generate_yearly_entity_invoice(current_project, entity, analytics_service, date)
       year = Periods.year_month(date).to_year
       project = project_finder.find_project(current_project, year.end_date)
@@ -56,28 +55,24 @@ module Invoicing
       quarter_entity_results = calculate_package_results(quarter_details_results.values.flatten)
       quarter_entity_results.each { |r| r.frequency = "quarterly" }
 
-      begin
-        project = project_finder.find_project(current_project, year_quarter.end_date)
-        activity_results = calculate_activity_results(
-          analytics_service,
-          project,
-          entity,
-          year_quarter.end_date,
-          "quarterly"
-        )
+      project = project_finder.find_project(current_project, year_quarter.end_date)
+      activity_results = calculate_activity_results(
+        analytics_service,
+        project,
+        entity,
+        year_quarter.end_date,
+        "quarterly"
+      )
 
-        package_results = calculate_package_results(activity_results)
-        package_results.concat(quarter_entity_results)
-        payment_result = nil
-        if package_results.any?
-          payment_result = calculate_quarterly_payments(project, entity, package_results)
-        end
-        invoice = Invoicing::Invoice.new(date, entity, project, activity_results, package_results, payment_result)
-        invoice.dump_invoice
-        invoice
-      rescue => e
-        raise e
+      package_results = calculate_package_results(activity_results)
+      package_results.concat(quarter_entity_results)
+      payment_result = nil
+      if package_results.any?
+        payment_result = calculate_quarterly_payments(project, entity, package_results)
       end
+      invoice = Invoicing::Invoice.new(date, entity, project, activity_results, package_results, payment_result)
+      invoice.dump_invoice
+      invoice
     end
 
     def generate_monthly_entity_invoice(current_project, entity, analytics_service, date)
@@ -283,12 +278,7 @@ module Invoicing
 
     def to_string(array)
       array.map do |r|
-        begin
-          BigDecimal.new(r)
-          format("%.10f", r)
-        rescue
-          format("%.10f", r)
-        end
+        format("%.10f", r)
       end.join(" , ")
     end
 
