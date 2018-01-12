@@ -26,10 +26,6 @@ module Rules
       calculator.dependencies(
         mock_values(formula.expression, formula.rule.available_variables_for_values)
       )
-    rescue Dentaku::TokenizerError => e
-      formula.errors[:expression] << e.message
-    rescue Dentaku::ParseError => e
-      formula.errors[:expression] << e.message
     rescue KeyError => e
       formula.errors[:expression] << "#{e.message}. Remove extra spaces or verify it's in the available variables"
     rescue => e
@@ -76,9 +72,9 @@ module Rules
       available_variables_for_values
         .select { |name| name.ends_with?("_values") }
         .each do |variable_name|
-        raise "please don't add extra spaces in '%{#{variable_name}}'" if variable_name.include?(" ")
-        variables[variable_name.to_sym] = "1 , 2"
-      end
+          raise "please don't add extra spaces in '%{#{variable_name}}'" if variable_name.include?(" ")
+          variables[variable_name.to_sym] = "1 , 2"
+        end
       expression % variables
     rescue ArgumentError => e
       raise e.message

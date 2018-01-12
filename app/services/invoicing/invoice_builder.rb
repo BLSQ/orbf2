@@ -185,18 +185,15 @@ module Invoicing
     end
 
     def payment_previous_variables(payment_rule, monthly_payments_invoices)
-      variables = {}
-      payment_rule.rule.formulas.each do |formula|
+      payment_rule.rule.formulas.each_with_object({}) do |formula, variables|
         vals = solution_to_array(monthly_payments_invoices.select { |i| i.payment_result.payment_rule == payment_rule }.map(&:payment_result), formula.code)
         vals = vals.reject(&:nil?).reject(&:empty?)
         variables["#{formula.code}_previous_values".to_sym] = vals.any? ? vals.join(" , ") : "0"
       end
-      variables
     end
 
     def payment_variables(payment_rule, invoices, month)
-      variables = {}
-      payment_rule.packages.each do |package|
+      payment_rule.packages.each_with_object({}) do |package, variables|
         previous_monthly_invoices = invoices.flatten.select { |invoice| invoice.date <= month }
         previous_months_values = previous_monthly_invoices.flat_map(&:package_results)
 
@@ -206,7 +203,6 @@ module Invoicing
           variables["#{formula.code}_values".to_sym] = vals.join(" , ") || "0"
         end
       end
-      variables
     end
 
     def calculate_activity_results_monthly(entity, date, package, activity, values)
