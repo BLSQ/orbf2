@@ -77,7 +77,7 @@ class Setup::InvoicesController < PrivateController
     end
 
     begin
-      invoicing_request.invoices = InvoicesForEntitiesWorker.new.perform(
+      invoicing_request.invoices = InvoicesForEntitiesWorker.new.do_perform(
         project.project_anchor_id,
         invoicing_request.year,
         invoicing_request.quarter,
