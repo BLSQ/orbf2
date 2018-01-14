@@ -115,7 +115,6 @@ module Invoicing
         invoicing_request.quarter_dates.each do |month|
           begin
             monthly_invoice = invoice_builder.generate_monthly_entity_invoice(
-              invoicing_request.project,
               entity,
               analytics_service,
               month

@@ -75,7 +75,7 @@ module Invoicing
       invoice
     end
 
-    def generate_monthly_entity_invoice(current_project, entity, analytics_service, date)
+    def generate_monthly_entity_invoice(entity, analytics_service, date)
       date = date.to_date.end_of_month
       project = project_finder.find_project(date)
 
