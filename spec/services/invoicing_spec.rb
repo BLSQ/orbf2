@@ -19,7 +19,7 @@ describe Invoicing::InvoiceBuilder do
         monthly_invoice = builder.generate_monthly_entity_invoice(project, entity, analytics_service, month)
         monthly_invoice.dump_invoice
       end
-      quarterly_invoice = builder.generate_quarterly_entity_invoice(project, entity, analytics_service, Date.today.end_of_month)
+      quarterly_invoice = builder.generate_quarterly_entity_invoice(entity, analytics_service, Date.today.end_of_month)
     end
   end
 end

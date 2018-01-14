@@ -8,7 +8,7 @@ module Invoicing
       @tarification_service = tarification_service
     end
 
-    def generate_yearly_entity_invoice(current_project, entity, analytics_service, date)
+    def generate_yearly_entity_invoice(entity, analytics_service, date)
       year = Periods.year_month(date).to_year
       project = project_finder.find_project(year.end_date)
       activity_results = calculate_activity_results(
@@ -30,7 +30,7 @@ module Invoicing
       invoice
     end
 
-    def generate_quarterly_entity_invoice(current_project, entity, analytics_service, date)
+    def generate_quarterly_entity_invoice(entity, analytics_service, date)
       year_quarter = Periods.year_month(date.to_date.end_of_month).to_quarter
 
       quarter_details_results = {}

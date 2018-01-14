@@ -127,7 +127,6 @@ module Invoicing
           end
         end
         quarterly_invoices = invoice_builder.generate_quarterly_entity_invoice(
-          invoicing_request.project,
           entity,
           analytics_service,
           invoicing_request.end_date_as_date
@@ -135,7 +134,6 @@ module Invoicing
         invoices << quarterly_invoices
 
         yearly_invoices = invoice_builder.generate_yearly_entity_invoice(
-          invoicing_request.project,
           entity,
           analytics_service,
           invoicing_request.end_date_as_date
