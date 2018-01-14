@@ -15,7 +15,7 @@ module Invoicing
     def call
       profile("InvoicesForEntitiesWorker") do
         puts "************ invoices for #{project_anchor.id} - #{invoicing_request.year}/Q#{invoicing_request.quarter} -  #{org_unit_ids}"
-        invoicing_request.project = project_finder.find_project(nil, invoicing_request.end_date_as_date)
+        invoicing_request.project = project_finder.find_project(invoicing_request.end_date_as_date)
 
         create_invoices.tap do |invoices|
           publish(invoicing_request.project, invoices.values.flatten)

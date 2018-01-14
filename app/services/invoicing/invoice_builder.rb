@@ -10,7 +10,7 @@ module Invoicing
 
     def generate_yearly_entity_invoice(current_project, entity, analytics_service, date)
       year = Periods.year_month(date).to_year
-      project = project_finder.find_project(current_project, year.end_date)
+      project = project_finder.find_project(year.end_date)
       activity_results = calculate_activity_results(
         analytics_service,
         project,
@@ -36,7 +36,7 @@ module Invoicing
       quarter_details_results = {}
       quarterly_package_results = {}
       year_quarter.months.each do |year_month|
-        project = project_finder.find_project(current_project, year_month.end_date)
+        project = project_finder.find_project(year_month.end_date)
         begin
           activity_monthly_results = calculate_activity_results(
             analytics_service,
@@ -55,7 +55,7 @@ module Invoicing
       quarter_entity_results = calculate_package_results(quarter_details_results.values.flatten)
       quarter_entity_results.each { |r| r.frequency = "quarterly" }
 
-      project = project_finder.find_project(current_project, year_quarter.end_date)
+      project = project_finder.find_project(year_quarter.end_date)
       activity_results = calculate_activity_results(
         analytics_service,
         project,
@@ -77,7 +77,7 @@ module Invoicing
 
     def generate_monthly_entity_invoice(current_project, entity, analytics_service, date)
       date = date.to_date.end_of_month
-      project = project_finder.find_project(current_project, date)
+      project = project_finder.find_project(date)
 
       begin
         activity_results = calculate_activity_results(

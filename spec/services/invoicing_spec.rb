@@ -6,7 +6,7 @@ describe Invoicing::InvoiceBuilder do
   let(:project) { ProjectFactory.new.build }
 
   it "should have a nice project" do
-    json = project_finder.find_project(nil, Date.today).export_to_json
+    json = project_finder.find_project(Date.today).export_to_json
     obj = JSON.parse(json)
     puts JSON.pretty_unparse(obj)
     project.dump_rules
