@@ -251,7 +251,7 @@ module Invoicing
     end
 
     def publisher_ids
-      default_options[:publisher_ids]
+      options[:publisher_ids]
     end
   end
 end
