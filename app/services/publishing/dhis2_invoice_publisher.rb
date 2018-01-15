@@ -1,7 +1,7 @@
 module Publishing
   class Dhis2InvoicePublisher
     def publish(project, invoices)
-      values = to_values(project, invoices)
+      values = to_values(invoices)
       Rails.logger.info "about to publish #{values.size} values to dhis2"
       return if values.empty?
       status = project.dhis2_connection.data_value_sets.create(values)
@@ -11,7 +11,9 @@ module Publishing
       status
     end
 
-    def to_values(_project, invoices)
+    private
+
+    def to_values(invoices)
       (activity_values(invoices) + package_values(invoices) + payment_values(invoices)).compact
     end
 
