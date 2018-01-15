@@ -16,11 +16,11 @@ module Publishing
     end
 
     def payment_values(invoices)
-      invoices.select(&:payment_result).map do |invoice|
+      invoices.select(&:payment_result).each_with_object([]) do |invoice, array|
         period = Periods.year_month(invoice.date)
-        invoice.payment_result.payment_rule.rule.formulas.select(&:formula_mapping).map do |formula|
+        invoice.payment_result.payment_rule.rule.formulas.select(&:formula_mapping).each do |formula|
           mapping = formula.formula_mapping
-          {
+          array.push({
             dataElement: mapping.external_reference,
             orgUnit:     invoice.entity.id,
             period:      format_to_dhis_period(
@@ -29,20 +29,20 @@ module Publishing
             ),
             value:       invoice.payment_result.solution[formula.code],
             comment:     "$-#{formula.code}-#{invoice.payment_result.payment_rule.rule.name}"
-          }
+          })
         end
-      end.flatten
+      end
     end
 
     def package_values(invoices)
-      invoices.map do |invoice|
+      invoices.each_with_object([]) do |invoice, array|
         period = Periods.year_month(invoice.date)
         invoice.package_results.map do |package_result|
           package_result.package.package_rule.formulas.select(&:formula_mapping).map do |formula|
             mapping = formula.formula_mapping
             next if !package_result.frequency.nil? && package_result.frequency != package_result.package.frequency
 
-            {
+            array.push({
               dataElement: mapping.external_reference,
               orgUnit:     invoice.entity.id,
               period:      format_to_dhis_period(
@@ -51,10 +51,10 @@ module Publishing
               ),
               value:       package_result.solution[formula.code],
               comment:     "P-#{formula.code}-#{package_result.package.name}"
-            }
+            })
           end
         end
-      end.flatten
+      end
     end
 
     def activity_values(invoices)
