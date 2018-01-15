@@ -13,7 +13,7 @@ describe Invoicing::InvoiceBuilder do
   it "should have a nice project" do
     json = project_finder.find_project(Date.today).export_to_json
     obj = JSON.parse(json)
-    puts JSON.pretty_unparse(obj)
+    Rails.logger.info JSON.pretty_unparse(obj)
     project.dump_rules
   end
 

@@ -9,13 +9,13 @@ class Dhis2SnapshotCompactor
   def compact!(snapshot)
     compacted = compact(snapshot)
     return unless compacted
-    puts "saving id:#{snapshot.id} #{snapshot.kind} - #{snapshot.project_anchor.program.code} - #{snapshot.snapshoted_at}"
+    Rails.logger.info "saving id:#{snapshot.id} #{snapshot.kind} - #{snapshot.project_anchor.program.code} - #{snapshot.snapshoted_at}"
     snapshot.save!
   end
 
   def compact(snapshot)
     unless CLEANUP_INFOS[snapshot.kind]
-      puts "not cleanup for #{snapshot.kind} id:#{snapshot.id}"
+      Rails.logger.info "not cleanup for #{snapshot.kind} id:#{snapshot.id}"
       return false
     end
     clean_count = 0
@@ -26,10 +26,10 @@ class Dhis2SnapshotCompactor
       end
     end
     if clean_count == 0
-      puts "nothing to clean for id:#{snapshot.id} #{snapshot.kind} - #{snapshot.project_anchor.program.code} - #{snapshot.snapshoted_at}"
+      Rails.logger.info "nothing to clean for id:#{snapshot.id} #{snapshot.kind} - #{snapshot.project_anchor.program.code} - #{snapshot.snapshoted_at}"
       return false
     end
-    puts "cleaned #{clean_count}"
+    Rails.logger.info "cleaned #{clean_count}"
     true
   end
 end

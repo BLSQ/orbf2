@@ -59,7 +59,7 @@ RSpec.describe InvoiceForProjectAnchorWorker do
       }
     )
 
-    puts "added payment for  #{payment_rule.packages.map(&:name)}"
+    Rails.logger.info "added payment for  #{payment_rule.packages.map(&:name)}"
 
     self
   end
@@ -197,7 +197,7 @@ RSpec.describe InvoiceForProjectAnchorWorker do
       }
     end
 
-    puts "org_unit_level_1_values #{org_unit_level_1_values.to_json}"
+    Rails.logger.info "org_unit_level_1_values #{org_unit_level_1_values.to_json}"
     stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&endDate=2015-12-31&orgUnit=#{ORG_UNIT_ID}&startDate=2015-01-01")
       .to_return(status: 200, body: JSON.pretty_generate("dataValues": (org_unit_values + org_unit_level_1_values)))
 
@@ -323,7 +323,7 @@ RSpec.describe InvoiceForProjectAnchorWorker do
   end
 
   def stub_export_values(expected_fixture)
-    puts "Stubbing dataValueSets with #{expected_fixture}"
+    Rails.logger.info "Stubbing dataValueSets with #{expected_fixture}"
     stub_request(:post, "http://play.dhis2.org/demo/api/dataValueSets")
       .with { |request| sorted_datavalues(JSON.parse(fixture_content(:scorpio, expected_fixture))) == sorted_datavalues(JSON.parse(request.body)) }
       .to_return(status: 200, body: "")
@@ -331,7 +331,7 @@ RSpec.describe InvoiceForProjectAnchorWorker do
 
   def sorted_datavalues(json)
     sorted = json["dataValues"].sort_by { |e| [e["dataElement"], e["orgUnit"], e["period"]] }
-    # puts "sorted\n #{sorted}\n\n\n"
+    # Rails.logger.info "sorted\n #{sorted}\n\n\n"
     sorted
   end
 end

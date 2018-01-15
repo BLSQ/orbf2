@@ -20,9 +20,9 @@ class InvoiceForProjectAnchorWorker
     contracted_entities = organisation_units(project_anchor, request)
     contracted_entities &= selected_org_unit_ids if selected_org_unit_ids
 
-    puts "contracted_entities #{contracted_entities.size}"
+    Rails.logger.info "contracted_entities #{contracted_entities.size}"
     if contracted_entities.empty?
-      puts "WARN : selected_org_unit_ids '#{selected_org_unit_ids}' are in the contracted group !"
+      Rails.logger.info "WARN : selected_org_unit_ids '#{selected_org_unit_ids}' are in the contracted group !"
     end
 
     contracted_entities.each_slice(options[:slice_size]).each do |org_unit_ids|
@@ -36,7 +36,7 @@ class InvoiceForProjectAnchorWorker
       pyramid = project_anchor.nearest_pyramid_for(quarter_date)
       project = project_anchor.projects.for_date(quarter_date) || project_anchor.latest_draft
       contracted_entities = pyramid.org_units_in_all_groups([project.entity_group.external_reference])
-      puts "quarter_date #{quarter_date.year}-#{quarter_date.month} => projects #{project.status} #{project.id} => #{contracted_entities.size} (#{project.entity_group.external_reference})"
+      Rails.logger.info "quarter_date #{quarter_date.year}-#{quarter_date.month} => projects #{project.status} #{project.id} => #{contracted_entities.size} (#{project.entity_group.external_reference})"
       contracted_entities.map(&:id)
     end.flatten.uniq.sort
   end

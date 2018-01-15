@@ -18,7 +18,7 @@ module Support
       start = Time.now.utc
       element = yield block
       elapsed = Time.now.utc - start
-      puts "\t => #{message} in #{elapsed}\t|\t#{Profiling.rss}"
+      Rails.logger.info "\t => #{message} in #{elapsed}\t|\t#{Profiling.rss}"
       element
     end
   end

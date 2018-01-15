@@ -63,7 +63,7 @@ module Analytics
           end
           values_for_entity = values_for_entity.flatten.compact
           value = values_for_entity.map { |v| v["value"].to_f }.sum
-          # puts "calculating #{indicator_id} for pe:#{period} ou:#{orgunit}  => #{value} (#{expressions_to_sum}) <= #{values_for_entity}"
+          # Rails.logger.info "calculating #{indicator_id} for pe:#{period} ou:#{orgunit}  => #{value} (#{expressions_to_sum}) <= #{values_for_entity}"
           OpenStruct.new(
             data_element:          indicator_id,
             period:                period,

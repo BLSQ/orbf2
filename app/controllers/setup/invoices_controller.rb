@@ -97,7 +97,7 @@ class Setup::InvoicesController < PrivateController
   end
 
   def log(exception)
-    puts " #{exception.message} : \n#{exception.backtrace.join("\n")}"
+    Rails.logger.info " #{exception.message} : \n#{exception.backtrace.join("\n")}"
   end
 
   def invoice_params

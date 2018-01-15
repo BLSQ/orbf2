@@ -48,7 +48,7 @@ module Invoicing
           quarter_details_results[year_month.end_date] = activity_monthly_results
           quarterly_package_results[year_month.end_date] = calculate_package_results(activity_monthly_results)
         rescue => e
-          puts "WARN : generate_monthly_entity_invoice : #{e.class } : #{e.message} : \n#{e.backtrace.join("\n").to_s}"
+          Rails.logger.info "WARN : generate_monthly_entity_invoice : #{e.class } : #{e.message} : \n#{e.backtrace.join("\n").to_s}"
         end
       end
 
@@ -120,14 +120,14 @@ module Invoicing
 
           package_facts_and_rules = {}
           package_results.each do |package_result|
-            puts "results for #{package_result.package.name}"
+            Rails.logger.info "results for #{package_result.package.name}"
             package_facts_and_rules = package_facts_and_rules.merge(package_result.solution)
           end
 
 
           payment_rule.packages.each do |package|
             package.package_rule.formulas.each do |formula|
-              puts " #{package.name} #{formula.code} default to 0" unless package_facts_and_rules[formula.code]
+              Rails.logger.info " #{package.name} #{formula.code} default to 0" unless package_facts_and_rules[formula.code]
               package_facts_and_rules[formula.code] ||= 0
             end
           end
@@ -164,7 +164,7 @@ module Invoicing
         package_results = all_package_results.select do |pr|
           payment_rule.packages.map(&:name).include?(pr.package.name)
         end
-        # puts "********* calculate_payments : #{package_results} #{payment_rule.apply_for?(entity)} #{package_results.size} #{payment_rule.packages.size}"
+        # Rails.logger.info "********* calculate_payments : #{package_results} #{payment_rule.apply_for?(entity)} #{package_results.size} #{payment_rule.packages.size}"
 
         next unless payment_rule.apply_for?(entity)
         next unless package_results.size >= payment_rule.packages.size
@@ -250,7 +250,7 @@ module Invoicing
       selected_packages = project.packages.select do |package|
         package.for_frequency(frequency) && package.apply_for(entity)
       end
-      puts "No package for #{entity.name} #{entity.groups} #{frequency} vs supported groups #{project.packages.flat_map(&:package_entity_groups).map(&:organisation_unit_group_ext_ref).uniq}" if selected_packages.empty?
+      Rails.logger.info "No package for #{entity.name} #{entity.groups} #{frequency} vs supported groups #{project.packages.flat_map(&:package_entity_groups).map(&:organisation_unit_group_ext_ref).uniq}" if selected_packages.empty?
       selected_packages.each_with_object([]) do |package, array|
         analytics_service.activity_and_values(package, date).each do |activity, values|
           array.push(calculate_activity_results_monthly(entity, date, package, activity, values))
@@ -278,7 +278,7 @@ module Invoicing
     def string_template(formula, variables)
       return formula.expression % variables
     rescue KeyError => e
-      puts "problem with expression #{e.message} : #{formula.code} : #{formula.expression} #{JSON.pretty_generate(variables)}"
+      Rails.logger.info "problem with expression #{e.message} : #{formula.code} : #{formula.expression} #{JSON.pretty_generate(variables)}"
       raise e
     end
 

@@ -14,7 +14,7 @@ module Invoicing
 
     def call
       profile("InvoicesForEntitiesWorker") do
-        puts "************ invoices for #{project_anchor.id} - #{invoicing_request.year}/Q#{invoicing_request.quarter} -  #{org_unit_ids}"
+        Rails.logger.info "************ invoices for #{project_anchor.id} - #{invoicing_request.year}/Q#{invoicing_request.quarter} -  #{org_unit_ids}"
         invoicing_request.project = project_finder.find_project(invoicing_request.end_date_as_date)
 
         create_invoices.tap do |invoices|
@@ -40,7 +40,7 @@ module Invoicing
             hash[org_unit.id] = orgunit_invoices
           end
         rescue Invoicing::InvoicingError => e
-          puts e.message
+          Rails.logger.info e.message
         end
       end
     end
@@ -99,7 +99,7 @@ module Invoicing
     end
 
     def publish(project, all_invoices)
-      puts "generated #{all_invoices.size} invoices"
+      Rails.logger.info "generated #{all_invoices.size} invoices"
 
       publishers.each do |publisher|
         profile("publish #{all_invoices.size} invoices ") do
@@ -122,7 +122,7 @@ module Invoicing
             monthly_invoice.dump_invoice
             invoices << monthly_invoice
           rescue => e
-            puts "WARN : generate_monthly_entity_invoice : #{e.message}"
+            Rails.logger.info "WARN : generate_monthly_entity_invoice : #{e.message}"
           end
         end
         quarterly_invoices = invoice_builder.generate_quarterly_entity_invoice(
@@ -184,7 +184,7 @@ module Invoicing
 
     def fetch_values
       if options[:mock_values] == true
-        puts "using mock values !"
+        Rails.logger.info "using mock values !"
         return org_unit_and_packages.map { |ou| mock_values(ou.org_units_by_package) }.flatten
       end
       dhis2 = invoicing_request.project.dhis2_connection
@@ -206,7 +206,7 @@ module Invoicing
         end_date:          data_range.last,
         children:          false
       }
-      puts "fetching values #{values_query.to_json}"
+      Rails.logger.info "fetching values #{values_query.to_json}"
       values = dhis2.data_value_sets.list(values_query)
       values.data_values ? values.values : []
     end

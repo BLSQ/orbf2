@@ -24,10 +24,10 @@ class CreateMissingDhis2ElementsWorker
       end
     end
 
-    puts "About to create missing data elements"
-    puts JSON.pretty_generate(elements.values)
+    Rails.logger.info "About to create missing data elements"
+    Rails.logger.info JSON.pretty_generate(elements.values)
     status = dhis2.data_elements.create(elements.values.flatten)
-    puts "data elements created #{status.to_json}, creating activity states"
+    Rails.logger.info "data elements created #{status.to_json}, creating activity states"
 
     elements.map do |activity_state, data_element|
       activity, state = activity_state

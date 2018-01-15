@@ -55,7 +55,7 @@ class ProjectAnchor < ApplicationRecord
     indicators = nearest(candidates.select(&:kind_indicators?), date)
 
     return nil unless data_elements || data_element_groups || indicators
-    puts "for #{date} using snapshots #{data_elements.year} #{data_elements.month} and #{data_element_groups.year} #{data_element_groups.month} and #{indicators.year} #{indicators.month}"
+    Rails.logger.info "for #{date} using snapshots #{data_elements.year} #{data_elements.month} and #{data_element_groups.year} #{data_element_groups.month} and #{indicators.year} #{indicators.month}"
     data_elements = dhis2_snapshots.find(data_elements.id) if data_elements
     data_element_groups = dhis2_snapshots.find(data_element_groups.id) if data_element_groups
     indicators = dhis2_snapshots.find(indicators.id) if indicators

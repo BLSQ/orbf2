@@ -64,7 +64,7 @@ module Rules
     private
 
     def log(message)
-      puts message
+      Rails.logger.info message
     end
 
     def mock_values(expression, available_variables_for_values)
