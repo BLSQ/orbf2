@@ -32,12 +32,10 @@ module Invoicing
         begin
           org_unit = org_unit_and_package.org_unit
           profile("calculate invoices #{org_unit.id}") do
-            analytics_service = analytics_services_by_org_unit_id[org_unit.id]
-            orgunit_invoices = calculate_invoices(
+            hash[org_unit.id] = calculate_invoices(
               org_unit,
-              analytics_service
+              analytics_services_by_org_unit_id[org_unit.id]
             )
-            hash[org_unit.id] = orgunit_invoices
           end
         rescue Invoicing::InvoicingError => e
           Rails.logger.info e.message

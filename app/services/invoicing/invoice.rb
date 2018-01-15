@@ -11,14 +11,14 @@ module Invoicing
           log "************ Package #{package.name} "
           log package.invoice_details.join("\t")
           results.each do |result|
-            line = package.invoice_details.map { |item| d_to_s(item, result.solution[item]) }
+            line = package.invoice_details.map { |item| d_to_s(result.solution[item]) }
             log line.join("\t\t")
           end
           next unless package_results
           package_line = package.package_rule.formulas.map(&:code).map do |item|
             package_result = package_results.find { |pr| pr.package == package }
             next unless package_result.solution[item]
-            [item, d_to_s(item, package_result.solution[item])].join("=")
+            [item, d_to_s(package_result.solution[item])].join("=")
           end
           log package_line.compact.join("\n").to_s
         end
@@ -26,7 +26,7 @@ module Invoicing
 
       if payment_result
         package_line = project.payment_rules.first.rule.formulas.map do |formula|
-          [formula.code, d_to_s(formula.code, payment_result.solution[formula.code])].join(" : ")
+          [formula.code, d_to_s(payment_result.solution[formula.code])].join(" : ")
         end
         log "************ payments "
         log package_line.join("\n")
@@ -41,7 +41,7 @@ module Invoicing
       "Invoice-#{date}-#{package_results&.first&.package&.name}"
     end
 
-    def d_to_s(_item, decimal)
+    def d_to_s(decimal)
       return format("%.2f", decimal) if decimal.is_a? Numeric
       decimal
     end
