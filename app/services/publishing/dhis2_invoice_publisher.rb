@@ -37,8 +37,8 @@ module Publishing
     def package_values(invoices)
       invoices.each_with_object([]) do |invoice, array|
         period = Periods.year_month(invoice.date)
-        invoice.package_results.map do |package_result|
-          package_result.package.package_rule.formulas.select(&:formula_mapping).map do |formula|
+        invoice.package_results.each do |package_result|
+          package_result.package.package_rule.formulas.select(&:formula_mapping).each do |formula|
             mapping = formula.formula_mapping
             next if !package_result.frequency.nil? && package_result.frequency != package_result.package.frequency
 
