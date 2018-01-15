@@ -232,7 +232,7 @@ module Invoicing
     end
 
     def calculate_package_results(activity_results)
-      activity_results.flatten.group_by(&:package).map do |package, results|
+      activity_results.group_by(&:package).map do |package, results|
         variables = results.first.solution.each_with_object({}) do |(k,_), hash|
           hash["#{k}_values".to_sym] = solution_to_array(results, k).join(" , ")
         end
@@ -251,9 +251,9 @@ module Invoicing
         package.for_frequency(frequency) && package.apply_for(entity)
       end
       puts "No package for #{entity.name} #{entity.groups} #{frequency} vs supported groups #{project.packages.flat_map(&:package_entity_groups).map(&:organisation_unit_group_ext_ref).uniq}" if selected_packages.empty?
-      selected_packages.map do |package|
-        analytics_service.activity_and_values(package, date).map do |activity, values|
-          calculate_activity_results_monthly(entity, date, package, activity, values)
+      selected_packages.each_with_object([]) do |package, array|
+        analytics_service.activity_and_values(package, date).each do |activity, values|
+          array.push(calculate_activity_results_monthly(entity, date, package, activity, values))
         end
       end
     end

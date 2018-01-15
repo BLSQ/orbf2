@@ -11,7 +11,7 @@ module Invoicing
       return unless debug
       puts "-------********* #{entity.name} #{date}************------------"
       if activity_results
-        activity_results.flatten.group_by(&:package).map do |package, results|
+        activity_results.group_by(&:package).map do |package, results|
           puts "************ Package #{package.name} "
           puts package.invoice_details.join("\t")
           results.each do |result|

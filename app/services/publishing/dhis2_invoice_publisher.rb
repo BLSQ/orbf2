@@ -58,28 +58,26 @@ module Publishing
     end
 
     def activity_values(invoices)
-      invoices.map do |invoice|
+      invoices.each_with_object([]) do |invoice, array|
         period = Periods.year_month(invoice.date)
-        invoice.activity_results.map do |activity_results|
-          activity_results.map do |activity_result|
-            activity = activity_result.activity
-            package = activity_result.package
-            package.activity_rule.formulas.select { |f| f.formula_mapping(activity) }.map do |formula|
-              mapping = formula.formula_mapping(activity)
-              {
-                dataElement: mapping.external_reference,
-                orgUnit:     invoice.entity.id,
-                period:      format_to_dhis_period(
-                  period,
-                  formula.frequency || package.frequency
-                ),
-                value:       activity_result.solution[formula.code],
-                comment:     "A-#{formula.code}-#{activity.name}"
-              }
-            end
+        invoice.activity_results.each do |activity_result|
+          activity = activity_result.activity
+          package = activity_result.package
+          package.activity_rule.formulas.select { |f| f.formula_mapping(activity) }.each do |formula|
+            mapping = formula.formula_mapping(activity)
+            array.push({
+              dataElement: mapping.external_reference,
+              orgUnit:     invoice.entity.id,
+              period:      format_to_dhis_period(
+                period,
+                formula.frequency || package.frequency
+              ),
+              value:       activity_result.solution[formula.code],
+              comment:     "A-#{formula.code}-#{activity.name}"
+            })
           end
         end
-      end.flatten
+      end
     end
 
     def format_to_dhis_period(year_month, frequency)
