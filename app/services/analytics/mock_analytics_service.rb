@@ -1,11 +1,5 @@
 module Analytics
   class MockAnalyticsService
-    def entities
-      [
-        Analytics::Entity.new(1, "Maqokho HC", ["hospital_group_id"]),
-        Analytics::Entity.new(2, "fosa", ["fosa_group_id"])
-      ]
-    end
 
     def activity_and_values(package, date)
       # build from data element group and analytics api

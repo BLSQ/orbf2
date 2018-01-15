@@ -14,8 +14,6 @@ module Analytics
       @entity_builder = Invoicing::EntityBuilder.new
     end
 
-    def entities; end
-
     def activity_and_values(package, date)
       year_month = Periods.year_month(date)
       org_unit_ids = @org_units_by_package[package].map(&:id).to_set
@@ -30,6 +28,30 @@ module Analytics
         ]
       end
     end
+
+    def facts_for_period(package, activity, periods, org_unit_ids)
+      @org_unit_facts_by_org_id ||= {}
+
+      states_values = activity.activity_states.select(&:external_reference?).map do |activity_state|
+        activity_values = []
+        periods.map do |formatted_period|
+          activity_values += @values_by_data_element_and_period[
+            [activity_state.external_reference, formatted_period.to_dhis2]
+          ] || []
+        end
+        activity_values = activity_values.select { |v| org_unit_ids.include?(v.org_unit) }
+        if package.multi_entities_rule && org_unit_ids.size > 1
+          activity_values = activity_values.select do |v|
+            sum_if?(package, activity, v.org_unit)
+          end
+        end
+        [activity_state.state.code, aggregation(activity_values, activity_state)]
+      end
+
+      states_values.to_h.merge(org_units_count_facts(package, activity, org_unit_ids))
+    end
+
+    private
 
     def build_facts(package, activity, year_month, org_unit_ids)
       facts = facts_for_period(
@@ -83,28 +105,6 @@ module Analytics
         org_units_sum_if_count: org_units_sum_if_count,
         org_units_count:        org_unit_ids.size
       }
-    end
-
-    def facts_for_period(package, activity, periods, org_unit_ids)
-      @org_unit_facts_by_org_id ||= {}
-
-      states_values = activity.activity_states.select(&:external_reference?).map do |activity_state|
-        activity_values = []
-        periods.map do |formatted_period|
-          activity_values += @values_by_data_element_and_period[
-            [activity_state.external_reference, formatted_period.to_dhis2]
-          ] || []
-        end
-        activity_values = activity_values.select { |v| org_unit_ids.include?(v.org_unit) }
-        if package.multi_entities_rule && org_unit_ids.size > 1
-          activity_values = activity_values.select do |v|
-            sum_if?(package, activity, v.org_unit)
-          end
-        end
-        [activity_state.state.code, aggregation(activity_values, activity_state)]
-      end
-
-      states_values.to_h.merge(org_units_count_facts(package, activity, org_unit_ids))
     end
 
     def sum_if?(package, activity, org_unit_id)
