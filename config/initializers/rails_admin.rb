@@ -57,6 +57,13 @@ RailsAdmin.config do |config|
       field :token
     end
   end
+
+  config.model "Program" do
+    object_label_method do
+      :label
+    end
+  end
+
   if ENV["ADMIN_PASSWORD"]
   config.authorize_with do
     authenticate_or_request_with_http_basic("Authentication") do |username, password|

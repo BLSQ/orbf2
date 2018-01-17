@@ -107,7 +107,7 @@
   <br>
   <br>
   <br>
-  <% values = Publishing::Dhis2InvoicePublisher.new.to_values(invoicing_request.project, invoicing_request.invoices)%>
+  <% values = Publishing::Dhis2InvoicePublisher.new.to_values(invoicing_request.invoices)%>
   <% if values && values.any? %>
     <h3 > Dhis2 values </h3>
     <button class="btn btn-default" data-toggle="collapse" data-target="#dhis2-values">Show values</button>

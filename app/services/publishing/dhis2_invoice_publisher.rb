@@ -11,11 +11,11 @@ module Publishing
       status
     end
 
-    private
-
     def to_values(invoices)
       (activity_values(invoices) + package_values(invoices) + payment_values(invoices)).compact
     end
+
+    private
 
     def payment_values(invoices)
       invoices.select(&:payment_result).each_with_object([]) do |invoice, array|
