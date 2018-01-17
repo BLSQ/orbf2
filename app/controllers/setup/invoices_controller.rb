@@ -77,7 +77,7 @@ class Setup::InvoicesController < PrivateController
     end
 
     begin
-      invoicing_request.invoices = InvoicesForEntitiesWorker.new.do_perform(
+      invoicing_request.invoices = InvoicesForEntitiesWorker.new.perform(
         project.project_anchor_id,
         invoicing_request.year,
         invoicing_request.quarter,
@@ -97,7 +97,7 @@ class Setup::InvoicesController < PrivateController
   end
 
   def log(exception)
-    puts " #{exception.message} : \n#{exception.backtrace.join("\n")}"
+    Rails.logger.info " #{exception.message} : \n#{exception.backtrace.join("\n")}"
   end
 
   def invoice_params

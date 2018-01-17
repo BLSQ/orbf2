@@ -17,8 +17,8 @@ class Setup::ProjectRulesController < PrivateController
     payment_rules_attributes = rule_params
     payment_rules_attributes[:rule_attributes][:kind] = "payment"
     @project_rule = current_project.payment_rules.build(payment_rules_attributes)
-    puts project_rule.valid?
-    puts project_rule.errors.full_messages
+    Rails.logger.info project_rule.valid?
+    Rails.logger.info project_rule.errors.full_messages
     if project_rule.save
       flash[:notice] = "Rule created !"
       redirect_to(root_path)
@@ -31,8 +31,8 @@ class Setup::ProjectRulesController < PrivateController
   def update
     @project_rule = current_project.payment_rules.find(params[:id])
     project_rule.update_attributes(rule_params)
-    puts project_rule.valid?
-    puts project_rule.errors.full_messages
+    Rails.logger.info project_rule.valid?
+    Rails.logger.info project_rule.errors.full_messages
     if project_rule.save
       flash[:notice] = "Rule updated !"
       redirect_to(root_path)

@@ -70,7 +70,7 @@ class Pyramid
     group_id = (groupset_group_ids & org_unit_group_ids).first
 
     orgs = org_units_in_group(group_id)
-    puts "warn #org_units_in_same_group(#{org_unit.id} - #{org_unit.display_name}, #{group_set_id}) : large number of org units in the same group #{orgs.size} " if orgs.size > 100
+    Rails.logger.info "warn #org_units_in_same_group(#{org_unit.id} - #{org_unit.display_name}, #{group_set_id}) : large number of org units in the same group #{orgs.size} " if orgs.size > 100
     orgs
   end
 

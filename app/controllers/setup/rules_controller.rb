@@ -29,8 +29,8 @@ class Setup::RulesController < PrivateController
       rule_params.merge(kind:    kind,
                         package: current_package)
     )
-    puts @rule.valid?
-    puts @rule.errors.full_messages
+    Rails.logger.info @rule.valid?
+    Rails.logger.info @rule.errors.full_messages
     if @rule.save
       flash[:notice] = "Rule created !"
       redirect_to(root_path)
@@ -42,8 +42,8 @@ end
   def update
     @rule = current_package.rules.find(params[:id])
     @rule.update_attributes(rule_params)
-    puts @rule.valid?
-    puts @rule.errors.full_messages
+    Rails.logger.info @rule.valid?
+    Rails.logger.info @rule.errors.full_messages
     if @rule.save
       flash[:notice] = "Rule updated !"
       redirect_to(root_path)

@@ -1,5 +1,5 @@
 class MockProjectFinder
-  def find_project(_project, _date)
+  def find_project(_date)
     ProjectFactory.new.build
   end
 end

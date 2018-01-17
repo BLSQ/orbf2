@@ -41,7 +41,7 @@ RSpec.describe Setup::SetupController, type: :controller do
     end
 
     def dump_steps_for_debugs
-      puts setup.steps.map(&:inspect)
+      Rails.logger.info setup.steps.map(&:inspect)
     end
 
     it "should display main entity group when Dhis2 is complete" do

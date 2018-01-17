@@ -24,7 +24,7 @@ class Setup::PackagesController < PrivateController
       flash[:success] = "Package updated"
       redirect_to(root_path)
     else
-      puts "!!!!!!!! package invalid : #{package.errors.full_messages.join(',')}"
+      Rails.logger.info "!!!!!!!! package invalid : #{package.errors.full_messages.join(',')}"
       flash[:failure] = "Package doesn't look valid..."
       flash[:failure] += "Please select at least one organisation group" unless params[:package][:entity_groups]
       render :edit

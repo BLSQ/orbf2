@@ -43,11 +43,7 @@ class ProjectFactory
             )
           ]
         )
-      ],
-      %w[claimed verified
-         difference_percentage quantity
-         tarif amount
-         activity_name quantity_total_pma]
+      ]
     )
 
     package_quantity_pca = new_package(
@@ -87,9 +83,7 @@ class ProjectFactory
             )
           ]
         )
-      ],
-      %w[claimed verified difference_percentage quantity tarif amount activity_name quantity_total_pca]
-
+      ]
     )
 
     package_quality = new_package(
@@ -139,8 +133,7 @@ class ProjectFactory
             )
           ]
         )
-      ],
-      %w[attributed_points max_points quality_technical_score_value activity_name]
+      ]
     )
 
     package_perfomance_admin = new_package(
@@ -195,11 +188,7 @@ class ProjectFactory
             )
           ]
         )
-      ],
-      %w[claimed verified
-         difference_percentage quantity
-         tarif amount
-         activity_name quantity_total]
+      ]
     )
 
     project.packages = [package_quantity_pma, package_quantity_pca, package_quality, package_perfomance_admin]
@@ -388,13 +377,12 @@ class ProjectFactory
     Formula.new(code: code, expression: expression, description: description)
   end
 
-  def new_package(name, frequency, groups, rules, invoice_details)
+  def new_package(name, frequency, groups, rules)
     Package.new(
       name:                       name,
       frequency:                  frequency,
       data_element_group_ext_ref: "data_element_group_ext_ref",
       rules:                      rules,
-      invoice_details:            invoice_details,
       package_entity_groups:      groups.map do |g|
         PackageEntityGroup.new(name: g, organisation_unit_group_ext_ref: g)
       end
