@@ -4,8 +4,8 @@ module Periods
     attr_reader :year, :month
 
     def initialize(year, month)
-      @year = year.to_i
-      @month = month.to_i
+      @year = Integer(year)
+      @month = Integer(month)
       raise "no a valid month number for '#{month}'" if @month < 1 || @month > 12
     end
 
@@ -34,7 +34,7 @@ module Periods
     end
 
     def end_date
-      @end_date ||= Date.parse("#{year}-#{@month}-01").end_of_month
+      @end_date ||= start_date.end_of_month
     end
 
     def to_quarter

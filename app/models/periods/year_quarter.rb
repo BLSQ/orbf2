@@ -14,8 +14,8 @@ module Periods
     def initialize(yyyyqq)
       @yyyyqq = yyyyqq.freeze
       components = yyyyqq.split("Q")
-      @quarter = components.last.to_i
-      @year = components.first.to_i
+      @quarter = Integer(components.last)
+      @year = Integer(components.first)
       raise "no a valid quarter number for '#{yyyyqq}'" if quarter <= 0 || quarter > 4
     end
 
@@ -46,7 +46,7 @@ module Periods
     end
 
     def end_date
-      @end_date ||= Date.parse("#{year}-#{QUARTER_TO_END_MONTH[quarter.to_i]}-01").end_of_month
+      @end_date ||= start_date.end_of_quarter
     end
 
     def months
