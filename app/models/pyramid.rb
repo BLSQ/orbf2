@@ -81,6 +81,7 @@ class Pyramid
 
   def org_unit_parents(org_unit_id)
     ou = org_unit(org_unit_id)
+    return [] unless ou
     return [ou] unless ou.path
     ou.path.split("/").reject(&:empty?).map { |parent_id| org_unit(parent_id) }
   end
