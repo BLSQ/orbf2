@@ -38,7 +38,7 @@ Rails.application.routes.draw do
             post :confirm_mass_creation
           end
         end
-        resources :jobs
+        resources :jobs, only: [:index]
         resources :publish_drafts, only: [:create]
         resource :main_entity_group, only: %i[create update]
         resources :diagnose, only: [:index]
