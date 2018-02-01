@@ -20,5 +20,4 @@ class Dhis2Log < ApplicationRecord
   def periods
     sent.map { |data_value| data_value["period"] }.uniq.sort
   end
-
 end

@@ -22,14 +22,24 @@ RSpec.describe Setup::JobsController, type: :controller do
       let(:dhis2_log_attributes) do
         {
           sent:   [
-            { "value" => "0.0", "period" => "201712",
-           "comment" => "$-pma_amount_patient_satisfaction_weighted-Total payment- PMA",
-           "orgUnit" => "sjudUrVxlBG", "dataElement" => "qmrBCjHt2UL" }
+            {
+              "value"       => "0.0", "period" => "201712",
+              "comment"     => "$-pma_amount_patient_satisfaction_weighted-Total payment- PMA",
+              "orgUnit"     => "sjudUrVxlBG",
+              "dataElement" => "qmrBCjHt2UL"
+            }
           ],
           status: {
-            "status" => "SUCCESS", "description" => "Import process completed successfully",
-              "import_count" => { "deleted" => 0, "ignored" => 0, "updated" => 433, "imported" => 0 },
-              "response_type" => "ImportSummary", "data_set_complete" => "false"
+            "status"            => "SUCCESS",
+            "description"       => "Import process completed successfully",
+            "import_count"      => {
+              "deleted"  => 0,
+              "ignored"  => 0,
+              "updated"  => 433,
+              "imported" => 0
+            },
+            "response_type"     => "ImportSummary",
+            "data_set_complete" => "false"
           }
         }
       end
