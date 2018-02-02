@@ -11,10 +11,10 @@ describe Periods::YearMonth do
 
   describe 'fails fast' do
     it "when year is nil" do
-      expect {Periods::YearMonth.new(nil,1)}.to raise_error(ArgumentError, "Argument year can't be nil : , 1")
+      expect {Periods::YearMonth.new(nil,1)}.to raise_error(TypeError, "can't convert nil into Integer")
     end
     it "when month is nil" do
-      expect {Periods::YearMonth.new(2016, nil)}.to raise_error(ArgumentError, "Argument month can't be nil : 2016, ")
+      expect {Periods::YearMonth.new(2016, nil)}.to raise_error(TypeError, "can't convert nil into Integer")
     end
     it "when year is a alpha" do
       expect {Periods::YearMonth.new("year", 1)}.to raise_error('invalid value for Integer(): "year"')
