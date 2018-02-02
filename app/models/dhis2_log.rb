@@ -12,4 +12,12 @@
 
 class Dhis2Log < ApplicationRecord
   belongs_to :project_anchor
+
+  def orgunit_ids
+    sent.map { |data_value| data_value["orgUnit"] }.uniq
+  end
+
+  def periods
+    sent.map { |data_value| data_value["period"] }.uniq.sort
+  end
 end

@@ -1,0 +1,39 @@
+<div class="tabbable"> <!-- Only required for left/right tabs -->
+  <ul class="nav nav-tabs">
+    <li class="active"><a href="#scheduled" data-toggle="tab">Scheduled invoices (<%= jobs.scheduled_jobs.size%>)</a></li>
+    <li><a href="#last" data-toggle="tab">Last generated invoices</a></li>
+  </ul>
+
+</div>
+
+<div class="tab-content">
+
+    <div id="scheduled" class="tab-pane active in fade">
+        <h1>Scheduled invoices (<%= jobs.scheduled_jobs.size%>)</h1>
+
+        <table class="table table-striped">
+            <tr>
+                <th>Period</th>
+                <th>Orgunit id</th>
+                <th>Details</th>
+            </tr>
+
+            <%= render partial: 'scheduled_job', collection: jobs.scheduled_jobs, as: :job %>
+        </table>
+    </div>
+
+    <div id="last" class="tab-pane fade">
+        <h1>Last generated invoices</h1>
+        <table class="table table-striped">
+            <tr>
+                <th>Period</th>
+                <th>Orgunit id</th>
+                <th>Details</th>
+                <th>Status</th>
+            </tr>
+
+            <%= render partial: 'last_job', collection: jobs.last_jobs, as: :job %>
+        </table>
+    </div>
+</div>
+

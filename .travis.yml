@@ -4,6 +4,8 @@ env:
     - RAILS_ENV=test
 addons:
   postgresql: "9.6"
+services:
+  - redis-server
 sudo: false
 language: ruby
 cache: bundler
