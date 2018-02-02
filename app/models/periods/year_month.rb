@@ -4,7 +4,6 @@ module Periods
     attr_reader :year, :month
 
     def initialize(year, month)
-
       @year = Integer(year)
       @month = Integer(month)
       raise "no a valid month number for '#{month}'" if @month < 1 || @month > 12
