@@ -4,7 +4,7 @@ module Periods
     attr_reader :yyyy
 
     def initialize(yyyy)
-      @yyyy = yyyy.to_i
+      @yyyy = Integer(yyyy)
     end
 
     def quarters
@@ -36,7 +36,7 @@ module Periods
     end
 
     def end_date
-      @end_date ||= Date.parse("#{year}-12-01").end_of_month
+      @end_date ||= start_date.end_of_year
     end
 
     def to_dhis2
