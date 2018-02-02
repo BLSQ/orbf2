@@ -5,6 +5,23 @@ describe Periods::YearQuarter do
   let(:year_quarter) { Periods::YearQuarter.from_yyyyqq(yyyyqq) }
   let(:last_quarter) { Periods::YearQuarter.from_yyyyqq("2016Q4") }
 
+  describe 'fails fast' do
+    it "when nil" do
+      expect {Periods::YearQuarter.new(nil)}.to raise_error(ArgumentError,"Argument yyyyqq can't be nil")
+    end
+
+    it "when year is a alpha" do
+      expect {Periods::YearQuarter.new("yearQ1")}.to raise_error('invalid value for Integer(): "year"')
+    end
+    it "when no Q for quarter" do
+      expect {Periods::YearQuarter.new("201601")}.to raise_error("no a valid quarter number for '201601'")
+    end
+    it "when alha for Q for quarter" do
+      expect {Periods::YearQuarter.new("2016Qa")}.to raise_error('invalid value for Integer(): "a"')
+    end
+  end
+
+
   describe "#from_yyyyqq" do
     it "should return yyyyqq" do
       expect(year_quarter.yyyyqq).to eq yyyyqq

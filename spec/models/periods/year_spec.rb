@@ -4,6 +4,15 @@ describe Periods::Year do
   let(:yyyy) { "2016" }
   let(:year) { Periods::Year.new(yyyy) }
 
+  describe 'fails fast' do
+    it "when nil" do
+      expect {Periods::Year.new(nil)}.to raise_error(TypeError,"can't convert nil into Integer")
+    end
+    it "when alhpa" do
+      expect {Periods::Year.new("aze")}.to raise_error(ArgumentError, 'invalid value for Integer(): "aze"')
+    end
+  end
+
   it "should have 4 quarters" do
     expect(year.quarters.length).to eq(4)
     expect(year.quarters.map(&:to_year).uniq.first).to eq(year)

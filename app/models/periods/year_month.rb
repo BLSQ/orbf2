@@ -4,6 +4,9 @@ module Periods
     attr_reader :year, :month
 
     def initialize(year, month)
+      raise ArgumentError, "Argument year can't be nil : #{year}, #{month}" unless year
+      raise ArgumentError, "Argument month can't be nil : #{year}, #{month}" unless month
+
       @year = Integer(year)
       @month = Integer(month)
       raise "no a valid month number for '#{month}'" if @month < 1 || @month > 12
