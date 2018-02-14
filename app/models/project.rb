@@ -211,7 +211,8 @@ class Project < ApplicationRecord
       url:                 dhis2_url,
       user:                user,
       password:            password,
-      no_ssl_verification: bypass_ssl
+      no_ssl_verification: bypass_ssl,
+      version:             dhis_version
     )
   end
 
@@ -370,5 +371,9 @@ class Project < ApplicationRecord
 
   def log(message)
     Rails.logger.info message
+  end
+
+  def dhis_version
+    "2.28"
   end
 end

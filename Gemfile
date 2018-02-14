@@ -2,6 +2,13 @@ source "https://rubygems.org"
 
 ruby "2.4.2"
 
+source 'https://rubygems.org'
+
+git_source(:github) do |repo_name|
+  repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
+  "https://github.com/#{repo_name}.git"
+end
+
 gem "bootstrap-datepicker-rails"
 gem "bootstrap-sass", "~> 3.3.6"
 gem "cocoon"
@@ -9,7 +16,7 @@ gem "coffee-rails", "~> 4.2"
 gem "deep_cloneable"
 gem "dentaku"
 gem "devise", "~> 4.2.0"
-gem "dhis2", git: "https://github.com/BLSQ/dhis2.git"
+gem 'dhis2', github: 'BLSQ/dhis2', branch: 'api-versioning', ref: '72b51cb'
 gem "differ"
 gem "easy_diff"
 gem "figaro"

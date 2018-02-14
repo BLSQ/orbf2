@@ -37,6 +37,7 @@ class Setup::InvoicesController < PrivateController
     @org_unit = org_unit
 
     render(:new) && return unless org_unit
+    org_unit.pyramid ||= pyramid
 
     @org_unit_summaries = [
       org_unit.name,

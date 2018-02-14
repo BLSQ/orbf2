@@ -35,7 +35,8 @@ RSpec.describe SynchroniseDegDsWorker do
   let(:budget_perf_deg) { "{\"dataElementGroups\":[{\"name\":\"Budgets - Performance Adm\",\"shortName\":\"budget-Performance Adm\",\"code\":\"budget-Performance Adm\",\"dataElements\":[]}]}" }
   let(:budget_perf_dataset) { "{\"dataSets\":[{\"name\":\"Budgets - Performance Adm\",\"shortName\":\"budget-Performance Adm\",\"code\":\"budget-Performance Adm\",\"periodType\":\"Monthly\",\"dataElements\":[],\"organisationUnits\":[],\"categoryCombo\":{\"id\":\"p0KPaWEg3cf\",\"name\":\"default\"}}]}" }
   let(:all_deg) do
-    [claimed_deg, verified_deg,
+    [claimed_deg,
+     verified_deg,
      tarif_deg,
      claimed_quantity_deg,
      verified_quantity_deg,
@@ -45,7 +46,8 @@ RSpec.describe SynchroniseDegDsWorker do
      maxscore_quality_deg,
      claimed_perf_deg,
      max_score_perf_deg,
-     budget_perf_deg]
+     budget_perf_deg
+   ]
   end
 
   let(:all_dataset) do
@@ -84,14 +86,14 @@ RSpec.describe SynchroniseDegDsWorker do
   end
 
   def stub_all_indicators
-    stub_request(:get, "#{project.dhis2_url}/api/indicators?fields=:all&pageSize=50000")
+    stub_request(:get, "#{project.dhis2_url}/api/indicators?fields=:all&page=1")
       .to_return(status: 200, body: fixture_content(:dhis2, "indicators.json"))
   end
 
   def stub_data_elements_groups_creation(deg)
     stub_request(:post, "http://play.dhis2.org/demo/api/metadata")
       .with(body: deg)
-      .to_return(status: 200, body: "", headers: {})
+      .to_return(status: 200, body: ResponseFactory.valid_bulk, headers: {})
   end
 
   def stub_update_data_element_sets
@@ -112,7 +114,7 @@ RSpec.describe SynchroniseDegDsWorker do
   def stub_create_dataset(dataset)
     stub_request(:post, "http://play.dhis2.org/demo/api/metadata")
       .with(body: dataset)
-      .to_return(status: 200, body: "", headers: {})
+      .to_return(status: 200, body: ResponseFactory.valid_bulk, headers: {})
   end
 
   def stub_find_dataset_by_name(dataset)

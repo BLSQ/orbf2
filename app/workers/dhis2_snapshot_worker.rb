@@ -18,7 +18,7 @@ class Dhis2SnapshotWorker
     year = now.year
 
     dhis2 = project.dhis2_connection
-    data = dhis2.send(kind).list(fields: ":all", page_size: 50_000)
+    data = dhis2.send(kind).fetch_paginated_data(fields: ":all")
     dhis2_version = dhis2.system_infos.get["version"]
 
     new_snapshot = false
@@ -29,7 +29,7 @@ class Dhis2SnapshotWorker
     ) do
       new_snapshot = true
     end
-    snapshot.content = JSON.parse(data.to_json)
+    snapshot.content = data.map { |d| { "table" => d.to_h } }
     snapshot.job_id = jid || "railsc"
     snapshot.dhis2_version = dhis2_version
     Dhis2SnapshotCompactor.new.compact(snapshot)

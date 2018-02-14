@@ -13,7 +13,7 @@ class SynchroniseDegDsWorker
 
   def synchronize(package)
     Rails.logger.info "********** Synchronizing #{package.name} (#{package.id}) - activities #{package.activities.size}"
-    @indicators ||= package.project.dhis2_connection.indicators.list(fields: ":all", page_size: 50_000)
+    @indicators ||= package.project.dhis2_connection.indicators.fetch_paginated_data(fields: ":all")
     package.package_states.each do |package_state|
       state = package_state.state
       Rails.logger.info "\t ---------------- #{state.name}"
@@ -43,13 +43,13 @@ class SynchroniseDegDsWorker
       { name:          deg_name,
         short_name:    deg_code,
         code:          deg_code,
-        display_name:  deg_name,
+        # display_name:  deg_name,
         data_elements: data_element_ids.map do |data_element_id|
           { id: data_element_id }
         end }
     ]
     dhis2 = package.project.dhis2_connection
-    status = dhis2.data_element_groups.create(deg)
+    status = dhis2.data_element_groups.bulk_create(data_element_groups: deg)
     created_deg = dhis2.data_element_groups.find_by(name: deg_name)
     raise "data element group not created #{deg_name} : #{deg} : #{status.inspect}" unless created_deg
     return created_deg
@@ -73,8 +73,9 @@ class SynchroniseDegDsWorker
     ds.first[:data_set_elements] = ds.first[:data_elements].map do |de|
       { "data_element" => de }
     end
+    puts "XX" * 30 + data_element_ids.to_json
     dhis2 = package.project.dhis2_connection
-    status = dhis2.data_sets.create(ds)
+    status = dhis2.data_sets.bulk_create(datasets: ds)
     created_ds = dhis2.data_sets.find_by(name: ds_name)
     Rails.logger.info JSON.pretty_generate(created_ds.to_h)
     created_ds[:data_set_elements] = ds.first[:data_elements].map do |de|

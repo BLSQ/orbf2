@@ -198,15 +198,14 @@ module Invoicing
       data_range = invoicing_request.project.date_range(invoicing_request.year_quarter)
 
       values_query = {
-        organisation_unit: org_unit_ids,
-        data_sets:         dataset_ids,
+        org_unit: org_unit_ids,
+        data_set:          dataset_ids,
         start_date:        data_range.first,
         end_date:          data_range.last,
         children:          false
       }
       Rails.logger.info "fetching values #{values_query.to_json}"
-      values = dhis2.data_value_sets.list(values_query)
-      values.data_values ? values.values : []
+      dhis2.data_value_sets.list(values_query)
     end
 
     def mock_values(_org_units_by_package)

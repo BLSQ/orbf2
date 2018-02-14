@@ -20,8 +20,7 @@ class EntityGroup < ApplicationRecord
 
   def find_sibling_organisation_unit_groups
     dhis2 = project.dhis2_connection
-    units = dhis2.organisation_units.list(
-      page_size: 50_000,
+    units = dhis2.organisation_units.fetch_paginated_data(
       fields:    "id,displayName,organisationUnitGroups"
     )
 
