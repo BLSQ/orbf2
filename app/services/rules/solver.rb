@@ -29,6 +29,7 @@ module Rules
     rescue KeyError => e
       formula.errors[:expression] << "#{e.message}. Remove extra spaces or verify it's in the available variables"
     rescue => e
+      Rails.logger.warn("FAILED to validate #{formula} : #{e.backtrace.join("\n")}")
       formula.errors[:expression] << e.message
     end
 

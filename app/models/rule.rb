@@ -126,6 +126,8 @@ class Rule < ApplicationRecord
       rules = payment_rule.packages.flat_map(&:rules).select(&:package_kind?)
       var_names << rules.flat_map(&:formulas).map(&:code)
       var_names << available_variables_for_values.map { |code| "%{#{code}}" }
+    elsif multi_entities_kind?
+      var_names << package.states.select(&:activity_level?).map(&:code)
     end
     var_names << decision_tables.map(&:out_headers) if decision_tables.any?
     var_names.flatten.uniq.reject(&:nil?).sort
@@ -163,6 +165,7 @@ class Rule < ApplicationRecord
                                .map { |code| "#{code}_values" }
       var_names << payment_rule.rule.formulas.map(&:code).map { |code| "#{code}_previous_values" }
     end
+
     var_names.flatten
   end
 
@@ -178,6 +181,8 @@ class Rule < ApplicationRecord
     elsif package_kind?
       # in case we are in a clone packages a not there so go through long road package_states instead of states
       to_fake_facts(package.package_states.map(&:state).select(&:package_level?))
+    elsif multi_entities_kind?
+      to_fake_facts(package.package_states.map(&:state).select(&:activity_level?))
     elsif payment_kind?
       facts = {}
       packages = payment_rule.packages
