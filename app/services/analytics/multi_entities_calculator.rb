@@ -25,7 +25,9 @@ module Analytics
     def build_results
       periods = [period.to_dhis2, period.to_quarter.to_dhis2]
       org_unit_ids.each_with_object([]) do |org_unit_id, array|
-        orgunit_values = values.select { |val| periods.include?(val.period) && val.org_unit == org_unit_id }
+        orgunit_values = values.select do |val|
+          periods.include?(val.period) && val.org_unit == org_unit_id
+        end
         package.activities.each do |activity|
           array.push(
             MultiEntitiesResult.with(
@@ -41,7 +43,9 @@ module Analytics
     def build_and_solve(activity, orgunit_values)
       hash = {}
       activity.activity_states.select(&:external_reference?).each do |activity_state|
-        activity_values = orgunit_values.select { |val| val.data_element == activity_state.external_reference }
+        activity_values = orgunit_values.select do |val|
+          val.data_element == activity_state.external_reference
+        end
         hash[activity_state.state.code] = activity_values.map(&:value).map(&:to_f).sum
       end
 

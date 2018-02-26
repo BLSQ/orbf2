@@ -152,8 +152,8 @@ class Rule < ApplicationRecord
       Analytics::Timeframe.all_variables_builders.each do |timeframe|
         var_names << activity_level_states.map { |state| "#{state.code}#{timeframe.suffix}" }
       end
-      if package.multi_entities_rule 
-        var_names << package.multi_entities_rule.formulas.map {|f| f.code+"_values" }        
+      if package.multi_entities_rule
+        var_names << package.multi_entities_rule.formulas.map { |f| f.code + "_values" }
       end
     end
     if package_kind? && package.activity_rule
