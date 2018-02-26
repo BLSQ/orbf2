@@ -36,16 +36,15 @@ module Analytics
       variables
     end
 
-    def multi_entity_variables(package, multi_entity_results, _activity)
+    def multi_entity_variables(package, multi_entity_results, activity)
       return {} unless package.multi_entities_rule&.formulas&.any?
       hash = {}
 
-      multi_entity_results.group_by(&:activity).each do |activity, results|
-        selected_results = results.select { |result| result.activity == activity && sum_if?(package, activity, result.org_unit_id) }
-
-        package.multi_entities_rule&.formulas&.each do |formula|
-          hash[formula.code + "_values"] = selected_results.map(&:solution).map { |sol| sol[formula.code] }
-        end
+      selected_results = multi_entity_results.select do |result|
+        result.activity == activity && sum_if?(package, activity, result.org_unit_id)
+      end
+      package.multi_entities_rule.formulas.each do |formula|
+        hash[formula.code + "_values"] = selected_results.map { |r| r.solution[formula.code] }
       end
       hash
     end
