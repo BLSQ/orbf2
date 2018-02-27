@@ -26,10 +26,8 @@
 </div>
 <% end %>
 
-<% unless rule.multi_entities_kind? %>
-  <%= f.simple_fields_for :formulas do |formula| %>
-    <%= render 'setup/rules/formula_fields', :f => formula %>
-  <% end %>
+<%= f.simple_fields_for :formulas do |formula| %>
+  <%= render 'setup/rules/formula_fields', :f => formula %>
 <% end %>
 
 <div class="links">
@@ -41,6 +39,5 @@
 
 <%= render "setup/rules/decision_tables", rule: rule, f: f%>
 
-<% unless rule.multi_entities_kind? %>
-   <%= render "setup/rules/graph", rule: rule %>
-<% end %>
+<%= render "setup/rules/graph", rule: rule %>
+

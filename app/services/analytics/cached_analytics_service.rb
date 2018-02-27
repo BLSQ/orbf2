@@ -17,16 +17,36 @@ module Analytics
     def activity_and_values(package, date)
       year_month = Periods.year_month(date)
       org_unit_ids = @org_units_by_package[package].map(&:id).to_set
-      package.activities.map do |activity|
+
+      multi_entity_results = Analytics::MultiEntitiesCalculator.new(org_unit_ids, package, @values, year_month).calculate
+
+      variables = package.activities.map do |activity|
         [
           activity,
           Values.new(
             date,
             build_facts(package, activity, year_month, org_unit_ids),
-            build_variables(package, activity, year_month, org_unit_ids)
+            build_variables(package, activity, year_month, org_unit_ids).merge(
+              multi_entity_variables(package, multi_entity_results, activity)
+            )
           )
         ]
       end
+
+      variables
+    end
+
+    def multi_entity_variables(package, multi_entity_results, activity)
+      return {} unless package.multi_entities_rule&.formulas&.any?
+      hash = {}
+
+      selected_results = multi_entity_results.select do |result|
+        result.activity == activity && sum_if?(package, activity, result.org_unit_id)
+      end
+      package.multi_entities_rule.formulas.each do |formula|
+        hash[formula.code + "_values"] = selected_results.map { |r| r.solution[formula.code] }
+      end
+      hash
     end
 
     def facts_for_period(package, activity, periods, org_unit_ids)
