@@ -89,10 +89,10 @@ class Setup::InvoicesController < PrivateController
       invoicing_request.invoices = invoicing_request.invoices.sort_by(&:date)
     rescue Rules::SolvingError => e
       log(e)
-      flash[:alert] = "Failed to simulate invoice : #{e.class.name} #{e.message} : <br>#{e.facts_and_rules.map { |k, v| [k, v].join(' : ') }.join(' <br>')}".html_safe
+      flash[:alert] = "Failed to simulate invoice : #{e.class.name} #{e.message[0..100]} : <br>#{e.facts_and_rules.map { |k, v| [k, v].join(' : ') }.join(' <br>')}".html_safe
     rescue => e
       log(e)
-      flash[:alert] = "Failed to simulate invoice : #{e.class.name} #{e.message}"
+      flash[:alert] = "Failed to simulate invoice : #{e.class.name} #{e.message[0..100]}"
     end
     render :new
   end

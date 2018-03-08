@@ -14,9 +14,10 @@ gem "bootstrap-sass", "~> 3.3.6"
 gem "cocoon"
 gem "coffee-rails", "~> 4.2"
 gem "deep_cloneable"
-gem "dentaku"
+gem "dentaku", "~> 3.1.0"
 gem "devise", "~> 4.2.0"
-gem 'dhis2', github: 'BLSQ/dhis2', branch: 'api-versioning', ref: '72b51cb'
+gem 'dhis2', github: 'BLSQ/dhis2', branch: 'master'
+gem 'orbf-rules_engine', github: 'BLSQ/orbf-rules_engine', branch: 'feature/subcontract-decision-table-support'
 gem "differ"
 gem "easy_diff"
 gem "figaro"
@@ -65,6 +66,7 @@ group :development do
   gem "pronto-simplecov", require: false
   gem "rack-mini-profiler"
   gem "rubocop", require: false
+  gem "rest-client-logger"
   gem "spring"
   gem "spring-watcher-listen", "~> 2.0.0"
   gem "stackprof"
@@ -81,6 +83,3 @@ end
 group :production do
   gem "heroku-deflater"
 end
-
-# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem "tzinfo-data", platforms: %i[mingw mswin x64_mingw jruby]
