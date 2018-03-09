@@ -1,3 +1,5 @@
+require "orbf/rules_engine"
+
 class MapProjectToOrbfProject
   def initialize(project)
     @project = project
@@ -16,7 +18,6 @@ class MapProjectToOrbfProject
   attr_reader :project, :packages
 
   PACKAGE_KINDS = {
-    "single"         => "single",
     "multi-groupset" => "subcontract"
   }.freeze
 
@@ -24,7 +25,7 @@ class MapProjectToOrbfProject
     @packages = project.packages.map do |package|
       Orbf::RulesEngine::Package.new(
         code:                   Codifier.codify(package.name),
-        kind:                   PACKAGE_KINDS[package.kind],
+        kind:                   PACKAGE_KINDS[package.kind] || package.kind,
         frequency:              package.frequency,
         org_unit_group_ext_ids: package.package_entity_groups.map(&:organisation_unit_group_ext_ref).compact,
         groupset_ext_id:        package.ogs_reference,
@@ -44,22 +45,28 @@ class MapProjectToOrbfProject
     end
   end
 
+  ACTIVITY_STATE_KIND = {
+    "formula" => "constant"
+  }.freeze
+
   def map_activity_states(activity_states)
     activity_states.map do |activity_state|
       Orbf::RulesEngine::ActivityState.with(
         state:   activity_state.state.code,
         name:    activity_state.name,
         formula: activity_state.formula,
-        kind:    activity_state.kind,
+        kind:    ACTIVITY_STATE_KIND[activity_state.kind] || activity_state.kind,
         ext_id:  activity_state.external_reference
       )
     end
   end
 
+  RULE_KINDS = { "multi-entities" => "entities_aggregation" }.freeze
+
   def map_rules(rules)
     rules.map do |rule|
       Orbf::RulesEngine::Rule.new(
-        kind:            rule.kind,
+        kind:            RULE_KINDS[rule.kind] || rule.kind,
         formulas:        map_formulas(rule.formulas),
         decision_tables: map_decision_tables(rule.decision_tables)
       )
@@ -71,9 +78,22 @@ class MapProjectToOrbfProject
       Orbf::RulesEngine::Formula.new(
         formula.code,
         formula.expression,
-        formula.description
+        formula.description,
+        map_formula_mappings(formula)
       )
     end
+  end
+
+  def map_formula_mappings(formula)
+    formula_mappings = {}
+    if formula.formula_mappings.size > 1
+      formula_mappings[:activity_mappings] = formula.formula_mappings.each_with_object({}) do |mapping, hash|
+        hash[mapping.activity.code] = mapping.external_reference
+      end
+    elsif formula.formula_mappings.size == 1
+      formula_mappings[:single_mapping] = formula.formula_mappings.first.external_reference
+    end
+    formula_mappings
   end
 
   def map_decision_tables(decision_tables)

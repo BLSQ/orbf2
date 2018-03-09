@@ -2,7 +2,7 @@ source "https://rubygems.org"
 
 ruby "2.4.2"
 
-source 'https://rubygems.org'
+source "https://rubygems.org"
 
 git_source(:github) do |repo_name|
   repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
@@ -16,8 +16,7 @@ gem "coffee-rails", "~> 4.2"
 gem "deep_cloneable"
 gem "dentaku", "~> 3.1.0"
 gem "devise", "~> 4.2.0"
-gem 'dhis2', github: 'BLSQ/dhis2', branch: 'master'
-gem 'orbf-rules_engine', github: 'BLSQ/orbf-rules_engine', branch: 'feature/subcontract-decision-table-support'
+gem "dhis2", github: "BLSQ/dhis2", branch: "master"
 gem "differ"
 gem "easy_diff"
 gem "figaro"
@@ -28,6 +27,7 @@ gem "jquery-rails"
 gem "jquery-ui-rails"
 gem "json", "2.1.0"
 gem "lograge"
+gem "orbf-rules_engine", github: "BLSQ/orbf-rules_engine", branch: "feature/subcontract-decision-table-support"
 gem "paper_trail"
 gem "pg", "~> 0.18"
 gem "puma", "~> 3.0"
@@ -47,7 +47,7 @@ group :development, :test do
   gem "database_cleaner"
   gem "factory_girl_rails", " 4.0"
   gem "faker"
-  gem "rails-controller-testing"
+  gem "rest-client-logger"
   gem "rest-client-logger"
   gem "rspec-its"
   gem "rspec-rails", "~> 3.0"
@@ -65,8 +65,8 @@ group :development do
   gem "pronto-rubocop", require: false
   gem "pronto-simplecov", require: false
   gem "rack-mini-profiler"
+  gem "rails-controller-testing"
   gem "rubocop", require: false
-  gem "rest-client-logger"
   gem "spring"
   gem "spring-watcher-listen", "~> 2.0.0"
   gem "stackprof"

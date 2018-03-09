@@ -141,7 +141,7 @@ RSpec.describe InvoiceForProjectAnchorWorker do
 
   it "should perform for subset of contracted_entities" do
     stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&endDate=2015-12-31&orgUnit=vRC0stJ5y9Q&startDate=2015-01-01")
-      .to_return(status: 200, body: {"dataValues": []}.to_json, headers: {})
+      .to_return(status: 200, body: { "dataValues": [] }.to_json, headers: {})
 
     export_request = stub_export_values("invoice_zero_single.json")
 
@@ -210,7 +210,7 @@ RSpec.describe InvoiceForProjectAnchorWorker do
   it "should perform for yearly project cycle" do
     project.update_attributes(cycle: "yearly")
 
-    stub_dhis2_values_yearly({"dataValues": []}.to_json, "2015-01-01")
+    stub_dhis2_values_yearly({ "dataValues": [] }.to_json, "2015-01-01")
     export_request = stub_export_values("invoice_zero_single.json")
 
     worker.perform(project.project_anchor.id, 2015, 1, [ORG_UNIT_ID])
