@@ -7,7 +7,7 @@ class MapProjectToOrbfProject
 
   def map
     Orbf::RulesEngine::Project.new(
-      packages:      map_packages,
+      packages:      map_packages(project.packages),
       payment_rules: map_payment_rules,
       dhis2_params:  project.dhis_configuration.client_params
     )
@@ -21,19 +21,23 @@ class MapProjectToOrbfProject
     "multi-groupset" => "subcontract"
   }.freeze
 
-  def map_packages
-    @packages = project.packages.map do |package|
-      Orbf::RulesEngine::Package.new(
-        code:                   Codifier.codify(package.name),
-        kind:                   PACKAGE_KINDS[package.kind] || package.kind,
-        frequency:              package.frequency,
-        org_unit_group_ext_ids: package.package_entity_groups.map(&:organisation_unit_group_ext_ref).compact,
-        groupset_ext_id:        package.ogs_reference,
-        dataset_ext_ids:        package.package_states.map(&:ds_external_reference).compact,
-        activities:             map_activities(package.activities),
-        rules:                  map_rules(package.rules)
-      )
+  def map_packages(packages)
+    packages.map do |package|
+      map_package(package)
     end
+  end
+
+  def map_package(package)
+    Orbf::RulesEngine::Package.new(
+      code:                   Codifier.codify(package.name),
+      kind:                   PACKAGE_KINDS[package.kind] || package.kind,
+      frequency:              package.frequency,
+      org_unit_group_ext_ids: package.package_entity_groups.map(&:organisation_unit_group_ext_ref).compact,
+      groupset_ext_id:        package.ogs_reference,
+      dataset_ext_ids:        package.package_states.map(&:ds_external_reference).compact,
+      activities:             map_activities(package.activities),
+      rules:                  map_rules(package.rules)
+    )
   end
 
   def map_activities(package_activities)
@@ -65,12 +69,16 @@ class MapProjectToOrbfProject
 
   def map_rules(rules)
     rules.map do |rule|
-      Orbf::RulesEngine::Rule.new(
-        kind:            RULE_KINDS[rule.kind] || rule.kind,
-        formulas:        map_formulas(rule.formulas),
-        decision_tables: map_decision_tables(rule.decision_tables)
-      )
+      map_rule(rule)
     end
+  end
+
+  def map_rule(rule)
+    Orbf::RulesEngine::Rule.new(
+      kind:            RULE_KINDS[rule.kind] || rule.kind,
+      formulas:        map_formulas(rule.formulas),
+      decision_tables: map_decision_tables(rule.decision_tables)
+    )
   end
 
   def map_formulas(formulas)
@@ -87,7 +95,8 @@ class MapProjectToOrbfProject
   def map_formula_mappings(formula)
     formula_mappings = {}
     if formula.formula_mappings.size > 1
-      formula_mappings[:activity_mappings] = formula.formula_mappings.each_with_object({}) do |mapping, hash|
+      formula_mappings[:activity_mappings] = formula.formula_mappings
+                                                    .each_with_object({}) do |mapping, hash|
         hash[mapping.activity.code] = mapping.external_reference
       end
     elsif formula.formula_mappings.size == 1
@@ -103,7 +112,13 @@ class MapProjectToOrbfProject
   end
 
   def map_payment_rules
-    # TODO: implement
-    []
+    project.payment_rules.map do |payment_rule|
+      Orbf::RulesEngine::PaymentRule.new(
+        code:      Codifier.codify(payment_rule.rule.name),
+        frequency: payment_rule.frequency,
+        packages:  map_packages(payment_rule.packages),
+        rule:      map_rule(payment_rule.rule)
+      )
+    end
   end
 end
