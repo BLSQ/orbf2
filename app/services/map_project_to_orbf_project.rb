@@ -28,7 +28,10 @@ class MapProjectToOrbfProject
   end
 
   def map_package(package)
-    Orbf::RulesEngine::Package.new(
+    @cache_package ||= {}
+    return @cache_package[package] if @cache_package[package]
+
+    @cache_package[package] = Orbf::RulesEngine::Package.new(
       code:                   Orbf::RulesEngine::Codifier.codify(package.name),
       kind:                   PACKAGE_KINDS[package.kind] || package.kind,
       frequency:              package.frequency,
@@ -38,6 +41,7 @@ class MapProjectToOrbfProject
       activities:             map_activities(package.activities),
       rules:                  map_rules(package.rules)
     )
+    @cache_package[package]
   end
 
   def map_activities(package_activities)
