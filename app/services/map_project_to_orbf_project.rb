@@ -29,7 +29,7 @@ class MapProjectToOrbfProject
 
   def map_package(package)
     Orbf::RulesEngine::Package.new(
-      code:                   Codifier.codify(package.name),
+      code:                   Orbf::RulesEngine::Codifier.codify(package.name),
       kind:                   PACKAGE_KINDS[package.kind] || package.kind,
       frequency:              package.frequency,
       org_unit_group_ext_ids: package.package_entity_groups.map(&:organisation_unit_group_ext_ref).compact,
@@ -114,7 +114,7 @@ class MapProjectToOrbfProject
   def map_payment_rules
     project.payment_rules.map do |payment_rule|
       Orbf::RulesEngine::PaymentRule.new(
-        code:      Codifier.codify(payment_rule.rule.name),
+        code:      Orbf::RulesEngine::Codifier.codify(payment_rule.rule.name),
         frequency: payment_rule.frequency,
         packages:  map_packages(payment_rule.packages),
         rule:      map_rule(payment_rule.rule)
