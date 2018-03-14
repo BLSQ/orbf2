@@ -8,7 +8,8 @@ class Setup::InvoicesController < PrivateController
       project: current_project,
       year:    params[:year] || Date.today.to_date.year,
       quarter: params[:quarter] || (Date.today.to_date.month / 4) + 1,
-      entity:  params[:entity]
+      entity:  params[:entity],
+      legacy_engine:  params[:legacy_engine] ? params[:legacy_engine]=="true" : true
     )
     if params["calculate"]
       render_invoice(project, invoicing_request)
@@ -26,6 +27,28 @@ class Setup::InvoicesController < PrivateController
   private
 
   def render_invoice(project, invoicing_request)
+
+    if invoicing_request.legacy_engine?
+      render_legacy_invoice(project, invoicing_request)
+    else
+      render_new_invoice(project, invoicing_request)
+    end
+  end
+
+def render_new_invoice(project, invoicing_request)
+
+  orbf_project = MapProjectToOrbfProject.new(project).map
+  fetch_and_solve = Orbf::RulesEngine::FetchAndSolve.new(orbf_project, invoicing_request.entity, invoicing_request.year_quarter.to_dhis2)
+  fetch_and_solve.call
+  invoicing_request.invoices = Orbf::RulesEngine::InvoicePrinter.new(fetch_and_solve.solver.variables, fetch_and_solve.solver.solution).print
+
+  @exported_values = fetch_and_solve.exported_values
+
+  render "new_invoice"
+end
+
+  def render_legacy_invoice(project, invoicing_request)
+
     pyramid = project.project_anchor.nearest_pyramid_for(invoicing_request.end_date_as_date)
     pyramid ||= Pyramid.from(project)
     @pyramid = pyramid
@@ -106,6 +129,7 @@ class Setup::InvoicesController < PrivateController
           .permit(:entity,
                   :year,
                   :quarter,
-                  :mock_values)
+                  :mock_values,
+                :legacy_engine)
   end
 end

@@ -1,0 +1,6 @@
+<tr>
+  <% invoice.headers.each do |header| %>
+     <td><%=activity_item.solution[header] %> </td>
+  <%end%>
+  <td><%=activity_item.activity.activity_code %></td>  
+</tr>

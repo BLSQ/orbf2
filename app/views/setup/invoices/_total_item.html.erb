@@ -1,0 +1,20 @@
+<h2>Totals <%= invoice.period %></h2>
+
+<button class="pull-right btn btn-default" data-toggle="collapse" data-target="#payment-descriptors-<%= (invoice.package&.code || invoice.payment_rule&.code) %>">Show totals descriptors</button>
+
+  <div class="container">
+    <%invoice.total_items.each do |item|%>
+      <div class="row">
+         <div class="col-md-3">
+           <%=item.formula.code.humanize %> :
+        </div>
+
+      </div>
+    <%end%>
+
+  <div id="payment-descriptors-<%= (invoice.package&.code || invoice.payment_rule&.code) %>" class="collapse">
+
+  <pre><%= JSON.pretty_generate(invoice.total_items) %></pre>
+
+  </div>
+</div>

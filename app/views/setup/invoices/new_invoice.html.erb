@@ -1,0 +1,18 @@
+<%= render partial: "form"  %>
+
+<h1> Invoice details </h1>
+<%= render partial: "new_invoice", collection: invoicing_request.invoices, :as => :invoice  %>
+
+<br>
+<br>
+<br>
+
+<h3 > Dhis2 values </h3>
+<button class="btn btn-default" data-toggle="collapse" data-target="#dhis2-values">Show values</button>
+  <div id="dhis2-values" class="collapse">
+    <pre>
+    <%=
+    JSON.pretty_generate(@exported_values)
+     %>
+    </pre>
+</div>
