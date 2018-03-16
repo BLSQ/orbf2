@@ -80,8 +80,20 @@ namespace :demo do
 
     missing = (exported_values - legacy_exported_values)
     extra   = (legacy_exported_values - exported_values)
-    puts "missing #{missing.size}"
-    puts "extra   #{extra.size}"
+    puts "exported_values        #{exported_values.size} "
+    puts "legacy_exported_values #{exported_values.size} "
+    puts "missing                #{missing.size}"
+    puts "extra                  #{extra.size}"
+    puts "*************** details "
+    puts "missing : #{JSON.pretty_generate(missing)}"
+    puts "extra : #{JSON.pretty_generate(extra)}"
+
+    missing_indexed= missing.group_by {|v| [v[:dataElement], v[:orgUnit], v[:period]]}
+    extra_indexed= extra.group_by {|v| [v[:dataElement], v[:orgUnit], v[:period]]}
+
+    missing_indexed.each do |k,v|
+      puts "#{k.join("\t")} => #{v.first[:value]} #{extra_indexed[k]}"
+    end
     raise " legacy vs rules engine failed " unless missing.empty? && extra.empty?
   end
 
