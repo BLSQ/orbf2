@@ -1,36 +1,49 @@
 
 namespace :demo do
   TEST_CASES = {
-    mw_pma:                    {
+    cm_pma:                    {
       project_id:     "9",
       year:           "2017",
       quarter:        "4",
       orgunit_ext_id: "eov2pDYbAK0"
     },
-    mw_pma_subcontract:        {
+    cm_pma_subcontract:        {
       project_id:     "9",
       year:           "2017",
       quarter:        "4",
       orgunit_ext_id: "FKwP5mdXS44"
     },
-    mw_pca:                    {
+    cm_pca:                    {
       project_id:     "9",
       year:           "2017",
       quarter:        "4",
       orgunit_ext_id: "gjQVhah9fej"
     },
-    mw_with_nine_subcontracts: {
+    cm_with_nine_subcontracts: {
       project_id:     "9",
       year:           "2017",
       quarter:        "4",
       orgunit_ext_id: "lr8un7u9V0s"
     },
-    mw_bambalang:              {
+    cm_bambalang:              {
       project_id:     "9",
       year:           "2017",
       quarter:        "4",
       orgunit_ext_id: "x0GbxmB4a0T"
+    },
+    mw_bemonc_chikuse:         {
+      project_id:     "11",
+      year:           "2017",
+      quarter:        "1",
+      orgunit_ext_id: "DsCJ5VYc6vm"
+    },
+    mw_dhmt_dedza:             {
+      project_id:     "11",
+      year:           "2017",
+      quarter:        "1",
+      orgunit_ext_id: "TiaEk64xgmm"
     }
+
   }.with_indifferent_access
 
   desc "Run invoice from commandline"
