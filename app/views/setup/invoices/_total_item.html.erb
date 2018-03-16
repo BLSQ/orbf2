@@ -1,20 +1,30 @@
-<h2>Totals <%= invoice.period %></h2>
 
-<button class="pull-right btn btn-default" data-toggle="collapse" data-target="#payment-descriptors-<%= (invoice.package&.code || invoice.payment_rule&.code) %>">Show totals descriptors</button>
 
-  <div class="container">
-    <%invoice.total_items.each do |item|%>
-      <div class="row">
-         <div class="col-md-3">
-           <%=item.formula.code.humanize %> :
-        </div>
 
+<div class="container">
+    <div class="row">
+      <div class="col-md-3">
+        <b><%=total_item.formula.code.humanize %></b> :
       </div>
-    <%end%>
+      <div class="col-md-3 popper <%= invoice_output_input_class(total_item) %>" data-toggle="popover"  data-placement="bottom">
+        <%= total_item.value %>
+          <div class="popper-content hide">
+            <h3><%= total_item.formula.code%></h3>
+            <ul>
+            <li><%= total_item.value %></li>
+            <li><%= total_item.formula.code %></li>
+            <li><%= total_item.formula.expression %></li>
+            <li><%= total_item.formula.dhis2_mapping %><l/i>
+            <li><%= @datacompound.data_element(total_item.formula.dhis2_mapping)&.name%> </>
+            </ul>
+            <h3>Step by step explanations</h3>
+            <% total_item.explanations.each do |explanation|%>
+              <pre><%= explanation %></pre>
+            <%end%>
+          </div>
+      </div>
 
-  <div id="payment-descriptors-<%= (invoice.package&.code || invoice.payment_rule&.code) %>" class="collapse">
 
-  <pre><%= JSON.pretty_generate(invoice.total_items) %></pre>
 
-  </div>
+   </div>
 </div>

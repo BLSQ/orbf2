@@ -5,11 +5,11 @@ class Setup::InvoicesController < PrivateController
   def new
     project = current_project(project_scope: :fully_loaded) if params["calculate"]
     @invoicing_request = InvoicingRequest.new(
-      project: current_project,
-      year:    params[:year] || Date.today.to_date.year,
-      quarter: params[:quarter] || (Date.today.to_date.month / 4) + 1,
-      entity:  params[:entity],
-      legacy_engine:  params[:legacy_engine] ? params[:legacy_engine]=="true" : true
+      project:       current_project,
+      year:          params[:year] || Date.today.to_date.year,
+      quarter:       params[:quarter] || (Date.today.to_date.month / 4) + 1,
+      entity:        params[:entity],
+      legacy_engine: params[:legacy_engine] ? params[:legacy_engine] == "true" : true
     )
     if params["calculate"]
       render_invoice(project, invoicing_request)
@@ -27,7 +27,6 @@ class Setup::InvoicesController < PrivateController
   private
 
   def render_invoice(project, invoicing_request)
-
     if invoicing_request.legacy_engine?
       render_legacy_invoice(project, invoicing_request)
     else
@@ -35,20 +34,27 @@ class Setup::InvoicesController < PrivateController
     end
   end
 
-def render_new_invoice(project, invoicing_request)
+  def render_new_invoice(project, invoicing_request)
+    @datacompound = project.project_anchor.nearest_data_compound_for(invoicing_request.end_date_as_date)
+    @datacompound ||= DataCompound.from(project)
 
-  orbf_project = MapProjectToOrbfProject.new(project).map
-  fetch_and_solve = Orbf::RulesEngine::FetchAndSolve.new(orbf_project, invoicing_request.entity, invoicing_request.year_quarter.to_dhis2)
-  fetch_and_solve.call
-  invoicing_request.invoices = Orbf::RulesEngine::InvoicePrinter.new(fetch_and_solve.solver.variables, fetch_and_solve.solver.solution).print
+    orbf_project = MapProjectToOrbfProject.new(project).map
+    fetch_and_solve = Orbf::RulesEngine::FetchAndSolve.new(orbf_project, invoicing_request.entity, invoicing_request.year_quarter.to_dhis2)
+    fetch_and_solve.call
 
-  @exported_values = fetch_and_solve.exported_values
+    selected_periods = [
+      invoicing_request.year_quarter.months.map(&:to_dhis2),
+      invoicing_request.year_quarter.to_dhis2
+    ].flatten.to_set
 
-  render "new_invoice"
-end
+    invoicing_request.invoices = Orbf::RulesEngine::InvoicePrinter.new(fetch_and_solve.solver.variables, fetch_and_solve.solver.solution).print.select { |invoice| selected_periods.include?(invoice.period) }.sort_by(&:period)
+
+    @exported_values = fetch_and_solve.exported_values
+
+    render "new_invoice"
+  end
 
   def render_legacy_invoice(project, invoicing_request)
-
     pyramid = project.project_anchor.nearest_pyramid_for(invoicing_request.end_date_as_date)
     pyramid ||= Pyramid.from(project)
     @pyramid = pyramid
@@ -130,6 +136,6 @@ end
                   :year,
                   :quarter,
                   :mock_values,
-                :legacy_engine)
+                  :legacy_engine)
   end
 end

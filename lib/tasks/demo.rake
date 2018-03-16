@@ -25,12 +25,12 @@ namespace :demo do
       quarter:        "4",
       orgunit_ext_id: "lr8un7u9V0s"
     },
-    mw_bambalang: {
+    mw_bambalang:              {
       project_id:     "9",
       year:           "2017",
       quarter:        "4",
       orgunit_ext_id: "x0GbxmB4a0T"
-  }
+    }
   }.with_indifferent_access
 
   desc "Run invoice from commandline"
@@ -49,7 +49,7 @@ namespace :demo do
     fetch_and_solve = Orbf::RulesEngine::FetchAndSolve.new(orbf_project, test_case.orgunit_ext_id, invoicing_period)
     fetch_and_solve.call
     orbf_invoices = Orbf::RulesEngine::InvoicePrinter.new(fetch_and_solve.solver.variables, fetch_and_solve.solver.solution).print
-    
+
     exported_values = clean_values(fetch_and_solve.exported_values)
 
     invoices = InvoicesForEntitiesWorker.new.perform(

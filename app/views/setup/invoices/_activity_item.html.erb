@@ -1,6 +1,30 @@
 <tr>
   <% invoice.headers.each do |header| %>
-     <td><%=activity_item.solution[header] %> </td>
+     <td class="popper <%=invoice_output_input_act_class(activity_item, header)%>" data-toggle="popover"  data-placement="bottom">
+        <% formatted_amount = d_to_s(activity_item.solution[header])%>
+
+        <span class="num-span" title="<%= activity_item.solution[header]%>">
+          <% if formatted_amount.to_d!= activity_item.solution[header].to_s.to_d%>
+           <span title="Rounded for display <%= activity_item.solution[header] %>" class="color: red">*</span>
+        <% end %>
+        <%= formatted_amount%>
+
+        </span>
+          <div class="popper-content hide">
+          <% variable = activity_item.variable(header)%>
+            <h3> <%=variable.state %></h3>
+            <ul>
+                <li><%= variable.key %></li>
+                <li><%= variable.expression %></li>
+                <li><%= variable.dhis2_data_element %></li>
+                <li><%= @datacompound.data_element(variable.dhis2_data_element)&.name%>
+            </ul>
+            <h3>Step by step explanations</h3>
+            <pre><%= JSON.pretty_generate(activity_item.problem) %></pre>
+            <pre><%= JSON.pretty_generate(activity_item.solution) %></pre>
+          </div>
+      </div>
+     </td>
   <%end%>
-  <td><%=activity_item.activity.activity_code %></td>  
+  <td><%=activity_item.activity.activity_code.humanize %></td>
 </tr>
