@@ -46,10 +46,9 @@ end
     Rails.logger.info @rule.errors.full_messages
     if @rule.save
       flash[:notice] = "Rule updated !"
-      redirect_to(root_path)
-    else
-      render action: "edit"
     end
+
+    render action: "edit"
   end
 
   private

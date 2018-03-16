@@ -114,7 +114,6 @@ RSpec.describe Setup::RulesController, type: :controller do
             }
         }
         expect(flash[:notice]).to eq("Rule updated !")
-        expect(response).to redirect_to("/")
         package.activity_rule.reload
         expect(package.activity_rule.name).to eq("sample rule 2")
       end
