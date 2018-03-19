@@ -19,9 +19,9 @@ class DataCompound
     data_compound = project.project_anchor.data_compound_for(Time.now.utc)
     return data_compound if data_compound
     dhis2 = project.dhis2_connection
-    data_elements = dhis2.data_elements.fetch_paginated_data(fields: ":all")
-    data_element_groups = dhis2.data_element_groups.fetch_paginated_data(fields: ":all")
-    indicators = dhis2.indicators.fetch_paginated_data(fields: ":all")
+    data_elements = dhis2.data_elements.fetch_paginated_data(fields: ":all", page_size: 20000)
+    data_element_groups = dhis2.data_element_groups.fetch_paginated_data(fields: ":all", page_size: 20000)
+    indicators = dhis2.indicators.fetch_paginated_data(fields: ":all", page_size: 20000)
     DataCompound.new(data_elements, data_element_groups, indicators)
   end
 

@@ -4,7 +4,7 @@
         <% formatted_amount = d_to_s(activity_item.solution[header])%>
 
         <span class="num-span" title="<%= activity_item.solution[header]%>">
-          <% if formatted_amount.to_d!= activity_item.solution[header].to_s.to_d%>
+          <% if formatted_amount && formatted_amount.to_d!= activity_item.solution[header].to_s.to_d%>
            <span title="Rounded for display <%= activity_item.solution[header] %>" class="text-danger" role="button">*</span>
         <% end %>
         <%= formatted_amount%>
@@ -26,5 +26,5 @@
       </div>
      </td>
   <%end%>
-  <td><%=activity_item.activity.activity_code.humanize %></td>
+  <td title="<%= activity_item.activity.name %>"><%=activity_item.activity.activity_code.humanize %></td>
 </tr>

@@ -37,6 +37,18 @@ namespace :demo do
       quarter:        "1",
       orgunit_ext_id: "DsCJ5VYc6vm"
     },
+    mw_bemonc_chikuse_idr:     {
+      project_id:     "11",
+      year:           "2015",
+      quarter:        "1",
+      orgunit_ext_id: "DsCJ5VYc6vm"
+    },
+    mw_cemonc_dedza_dh:        {
+      project_id:     "11",
+      year:           "2015",
+      quarter:        "1",
+      orgunit_ext_id: "PBqAud9Tvcc"
+    },
     mw_dhmt_dedza:             {
       project_id:     "11",
       year:           "2017",
@@ -58,7 +70,8 @@ namespace :demo do
     invoicing_period = "#{test_case.year}Q#{test_case.quarter}"
 
     project = Project.fully_loaded.find(test_case.project_id)
-    orbf_project = MapProjectToOrbfProject.new(project).map
+    data_compound = DataCompound.from(project)
+    orbf_project = MapProjectToOrbfProject.new(project, data_compound.indicators).map
     fetch_and_solve = Orbf::RulesEngine::FetchAndSolve.new(orbf_project, test_case.orgunit_ext_id, invoicing_period)
     fetch_and_solve.call
     orbf_invoices = Orbf::RulesEngine::InvoicePrinter.new(fetch_and_solve.solver.variables, fetch_and_solve.solver.solution).print
@@ -88,12 +101,16 @@ namespace :demo do
     puts "missing : #{JSON.pretty_generate(missing)}"
     puts "extra : #{JSON.pretty_generate(extra)}"
 
-    missing_indexed= missing.group_by {|v| [v[:dataElement], v[:orgUnit], v[:period]]}
-    extra_indexed= extra.group_by {|v| [v[:dataElement], v[:orgUnit], v[:period]]}
+    missing_indexed = missing.group_by { |v| [v[:dataElement], v[:orgUnit], v[:period]] }
+    extra_indexed = extra.group_by { |v| [v[:dataElement], v[:orgUnit], v[:period]] }
 
-    missing_indexed.each do |k,v|
+    missing_indexed.each do |k, v|
       puts "#{k.join("\t")} => #{v.first[:value]} #{extra_indexed[k]}"
     end
+    puts "---------------------- project "
+    # puts YAML.dump(orbf_project)
+
+    #puts JSON.pretty_generate(fetch_and_solve.solver.build_problem)
     raise " legacy vs rules engine failed " unless missing.empty? && extra.empty?
   end
 

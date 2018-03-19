@@ -1,8 +1,9 @@
 require "orbf/rules_engine"
 
 class MapProjectToOrbfProject
-  def initialize(project)
+  def initialize(project, dhis2_indicators)
     @project = project
+    @dhis2_indicators_by_id = dhis2_indicators.index_by(&:id)
   end
 
   def map
@@ -15,7 +16,7 @@ class MapProjectToOrbfProject
 
   private
 
-  attr_reader :project, :packages
+  attr_reader :project, :packages, :dhis2_indicators_by_id
 
   PACKAGE_KINDS = {
     "multi-groupset" => "subcontract"
@@ -47,6 +48,7 @@ class MapProjectToOrbfProject
   def map_activities(package_activities)
     package_activities.map do |activity|
       Orbf::RulesEngine::Activity.with(
+        name:            activity.name,
         activity_code:   activity.code,
         activity_states: map_activity_states(activity.activity_states)
       )
@@ -62,7 +64,7 @@ class MapProjectToOrbfProject
       Orbf::RulesEngine::ActivityState.with(
         state:   activity_state.state.code,
         name:    activity_state.name,
-        formula: activity_state.formula,
+        formula: activity_state.formula || dhis2_indicators_by_id[activity_state.external_reference]&.numerator,
         kind:    ACTIVITY_STATE_KIND[activity_state.kind] || activity_state.kind,
         ext_id:  activity_state.external_reference
       )

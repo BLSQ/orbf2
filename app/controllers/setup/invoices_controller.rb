@@ -38,8 +38,12 @@ class Setup::InvoicesController < PrivateController
     @datacompound = project.project_anchor.nearest_data_compound_for(invoicing_request.end_date_as_date)
     @datacompound ||= DataCompound.from(project)
 
-    orbf_project = MapProjectToOrbfProject.new(project).map
-    fetch_and_solve = Orbf::RulesEngine::FetchAndSolve.new(orbf_project, invoicing_request.entity, invoicing_request.year_quarter.to_dhis2)
+    orbf_project = MapProjectToOrbfProject.new(project, @datacompound.indicators).map
+    fetch_and_solve = Orbf::RulesEngine::FetchAndSolve.new(
+      orbf_project,
+      invoicing_request.entity,
+      invoicing_request.year_quarter.to_dhis2
+    )
     fetch_and_solve.call
 
     selected_periods = [
@@ -47,7 +51,14 @@ class Setup::InvoicesController < PrivateController
       invoicing_request.year_quarter.to_dhis2
     ].flatten.to_set
 
-    invoicing_request.invoices = Orbf::RulesEngine::InvoicePrinter.new(fetch_and_solve.solver.variables, fetch_and_solve.solver.solution).print.select { |invoice| selected_periods.include?(invoice.period) }.sort_by(&:period)
+    invoicing_request.invoices = Orbf::RulesEngine::InvoicePrinter.new(
+      fetch_and_solve.solver.variables,
+      fetch_and_solve.solver.solution
+    ).print
+
+    invoicing_request.invoices = invoicing_request.invoices.select { |invoice|
+      selected_periods.include?(invoice.period) && (invoice.activity_items.any? || invoice.total_items.any?)
+    }.sort_by(&:period)
 
     @exported_values = fetch_and_solve.exported_values
 
