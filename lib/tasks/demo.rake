@@ -89,8 +89,9 @@ namespace :demo do
       allow_fresh_dhis2_data: true
     )[test_case.orgunit_ext_id]
 
-    legacy_exported_values = clean_values(Publishing::Dhis2InvoicePublisher.new.to_values(invoices))
-
+    legacy_exported_values = Publishing::Dhis2InvoicePublisher.new.to_values(invoices)
+    raw_legacy_exported_values = JSON.parse(legacy_exported_values.to_json)
+    legacy_exported_values = clean_values(legacy_exported_values)
     missing = (exported_values - legacy_exported_values)
     extra   = (legacy_exported_values - exported_values)
     puts "exported_values        #{exported_values.size} "
@@ -104,8 +105,11 @@ namespace :demo do
     missing_indexed = missing.group_by { |v| [v[:dataElement], v[:orgUnit], v[:period]] }
     extra_indexed = extra.group_by { |v| [v[:dataElement], v[:orgUnit], v[:period]] }
 
+    with_comments = raw_legacy_exported_values.group_by { |v| [v["dataElement"], v["orgUnit"], v["period"]] }
+
     missing_indexed.each do |k, v|
-      puts "#{k.join("\t")} => #{v.first[:value]} #{extra_indexed[k]}"
+      comment = with_comments[k]
+      puts "#{k.join("\t")} => #{v.first[:value]}\t#{extra_indexed[k].first[:value]}\t#{comment.first["comment"]}"
     end
     puts "---------------------- project "
     # puts YAML.dump(orbf_project)
