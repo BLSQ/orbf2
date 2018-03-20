@@ -250,7 +250,6 @@ module Invoicing
       selected_packages = project.packages.select do |package|
         package.for_frequency(frequency) && package.apply_for(entity)
       end
-      Rails.logger.info "No package for #{entity.name} #{entity.groups} #{frequency} vs supported groups #{project.packages.flat_map(&:package_entity_groups).map(&:organisation_unit_group_ext_ref).uniq}" if selected_packages.empty?
       selected_packages.each_with_object([]) do |package, array|
         analytics_service.activity_and_values(package, date).each do |activity, values|
           array.push(calculate_activity_results_monthly(entity, date, package, activity, values))
