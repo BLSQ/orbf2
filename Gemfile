@@ -27,6 +27,7 @@ gem "jquery-rails"
 gem "jquery-ui-rails"
 gem "json", "2.1.0"
 gem "lograge"
+gem "naturalsort"
 if ENV["ORBF_DEV_MODE"]
   gem "orbf-rules_engine", path: "../orbf-rules_engine"
 else

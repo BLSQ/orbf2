@@ -1,3 +1,5 @@
+require 'natural_sort'
+
 class Setup::InvoicesController < PrivateController
   attr_reader :invoicing_request
   helper_method :invoicing_request
@@ -61,6 +63,14 @@ class Setup::InvoicesController < PrivateController
     }.sort_by(&:period)
 
     @exported_values = fetch_and_solve.exported_values
+
+    @activity_mappings = orbf_project.packages.each_with_object({}) do |package, activity_mappings|
+      package.activities.each do |activity|
+        activity.activity_states.each do |activity_state|
+          activity_mappings[[activity.activity_code, activity_state.state]] = activity_state
+        end
+      end
+    end
 
     render "new_invoice"
   end

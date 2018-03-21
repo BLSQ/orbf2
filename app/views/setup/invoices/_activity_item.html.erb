@@ -15,9 +15,14 @@
             <h3> <%=variable.state %></h3>
             <ul>
                 <li><%= variable.key %></li>
-                <li><%= variable.expression %></li>
-                <li><%= variable.dhis2_data_element %></li>
-                <li><%= @datacompound.data_element(variable.dhis2_data_element)&.name%>
+                <li><code><%= variable.expression %></code></li>
+                <% activity_state = @activity_mappings[[variable.activity_code, variable.state]] %>
+                <%if variable.dhis2_data_element %>
+                  <li><%= variable.dhis2_data_element %></li>
+                  <li><%= @datacompound.data_element(variable.dhis2_data_element)&.name%>
+                <%elsif activity_state%>
+                  <li>Mapping : <%= activity_state.ext_id%> - <%= activity_state.kind%> - <%= @datacompound.data_element(activity_state.ext_id)&.name%>
+                <%end%>
             </ul>
             <h3>Step by step explanations</h3>
             <pre><%= JSON.pretty_generate(activity_item.problem) %></pre>
@@ -26,5 +31,5 @@
       </div>
      </td>
   <%end%>
-  <td title="<%= activity_item.activity.name %>"><%=activity_item.activity.activity_code.humanize %></td>
+  <td title="<%= activity_item.activity.activity_code %>"><%=activity_item.activity.name %></td>
 </tr>

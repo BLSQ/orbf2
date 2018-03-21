@@ -54,6 +54,12 @@ namespace :demo do
       year:           "2017",
       quarter:        "1",
       orgunit_ext_id: "TiaEk64xgmm"
+    },
+    zim_co_ma_chibuwe_clinic:  {
+      project_id:     "12",
+      year:           "2018",
+      quarter:        "1",
+      orgunit_ext_id: "moQZ9tvpYvt"
     }
 
   }.with_indifferent_access
@@ -65,7 +71,7 @@ namespace :demo do
     test_cases = TEST_CASES.map { |k, v| [k, OpenStruct.new(v)] }
     test_case_name = ENV["test_case"]
     test_case = OpenStruct.new(TEST_CASES[test_case_name])
-    test_cases if test_case_name != "all"
+    test_cases = { test_case_name.to_sym => TEST_CASES[test_case_name] } if test_case_name != "all"
 
     test_cases.each do |test_case_name, test_case|
       run_test_case(test_case_name, OpenStruct.new(test_case))
@@ -106,8 +112,6 @@ namespace :demo do
       orbf_invoices = Orbf::RulesEngine::InvoicePrinter.new(fetch_and_solve.solver.variables, fetch_and_solve.solver.solution).print
       clean_values(fetch_and_solve.exported_values)
     end
-
-
 
     raw_legacy_exported_values = JSON.parse(legacy_exported_values.to_json)
     legacy_exported_values = clean_values(legacy_exported_values)

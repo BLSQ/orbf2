@@ -12,11 +12,14 @@
     </tr>
     </thead>
     <tbody>
-      <%= render partial: "activity_item", collection: invoice.activity_items, :as => :activity_item, locals: {invoice:invoice}  %>
+      <%= render partial: "activity_item",
+                 collection: invoice.activity_items.sort {|a,b| NaturalSort.comparator(a.activity.activity_code, b.activity.activity_code)} ,
+                 as: :activity_item,
+                 locals: {invoice:invoice}  %>
     </tbody>
 </table>
 <% end %>
 
 <% if invoice.total_items.any? %>
-<%= render partial: "total_item", collection: invoice.total_items, :as => :total_item, locals: {invoice:invoice}  %>
+<%= render partial: "total_item", collection: invoice.total_items.sort_by {|total_item| total_item.formula.code }, :as => :total_item, locals: {invoice:invoice}  %>
 <% end %>
