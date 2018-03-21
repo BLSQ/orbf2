@@ -55,13 +55,23 @@ namespace :demo do
       quarter:        "1",
       orgunit_ext_id: "TiaEk64xgmm"
     },
-    zim_co_ma_chibuwe_clinic:  {
+    zim_co_st_joseph_mh:       {
+      project_id:     "12",
+      year:           "2018",
+      quarter:        "1",
+      orgunit_ext_id: "f7IkOT2Fpg5"
+    },
+    zim_co_chipinge_hd:        {
+      project_id:     "12",
+      year:           "2018",
+      quarter:        "1",
+      orgunit_ext_id: "prJwfHo35UK"
+    }, zim_co_ma_chibuwe_clinic:  {
       project_id:     "12",
       year:           "2018",
       quarter:        "1",
       orgunit_ext_id: "moQZ9tvpYvt"
     }
-
   }.with_indifferent_access
 
   desc "Run invoice from commandline"

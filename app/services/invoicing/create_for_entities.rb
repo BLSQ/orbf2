@@ -205,7 +205,7 @@ module Invoicing
         children:          false
       }
       Rails.logger.info "fetching values #{values_query.to_json}"
-      dhis2.data_value_sets.list(values_query)
+      dhis2.data_value_sets.list(values_query) || []
     end
 
     def mock_values(_org_units_by_package)
