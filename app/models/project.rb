@@ -50,6 +50,11 @@ class Project < ApplicationRecord
     message: "%{value} is not a valid see #{CYCLES.join(',')}"
   }
 
+  validates :dhis2_version, presence: true, inclusion: {
+    in:      Dhis2::Configuration::ALLOWED_VERSIONS,
+    message: "%{value} is not a valid see #{Dhis2::Configuration::ALLOWED_VERSIONS.join(',')}"
+  }
+
   # see PaperTrailed meta
   def project_id
     id
@@ -201,9 +206,9 @@ class Project < ApplicationRecord
   def verify_connection
     return { status: :ko, message: errors.full_messages.join(",") } if invalid?
     infos = dhis2_connection.system_infos.get
-    return { status: :ok, message: infos }
-  rescue => e
-    return { status: :ko, message: e.message }
+    { status: :ok, message: infos }
+  rescue StandardError => e
+    { status: :ko, message: e.message }
   end
 
   def dhis_configuration

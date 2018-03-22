@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170913121634) do
+ActiveRecord::Schema.define(version: 20180322124142) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -193,6 +193,7 @@ ActiveRecord::Schema.define(version: 20170913121634) do
     t.integer  "project_anchor_id"
     t.integer  "original_id"
     t.string   "cycle",             default: "quarterly", null: false
+    t.string   "dhis2_version",     default: "2.24",      null: false
     t.index ["project_anchor_id"], name: "index_projects_on_project_anchor_id", using: :btree
   end
 
