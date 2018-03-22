@@ -12,7 +12,7 @@
             <li><%= total_item.formula.code %></li>
             <li><%= total_item.formula.expression %></li>
             <li><%= total_item.formula.dhis2_mapping %><l/i>
-            <li><%= @datacompound.data_element(total_item.formula.dhis2_mapping)&.name%> </>
+            <li><%= @data_compound.data_element(total_item.formula.dhis2_mapping)&.name%> </>
             </ul>
             <h3>Step by step explanations</h3>
             <% total_item.explanations.each do |explanation|%>

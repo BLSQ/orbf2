@@ -1,13 +1,13 @@
 
 module WebmockDhis2Helpers
   def stub_all_data_compound(project)
-    stub_request(:get, "#{project.dhis2_url}/api/dataElements?fields=:all&page=1")
+    stub_request(:get, "#{project.dhis2_url}/api/dataElements?fields=:all&page=1&pageSize=20000")
       .to_return(status: 200, body: fixture_content(:dhis2, "all_data_elements.json"))
 
-    stub_request(:get, "#{project.dhis2_url}/api/dataElementGroups?fields=:all&page=1")
+    stub_request(:get, "#{project.dhis2_url}/api/dataElementGroups?fields=:all&page=1&pageSize=20000")
       .to_return(status: 200, body: fixture_content(:dhis2, "data_element_groups.json"))
 
-    stub_request(:get, "#{project.dhis2_url}/api/indicators?fields=:all&page=1")
+    stub_request(:get, "#{project.dhis2_url}/api/indicators?fields=:all&page=1&pageSize=20000")
       .to_return(status: 200, body: fixture_content(:dhis2, "indicators.json"))
   end
 

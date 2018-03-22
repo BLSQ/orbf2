@@ -34,7 +34,8 @@ RSpec.describe Setup::InvoicesController, type: :controller do
         invoicing_request: {
           entity:  org_unit_id,
           year:    "2017",
-          quarter: "1"
+          quarter: "1",
+          legacy_engine: "1"
         },
         simulate_draft: true
       }
@@ -52,7 +53,8 @@ RSpec.describe Setup::InvoicesController, type: :controller do
           entity:      org_unit_id,
           year:        "2017",
           quarter:     "1",
-          mock_values: "1"
+          mock_values: "1",
+          legacy_engine: "1"
         },
         simulate_draft: true
       }

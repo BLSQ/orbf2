@@ -7,8 +7,10 @@ GIT
       dry-validation (= 0.11.1)
       rest-client
 
-PATH
-  remote: ../orbf-rules_engine
+GIT
+  remote: https://github.com/BLSQ/orbf-rules_engine.git
+  revision: 1e9033de4cc9509c050069d89fd1325c173372af
+  branch: using_rules_engine_gem
   specs:
     orbf-rules_engine (0.1.0)
       activesupport

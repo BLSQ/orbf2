@@ -17,11 +17,14 @@
                 <li><%= variable.key %></li>
                 <li><code><%= variable.expression %></code></li>
                 <% activity_state = @activity_mappings[[variable.activity_code, variable.state]] %>
+                <%if variable.formula %>
+                  <li><%= variable.formula.code %> = <%= variable.formula.expression %></li>
+                <%end%>
                 <%if variable.dhis2_data_element %>
                   <li><%= variable.dhis2_data_element %></li>
-                  <li><%= @datacompound.data_element(variable.dhis2_data_element)&.name%>
+                  <li><%= @data_compound.data_element(variable.dhis2_data_element)&.name%>
                 <%elsif activity_state%>
-                  <li>Mapping : <%= activity_state.ext_id%> - <%= activity_state.kind%> - <%= @datacompound.data_element(activity_state.ext_id)&.name%>
+                  <li>Mapping : <%= activity_state.ext_id%> - <%= activity_state.kind%> - <%= @data_compound.data_element(activity_state.ext_id)&.name%>
                 <%end%>
             </ul>
             <h3>Step by step explanations</h3>

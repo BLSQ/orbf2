@@ -37,47 +37,23 @@ class Setup::InvoicesController < PrivateController
   end
 
   def render_new_invoice(project, invoicing_request)
-    @datacompound = project.project_anchor.nearest_data_compound_for(invoicing_request.end_date_as_date)
-    @datacompound ||= DataCompound.from(project)
-    legacy_pyramid = project.project_anchor.nearest_pyramid_for(invoicing_request.end_date_as_date)
-    if legacy_pyramid
-      @pyramid = Orbf::RulesEngine::PyramidFactory.from_dhis2(
-        org_units:          legacy_pyramid.org_units,
-        org_unit_groups:    legacy_pyramid.org_unit_groups,
-        org_unit_groupsets: legacy_pyramid.organisation_unit_group_sets
-      )
-    end
-
-    orbf_project = MapProjectToOrbfProject.new(project, @datacompound.indicators).map
-    fetch_and_solve = Orbf::RulesEngine::FetchAndSolve.new(
-      orbf_project,
-      invoicing_request.entity,
-      invoicing_request.year_quarter.to_dhis2,
-      @pyramid
+    options = Invoicing::InvoicingOptions.new(
+      publish_to_dhis2:       false,
+      force_project_id:       project.id,
+      allow_fresh_dhis2_data: false
     )
-    fetch_and_solve.call
-    @pyramid = fetch_and_solve.pyramid
+    @invoice_entity = Invoicing::InvoiceEntity.new(project.project_anchor, invoicing_request, options)
+    Invoicing::MapToInvoices.new.call(invoicing_request, @invoice_entity.fetch_and_solve)
 
-    selected_periods = [
-      invoicing_request.year_quarter.months.map(&:to_dhis2),
-      invoicing_request.year_quarter.to_dhis2
-    ].flatten.to_set
+    @dhis2_export_values = @invoice_entity.fetch_and_solve.exported_values
+    @dhis2_input_values = @invoice_entity.fetch_and_solve.dhis2_values
+    @pyramid = @invoice_entity.pyramid
+    @data_compound = @invoice_entity.data_compound
 
-    invoicing_request.invoices = Orbf::RulesEngine::InvoicePrinter.new(
-      fetch_and_solve.solver.variables,
-      fetch_and_solve.solver.solution
-    ).print
-
-    invoicing_request.invoices = invoicing_request.invoices.select { |invoice|
-      selected_periods.include?(invoice.period) && (invoice.activity_items.any? || invoice.total_items.any?)
-    }.sort_by(&:period)
-
-    @dhis2_export_values = fetch_and_solve.exported_values
-    @dhis2_input_values = fetch_and_solve.dhis2_values
-
-    # extra
-
-    @activity_mappings = orbf_project.packages.each_with_object({}) do |package, activity_mappings|
+    # to allow display input dhis2 data elements
+    @activity_mappings = @invoice_entity.orbf_project
+                                        .packages
+                                        .each_with_object({}) do |package, activity_mappings|
       package.activities.each do |activity|
         activity.activity_states.each do |activity_state|
           activity_mappings[[activity.activity_code, activity_state.state]] = activity_state
@@ -85,17 +61,10 @@ class Setup::InvoicesController < PrivateController
       end
     end
 
-    org_unit =  @pyramid.org_unit(invoicing_request.entity)
-    org_unit = Orbf::RulesEngine::OrgUnitWithFacts.new(
-      orgunit: org_unit,
-      facts:   Orbf::RulesEngine::OrgunitFacts.new(org_unit, @pyramid).to_facts
-    )
-    @org_unit_summaries = [
-      org_unit.name,
-      "Path : " + org_unit.parent_ext_ids.map { |parent_id| @pyramid.org_unit(parent_id) }.map(&:name).join(" > "),
-      "Groups : " + @pyramid.groups(org_unit.group_ext_ids).map(&:name).join(", "),
-      "Facts : " + org_unit.facts.map(&:to_s).join(", ")
-    ]
+    @org_unit_summaries = Invoicing::EntitySignalitic.new(
+      @pyramid,
+      invoicing_request.entity
+    ).call
 
     render "new_invoice"
   end
