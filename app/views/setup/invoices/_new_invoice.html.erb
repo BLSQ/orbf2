@@ -1,5 +1,5 @@
 <a name="<%= (invoice.package&.code || invoice.payment_rule&.code)+"-"+invoice.period%>"></a>
-<h2><%= (invoice.package&.code || invoice.payment_rule&.code).humanize %> &nbsp;&nbsp;&nbsp;&nbsp; <%= fa_icon("calendar")%> <%= invoice.period%></h2>
+<h2><%= (invoice.package&.code || invoice.payment_rule&.code).humanize %> &nbsp;&nbsp;&nbsp;&nbsp; <span class="pull-right"><%= fa_icon("calendar")%> <%= invoice.period%></span></h2>
 
 <% if invoice.activity_items.any? %>
 <table class="table invoice num-span-table table-striped">

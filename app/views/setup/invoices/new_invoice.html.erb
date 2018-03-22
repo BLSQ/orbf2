@@ -1,5 +1,21 @@
 <%= render partial: "form"  %>
 
+<% if @org_unit_summaries %>
+  <br>
+  <br>
+  <% @org_unit_summaries.each do |summary|%>
+    <%= summary %> <br>
+  <%end%>
+  <br>
+  <br>
+  <br>
+<%end%>
+
+<button class="pull-right btn btn-default" data-toggle="collapse" data-target="#rules-descriptors">Show descriptors</button>
+<div id="rules-descriptors" class="collapse">
+  <pre><%= as_pretty_json_string(project_descriptor(@current_project))%></pre>
+</div>
+
 <h1> Invoice details </h1>
 <%= render partial: "new_invoice", collection: invoicing_request.invoices, :as => :invoice  %>
 
@@ -7,12 +23,14 @@
 <br>
 <br>
 
-<h3 > Dhis2 values </h3>
-<button class="btn btn-default" data-toggle="collapse" data-target="#dhis2-values">Show values</button>
-  <div id="dhis2-values" class="collapse">
-    <pre>
-    <%=
-    JSON.pretty_generate(@exported_values)
-     %>
-    </pre>
+<h3 > Dhis2 output values </h3>
+<button class="btn btn-default" data-toggle="collapse" data-target="#dhis2-output-values">Show values</button>
+  <div id="dhis2-output-values" class="collapse">
+    <pre><%=JSON.pretty_generate(@dhis2_export_values)%></pre>
+</div>
+
+<h3 > Dhis2 input values </h3>
+<button class="btn btn-default" data-toggle="collapse" data-target="#dhis2-input-values">Show values</button>
+  <div id="dhis2-input-values" class="collapse">
+    <pre><%=JSON.pretty_generate(@dhis2_input_values) %></pre>
 </div>

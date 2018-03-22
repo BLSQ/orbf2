@@ -1,19 +1,18 @@
 GIT
   remote: https://github.com/BLSQ/dhis2.git
-  revision: 8135296d110b9843e1fd4c3c017e5dc2f4cdb6d6
-  branch: master
+  revision: e391518d95e6ee575e928c089253348924267575
+  branch: fix/datavaluesset-return-empty-hash
   specs:
     dhis2 (3.0.0)
       dry-validation (= 0.11.1)
       rest-client
 
-GIT
-  remote: https://github.com/BLSQ/orbf-rules_engine.git
-  revision: 454fe232842bf69c7abe1457b6a33684d408f738
-  branch: feature/subcontract-decision-table-support
+PATH
+  remote: ../orbf-rules_engine
   specs:
     orbf-rules_engine (0.1.0)
       activesupport
+      colorize
       dentaku (= 3.1.0)
       dhis2 (= 3.0.0)
 
@@ -83,6 +82,7 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.11.1)
+    colorize (0.8.1)
     concurrent-ruby (1.0.5)
     connection_pool (2.2.1)
     crack (0.4.3)
@@ -108,7 +108,7 @@ GEM
     dry-container (0.6.0)
       concurrent-ruby (~> 1.0)
       dry-configurable (~> 0.1, >= 0.1.3)
-    dry-core (0.4.4)
+    dry-core (0.4.5)
       concurrent-ruby (~> 1.0)
     dry-equalizer (0.2.0)
     dry-logic (0.4.2)
@@ -206,6 +206,7 @@ GEM
     multi_json (1.12.1)
     multi_xml (0.6.0)
     multipart-post (2.0.0)
+    naturalsort (1.2.0)
     nested_form (0.3.2)
     netrc (0.11.0)
     nio4r (2.1.0)
@@ -456,6 +457,7 @@ DEPENDENCIES
   listen (~> 3.0.5)
   lograge
   memory_profiler
+  naturalsort
   orbf-rules_engine!
   paper_trail
   pg (~> 0.18)
