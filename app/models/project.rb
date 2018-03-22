@@ -16,6 +16,7 @@
 #  project_anchor_id :integer
 #  original_id       :integer
 #  cycle             :string           default("quarterly"), not null
+#  dhis2_version     :string           default("2.24"), not null
 #
 
 class Project < ApplicationRecord
@@ -206,6 +207,7 @@ class Project < ApplicationRecord
   def verify_connection
     return { status: :ko, message: errors.full_messages.join(",") } if invalid?
     infos = dhis2_connection.system_infos.get
+    self.dhis2_version = infos['version']
     { status: :ok, message: infos }
   rescue StandardError => e
     { status: :ko, message: e.message }
@@ -216,7 +218,7 @@ class Project < ApplicationRecord
       config.url      = dhis2_url
       config.user     = user
       config.password = password
-      config.version  = dhis_version
+      config.version  = dhis2_version
       config.no_ssl_verification = bypass_ssl
     end
   end

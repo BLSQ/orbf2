@@ -1,9 +1,24 @@
 <%= simple_form_for([:setup,step.model]) do |f| %>
-  <%= f.input :name %>
-  <%= f.input :cycle, collection: Project::CYCLES %>
-  <%= f.input :dhis2_url, placeholder: "eg : https://play.dhis2.org/demo" %>
-  <%= f.input :user, input_html: { autocomplete: "off" }  %>
-  <%= f.input :password, input_html: { autocomplete: "off" } %>
-  <%= f.input :bypass_ssl, label: "Check this to bypass SSL verification for self-signed certificate. Note that this might allow man-in-the middle attack!" %>
+  <div class="col-md-12">
+    <%= f.input :name %>
+  </div>
+  <div class="col-md-12">
+    <%= f.input :cycle, collection: Project::CYCLES %>
+  </div>
+  <div class="col-md-10">
+    <%= f.input :dhis2_url, placeholder: "eg : https://play.dhis2.org/demo" %>
+  </div>
+  <div class="col-md-2">
+    <%= f.input :dhis2_version, readonly: true, input_html: { class: "text-right" } %>
+  </div>
+  <div class="col-md-6">
+    <%= f.input :user, input_html: { autocomplete: "off" }  %>
+  </div>
+  <div class="col-md-6">
+    <%= f.input :password, input_html: { autocomplete: "off" } %>
+  </div>
+  <div class="col-md-12">
+    <%= f.input :bypass_ssl, label: "Check this to bypass SSL verification for self-signed certificate. Note that this might allow man-in-the middle attack!" %>
+  </div>
   <%= f.button :submit, class: "btn btn-success" %>
 <% end %>

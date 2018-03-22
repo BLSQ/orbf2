@@ -16,6 +16,7 @@
 #  project_anchor_id :integer
 #  original_id       :integer
 #  cycle             :string           default("quarterly"), not null
+#  dhis2_version     :string           default("2.24"), not null
 #
 
 require "rails_helper"
@@ -52,6 +53,12 @@ RSpec.describe Project, type: :model do
         status:  :ok,
         message: { "version"=>"2.25" }
       )
+    end
+
+    it "should return DHIS2 version number" do
+      stub_dhis2_system_info_success(project.dhis2_url)
+
+      expect(project.verify_connection[:message]['version']).to eq("2.25")
     end
 
     it "should return ko when connection is ko" do

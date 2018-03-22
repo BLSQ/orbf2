@@ -16,6 +16,7 @@
 #  project_anchor_id :integer
 #  original_id       :integer
 #  cycle             :string           default("quarterly"), not null
+#  dhis2_version     :string           default("2.24"), not null
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl
