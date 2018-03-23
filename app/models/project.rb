@@ -207,12 +207,16 @@ class Project < ApplicationRecord
   end
 
   def dhis2_connection
-    Dhis2::Client.new(
+    Dhis2::Client.new(dhis_configuration)
+  end
+
+  def dhis_configuration
+    {
       url:                 dhis2_url,
       user:                user,
       password:            password,
       no_ssl_verification: bypass_ssl
-    )
+    }
   end
 
   def unused_packages
@@ -359,6 +363,8 @@ class Project < ApplicationRecord
     end
     missing_activity_states
   end
+
+
 
   private
 

@@ -1,3 +1,5 @@
+require "natural_sort"
+
 class Setup::InvoicesController < PrivateController
   attr_reader :invoicing_request
   helper_method :invoicing_request
@@ -5,10 +7,11 @@ class Setup::InvoicesController < PrivateController
   def new
     project = current_project(project_scope: :fully_loaded) if params["calculate"]
     @invoicing_request = InvoicingRequest.new(
-      project: current_project,
-      year:    params[:year] || Date.today.to_date.year,
-      quarter: params[:quarter] || (Date.today.to_date.month / 4) + 1,
-      entity:  params[:entity]
+      project:       current_project,
+      year:          params[:year] || Date.today.to_date.year,
+      quarter:       params[:quarter] || (Date.today.to_date.month / 4) + 1,
+      entity:        params[:entity],
+      legacy_engine: params[:legacy_engine] ? params[:legacy_engine] == "true" : true
     )
     if params["calculate"]
       render_invoice(project, invoicing_request)
@@ -26,6 +29,47 @@ class Setup::InvoicesController < PrivateController
   private
 
   def render_invoice(project, invoicing_request)
+    if invoicing_request.legacy_engine?
+      render_legacy_invoice(project, invoicing_request)
+    else
+      render_new_invoice(project, invoicing_request)
+    end
+  end
+
+  def render_new_invoice(project, invoicing_request)
+    options = Invoicing::InvoicingOptions.new(
+      publish_to_dhis2:       false,
+      force_project_id:       params[:simulate_draft] ? project.id : nil,
+      allow_fresh_dhis2_data: params[:simulate_draft]
+    )
+    @invoice_entity = Invoicing::InvoiceEntity.new(project.project_anchor, invoicing_request, options)
+    Invoicing::MapToInvoices.new.call(invoicing_request, @invoice_entity.fetch_and_solve)
+
+    @dhis2_export_values = @invoice_entity.fetch_and_solve.exported_values
+    @dhis2_input_values = @invoice_entity.fetch_and_solve.dhis2_values
+    @pyramid = @invoice_entity.pyramid
+    @data_compound = @invoice_entity.data_compound
+
+    # to allow display input dhis2 data elements
+    @activity_mappings = @invoice_entity.orbf_project
+                                        .packages
+                                        .each_with_object({}) do |package, activity_mappings|
+      package.activities.each do |activity|
+        activity.activity_states.each do |activity_state|
+          activity_mappings[[activity.activity_code, activity_state.state]] = activity_state
+        end
+      end
+    end
+
+    @org_unit_summaries = Invoicing::EntitySignalitic.new(
+      @pyramid,
+      invoicing_request.entity
+    ).call
+
+    render "new_invoice"
+  end
+
+  def render_legacy_invoice(project, invoicing_request)
     pyramid = project.project_anchor.nearest_pyramid_for(invoicing_request.end_date_as_date)
     pyramid ||= Pyramid.from(project)
     @pyramid = pyramid
@@ -37,6 +81,7 @@ class Setup::InvoicesController < PrivateController
     @org_unit = org_unit
 
     render(:new) && return unless org_unit
+    org_unit.pyramid ||= pyramid
 
     @org_unit_summaries = [
       org_unit.name,
@@ -88,10 +133,10 @@ class Setup::InvoicesController < PrivateController
       invoicing_request.invoices = invoicing_request.invoices.sort_by(&:date)
     rescue Rules::SolvingError => e
       log(e)
-      flash[:alert] = "Failed to simulate invoice : #{e.class.name} #{e.message} : <br>#{e.facts_and_rules.map { |k, v| [k, v].join(' : ') }.join(' <br>')}".html_safe
+      flash[:alert] = "Failed to simulate invoice : #{e.class.name} #{e.message[0..100]} : <br>#{e.facts_and_rules.map { |k, v| [k, v].join(' : ') }.join(' <br>')}".html_safe
     rescue => e
       log(e)
-      flash[:alert] = "Failed to simulate invoice : #{e.class.name} #{e.message}"
+      flash[:alert] = "Failed to simulate invoice : #{e.class.name} #{e.message[0..100]}"
     end
     render :new
   end
@@ -105,6 +150,7 @@ class Setup::InvoicesController < PrivateController
           .permit(:entity,
                   :year,
                   :quarter,
-                  :mock_values)
+                  :mock_values,
+                  :legacy_engine)
   end
 end

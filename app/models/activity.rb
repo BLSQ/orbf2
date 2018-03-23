@@ -32,7 +32,17 @@ class Activity < ApplicationRecord
   before_validation :codify
 
   def codify
-    self.code = Codifier.codify(self.name) if self.code.blank?
+    self.code = Codifier.codify(name) if code.blank?
+  end
+
+  def code
+    val = read_attribute(:code)
+    if val.present?
+      return val
+    elsif name
+      write_attribute(:code, Codifier.codify(name))
+      read_attribute(:code)
+    end
   end
 
   def activity_state(state)

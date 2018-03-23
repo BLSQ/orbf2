@@ -17,7 +17,7 @@ class ProjectFactory
           formulas: [
             new_formula(
               :difference_percentage,
-              "if (verified != 0.0, (ABS(claimed - verified) / verified ) * 100.0, 0.0)",
+              "if (verified != 0.0, (ABS(claimed - verified) / verified ) * 100.0, 0.0) ",
               "Pourcentage difference entre déclaré & vérifié"
             ),
             new_formula(

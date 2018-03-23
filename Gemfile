@@ -2,6 +2,11 @@ source "https://rubygems.org"
 
 ruby "2.4.2"
 
+git_source(:github) do |repo_name|
+  repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
+  "https://github.com/#{repo_name}.git"
+end
+
 gem "bootstrap-datepicker-rails"
 gem "bootstrap-sass", "~> 3.3.6"
 gem "cocoon"
@@ -9,7 +14,7 @@ gem "coffee-rails", "~> 4.2"
 gem "deep_cloneable"
 gem "dentaku"
 gem "devise", "~> 4.2.0"
-gem "dhis2", git: "https://github.com/BLSQ/dhis2.git"
+gem "dhis2"
 gem "differ"
 gem "easy_diff"
 gem "figaro"
@@ -20,6 +25,12 @@ gem "jquery-rails"
 gem "jquery-ui-rails"
 gem "json", "2.1.0"
 gem "lograge"
+gem "naturalsort"
+if ENV["ORBF_DEV_MODE"]
+  gem "orbf-rules_engine", path: "../orbf-rules_engine"
+else
+  gem "orbf-rules_engine", github: "BLSQ/orbf-rules_engine", branch: "using_rules_engine_gem"
+end
 gem "paper_trail"
 gem "pg", "~> 0.18"
 gem "puma", "~> 3.0"
