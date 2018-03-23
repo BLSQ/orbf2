@@ -12,6 +12,7 @@ PATH
   specs:
     orbf-rules_engine (0.1.0)
       activesupport
+      colorize
       dentaku (= 3.1.0)
       dhis2 (= 3.0.0)
 
@@ -81,6 +82,7 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.11.1)
+    colorize (0.8.1)
     concurrent-ruby (1.0.5)
     connection_pool (2.2.1)
     crack (0.4.3)

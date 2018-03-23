@@ -57,8 +57,8 @@ RSpec.describe Project, type: :model do
 
     it "should return DHIS2 version number" do
       stub_dhis2_system_info_success(project.dhis2_url)
-
-      expect(project.verify_connection[:message]['version']).to eq("2.25")
+      project.verify_connection
+      expect(project.dhis2_version).to eq("2.25")
     end
 
     it "should return ko when connection is ko" do

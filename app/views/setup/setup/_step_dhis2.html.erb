@@ -6,7 +6,7 @@
     <%= f.input :cycle, collection: Project::CYCLES %>
   </div>
   <div class="col-md-10">
-    <%= f.input :dhis2_url, placeholder: "eg : https://play.dhis2.org/demo" %>
+    <%= f.input :dhis2_url, placeholder: "eg : https://play.dhis2.org/#{step.model.dhis2_version}/" %>
   </div>
   <div class="col-md-2">
     <%= f.input :dhis2_version, readonly: true, input_html: { class: "text-right" } %>
