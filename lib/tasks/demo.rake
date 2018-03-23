@@ -80,7 +80,7 @@ namespace :demo do
 
     test_cases = TEST_CASES.map { |k, v| [k, OpenStruct.new(v)] }
     test_case_name = ENV["test_case"]
-    test_case = OpenStruct.new(TEST_CASES[test_case_name])
+
     test_cases = { test_case_name.to_sym => TEST_CASES[test_case_name] } if test_case_name != "all"
 
     test_cases.each do |test_case_name, test_case|
