@@ -2,14 +2,21 @@ source "https://rubygems.org"
 
 ruby "2.4.2"
 
+source "https://rubygems.org"
+
+git_source(:github) do |repo_name|
+  repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
+  "https://github.com/#{repo_name}.git"
+end
+
 gem "bootstrap-datepicker-rails"
 gem "bootstrap-sass", "~> 3.3.6"
 gem "cocoon"
 gem "coffee-rails", "~> 4.2"
 gem "deep_cloneable"
-gem "dentaku"
+gem "dentaku", "~> 3.1.0"
 gem "devise", "~> 4.2.0"
-gem "dhis2", git: "https://github.com/BLSQ/dhis2.git"
+gem "dhis2", github: "BLSQ/dhis2", branch: "fix/datavaluesset-return-empty-hash"
 gem "differ"
 gem "easy_diff"
 gem "figaro"
@@ -20,12 +27,19 @@ gem "jquery-rails"
 gem "jquery-ui-rails"
 gem "json", "2.1.0"
 gem "lograge"
+gem "naturalsort"
+if ENV["ORBF_DEV_MODE"]
+  gem "orbf-rules_engine", path: "../orbf-rules_engine"
+else
+  gem "orbf-rules_engine", github: "BLSQ/orbf-rules_engine", branch: "using_rules_engine_gem"
+end
 gem "paper_trail"
 gem "pg", "~> 0.18"
 gem "puma", "~> 3.0"
 gem "rails", "~> 5.0.0", ">= 5.0.4"
 gem "rails-jquery-autocomplete"
 gem "rails_admin"
+gem "rails-controller-testing"
 gem "sass-rails", "~> 5.0"
 gem "sentry-raven", "2.6.3"
 gem "sidekiq"
@@ -39,7 +53,7 @@ group :development, :test do
   gem "database_cleaner"
   gem "factory_girl_rails", " 4.0"
   gem "faker"
-  gem "rails-controller-testing"
+  gem "rest-client-logger"
   gem "rest-client-logger"
   gem "rspec-its"
   gem "rspec-rails", "~> 3.0"
@@ -57,6 +71,7 @@ group :development do
   gem "pronto-rubocop", require: false
   gem "pronto-simplecov", require: false
   gem "rack-mini-profiler"
+  gem "rails-controller-testing"
   gem "rubocop", require: false
   gem "spring"
   gem "spring-watcher-listen", "~> 2.0.0"
@@ -74,6 +89,3 @@ end
 group :production do
   gem "heroku-deflater"
 end
-
-# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem "tzinfo-data", platforms: %i[mingw mswin x64_mingw jruby]

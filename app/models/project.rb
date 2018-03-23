@@ -206,13 +206,18 @@ class Project < ApplicationRecord
     return { status: :ko, message: e.message }
   end
 
+  def dhis_configuration
+    Dhis2::Configuration.new.tap do |config|
+      config.url      = dhis2_url
+      config.user     = user
+      config.password = password
+      config.version  = dhis_version
+      config.no_ssl_verification = bypass_ssl
+    end
+  end
+
   def dhis2_connection
-    Dhis2::Client.new(
-      url:                 dhis2_url,
-      user:                user,
-      password:            password,
-      no_ssl_verification: bypass_ssl
-    )
+    Dhis2::Client.new(dhis_configuration.client_params)
   end
 
   def unused_packages
@@ -370,5 +375,9 @@ class Project < ApplicationRecord
 
   def log(message)
     Rails.logger.info message
+  end
+
+  def dhis_version
+    "2.24"
   end
 end

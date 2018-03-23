@@ -98,22 +98,22 @@ class ProjectAnchor < ApplicationRecord
   def new_data_compound(data_elements, data_element_groups, indicators)
     return nil unless data_elements && data_element_groups
     DataCompound.new(
-      data_elements.content.map { |r| Dhis2::Api::DataElement.new(nil, r["table"]) },
-      data_element_groups.content.map { |r| Dhis2::Api::DataElementGroup.new(nil, r["table"]) },
-      indicators ? indicators.content.map { |r| Dhis2::Api::Indicator.new(nil, r["table"]) } : []
+      data_elements.content.map { |r| Dhis2::DataElement[version].new(nil, r["table"]) },
+      data_element_groups.content.map { |r| Dhis2::DataElementGroup[version].new(nil, r["table"]) },
+      indicators ? indicators.content.map { |r| Dhis2::Indicator[version].new(nil, r["table"]) } : []
     )
   end
 
   def new_pyramid(orgs_data)
     Pyramid.new(
       orgs_data[:organisation_units].content.map do |r|
-        Dhis2::Api::OrganisationUnit.new(nil, r["table"])
+        Dhis2::OrganisationUnit[version].new(nil, r["table"])
       end,
       orgs_data[:organisation_unit_groups].content.map do |r|
-        Dhis2::Api::OrganisationUnitGroup.new(nil, r["table"])
+        Dhis2::OrganisationUnitGroup[version].new(nil, r["table"])
       end,
       orgs_data[:organisation_unit_group_sets].content.map do |r|
-        Dhis2::Api::OrganisationUnitGroupSet.new(nil, r["table"])
+        Dhis2::OrganisationUnitGroupSet[version].new(nil, r["table"])
       end
     )
   end
@@ -128,5 +128,9 @@ class ProjectAnchor < ApplicationRecord
     data_element_groups = snapshots.find(&:kind_data_element_groups?)
     indicators = snapshots.find(&:kind_indicators?)
     new_data_compound(data_elements, data_element_groups, indicators)
+  end
+
+  def version
+    "2.28"
   end
 end

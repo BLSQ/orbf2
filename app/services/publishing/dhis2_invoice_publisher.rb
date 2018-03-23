@@ -4,7 +4,7 @@ module Publishing
       values = to_values(invoices)
       Rails.logger.info "about to publish #{values.size} values to dhis2"
       return if values.empty?
-      status = project.dhis2_connection.data_value_sets.create(values)
+      status = project.dhis2_connection.data_value_sets.bulk_create(data_values: values)
       Rails.logger.info values.to_json
       Rails.logger.info status.raw_status.to_json
       project.project_anchor.dhis2_logs.create(sent: values, status: status.raw_status)
