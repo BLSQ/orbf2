@@ -51,16 +51,7 @@ class Setup::InvoicesController < PrivateController
     @pyramid = @invoice_entity.pyramid
     @data_compound = @invoice_entity.data_compound
 
-    # to allow display input dhis2 data elements
-    @activity_mappings = @invoice_entity.orbf_project
-                                        .packages
-                                        .each_with_object({}) do |package, activity_mappings|
-      package.activities.each do |activity|
-        activity.activity_states.each do |activity_state|
-          activity_mappings[[activity.activity_code, activity_state.state]] = activity_state
-        end
-      end
-    end
+    activity_mappings
 
     @org_unit_summaries = Invoicing::EntitySignalitic.new(
       @pyramid,
@@ -153,5 +144,18 @@ class Setup::InvoicesController < PrivateController
                   :quarter,
                   :mock_values,
                   :legacy_engine)
+  end
+
+  # to allow display input dhis2 data elements
+  def activity_mappings
+    @activity_mappings = @invoice_entity.orbf_project
+                                        .packages
+                                        .each_with_object({}) do |package, activity_mappings|
+      package.activities.each do |activity|
+        activity.activity_states.each do |activity_state|
+          activity_mappings[[activity.activity_code, activity_state.state]] = activity_state
+        end
+      end
+    end
   end
 end
