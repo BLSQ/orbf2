@@ -43,7 +43,8 @@ class Setup::InvoicesController < PrivateController
       allow_fresh_dhis2_data: params[:simulate_draft]
     )
     @invoice_entity = Invoicing::InvoiceEntity.new(project.project_anchor, invoicing_request, options)
-    Invoicing::MapToInvoices.new.call(invoicing_request, @invoice_entity.fetch_and_solve)
+    @invoice_entity.call
+    Invoicing::MapToInvoices.new(invoicing_request, @invoice_entity.fetch_and_solve.solver).call
 
     @dhis2_export_values = @invoice_entity.fetch_and_solve.exported_values
     @dhis2_input_values = @invoice_entity.fetch_and_solve.dhis2_values
@@ -134,7 +135,7 @@ class Setup::InvoicesController < PrivateController
     rescue Rules::SolvingError => e
       log(e)
       flash[:alert] = "Failed to simulate invoice : #{e.class.name} #{e.message[0..100]} : <br>#{e.facts_and_rules.map { |k, v| [k, v].join(' : ') }.join(' <br>')}".html_safe
-    rescue => e
+    rescue StandardError => e
       log(e)
       flash[:alert] = "Failed to simulate invoice : #{e.class.name} #{e.message[0..100]}"
     end

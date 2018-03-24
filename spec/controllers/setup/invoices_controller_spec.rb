@@ -68,6 +68,8 @@ RSpec.describe Setup::InvoicesController, type: :controller do
         simulate_draft:    true
       }
 
+      expect(assigns(:invoicing_request).invoices.size).to eq(5)
+
       expect(response).to have_http_status(:success)
     end
 
