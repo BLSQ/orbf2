@@ -6,9 +6,13 @@ namespace :new_engine do
     require "colorized_string"
 
     test_cases = TEST_CASES.map { |k, v| [k, OpenStruct.new(v)] }
-    test_case_name = ENV["test_case"]
+    selected_test_case_name = ENV["test_case"]
 
-    test_cases = { test_case_name => TEST_CASES[test_case_name] } if test_case_name != "all"
+    if selected_test_case_name != "all"
+      test_cases = {
+        selected_test_case_name => TEST_CASES[selected_test_case_name]
+      }
+    end
 
     test_cases.each do |test_case_name, test_case|
       run_test_case(test_case_name, OpenStruct.new(test_case))
@@ -17,7 +21,7 @@ namespace :new_engine do
 
   def run_test_case(test_case_name, test_case)
     puts ColorizedString["***** #{test_case_name} : #{test_case.to_h}"].colorize(:light_cyan)
-    raise " no '#{test_case_name}' only knows #{TEST_CASES.keys.join(', ')}" if test_case.to_h.empty?
+    raise " no '#{test_case_name}' try all or #{TEST_CASES.keys.join(', ')}" if test_case.to_h.empty?
 
     invoicing_period = "#{test_case.year}Q#{test_case.quarter}"
 
@@ -57,7 +61,9 @@ namespace :new_engine do
     missing_indexed = missing.group_by { |v| [v[:dataElement], v[:orgUnit], v[:period]] }
     extra_indexed = extra.group_by { |v| [v[:dataElement], v[:orgUnit], v[:period]] }
 
-    with_comments = raw_legacy_exported_values.group_by { |v| [v["dataElement"], v["orgUnit"], v["period"]] }
+    with_comments = raw_legacy_exported_values.group_by do |v|
+      [v["dataElement"], v["orgUnit"], v["period"]]
+    end
 
     success = missing.empty? && extra.empty?
     if success
@@ -86,6 +92,7 @@ namespace :new_engine do
     raise " legacy vs rules engine failed " unless success
   end
 
+  # rubocop:disable Rails/TimeZone
   def with_benchmark(message)
     start = Time.now
     value = nil
@@ -97,6 +104,7 @@ namespace :new_engine do
     end
     value
   end
+  # rubocop:enable Rails/TimeZone
 
   def without_stdout
     original_stderr = $stderr
