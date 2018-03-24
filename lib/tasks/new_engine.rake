@@ -19,15 +19,8 @@ namespace :new_engine do
     end
   end
 
-  def run_test_case(test_case_name, test_case)
-    puts ColorizedString["***** #{test_case_name} : #{test_case.to_h}"].colorize(:light_cyan)
-    raise " no '#{test_case_name}' try all or #{TEST_CASES.keys.join(', ')}" if test_case.to_h.empty?
-
-    invoicing_period = "#{test_case.year}Q#{test_case.quarter}"
-
-    project_anchor_id = Project.find(test_case.project_id).project_anchor_id
-
-    legacy_exported_values = with_benchmark "legacy engine" do
+  def run_legacy_test_case(project_anchor_id, test_case)
+    with_benchmark "legacy engine" do
       invoices = without_stdout do
         InvoicesForEntitiesWorker.new.perform(
           project_anchor_id,
@@ -43,8 +36,12 @@ namespace :new_engine do
 
       Publishing::Dhis2InvoicePublisher.new.to_values(invoices)
     end
+  end
 
-    exported_values = with_benchmark "new engine" do
+  def run_new_test_case(_project_anchor_id, test_case)
+    with_benchmark "new engine" do
+      invoicing_period = "#{test_case.year}Q#{test_case.quarter}"
+
       project = Project.fully_loaded.find(test_case.project_id)
       data_compound = DataCompound.from(project)
       orbf_project = MapProjectToOrbfProject.new(project, data_compound.indicators).map
@@ -52,7 +49,9 @@ namespace :new_engine do
       fetch_and_solve.call
       clean_values(fetch_and_solve.exported_values)
     end
+  end
 
+  def determine_success!(legacy_exported_values, exported_values)
     raw_legacy_exported_values = JSON.parse(legacy_exported_values.to_json)
     legacy_exported_values = clean_values(legacy_exported_values)
     missing = (exported_values - legacy_exported_values)
@@ -90,6 +89,19 @@ namespace :new_engine do
     end
 
     raise " legacy vs rules engine failed " unless success
+  end
+
+  def run_test_case(test_case_name, test_case)
+    puts ColorizedString["***** #{test_case_name} : #{test_case.to_h}"].colorize(:light_cyan)
+    raise " no '#{test_case_name}' try all or #{TEST_CASES.keys.join(', ')}" if test_case.to_h.empty?
+
+    project_anchor_id = Project.find(test_case.project_id).project_anchor_id
+
+    legacy_exported_values = run_legacy_test_case(project_anchor_id, test_case)
+
+    exported_values = run_new_test_case(project_anchor_id, test_case)
+
+    determine_success!(legacy_exported_values, exported_values)
   end
 
   # rubocop:disable Rails/TimeZone

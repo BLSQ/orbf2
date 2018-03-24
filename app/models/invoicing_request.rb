@@ -23,6 +23,6 @@ class InvoicingRequest
   end
 
   def legacy_engine?
-    legacy_engine=="1" || legacy_engine=="true"
+    legacy_engine == "1" || legacy_engine == "true"
   end
 end

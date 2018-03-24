@@ -9,7 +9,7 @@ RSpec.describe MapProjectToOrbfProject do
     expect(orbf_project.packages.first).to be_a(Orbf::RulesEngine::Package)
     expect(orbf_project.packages.size).to eq project.packages.size
 
-    #dump with yaml to support circular references
+    # dump with yaml to support circular references
     puts YAML.dump(orbf_project)
   end
 end

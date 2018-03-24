@@ -36,12 +36,12 @@ class Activity < ApplicationRecord
   end
 
   def code
-    val = read_attribute(:code)
+    val = self[:code]
     if val.present?
       return val
     elsif name
-      write_attribute(:code, Codifier.codify(name))
-      read_attribute(:code)
+      self[:code] = Codifier.codify(name)
+      self[:code]
     end
   end
 

@@ -364,8 +364,6 @@ class Project < ApplicationRecord
     missing_activity_states
   end
 
-
-
   private
 
   def destroy_dependencies

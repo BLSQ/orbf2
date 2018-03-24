@@ -29,14 +29,10 @@ AlignHash:
   # a: 0
   # bb: 1
   EnforcedColonStyle: table
-IfUnlessModifier:
-  MaxLineLength: 100
-LineLength:
+Metrics/LineLength:
   Max: 100
 StringLiterals:
   EnforcedStyle: double_quotes
-WhileUntilModifier:
-  MaxLineLength: 100
 MethodCalledOnDoEndBlock:
   Description: 'Avoid chaining a method call on a do...end block.'
   Enabled: true
@@ -47,7 +43,7 @@ Documentation:
 Style/FrozenStringLiteralComment:
   Enabled: false
 # I don't think there's a good way to enforce this sometime commit_sha1 is ok sometimes user_1 is ok
-Style/VariableNumber:
+Naming/VariableNumber:
   Enabled: false
 # this one triggers a lot of false positive as orbf rules are "%{}"-based
 Style/FormatStringToken:

@@ -51,7 +51,8 @@ module Invoicing
       @project ||= if options.force_project_id
                      project_anchor.projects.fully_loaded.find(options.force_project_id)
                    else
-                     project_anchor.projects.fully_loaded.for_date(invoicing_request.end_date_as_date) || project_anchor.latest_draft
+                     project_anchor.projects.fully_loaded.for_date(invoicing_request.end_date_as_date) ||
+                       project_anchor.latest_draft
                    end
     end
 
@@ -64,11 +65,13 @@ module Invoicing
     end
 
     def pyramid
-      @pyramid ||= legacy_pyramid ? Orbf::RulesEngine::PyramidFactory.from_dhis2(
-        org_units:          legacy_pyramid.org_units,
-        org_unit_groups:    legacy_pyramid.org_unit_groups,
-        org_unit_groupsets: legacy_pyramid.organisation_unit_group_sets
-      ) : nil
+      @pyramid ||= if legacy_pyramid
+                     Orbf::RulesEngine::PyramidFactory.from_dhis2(
+                       org_units:          legacy_pyramid.org_units,
+                       org_unit_groups:    legacy_pyramid.org_unit_groups,
+                       org_unit_groupsets: legacy_pyramid.organisation_unit_group_sets
+                     )
+                   end
     end
   end
 end
