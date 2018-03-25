@@ -17,6 +17,11 @@ module RuleTypes
       var_names << available_variables_for_values.map { |code| "%{#{code}}" }
       var_names << "quarter_of_year"
       var_names << "month_of_year"
+
+      if project.new_engine? && package.package_rule
+        var_names << package.package_rule.formulas.map(&:code)
+      end
+
       if package.multi_entities?
         var_names << "org_units_sum_if_count" if package.multi_entities_rule
         var_names << "org_units_count"
@@ -47,6 +52,20 @@ module RuleTypes
           Analytics::Locations::LevelScope.new.to_fake_facts(package)
         )
         .merge("org_units_count" => "1", "org_units_sum_if_count" => "1")
+        .merge(package_rules_facts)
+    end
+
+    def package_rules_facts
+      return {} unless project.new_engine? && package.package_rule
+      activity_formula_codes = rule.formulas.each_with_object({}) do |formula, hash|
+        hash["#{formula.code}_values".to_sym] = formula.code
       end
+      package.package_rule
+             .formulas
+             .each_with_object({}).each do |formula, facts|
+
+        facts[formula.code] = format(formula.expression, activity_formula_codes)
+      end
+    end
   end
 end
