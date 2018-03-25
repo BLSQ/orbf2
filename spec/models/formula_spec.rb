@@ -19,7 +19,7 @@ RSpec.describe Formula, type: :model do
   end
 
   def new_formula(args)
-    rule = Rule.new
+    rule = Rule.new(kind:"activity", package: Package.new)
     Formula.new(args.merge(code: args[:code] || "sample_expression", description: "description", rule: rule))
   end
 
@@ -37,12 +37,12 @@ RSpec.describe Formula, type: :model do
     end
   end
 
-  describe "frequency validation" do 
-    it "should allow empty frequency" do 
+  describe "frequency validation" do
+    it "should allow empty frequency" do
       formula = new_formula(frequency: "", expression: "variable - 456")
       formula.frequency=""
       expect(formula.valid?).to be true
-      expect(formula.frequency).to be nil    
+      expect(formula.frequency).to be nil
     end
   end
 
