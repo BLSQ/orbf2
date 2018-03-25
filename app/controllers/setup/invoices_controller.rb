@@ -59,6 +59,9 @@ class Setup::InvoicesController < PrivateController
     ).call
 
     render "new_invoice"
+  rescue StandardError => e
+    flash[:failure] = "An error occured during simulation #{e.class.name} #{e.message[0..100]}"
+    render "new_invoice"
   end
 
   def render_legacy_invoice(project, invoicing_request)
