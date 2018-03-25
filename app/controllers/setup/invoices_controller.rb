@@ -11,7 +11,7 @@ class Setup::InvoicesController < PrivateController
       year:          params[:year] || Date.today.to_date.year,
       quarter:       params[:quarter] || (Date.today.to_date.month / 4) + 1,
       entity:        params[:entity],
-      legacy_engine: params[:legacy_engine] ? params[:legacy_engine] == "true" : true
+      legacy_engine: current_project.new_engine? ? false : true
     )
     if params["calculate"]
       render_invoice(project, invoicing_request)

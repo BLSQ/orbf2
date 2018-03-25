@@ -142,6 +142,10 @@ class Project < ApplicationRecord
     order("id desc").limit(10)
   end
 
+  def new_engine?
+    engine_version == 2
+  end
+
   def draft?
     status == "draft"
   end
