@@ -11,7 +11,7 @@
     <% if package.multi_entities_rule%>
         <%= link_to( package.multi_entities_rule.name,
                      edit_setup_project_package_rule_path(project, package, package.multi_entities_rule) ,
-                     class: package.activity_rule.invalid? ? 'btn btn-danger' :'')
+                     class: package.multi_entities_rule.invalid? ? 'btn btn-danger' :'')
         %>
         <% if package.multi_entities_rule.present? %>
             <%= render partial: "rule_formulas", locals: { formulas: package.multi_entities_rule.formulas, readonly: readonly }%>
