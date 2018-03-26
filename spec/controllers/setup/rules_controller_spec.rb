@@ -39,7 +39,6 @@ RSpec.describe Setup::RulesController, type: :controller do
       it "should render new edit form" do
         get :new, params: {
           "package_id" => package.id,
-
           "project_id" => project.id
         }
         expect(response).to have_http_status(200)
@@ -116,6 +115,61 @@ RSpec.describe Setup::RulesController, type: :controller do
         expect(flash[:notice]).to eq("Rule updated !")
         package.activity_rule.reload
         expect(package.activity_rule.name).to eq("sample rule 2")
+      end
+    end
+  end
+
+  describe "When new engine and authenticated" do
+    before(:each) do
+      sign_in user
+    end
+
+    let(:program) { create :program }
+
+    let(:project) do
+      project = full_project
+      project.engine_version = 2
+      project.save!
+      user.program = program
+      user.save!
+      user.reload
+
+      project
+    end
+
+    let(:package) {
+      package = project.packages.first
+      package.update!(kind: "zone")
+      package
+    }
+
+    describe "#create zone rule" do
+      it "display form to create a " do
+        get :new, params: {
+          "project_id" => project.id,
+          "package_id" => package.id,
+          kind:                "zone"
+        }
+      end
+
+      it "allow the creation of zone rules referencing package formulas values" do
+        post :create, params: {
+          "project_id" => project.id,
+          "package_id" => package.id,
+          kind:                "zone",
+          rule: {
+            name:                "zone",
+            kind:                "zone",
+            formulas_attributes: [{
+              code:        "zone_formula",
+              expression:  "sum(%{quantity_total_pma_values})",
+              description: "pma for the zone"
+            }]
+          }
+        }
+        expect(assigns(:rule).valid?).to eq(true)
+        expect(response).to have_http_status(302)
+        expect(assigns(:rule).formulas.first.code).to eq("zone_formula")
       end
     end
   end

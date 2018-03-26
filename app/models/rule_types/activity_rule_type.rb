@@ -55,6 +55,8 @@ module RuleTypes
         .merge(package_rules_facts)
     end
 
+    private
+
     def package_rules_facts
       return {} unless project.new_engine? && package.package_rule
       activity_formula_codes = activity_formula_as_values
@@ -68,8 +70,6 @@ module RuleTypes
 
       zone_facts.merge(package_facts)
     end
-
-    private
 
     def activity_formula_as_values
       rule.formulas.each_with_object({}) do |formula, hash|

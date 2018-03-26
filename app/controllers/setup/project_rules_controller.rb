@@ -3,9 +3,10 @@ class Setup::ProjectRulesController < PrivateController
   attr_reader :project_rule
 
   def index
+    data_compound = current_project.project_anchor.nearest_data_compound_for(Date.new) || DataCompound.from(current_project)
     @orbf_project = MapProjectToOrbfProject.new(
       current_project,
-      current_project.project_anchor.nearest_data_compound_for(Date.new).indicators
+      data_compound.indicators
       ).map
   end
 
