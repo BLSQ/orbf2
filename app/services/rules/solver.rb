@@ -13,6 +13,10 @@ module Rules
       log "********** #{message} #{Time.new}\n#{JSON.pretty_generate(facts_and_rules)}\n" if debug
       begin
         solution = calculator.solve!(facts_and_rules)
+      rescue TSort::Cyclic => cycle_error
+        log JSON.pretty_generate(facts_and_rules)
+        log cycle_error.message
+        raise SolvingError.new("a cycle has been created : "+cycle_error.message, facts_and_rules), "Failed to solve this problem : a cycle exist between formulas: #{message} : #{cycle_error.message}"
       rescue => e
         log JSON.pretty_generate(facts_and_rules)
         log e.message
