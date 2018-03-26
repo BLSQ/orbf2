@@ -10,8 +10,10 @@ module RuleTypes
 
     def available_variables
       var_names = []
-
-      var_names.push(*package.states.select(&:activity_level?).map(&:code)) if package
+      if package
+        var_names.push(*package.states.select(&:activity_level?).map(&:code))
+        var_names.push(*null_states)
+      end
       var_names.push(*formulas.map(&:code))
       var_names.push(*Analytics::Locations::LevelScope.new.facts(package))
       var_names.push(*available_variables_for_values.map { |code| "%{#{code}}" })
@@ -53,9 +55,20 @@ module RuleTypes
         )
         .merge("org_units_count" => "1", "org_units_sum_if_count" => "1")
         .merge(package_rules_facts)
+        .merge(null_facts)
     end
 
     private
+
+    def null_states
+      package.states.select(&:activity_level?).map { |state| "#{state.code}_is_null" }
+    end
+
+    def null_facts
+      null_states.each_with_object({}) do |null_state, hash|
+        hash[null_state] = 0
+      end
+    end
 
     def package_rules_facts
       return {} unless project.new_engine? && package.package_rule
