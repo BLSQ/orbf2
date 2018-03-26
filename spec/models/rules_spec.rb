@@ -5,7 +5,7 @@ RSpec.describe Rule, kind: :model do
     is_expected.to be_versioned
   end
   let(:project) do
-    project = build(:project)
+    project = build(:project, engine_version: 2)
     %w[Claimed Verified Tarif].each do |state_name|
       project.states.build(name: state_name)
     end
@@ -209,4 +209,117 @@ RSpec.describe Rule, kind: :model do
       expect(rule.errors.full_messages.first).to include("no value provided for variables: difference_percentage")
     end
   end
+
+  describe "zone packages" do
+    let(:project) do
+      project = build(:project, engine_version: 2)
+      %w[Claimed].each do |state_name|
+        project.states.build(name: state_name)
+      end
+      project
+    end
+
+    let(:quantity_package) do
+      p = project.packages.build(kind: "zone")
+      p.states << p.project.states.select { |state| %w[Claimed].include?(state.name) }.to_a
+      p
+    end
+
+    let!(:activity_rule) do
+      rule = quantity_package.rules.build(
+        name: "QUALITY score",
+        kind: "activity"
+      )
+
+      rule.formulas.build(
+        rule:        rule,
+        code:        :attributed_points,
+        expression:  "claimed / 5 ",
+        description: "Quality score"
+      )
+      rule
+    end
+    let!(:package_rule) do
+      rule = quantity_package.rules.build(
+        name: "QUALITY score",
+        kind: "package"
+      )
+
+      rule.formulas.build(
+        rule:        rule,
+        code:        :fosa_attributed_points,
+        expression:  "SUM(%{attributed_points_values})",
+        description: "Quality score"
+      )
+      rule
+    end
+
+    let!(:zone_rule) do
+      rule = quantity_package.rules.build(
+        name: "QUALITY score",
+        kind: "zone"
+      )
+
+      rule.formulas.build(
+        rule:        rule,
+        code:        :zone_attributed_points,
+        expression:  "SUM(%{fosa_attributed_points_values})",
+        description: "Quality score"
+      )
+      rule
+    end
+
+
+    it "has validations for activity_rules" do
+      activity_rule.valid?
+      expect(activity_rule.errors.full_messages).to eq []
+    end
+
+    it "has validations for activity_rules" do
+      package_rule.valid?
+      expect(package_rule.errors.full_messages).to eq []
+    end
+
+    it "has validations for zone_rules" do
+      zone_rule.valid?
+      expect(zone_rule.errors.full_messages).to eq []
+    end
+
+    it "has available_variables for activity_rules" do
+
+      expect(activity_rule.available_variables).to eq %w[
+          %{claimed_current_cycle_values}
+          %{claimed_previous_year_same_quarter_values}
+          %{claimed_previous_year_values}
+          attributed_points
+          claimed
+          claimed_level_1
+          claimed_level_2
+          claimed_level_3
+          claimed_level_4
+          claimed_level_5
+          fosa_attributed_points
+          month_of_year
+          quarter_of_year
+      ]
+    end
+
+    it "has available_variables for package_rule" do
+      expect(package_rule.available_variables).to eq ["%{attributed_points_values}", "zone_attributed_points"]
+    end
+
+    it "has available_variables for zone_rule" do
+      expect(zone_rule.available_variables).to eq ["%{fosa_attributed_points_values}"]
+    end
+
+    it "detects cycles" do
+      package_rule.formulas.first.expression = "SUM(%{attributed_points_values}) / zone_attributed_points"
+      package_rule.valid?
+      expect(package_rule.errors.full_messages).to eq [
+        "Formulas a cycle has been created : topological sort failed:"\
+        " [\"zone_attributed_points\", \"fosa_attributed_points\"]"
+      ]
+    end
+  end
+
 end
