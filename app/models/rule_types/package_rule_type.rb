@@ -1,5 +1,5 @@
 module RuleTypes
-class PackageRuleType < BaseRuleType
+  class PackageRuleType < BaseRuleType
     def initialize(rule)
       @rule = rule
     end
@@ -32,6 +32,8 @@ class PackageRuleType < BaseRuleType
       var_names << package.states.select(&:package_level?).map(&:code) if package
       var_names << available_variables_for_values.map { |code| "%{#{code}}" }
 
+      var_names << package.zone_rule.formulas.map(&:code) if package.zone_rule
+
       var_names << decision_tables.map(&:out_headers) if decision_tables.any?
       var_names.flatten.uniq.reject(&:nil?).sort
     end
@@ -43,11 +45,26 @@ class PackageRuleType < BaseRuleType
       end
 
       var_names.flatten
-      end
+    end
 
     def fake_facts
       # in case we are in a clone packages a not there so go through long road package_states instead of package.states
       to_fake_facts(package.package_states.map(&:state).select(&:package_level?))
+        .merge(zone_rule_fake_facts)
+    end
+
+    def zone_rule_fake_facts
+      return {} unless package.zone_rule
+
+      zone_formula_codes = rule
+                                  .formulas
+                                  .each_with_object({}) do |formula, hash|
+        hash["#{formula.code}_values".to_sym] = formula.code
+      end
+
+      package.zone_rule.formulas.each_with_object({}) do |formula, facts|
+        facts[formula.code] = format(formula.expression, zone_formula_codes)
+      end
     end
   end
 end

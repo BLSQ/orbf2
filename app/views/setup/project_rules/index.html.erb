@@ -1,0 +1,9 @@
+
+<% @orbf_project.packages.each do |package|%>
+
+<h1><%= package.code.humanize %></h1>
+<div class="mermaid" style="width: 100%">
+graph TD
+<%= Orbf::RulesEngine::GraphvizProjectPrinter.new.print_packages([package]).first%>
+</div>
+<% end %>

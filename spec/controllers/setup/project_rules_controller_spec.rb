@@ -2,6 +2,7 @@ require "rails_helper"
 
 RSpec.describe Setup::ProjectRulesController, type: :controller do
   include_context "basic_context"
+  include WebmockDhis2Helpers
 
   describe "When non authenticated #new" do
     it "should redirect to sign on" do
@@ -32,6 +33,19 @@ RSpec.describe Setup::ProjectRulesController, type: :controller do
       project.payment_rules.destroy_all
       expect(Rule.all.count).to eq(8)
     end
+
+    describe "#index" do
+      it "should render new edit form" do
+        stub_all_data_compound(project)
+
+        get :index, params: {
+          "project_id" => project.id
+        }
+        expect(response).to have_http_status(200)
+        expect(response.body).to include("graph TD\nattributed_points--&gt; claimed;")
+      end
+    end
+
 
     describe "#new" do
       it "should render new edit form" do

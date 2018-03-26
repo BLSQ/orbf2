@@ -46,7 +46,7 @@ Rails.application.routes.draw do
           resources :rules, only: %i[new create update edit]
         end
         resources :incentives, only: %i[new create update]
-        resources :rules, only: %i[new create update edit], controller: "project_rules"
+        resources :rules, only: %i[new create update edit index], controller: "project_rules"
         resources :autocomplete, only: [] do
           collection do
             get :organisation_units

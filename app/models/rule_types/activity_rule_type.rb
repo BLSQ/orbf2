@@ -11,24 +11,24 @@ module RuleTypes
     def available_variables
       var_names = []
 
-      var_names << package.states.select(&:activity_level?).map(&:code) if package
-      var_names << formulas.map(&:code)
-      var_names << Analytics::Locations::LevelScope.new.facts(package)
-      var_names << available_variables_for_values.map { |code| "%{#{code}}" }
-      var_names << "quarter_of_year"
-      var_names << "month_of_year"
+      var_names.push(*package.states.select(&:activity_level?).map(&:code)) if package
+      var_names.push(*formulas.map(&:code))
+      var_names.push(*Analytics::Locations::LevelScope.new.facts(package))
+      var_names.push(*available_variables_for_values.map { |code| "%{#{code}}" })
+      var_names.push("quarter_of_year")
+      var_names.push("month_of_year")
 
       if project.new_engine? && package.package_rule
-        var_names << package.package_rule.formulas.map(&:code)
+        var_names.push(*package.package_rule.formulas.map(&:code))
       end
 
       if package.multi_entities?
-        var_names << "org_units_sum_if_count" if package.multi_entities_rule
-        var_names << "org_units_count"
+        var_names.push("org_units_sum_if_count") if package.multi_entities_rule
+        var_names.push("org_units_count")
       end
 
-      var_names << decision_tables.map(&:out_headers) if decision_tables.any?
-      var_names.flatten.uniq.reject(&:nil?).sort
+      var_names.push(*decision_tables.flat_map(&:out_headers)) if decision_tables.any?
+      var_names.uniq.reject(&:nil?).sort
     end
 
     def available_variables_for_values
@@ -55,16 +55,34 @@ module RuleTypes
         .merge(package_rules_facts)
     end
 
+    private
+
     def package_rules_facts
       return {} unless project.new_engine? && package.package_rule
-      activity_formula_codes = rule.formulas.each_with_object({}) do |formula, hash|
+      activity_formula_codes = activity_formula_as_values
+
+      package_facts = package.package_rule
+                             .formulas
+                             .each_with_object({})
+                             .each do |formula, facts|
+        facts[formula.code] = format(formula.expression, activity_formula_codes)
+      end
+
+      zone_facts.merge(package_facts)
+    end
+
+    def activity_formula_as_values
+      rule.formulas.each_with_object({}) do |formula, hash|
         hash["#{formula.code}_values".to_sym] = formula.code
       end
-      package.package_rule
-             .formulas
-             .each_with_object({}).each do |formula, facts|
+    end
 
-        facts[formula.code] = format(formula.expression, activity_formula_codes)
+    def zone_facts
+      return {} unless package.zone_rule
+      package.zone_rule
+             .formulas
+             .each_with_object({}) do |zone_formula, hash|
+        hash[zone_formula.code] = "1"
       end
     end
   end

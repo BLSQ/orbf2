@@ -20,10 +20,13 @@ class Rule < ApplicationRecord
   RULE_TYPE_ACTIVITY = "activity"
   RULE_TYPE_PACKAGE = "package"
   RULE_TYPE_PAYMENT = "payment"
+  RULE_TYPE_ZONE = "zone"
+
 
   RULE_TYPES = [
     RULE_TYPE_PAYMENT, RULE_TYPE_ACTIVITY,
-    RULE_TYPE_PACKAGE, RULE_TYPE_MULTI_ENTITIES
+    RULE_TYPE_PACKAGE, RULE_TYPE_MULTI_ENTITIES,
+    RULE_TYPE_ZONE
   ].freeze
 
   belongs_to :package, optional: true, inverse_of: :rules
@@ -59,6 +62,10 @@ class Rule < ApplicationRecord
 
   def multi_entities_kind?
     kind == RULE_TYPE_MULTI_ENTITIES
+  end
+
+  def zone_kind?
+    kind == RULE_TYPE_ZONE
   end
 
   def rule_type

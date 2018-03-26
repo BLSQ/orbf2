@@ -1,12 +1,16 @@
 <a name="<%= (invoice.package&.code || invoice.payment_rule&.code)+"-"+invoice.period%>"></a>
-<h2><%= (invoice.package&.code || invoice.payment_rule&.code).humanize %> &nbsp;&nbsp;&nbsp;&nbsp; <span class="pull-right"><%= fa_icon("calendar")%> <%= invoice.period%></span></h2>
+<h2><%= (invoice.package&.code || invoice.payment_rule&.code).humanize %>
+ -
+ <span title="<%= invoice.orgunit_ext_id%>"> <%= @pyramid.org_unit(invoice.orgunit_ext_id).name %> </span>
+ <span class="pull-right"><%= fa_icon("calendar")%> <%= invoice.period%></span>
+</h2>
 
 <% if invoice.activity_items.any? %>
 <table class="table invoice num-span-table table-striped">
   <thead>
     <tr>
       <% invoice.headers.each do |header| %>
-         <th title="header"><%=header.humanize %> </th>
+         <th title="<%= header %>"><%=header.humanize %> </th>
       <%end%>
       <th>Activity</th>
     </tr>

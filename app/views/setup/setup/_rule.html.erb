@@ -11,13 +11,17 @@
     <% if package.multi_entities_rule%>
         <%= link_to( package.multi_entities_rule.name,
                      edit_setup_project_package_rule_path(project, package, package.multi_entities_rule) ,
-                     class: package.activity_rule.invalid? ? 'btn btn-danger' :'')
+                     class: package.multi_entities_rule.invalid? ? 'btn btn-danger' :'')
         %>
-
+        <% if package.multi_entities_rule.present? %>
+            <%= render partial: "rule_formulas", locals: { formulas: package.multi_entities_rule.formulas, readonly: readonly }%>
+        <% end %>
     <% elsif package.ogs_reference.present?%>
       Keep "sum" everything or <br>
       <%= link_to 'Create new rule', new_setup_project_package_rule_path(project, package, kind: 'multi-entities') , class: 'btn btn-default' %>
     <% end %>
+
+
     </td>
 
     <td valign="top">
@@ -57,5 +61,23 @@
                <%= render partial: "rule_formulas", locals: { formulas: package.package_rule.formulas, readonly: readonly }%>
             <% end %>
         </div>
+    </td>
+
+    <td valign="top">
+
+
+     <%if package.zone_kind?%>
+       <%if package.zone_rule %>
+          <%= link_to( package.zone_rule.name,
+                      edit_setup_project_package_rule_path(project, package, package.zone_rule) ,
+                      class: package.zone_rule.invalid? ? 'btn btn-danger' :'')
+          %>
+          <% if package.zone_rule.present? %>
+              <%= render partial: "rule_formulas", locals: { formulas: package.zone_rule.formulas, readonly: readonly }%>
+          <% end %>
+       <%else%>
+         <%= link_to 'Create new rule', new_setup_project_package_rule_path(project, package, kind: 'zone') , class: 'btn btn-default' %>
+       <%end%>
+     <%end%>
     </td>
 </tr>

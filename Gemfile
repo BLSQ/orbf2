@@ -29,7 +29,7 @@ gem "naturalsort"
 if ENV["ORBF_DEV_MODE"]
   gem "orbf-rules_engine", path: "../orbf-rules_engine"
 else
-  gem "orbf-rules_engine", github: "BLSQ/orbf-rules_engine", branch: "using_rules_engine_gem"
+  gem "orbf-rules_engine", github: "BLSQ/orbf-rules_engine"
 end
 gem "paper_trail"
 gem "pg", "~> 0.18"

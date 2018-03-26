@@ -37,7 +37,7 @@ class Setup::RulesController < PrivateController
     else
       render action: "new"
     end
-end
+  end
 
   def update
     @rule = current_package.rules.find(params[:id])
