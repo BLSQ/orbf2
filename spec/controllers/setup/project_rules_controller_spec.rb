@@ -42,7 +42,8 @@ RSpec.describe Setup::ProjectRulesController, type: :controller do
           "project_id" => project.id
         }
         expect(response).to have_http_status(200)
-        expect(response.body).to include("graph TD\nattributed_points--&gt; claimed;")
+        expect(response.body).to include("graph TD")
+        expect(response.body).to include("attributed_points--&gt; claimed;")
       end
     end
 

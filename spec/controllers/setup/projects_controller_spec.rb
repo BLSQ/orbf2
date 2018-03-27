@@ -32,7 +32,9 @@ RSpec.describe Setup::ProjectsController, type: :controller do
       expect(response).to redirect_to("/")
       expect(flash[:notice]).to eq "Great your dhis2 connection looks valid !"
       user.reload
-      expect(user.program.project_anchor.project.name).to eq("project_name")
+      project = user.program.project_anchor.project
+      expect(project.name).to eq("project_name")
+      expect(project.engine_version).to eq(2)
     end
   end
 end
