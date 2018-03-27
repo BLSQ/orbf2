@@ -350,14 +350,14 @@ RSpec.describe InvoiceForProjectAnchorWorker do
           dataElement:          data_element,
           value:                index,
           period:               "2015#{month}",
-          orgUnit:              "PMa2VCrupOd",
+          orgUnit:              "PMa2VCrupO",
           categoryOptionCombo:  "HllvX50cXC0",
           attributeOptionCombo: "HllvX50cXC0"
         }
       end]
     end
 
-    stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&dataSet=ds-1&dataSet=ds-2&orgUnit=XJ6DqDkMlPv&period=201501&period=201502&period=201503&period=2015Q1")
+    stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?dataSet=ds-0&dataSet=ds-1&dataSet=ds-2&period=201501&period=201502&period=201503&period=2015&period=2015Q1&orgUnit=ImspTQPwCqd&orgUnit=O6uvpzGd5pu&orgUnit=U6Kr7Gtpidn&orgUnit=vRC0stJ5y9Q&orgUnit=at6UHUQatSo&orgUnit=qtr8GGlm4gg&orgUnit=cDw53Ej8rju&orgUnit=GvFqTavdpGE&orgUnit=Vth0fbpFcsO&orgUnit=TQkG0sX9nca&orgUnit=nq7F0t1Pz6t&orgUnit=C9uduqDZr9d&orgUnit=kBP1UvZpsNj&orgUnit=DmaLM8WYmWv&orgUnit=PD1fqyvJssC&orgUnit=LaxJ6CD2DHq&orgUnit=fXT1scbEObM&orgUnit=JLKGG67z7oj&orgUnit=DSBXsRQSXUW&orgUnit=LV2b3vaLRl1&orgUnit=cZtKKa9eJZ3&orgUnit=Ls2ESQONh9S&orgUnit=bM4Ky73uMao&orgUnit=fdc6uOvgoji&orgUnit=KKkLOTpMXGV&orgUnit=cgqkFdShPzg&orgUnit=KuR0y0h0mOM&orgUnit=Bift1B4gjru&orgUnit=kLNQT4KQ9hT&orgUnit=kMTHqMgenme&orgUnit=Uo4cyJwAhTW&orgUnit=qhqAxPSTUXp&orgUnit=VGAFxBXz16y&orgUnit=bPHn9IgjKLC&orgUnit=yP2nhllbQPh&orgUnit=tHUYjt9cU6h&orgUnit=ctfiYW0ePJ8&orgUnit=wNYYRm2c9EK&orgUnit=u6ZGNI8yUmt&orgUnit=kJq2mPyFEHo&orgUnit=KIUCimTXf8Q&orgUnit=HPg74Rr7UWp&orgUnit=lc3eMKXaEfw&orgUnit=XEyIRFd9pct&orgUnit=Bq5nb7UAEGd&orgUnit=gmen7SXL9CU&orgUnit=VCtF1DbspR5&orgUnit=T2Cn45nBY0u&orgUnit=roQ2l7TX0eZ&orgUnit=PMa2VCrupOd&orgUnit=QywkxFudXrC&orgUnit=JNJIPX9DfaW&orgUnit=EmTN0L4EAVi&orgUnit=PLoeN9CaL7z&orgUnit=eIQbndfxQMb&orgUnit=PQZJPIpTepd&orgUnit=wicmjKI3xiP&orgUnit=Vnc2qIRLbyw&orgUnit=ENHOJz3UH5L&orgUnit=nCh5dBoJVNw&orgUnit=BLVKubgVxkF&orgUnit=bVZTNrnfn9G&orgUnit=Ea3j0kUvyWg&orgUnit=TEQlaapDQoK&orgUnit=vn9KJsLyP5f&orgUnit=RUCp6OaTSAD&orgUnit=vv1QJFONsT6&orgUnit=jmIPBj66vD6&orgUnit=W5fN3G6y1VI&orgUnit=M721NHGtdZV&orgUnit=jCnyQOKQBFX&orgUnit=OuwX8H2CcRO&orgUnit=M2qEv692lS6&orgUnit=AhnK8hb3JWm&orgUnit=uNEhNuBUr0i&orgUnit=nV3OkyzF4US&orgUnit=Qw7c6Ckb0XC&orgUnit=jUb8gELQApl&orgUnit=cM2BKSrj9F9&orgUnit=IXJg79fclDm&orgUnit=mTNOoGXuC39&orgUnit=XJ6DqDkMlPv&children=false")
        .to_return(status: 200, body: JSON.pretty_generate("dataValues": values.flatten))
 
     export_request = stub_export_values("invoice_multi_entities_new_engine.json")
@@ -386,7 +386,7 @@ RSpec.describe InvoiceForProjectAnchorWorker do
   def stub_export_values(expected_fixture)
     Rails.logger.info "Stubbing dataValueSets with #{expected_fixture}"
     stub_request(:post, "http://play.dhis2.org/demo/api/dataValueSets")
-      .with { |request| puts request.body;sorted_datavalues(JSON.parse(fixture_content(:scorpio, expected_fixture))) == sorted_datavalues(JSON.parse(request.body)) }
+      .with { |request| sorted_datavalues(JSON.parse(fixture_content(:scorpio, expected_fixture))) == sorted_datavalues(JSON.parse(request.body)) }
       .to_return(status: 200, body: "")
   end
 
