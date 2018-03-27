@@ -5,7 +5,7 @@ class InvoiceForProjectAnchorWorker
 
   sidekiq_throttle(
     concurrency: { limit: 3 },
-    key_suffix:  ->(project_anchor_id, year, quarter, selected_org_unit_ids = nil, options ={}) { project_anchor_id }
+    key_suffix:  ->(project_anchor_id, _year, _quarter, _selected_org_unit_ids = nil, _options = {}) { project_anchor_id }
   )
 
   def perform(project_anchor_id, year, quarter, selected_org_unit_ids = nil, options = {})
@@ -23,6 +23,21 @@ class InvoiceForProjectAnchorWorker
     Rails.logger.info "contracted_entities #{contracted_entities.size}"
     if contracted_entities.empty?
       Rails.logger.info "WARN : selected_org_unit_ids '#{selected_org_unit_ids}' are in the contracted group !"
+    end
+
+    project = project_anchor.projects.for_date(request.end_date_as_date) || project_anchor.latest_draft
+
+    if project.new_engine? && contracted_entities.size == 1
+      options = Invoicing::InvoicingOptions.new(
+        publish_to_dhis2:       true,
+        force_project_id:       nil,
+        allow_fresh_dhis2_data: false
+      )
+      request.entity=contracted_entities.first
+      invoice_entity = Invoicing::InvoiceEntity.new(project_anchor, request, options)
+      invoice_entity.call
+
+      return
     end
 
     contracted_entities.each_slice(options[:slice_size]).each do |org_unit_ids|

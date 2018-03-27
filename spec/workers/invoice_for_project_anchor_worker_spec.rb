@@ -312,6 +312,67 @@ RSpec.describe InvoiceForProjectAnchorWorker do
     expect(export_request).to have_been_made.once
   end
 
+  it "should perform for sub contracted entities pattern with new engine" do
+    with_new_engine(project)
+
+    with_multi_entity_rule(project)
+    with_activities_and_formula_mappings(project)
+
+    expect(project.packages.first.activity_rule.available_variables).to include(
+      "org_units_count",
+      "org_units_sum_if_count"
+    )
+
+    refs = project.activities
+                  .flat_map(&:activity_states)
+                  .map(&:external_reference)
+                  .uniq
+                  .reject(&:empty?).sort
+    values = refs.each_with_index.flat_map do |data_element, index|
+      [{
+        dataElement:          data_element,
+        value:                index,
+        period:               "2015",
+        orgUnit:              ORG_UNIT_ID,
+        categoryOptionCombo:  "HllvX50cXC0",
+        attributeOptionCombo: "HllvX50cXC0"
+      }, (1..12).map do |month|
+        {
+          dataElement:          data_element,
+          value:                index,
+          period:               "2015#{month}",
+          orgUnit:              ORG_UNIT_ID,
+          categoryOptionCombo:  "HllvX50cXC0",
+          attributeOptionCombo: "HllvX50cXC0"
+        }
+      end, (1..12).map do |month|
+        {
+          dataElement:          data_element,
+          value:                index,
+          period:               "2015#{month}",
+          orgUnit:              "PMa2VCrupOd",
+          categoryOptionCombo:  "HllvX50cXC0",
+          attributeOptionCombo: "HllvX50cXC0"
+        }
+      end]
+    end
+
+    stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&dataSet=ds-1&dataSet=ds-2&orgUnit=XJ6DqDkMlPv&period=201501&period=201502&period=201503&period=2015Q1")
+       .to_return(status: 200, body: JSON.pretty_generate("dataValues": values.flatten))
+
+    export_request = stub_export_values("invoice_multi_entities_new_engine.json")
+
+    worker.perform(project.project_anchor.id, 2015, 1, [ORG_UNIT_ID])
+
+    expect(export_request).to have_been_made.once
+  end
+
+  def with_new_engine(project)
+    project.update_attributes!(engine_version: 2)
+    project
+  end
+
+
   def stub_dhis2_values_yearly(values, start_date)
     stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&endDate=2015-12-31&orgUnit=vRC0stJ5y9Q&startDate=#{start_date}")
       .to_return(status: 200, body: values)
@@ -325,7 +386,7 @@ RSpec.describe InvoiceForProjectAnchorWorker do
   def stub_export_values(expected_fixture)
     Rails.logger.info "Stubbing dataValueSets with #{expected_fixture}"
     stub_request(:post, "http://play.dhis2.org/demo/api/dataValueSets")
-      .with { |request| sorted_datavalues(JSON.parse(fixture_content(:scorpio, expected_fixture))) == sorted_datavalues(JSON.parse(request.body)) }
+      .with { |request| puts request.body;sorted_datavalues(JSON.parse(fixture_content(:scorpio, expected_fixture))) == sorted_datavalues(JSON.parse(request.body)) }
       .to_return(status: 200, body: "")
   end
 
