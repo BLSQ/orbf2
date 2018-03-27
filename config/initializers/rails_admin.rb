@@ -3,16 +3,17 @@ Kaminari.configure do |config|
 end
 
 RailsAdmin.config do |config|
-  EDITABLE_MODELS = %w(
+  EDITABLE_MODELS = %w[
     Program
     User
     ProjectAnchor
-  ).freeze
+    Project
+  ].freeze
 
-  DELETABLE_MODELS = %w(
+  DELETABLE_MODELS = %w[
     Program
     User
-  ).freeze
+  ].freeze
 
   config.actions do
     dashboard
@@ -58,6 +59,18 @@ RailsAdmin.config do |config|
     end
   end
 
+  config.model "Project" do
+    list do
+      field :name
+      field :dhis2_url
+      field :bypass_ssl
+      field :engine_version
+    end
+    edit do
+      field :engine_version
+    end
+  end
+
   config.model "Program" do
     object_label_method do
       :label
@@ -65,10 +78,10 @@ RailsAdmin.config do |config|
   end
 
   if ENV["ADMIN_PASSWORD"]
-  config.authorize_with do
-    authenticate_or_request_with_http_basic("Authentication") do |username, password|
-      username == "admin" && password == ENV["ADMIN_PASSWORD"]
+    config.authorize_with do
+      authenticate_or_request_with_http_basic("Authentication") do |username, password|
+        username == "admin" && password == ENV["ADMIN_PASSWORD"]
+      end
     end
   end
-end
 end

@@ -59,6 +59,10 @@ class Project < ApplicationRecord
     "Project"
   end
 
+  def engine_version_enum
+    {"legacy" => 1, "new" => 2}
+  end
+
   def cycle_yearly?
     cycle == "yearly"
   end
