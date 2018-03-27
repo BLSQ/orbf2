@@ -139,6 +139,7 @@ RSpec.describe Rule, kind: :model do
       "%{verified_previous_year_values}",
       "amount",
       "claimed",
+      "claimed_is_null",
       "claimed_level_1",
       "claimed_level_2",
       "claimed_level_3",
@@ -149,12 +150,14 @@ RSpec.describe Rule, kind: :model do
       "quantity",
       "quarter_of_year",
       "tarif",
+      "tarif_is_null",
       "tarif_level_1",
       "tarif_level_2",
       "tarif_level_3",
       "tarif_level_4",
       "tarif_level_5",
       "verified",
+      "verified_is_null",
       "verified_level_1",
       "verified_level_2",
       "verified_level_3",
@@ -164,7 +167,7 @@ RSpec.describe Rule, kind: :model do
 
     it "should return all states and scoped states " do
       availailable_variables = valid_package_quantity_rule.available_variables
-      expect(availailable_variables).to eq(EXPECTED_VARIABLES)
+      expect(availailable_variables).to eq(EXPECTED_VARIABLES), availailable_variables.join("\n")
     end
   end
   describe "validation of formulas" do
@@ -269,7 +272,6 @@ RSpec.describe Rule, kind: :model do
       rule
     end
 
-
     it "has validations for activity_rules" do
       activity_rule.valid?
       expect(activity_rule.errors.full_messages).to eq []
@@ -286,22 +288,22 @@ RSpec.describe Rule, kind: :model do
     end
 
     it "has available_variables for activity_rules" do
-
-      expect(activity_rule.available_variables).to eq %w[
-          %{claimed_current_cycle_values}
-          %{claimed_previous_year_same_quarter_values}
-          %{claimed_previous_year_values}
-          attributed_points
-          claimed
-          claimed_level_1
-          claimed_level_2
-          claimed_level_3
-          claimed_level_4
-          claimed_level_5
-          fosa_attributed_points
-          month_of_year
-          quarter_of_year
-      ]
+      expect(activity_rule.available_variables).to eq(%w[
+                                                        %{claimed_current_cycle_values}
+                                                        %{claimed_previous_year_same_quarter_values}
+                                                        %{claimed_previous_year_values}
+                                                        attributed_points
+                                                        claimed
+                                                        claimed_is_null
+                                                        claimed_level_1
+                                                        claimed_level_2
+                                                        claimed_level_3
+                                                        claimed_level_4
+                                                        claimed_level_5
+                                                        fosa_attributed_points
+                                                        month_of_year
+                                                        quarter_of_year
+                                                      ]), activity_rule.available_variables.join("\n")
     end
 
     it "has available_variables for package_rule" do
@@ -321,5 +323,4 @@ RSpec.describe Rule, kind: :model do
       ]
     end
   end
-
 end
