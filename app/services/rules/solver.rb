@@ -16,11 +16,14 @@ module Rules
       rescue TSort::Cyclic => cycle_error
         log JSON.pretty_generate(facts_and_rules)
         log cycle_error.message
-        raise SolvingError.new("a cycle has been created : "+cycle_error.message, facts_and_rules), "Failed to solve this problem : a cycle exist between formulas: #{message} : #{cycle_error.message}"
-      rescue => e
+        raise SolvingError.new("a cycle has been created : " + cycle_error.message, facts_and_rules),
+              "Failed to solve this problem : a cycle exist between formulas: "\
+              "#{message} : #{cycle_error.message}"
+      rescue StandardError => e
         log JSON.pretty_generate(facts_and_rules)
         log e.message
-        raise SolvingError.new(e.message, facts_and_rules), "Failed to solve this problem #{message} : #{e.message}"
+        raise SolvingError.new(e.message, facts_and_rules),
+              "Failed to solve this problem #{message} : #{e.message}"
       end
       log JSON.pretty_generate([solution]) if debug
       solution.with_indifferent_access
@@ -31,8 +34,9 @@ module Rules
         mock_values(formula.expression, formula.rule.available_variables_for_values)
       )
     rescue KeyError => e
-      formula.errors[:expression] << "#{e.message}. Remove extra spaces or verify it's in the available variables"
-    rescue => e
+      formula.errors[:expression] << "#{e.message}. " \
+        "Remove extra spaces or verify it's in the available variables"
+    rescue StandardError => e
       Rails.logger.warn("FAILED to validate #{formula} : #{e.backtrace.join("\n")}")
       formula.errors[:expression] << e.message
     end
@@ -41,7 +45,7 @@ module Rules
       calculator.dependencies(
         mock_values(formula.expression, formula.rule.available_variables_for_values)
       )
-    rescue => ignored
+    rescue StandardError => ignored
       []
     end
 
@@ -58,7 +62,7 @@ module Rules
       rule.errors[:formulas] << e.original_message
     rescue KeyError => e
       rule.errors[:formulas] << "#{e.message}. Remove extra spaces or verify it's in the available variables"
-    rescue => e
+    rescue StandardError => e
       rule.errors[:formulas] << e.message
     end
 
