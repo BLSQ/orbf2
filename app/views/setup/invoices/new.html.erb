@@ -1,31 +1,6 @@
 
 
-<%= simple_form_for(invoicing_request,  url: setup_project_invoices_path(invoicing_request.project), method: :post) do |f| %>
-
-<%= f.input :entity, as: :hidden%>
-<div class="form-group">
-  <label class="control-label string">Organisation unit</label>
-  <%= text_field_tag "formula_mappings_external_reference_id",
-                     invoicing_request.entity ,
-                     data: { autocomplete: organisation_units_setup_project_autocomplete_index_path(invoicing_request.project) ,
-                             id_element: "#invoicing_request_entity" },
-                     class: "form-control autocomplete-data-element",
-                     placeholder: "Type some letters to start searching organisation unit..." %>
-</div>
-  <%= f.input :year %>
-  <%= f.input :quarter %>
-
-  <%= f.input :mock_values, as: :boolean%>
-
-  <%= f.submit 'Push to dhis2',
-                  name: 'push_to_dhis2',
-                  data: { confirm: "Are you sure this might override existing data ?"},
-                  class: "btn btn-danger pull-right"
-  %>
-
-  <%= f.submit 'Simulate with draft', name: "simulate_draft", class: "btn btn-primary"  %>
-  <%= f.submit 'Simulate with published', name: "simulate_published", class: "btn btn-primary" %>
-<%end%>
+<%= render partial: "form"  %>
 
 <% if @org_unit_summaries %>
   <br>

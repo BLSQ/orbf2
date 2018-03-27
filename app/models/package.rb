@@ -19,7 +19,7 @@ class Package < ApplicationRecord
   delegate :program_id, to: :project
 
   FREQUENCIES = %w[monthly quarterly yearly].freeze
-  KINDS = %w[single multi-groupset].freeze
+  KINDS = %w[single multi-groupset zone].freeze
   belongs_to :project, inverse_of: :packages
   has_many :package_entity_groups, dependent: :destroy
   has_many :package_states, dependent: :destroy
@@ -59,6 +59,10 @@ class Package < ApplicationRecord
     kind == "multi-groupset"
   end
 
+  def zone_kind?
+    kind == "zone"
+  end
+
   def periods(year_month)
     return [] unless activity_rule
     used_variables_for_values = activity_rule.used_variables_for_values
@@ -77,7 +81,7 @@ class Package < ApplicationRecord
   end
 
   def missing_rules_kind
-    %w[activity package multi-entities] - rules.map(&:kind)
+    %w[activity package multi-entities zone] - rules.map(&:kind)
   end
 
   def apply_for(entity)
@@ -116,6 +120,10 @@ class Package < ApplicationRecord
 
   def activity_rule
     rules.find(&:activity_kind?)
+  end
+
+  def zone_rule
+    rules.find(&:zone_kind?)
   end
 
   def kind_multi?

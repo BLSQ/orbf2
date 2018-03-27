@@ -10,7 +10,6 @@ class Setup::PackagesController < PrivateController
   def update
     @package = current_project.packages.find(params[:id])
     package.update_attributes(params_package)
-    package.kind = package.ogs_reference.present? ? "multi-groupset" : "single"
 
     update_package_constants
 
@@ -38,13 +37,12 @@ class Setup::PackagesController < PrivateController
 
   def create
     @package = current_project.packages.build(params_package)
-    package.kind = package.ogs_reference.present? ? "multi-groupset" : "single"
 
     state_ids = params_package[:state_ids].reject(&:empty?)
 
     update_package_constants
 
-    package.states = State.find(state_ids)
+    package.states = current_project.states.find(state_ids)
 
     if package.invalid?
       flash[:failure] = "Package not valid..."
@@ -77,6 +75,6 @@ class Setup::PackagesController < PrivateController
   end
 
   def params_package
-    params.require(:package).permit(:name, :frequency, :ogs_reference, state_ids: [], activity_ids: [])
+    params.require(:package).permit(:name, :frequency, :kind, :ogs_reference, state_ids: [], activity_ids: [])
   end
 end

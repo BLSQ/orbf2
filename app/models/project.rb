@@ -59,6 +59,10 @@ class Project < ApplicationRecord
     "Project"
   end
 
+  def engine_version_enum
+    {"legacy" => 1, "new" => 2}
+  end
+
   def cycle_yearly?
     cycle == "yearly"
   end
@@ -142,6 +146,10 @@ class Project < ApplicationRecord
     order("id desc").limit(10)
   end
 
+  def new_engine?
+    engine_version == 2
+  end
+
   def draft?
     status == "draft"
   end
@@ -207,12 +215,16 @@ class Project < ApplicationRecord
   end
 
   def dhis2_connection
-    Dhis2::Client.new(
+    Dhis2::Client.new(dhis_configuration)
+  end
+
+  def dhis_configuration
+    {
       url:                 dhis2_url,
       user:                user,
       password:            password,
       no_ssl_verification: bypass_ssl
-    )
+    }
   end
 
   def unused_packages

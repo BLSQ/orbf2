@@ -1,0 +1,32 @@
+<a name="<%= (invoice.package&.code || invoice.payment_rule&.code)+"-"+invoice.period%>"></a>
+<h2><%= (invoice.package&.code || invoice.payment_rule&.code).humanize %>
+ -
+ <span title="<%= invoice.orgunit_ext_id%>"> <%= @pyramid.org_unit(invoice.orgunit_ext_id).name %> </span>
+ <span class="pull-right"><%= fa_icon("calendar")%> <%= invoice.period%></span>
+</h2>
+
+<% if invoice.activity_items.any? %>
+<table class="table invoice num-span-table table-striped">
+  <thead>
+    <tr>
+      <% invoice.headers.each do |header| %>
+         <th title="<%= header %>"><%=header.humanize %> </th>
+      <%end%>
+      <th>Activity</th>
+    </tr>
+    </thead>
+    <tbody>
+      <%= render partial: "activity_item",
+                 collection: invoice.activity_items.sort {|a,b| NaturalSort.comparator(a.activity.activity_code, b.activity.activity_code)} ,
+                 as: :activity_item,
+                 locals: {invoice:invoice}  %>
+    </tbody>
+</table>
+<% end %>
+
+<% if invoice.total_items.any? %>
+<%= render partial: "total_item",
+           collection: invoice.total_items.sort_by {|total_item| total_item.formula.code },
+           as: :total_item,
+           locals: { invoice: invoice }  %>
+<% end %>

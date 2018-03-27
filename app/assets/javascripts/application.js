@@ -27,17 +27,45 @@ $(document).ready(function() {
     container: "body",
     html: true,
     content: function() {
-      return $(this).find(".popper-content").html();
+      return $(this)
+        .find(".popper-content")
+        .html();
     }
   });
   // one popover at a time
-  $('body').on('click', function (e) {
-    $('[data-toggle="popover"]').each(function () {
-        //the 'is' for buttons that trigger popups
-        //the 'has' for icons within a button that triggers a popup
-        if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
-            $(this).popover('hide');
-        }
+  $("body").on("click", function(e) {
+    $('[data-toggle="popover"]').each(function() {
+      //the 'is' for buttons that trigger popups
+      //the 'has' for icons within a button that triggers a popup
+      if (
+        !$(this).is(e.target) &&
+        $(this).has(e.target).length === 0 &&
+        $(".popover").has(e.target).length === 0
+      ) {
+        $(this).popover("hide");
+      }
     });
-});
+  });
+
+  $("#searchEquation").keyup(function() {
+    filter = new RegExp($(this).val(), "i");
+    $("#equationsTable tbody tr").filter(function() {
+      $(this).each(function() {
+        found = false;
+        $(this)
+          .children()
+          .each(function() {
+            content = $(this).html();
+            if (content.match(filter)) {
+              found = true;
+            }
+          });
+        if (!found) {
+          $(this).hide();
+        } else {
+          $(this).show();
+        }
+      });
+    });
+  });
 });

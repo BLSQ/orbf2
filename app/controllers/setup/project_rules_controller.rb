@@ -2,6 +2,14 @@ class Setup::ProjectRulesController < PrivateController
   helper_method :project_rule
   attr_reader :project_rule
 
+  def index
+    data_compound = current_project.project_anchor.nearest_data_compound_for(Date.new) || DataCompound.from(current_project)
+    @orbf_project = MapProjectToOrbfProject.new(
+      current_project,
+      data_compound.indicators
+      ).map
+  end
+
   def new
     @project_rule = current_project.payment_rules.build(rule_attributes: { kind: "payment" })
     project_rule.rule.formulas.build

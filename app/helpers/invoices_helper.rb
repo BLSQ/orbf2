@@ -1,9 +1,19 @@
-
 module InvoicesHelper
+  def invoice_output_input_class(total_item)
+    total_item.formula.dhis2_mapping ? "formula-output" : nil
+  end
+
+  def invoice_output_input_act_class(activity_item, code)
+    if activity_item.input?(code)
+      "formula-input"
+    elsif activity_item.output?(code)
+      "formula-output"
+    end
+  end
 
   def project_descriptor(project)
     {
-      payment_rules: project.payment_rules.map {|payment_rule| payment_descriptor(payment_rule)}
+      payment_rules: project.payment_rules.map { |payment_rule| payment_descriptor(payment_rule) }
     }
   end
 
