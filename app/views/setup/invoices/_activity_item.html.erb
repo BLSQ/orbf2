@@ -18,7 +18,9 @@
                 <li><code><%= variable.expression %></code></li>
                 <% activity_state = @activity_mappings[[variable.activity_code, variable.state]] %>
                 <%if variable.formula %>
-                  <li><%= variable.formula.code %> = <%= variable.formula.expression %></li>
+                   <li><code><%= variable.formula.code %> = <%= variable.formula.expression %></code></li>
+                   <li><code><%= variable.formula.code %> = <%= activity_item.substitued[variable.formula.code] %></code></li>
+                   <li><code><%= variable.formula.code %> = <%= activity_item.solution[variable.formula.code] %></code></li>
                 <%end%>
                 <%if variable.dhis2_data_element %>
                   <li><%= variable.dhis2_data_element %></li>
@@ -29,6 +31,7 @@
             </ul>
             <h3>Step by step explanations</h3>
             <pre><%= JSON.pretty_generate(activity_item.problem) %></pre>
+            <pre><%= JSON.pretty_generate(activity_item.substitued) %></pre>
             <pre><%= JSON.pretty_generate(activity_item.solution) %></pre>
           </div>
       </div>
