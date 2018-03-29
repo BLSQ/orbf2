@@ -41,7 +41,7 @@ module RuleTypes
         var_names.push(*activity_level_states.map { |state| "#{state.code}#{timeframe.suffix}" })
       end
 
-      if project.new_engine?
+      if project&.new_engine?
         var_names.push(*rule.formulas.map { |formula| "#{formula.code}_current_quarter_values" })
       end
 
