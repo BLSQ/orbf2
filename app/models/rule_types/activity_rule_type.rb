@@ -38,13 +38,18 @@ module RuleTypes
 
       activity_level_states = package.package_states.map(&:state).select(&:activity_level?)
       Analytics::Timeframe.all_variables_builders.each do |timeframe|
-        var_names << activity_level_states.map { |state| "#{state.code}#{timeframe.suffix}" }
-      end
-      if package.multi_entities_rule
-        var_names << package.multi_entities_rule.formulas.map { |f| f.code + "_values" }
+        var_names.push(*activity_level_states.map { |state| "#{state.code}#{timeframe.suffix}" })
       end
 
-      var_names.flatten
+      if project&.new_engine?
+        var_names.push(*rule.formulas.map { |formula| "#{formula.code}_current_quarter_values" })
+      end
+
+      if package.multi_entities_rule
+        var_names.push(*package.multi_entities_rule.formulas.map { |f| f.code + "_values" })
+      end
+
+      var_names
     end
 
     def fake_facts

@@ -127,42 +127,45 @@ RSpec.describe Rule, kind: :model do
   end
 
   describe "#available_variables" do
-    EXPECTED_VARIABLES = [
-      "%{claimed_current_cycle_values}",
-      "%{claimed_previous_year_same_quarter_values}",
-      "%{claimed_previous_year_values}",
-      "%{tarif_current_cycle_values}",
-      "%{tarif_previous_year_same_quarter_values}",
-      "%{tarif_previous_year_values}",
-      "%{verified_current_cycle_values}",
-      "%{verified_previous_year_same_quarter_values}",
-      "%{verified_previous_year_values}",
-      "amount",
-      "claimed",
-      "claimed_is_null",
-      "claimed_level_1",
-      "claimed_level_2",
-      "claimed_level_3",
-      "claimed_level_4",
-      "claimed_level_5",
-      "difference_percentage",
-      "month_of_year",
-      "quantity",
-      "quarter_of_year",
-      "tarif",
-      "tarif_is_null",
-      "tarif_level_1",
-      "tarif_level_2",
-      "tarif_level_3",
-      "tarif_level_4",
-      "tarif_level_5",
-      "verified",
-      "verified_is_null",
-      "verified_level_1",
-      "verified_level_2",
-      "verified_level_3",
-      "verified_level_4",
-      "verified_level_5"
+    EXPECTED_VARIABLES = %w[
+      %{amount_current_quarter_values}
+      %{claimed_current_cycle_values}
+      %{claimed_previous_year_same_quarter_values}
+      %{claimed_previous_year_values}
+      %{difference_percentage_current_quarter_values}
+      %{quantity_current_quarter_values}
+      %{tarif_current_cycle_values}
+      %{tarif_previous_year_same_quarter_values}
+      %{tarif_previous_year_values}
+      %{verified_current_cycle_values}
+      %{verified_previous_year_same_quarter_values}
+      %{verified_previous_year_values}
+      amount
+      claimed
+      claimed_is_null
+      claimed_level_1
+      claimed_level_2
+      claimed_level_3
+      claimed_level_4
+      claimed_level_5
+      difference_percentage
+      month_of_year
+      quantity
+      quarter_of_year
+      tarif
+      tarif_is_null
+      tarif_level_1
+      tarif_level_2
+      tarif_level_3
+      tarif_level_4
+      tarif_level_5
+      verified
+      verified_is_null
+      verified_level_1
+      verified_level_2
+      verified_level_3
+      verified_level_4
+      verified_level_5
     ].freeze
 
     it "should return all states and scoped states " do
@@ -288,22 +291,25 @@ RSpec.describe Rule, kind: :model do
     end
 
     it "has available_variables for activity_rules" do
-      expect(activity_rule.available_variables).to eq(%w[
-                                                        %{claimed_current_cycle_values}
-                                                        %{claimed_previous_year_same_quarter_values}
-                                                        %{claimed_previous_year_values}
-                                                        attributed_points
-                                                        claimed
-                                                        claimed_is_null
-                                                        claimed_level_1
-                                                        claimed_level_2
-                                                        claimed_level_3
-                                                        claimed_level_4
-                                                        claimed_level_5
-                                                        fosa_attributed_points
-                                                        month_of_year
-                                                        quarter_of_year
-                                                      ]), activity_rule.available_variables.join("\n")
+      expect(activity_rule.available_variables).to eq(
+        %w[
+          %{attributed_points_current_quarter_values}
+          %{claimed_current_cycle_values}
+          %{claimed_previous_year_same_quarter_values}
+          %{claimed_previous_year_values}
+          attributed_points
+          claimed
+          claimed_is_null
+          claimed_level_1
+          claimed_level_2
+          claimed_level_3
+          claimed_level_4
+          claimed_level_5
+          fosa_attributed_points
+          month_of_year
+          quarter_of_year
+        ]
+      ), activity_rule.available_variables.join("\n")
     end
 
     it "has available_variables for package_rule" do
