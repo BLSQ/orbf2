@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-ruby "2.4.2"
+ruby "2.5.1"
 
 git_source(:github) do |repo_name|
   repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
@@ -51,7 +51,7 @@ group :development, :test do
   gem "factory_girl_rails", " 4.0"
   gem "faker"
   gem "rails-controller-testing"
-  gem "rest-client-logger"
+  gem "rest-client-logger", github:"uswitch/rest-client-logger"
   gem "rspec-its"
   gem "rspec-rails", "~> 3.0"
   gem "ruby-prof"

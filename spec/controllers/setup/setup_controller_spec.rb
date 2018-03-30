@@ -45,23 +45,20 @@ RSpec.describe Setup::SetupController, type: :controller do
     end
 
     it "should display main entity group when Dhis2 is complete" do
-      project
-      get :index, project_id: project.id
+      get :index, params: { project_id: project.id }
       expect(response).to have_http_status(:success)
       expect(setup.steps.map(&:todo?)).to eq [false, true, true, true, true, true, true, true, true]
     end
 
     it "should display packages group when main entity group" do
-      project
       project.create_entity_group(external_reference: "external_reference", name: "main group")
 
-      get :index, project_id: project.id
+      get :index, params: { project_id: project.id }
       expect(response).to have_http_status(:success)
       expect(setup.steps.map(&:todo?)).to eq [false, false, false, true, true, true, true, true, true]
     end
 
     it "should display rules group packages exist" do
-      project
       project.create_entity_group(external_reference: "external_reference", name: "main group")
       package = project.packages.create!(
         data_element_group_ext_ref: "data_element_group_ext_ref",
@@ -73,7 +70,7 @@ RSpec.describe Setup::SetupController, type: :controller do
         organisation_unit_group_ext_ref: "organisation_unit_group_ext_ref"
       )
 
-      get :index, project_id: project.id
+      get :index, params: { project_id: project.id }
       expect(response).to have_http_status(:success)
       expect(setup.steps.map(&:todo?)).to eq [false, false, false, true, true, true, true, true, true]
     end
