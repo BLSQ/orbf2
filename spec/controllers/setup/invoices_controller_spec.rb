@@ -24,6 +24,20 @@ RSpec.describe Setup::InvoicesController, type: :controller do
       expect(assigns(:invoicing_request)).not_to be nil
     end
 
+    it "schedule worker when push_to_dhis2 clicked" do
+      post :create, params: {
+        project_id:        full_project.id,
+        invoicing_request: {
+          entity:        org_unit_id,
+          year:          "2017",
+          quarter:       "1",
+          legacy_engine: "0"
+        },
+        push_to_dhis2:     true
+      }
+      expect(InvoiceForProjectAnchorWorker).to have_enqueued_sidekiq_job(full_project.project_anchor.id, "2017", "1", [org_unit_id])
+    end
+
     it "calculate invoices" do
       stub_all_pyramid(full_project)
       stub_all_data_compound(full_project)

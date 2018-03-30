@@ -29,6 +29,18 @@ class Setup::InvoicesController < PrivateController
   private
 
   def render_invoice(project, invoicing_request)
+    if params[:push_to_dhis2] && invoicing_request.entity
+      InvoiceForProjectAnchorWorker.perform_async(
+        project.project_anchor_id,
+        invoicing_request.year,
+        invoicing_request.quarter,
+        [invoicing_request.entity]
+      )
+      flash[:alert] = "Worker scheduled for #{invoicing_request.entity} : #{invoicing_request.year_quarter.to_dhis2}"
+      render(:new)
+      return
+    end
+
     if invoicing_request.legacy_engine?
       render_legacy_invoice(project, invoicing_request)
     else
@@ -42,6 +54,7 @@ class Setup::InvoicesController < PrivateController
       force_project_id:       params[:simulate_draft] ? project.id : nil,
       allow_fresh_dhis2_data: params[:simulate_draft]
     )
+
     @invoice_entity = Invoicing::InvoiceEntity.new(project.project_anchor, invoicing_request, options)
     @invoice_entity.call
     Invoicing::MapToInvoices.new(invoicing_request, @invoice_entity.fetch_and_solve.solver).call
@@ -90,18 +103,6 @@ class Setup::InvoicesController < PrivateController
     unless pyramid.belong_to_group(org_unit, project.entity_group.external_reference)
       flash[:failure] = "Warn this entity is not in the contracted entity group : #{project.entity_group.name}."
       flash[:failure] += "Only simulation will work. Update the group and trigger a dhis2 snaphots."
-    end
-
-    if params[:push_to_dhis2]
-      InvoiceForProjectAnchorWorker.perform_async(
-        project.project_anchor_id,
-        invoicing_request.year,
-        invoicing_request.quarter,
-        [org_unit.id]
-      )
-      flash[:alert] = "Worker scheduled for #{org_unit.name} : #{invoicing_request.year}Q#{invoicing_request.quarter}"
-      render(:new)
-      return
     end
 
     options = {
