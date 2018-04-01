@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/BLSQ/orbf-rules_engine.git
-  revision: 6926916ddfbe81b1031cedda81bd76da38ddb84c
+  revision: 0fa9719e290c021e2755c1fefb1c27b52f39f784
   specs:
     orbf-rules_engine (0.1.0)
       activesupport
