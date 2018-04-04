@@ -112,7 +112,9 @@ RSpec.describe Setup::InvoicesController, type: :controller do
     end
 
     def stub_data_value_sets_for_new_engine
-      stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&orgUnit=ImspTQPwCqd&orgUnit=at6UHUQatSo&orgUnit=cDw53Ej8rju&orgUnit=qtr8GGlm4gg&period=2017&period=201701&period=201702&period=201703&period=2017Q1")
+      stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false" \
+        "&orgUnit=ImspTQPwCqd&orgUnit=at6UHUQatSo&orgUnit=cDw53Ej8rju&orgUnit=qtr8GGlm4gg" \
+        "&period=2017&period=201701&period=201702&period=201703&period=2017Q1")
         .to_return(status: 200, body: "")
     end
 

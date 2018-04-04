@@ -5,11 +5,12 @@ RSpec.describe MapProjectToOrbfProject do
   it "should instantiate a valid project" do
     project = full_project
     package = project.packages.last
+    activity = package.activities.first
     formula_with_frequency = package.activity_rule.formulas.last
     formula_with_frequency.frequency = "yearly"
     formula_with_frequency.formula_mappings.create!(
       kind:               "activity",
-      activity:           package.activities.first,
+      activity:           activity,
       external_reference: "dhis2_out"
     )
 
@@ -29,7 +30,7 @@ RSpec.describe MapProjectToOrbfProject do
     expect(orbf_formula_with_frequency.frequency).to eq("yearly")
     expect(orbf_formula_with_frequency.code).to eq(formula_with_frequency.code)
     expect(orbf_formula_with_frequency.expression).to eq(formula_with_frequency.expression)
-    expect(orbf_formula_with_frequency.dhis2_mapping(package.activities.first.code)).to eq("dhis2_out")
+    expect(orbf_formula_with_frequency.dhis2_mapping(activity.code)).to eq("dhis2_out")
 
     orbf_package_formula = orbf_project.packages.last.package_rules.first.formulas.last
     expect(orbf_package_formula.dhis2_mapping).to eq("package_dhis2_out")
