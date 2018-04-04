@@ -100,12 +100,13 @@ class MapProjectToOrbfProject
 
   def map_formula_mappings(formula)
     formula_mappings = {}
-    if formula.formula_mappings.size > 1
+    formula_mappings[:frequency] = formula.frequency if formula.frequency
+    if formula.rule.activity_kind? && formula.formula_mappings.any?
       formula_mappings[:activity_mappings] = formula.formula_mappings
                                                     .each_with_object({}) do |mapping, hash|
         hash[mapping.activity.code] = mapping.external_reference
       end
-    elsif formula.formula_mappings.size == 1
+    elsif !formula.rule.activity_kind? && formula.formula_mappings.size == 1
       formula_mappings[:single_mapping] = formula.formula_mappings.first.external_reference
     end
     formula_mappings

@@ -60,7 +60,7 @@ RSpec.describe Setup::InvoicesController, type: :controller do
     it "calculate invoices with new engine" do
       stub_new_pyramid
       stub_all_data_compound(full_project)
-      stub_data_value_sets
+      stub_data_value_sets_for_new_engine
 
       verif_state = full_project.states.find { |s| s.name == "Verified" }
       maxscore_state = full_project.states.find { |s| s.name == "Max. Score" }
@@ -108,6 +108,11 @@ RSpec.describe Setup::InvoicesController, type: :controller do
 
     def stub_data_value_sets
       stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&endDate=2017-12-31&orgUnit=#{org_unit_id}&startDate=2017-01-01")
+        .to_return(status: 200, body: "")
+    end
+
+    def stub_data_value_sets_for_new_engine
+      stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&orgUnit=ImspTQPwCqd&orgUnit=at6UHUQatSo&orgUnit=cDw53Ej8rju&orgUnit=qtr8GGlm4gg&period=2017&period=201701&period=201702&period=201703&period=2017Q1")
         .to_return(status: 200, body: "")
     end
 
