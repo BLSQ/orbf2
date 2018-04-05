@@ -14,9 +14,19 @@ namespace :new_engine do
       }
     end
 
+    failures = []
     test_cases.each do |test_case_name, test_case|
-      run_test_case(test_case_name, OpenStruct.new(test_case))
+      begin
+        run_test_case(test_case_name, OpenStruct.new(test_case))
+      rescue StandardError => e
+        puts ColorizedString[" error !!!!!!!!!!!! "].colorize(:red)
+        puts e.message
+        failures.push e
+      end
     end
+
+    puts failures
+    raise "errors encountered " if failures.any?
   end
 
   def run_legacy_test_case(project_anchor_id, test_case)
@@ -97,9 +107,8 @@ namespace :new_engine do
 
     project_anchor_id = Project.find(test_case.project_id).project_anchor_id
 
-    legacy_exported_values = run_legacy_test_case(project_anchor_id, test_case)
-
     exported_values = run_new_test_case(project_anchor_id, test_case)
+    legacy_exported_values = run_legacy_test_case(project_anchor_id, test_case)
 
     determine_success!(legacy_exported_values, exported_values)
   end
@@ -112,7 +121,7 @@ namespace :new_engine do
       value = yield
     ensure
       elapsed_time = Time.now - start
-      puts "   #{message} #{elapsed_time}"
+      puts "   #{message} #{elapsed_time} #{value.size if value}"
     end
     value
   end
