@@ -381,6 +381,6 @@ class Project < ApplicationRecord
   end
 
   def log(message)
-    Rails.logger.info message
+    Rails.logger.debug message
   end
 end

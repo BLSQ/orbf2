@@ -17,7 +17,7 @@ RSpec.describe Setup::StatesController, type: :controller do
     let(:project) { full_project }
 
     it "should allow to create a new project's state" do
-      get :new, project_id: project.id
+      get :new, params: { project_id: project.id }
     end
 
     it "should allow to create a new project's state" do

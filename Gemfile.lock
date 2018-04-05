@@ -1,12 +1,20 @@
 GIT
   remote: https://github.com/BLSQ/orbf-rules_engine.git
-  revision: 6926916ddfbe81b1031cedda81bd76da38ddb84c
+  revision: 5676249e7cf44f5ea4716b5ab68de5a37a8dad5e
   specs:
     orbf-rules_engine (0.1.0)
       activesupport
       colorize
       dentaku (= 3.1.0)
       dhis2 (= 2.3.8)
+
+GIT
+  remote: https://github.com/uswitch/rest-client-logger.git
+  revision: 30347f419b6a3a397560fe3947a90956aec28a50
+  specs:
+    rest-client-logger (0.1.0)
+      railties (>= 3.1)
+      rest-client (>= 1.6)
 
 GEM
   remote: https://rubygems.org/
@@ -86,10 +94,10 @@ GEM
     deep_cloneable (2.2.2)
       activerecord (>= 3.1.0, < 5.2.0)
     dentaku (3.1.0)
-    devise (4.2.0)
+    devise (4.4.3)
       bcrypt (~> 3.0)
       orm_adapter (~> 0.1)
-      railties (>= 4.1.0, < 5.1)
+      railties (>= 4.1.0, < 6.0)
       responders
       warden (~> 1.2.3)
     dhis2 (2.3.8)
@@ -137,7 +145,7 @@ GEM
       rack (>= 1.4.5)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
-    httparty (0.16.1)
+    httparty (0.16.2)
       multi_xml (>= 0.5.2)
     i18n (0.9.5)
       concurrent-ruby (~> 1.0)
@@ -176,7 +184,7 @@ GEM
     mail (2.6.6)
       mime-types (>= 1.16, < 4)
     memory_profiler (0.9.8)
-    method_source (0.8.2)
+    method_source (0.9.0)
     mime-types (3.1)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2016.0521)
@@ -282,15 +290,13 @@ GEM
     redis (3.3.3)
     remotipart (1.3.1)
     request_store (1.3.2)
-    responders (2.3.0)
-      railties (>= 4.2.0, < 5.1)
+    responders (2.4.0)
+      actionpack (>= 4.2.0, < 5.3)
+      railties (>= 4.2.0, < 5.3)
     rest-client (2.0.2)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
-    rest-client-logger (0.0.1)
-      railties (>= 3.1)
-      rest-client (>= 1.6)
     rspec (3.5.0)
       rspec-core (~> 3.5.0)
       rspec-expectations (~> 3.5.0)
@@ -329,7 +335,7 @@ GEM
     ruby-progressbar (1.9.0)
     ruby_parser (3.9.0)
       sexp_processor (~> 4.1)
-    rugged (0.26.0)
+    rugged (0.27.0)
     safe_yaml (1.0.4)
     sass (3.4.22)
     sass-rails (5.0.6)
@@ -353,9 +359,9 @@ GEM
       redis (~> 3.2, >= 3.2.1)
     sidekiq-throttled (0.7.3)
       sidekiq
-    simple_form (3.3.1)
-      actionpack (> 4, < 5.1)
-      activemodel (> 4, < 5.1)
+    simple_form (3.5.1)
+      actionpack (> 4, < 5.2)
+      activemodel (> 4, < 5.2)
     simplecov (0.15.0)
       docile (~> 1.1.0)
       json (>= 1.8, < 3)
@@ -391,7 +397,7 @@ GEM
       unf_ext
     unf_ext (0.0.7.5)
     unicode-display_width (1.3.0)
-    warden (1.2.6)
+    warden (1.2.7)
       rack (>= 1.0)
     web-console (3.4.0)
       actionview (>= 5.0)
@@ -420,7 +426,7 @@ DEPENDENCIES
   database_cleaner
   deep_cloneable
   dentaku
-  devise (~> 4.2.0)
+  devise (~> 4.4.0)
   dhis2
   differ
   easy_diff
@@ -452,7 +458,7 @@ DEPENDENCIES
   rails-controller-testing
   rails-jquery-autocomplete
   rails_admin (~> 1.3.0)
-  rest-client-logger
+  rest-client-logger!
   rspec-its
   rspec-rails (~> 3.0)
   rspec-sidekiq
@@ -475,7 +481,7 @@ DEPENDENCIES
   webmock
 
 RUBY VERSION
-   ruby 2.4.2p198
+   ruby 2.5.1p57
 
 BUNDLED WITH
    1.16.1

@@ -25,8 +25,6 @@ module Scorpio
     logger.formatter = config.log_formatter
     config.logger    = ActiveSupport::TaggedLogging.new(logger)
     config.log_level = ENV["LOG_LEVEL"] || :info
-    # Do not swallow errors in after_commit/after_rollback callbacks.
-    config.active_record.raise_in_transactional_callbacks = true
     config.lograge.enabled = ENV["LOGRAGE"] == "true"
     config.lograge.custom_options = lambda do |event|
       {

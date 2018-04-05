@@ -36,13 +36,13 @@ RSpec.describe Setup::ActivitiesController, type: :controller do
 
     describe "#mass_creation" do
       it "should validate before creating " do
-        get :mass_creation, project_id: project.id
+        get :mass_creation, params: { project_id: project.id }
         missing_activity_states = assigns(:missing_activity_states)
         expect(missing_activity_states.size).to eq 2
       end
 
       it "should create asynch the missing data element " do
-        post :confirm_mass_creation, project_id: project.id
+        post :confirm_mass_creation, params: { project_id: project.id }
       end
     end
 
