@@ -13,6 +13,7 @@
 //= require jquery
 //= require sol/sol-2.0.0
 //= require mermaid.min
+//= require jquery.textcomplete.min
 //= require jquery_ujs
 //= require jquery-ui/autocomplete
 //= require autocomplete-rails
@@ -22,19 +23,19 @@
 //= require cocoon
 //= require_tree .
 
-$(document).ready(function() {
+$(document).ready(function () {
   $(".popper").popover({
     container: "body",
     html: true,
-    content: function() {
+    content: function () {
       return $(this)
         .find(".popper-content")
         .html();
     }
   });
   // one popover at a time
-  $("body").on("click", function(e) {
-    $('[data-toggle="popover"]').each(function() {
+  $("body").on("click", function (e) {
+    $('[data-toggle="popover"]').each(function () {
       //the 'is' for buttons that trigger popups
       //the 'has' for icons within a button that triggers a popup
       if (
@@ -47,14 +48,34 @@ $(document).ready(function() {
     });
   });
 
-  $("#searchEquation").keyup(function() {
+  $('.fomula-editor').textcomplete([{
+    match: /(^|\b)(\w{2,})$/,
+    search: function (term, callback) {
+      var words = $('#words').data("dictionary");
+      callback($.map(words, function (word) {
+        var index = word.indexOf(term)
+        if (index == 0) {
+          return word
+        }
+        if (index == 2) {
+          return word.substring(2);
+        }
+        return null;
+      }));
+    },
+    replace: function (word) {
+      return word + ' ';
+    }
+  }]);
+
+  $("#searchEquation").keyup(function () {
     filter = new RegExp($(this).val(), "i");
-    $("#equationsTable tbody tr").filter(function() {
-      $(this).each(function() {
+    $("#equationsTable tbody tr").filter(function () {
+      $(this).each(function () {
         found = false;
         $(this)
           .children()
-          .each(function() {
+          .each(function () {
             content = $(this).html();
             if (content.match(filter)) {
               found = true;

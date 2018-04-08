@@ -12,7 +12,7 @@
     <div class="row">
       <div class="col-md-11">  <%= f.input :expression,
                                           placeholder: (f.object.rule && f.object.rule.activity_kind? ? "eg 'if (verified != 0.0, (ABS(claimed - verified) / verified ) * 100.0, 0.0)'" : "eg 'SUM(%{amount_values})'"),
-                                          input_html: {style: 'font-family: monospace ', rows: 4}
+                                          input_html: {style: 'font-family: monospace ', rows: 4, class: "fomula-editor"}
                                           %>
                                         </div>
                               
