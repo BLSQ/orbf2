@@ -54,10 +54,10 @@ $(document).ready(function () {
       var words = $('#words').data("dictionary");
       callback($.map(words, function (word) {
         var index = word.indexOf(term)
-        if (index == 0) {
+        if (index === 0) {
           return word
         }
-        if (index == 2) {
+        if (index === 2) {
           return word.substring(2);
         }
         return null;
