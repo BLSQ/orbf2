@@ -13,6 +13,7 @@
 //= require jquery
 //= require sol/sol-2.0.0
 //= require mermaid.min
+//= require jquery.textcomplete.min
 //= require jquery_ujs
 //= require jquery-ui/autocomplete
 //= require autocomplete-rails
@@ -46,6 +47,45 @@ $(document).ready(function() {
       }
     });
   });
+
+  $(".fomula-editor").textcomplete([
+    {
+      match: /(^|\b)(\w{2,})$/,
+      search: function(term, callback) {
+        var words = $("#words").data("dictionary");
+        callback(
+          $.map(words, function(word) {
+            var index = word.indexOf(term);
+            if (index === 0) {
+              return word;
+            }
+            return null;
+          })
+        );
+      },
+      replace: function(word) {
+        return word + " ";
+      }
+    },
+    {
+      match: /(%{)([\-+\w]*)$/,
+      search: function(term, callback) {
+        var words = $("#words").data("dictionary");
+        callback(
+          $.map(words, function(word) {
+            var index = word.indexOf("%{" + term);
+            if (index === 0) {
+              return word;
+            }
+            return null;
+          })
+        );
+      },
+      replace: function(word) {
+        return word;
+      }
+    }
+  ]);
 
   $("#searchEquation").keyup(function() {
     filter = new RegExp($(this).val(), "i");
