@@ -71,6 +71,12 @@ class Setup::InvoicesController < PrivateController
       invoicing_request.entity
     ).call
 
+    unless check_contract(invoicing_request, project)
+      flash[:failure] = "Entity is not in the contracted entity group : #{project.entity_group.name}."
+      flash[:failure] += " (Snaphots last updated on #{project.project_anchor.updated_at.to_date})."
+      flash[:failure] += " Only simulation will work. Update the group and trigger a dhis2 snaphots."
+    end
+
     render "new_invoice"
   rescue StandardError => e
     flash[:failure] = "An error occured during simulation #{e.class.name} #{e.message[0..100]}"
@@ -148,6 +154,13 @@ class Setup::InvoicesController < PrivateController
                   :quarter,
                   :mock_values,
                   :legacy_engine)
+  end
+
+  def check_contract(invoicing_request, project)
+    org_unit = @pyramid.org_units.find do |ou|
+      ou.ext_id == invoicing_request.entity
+    end
+    org_unit.group_ext_ids.include?(project.entity_group.external_reference)
   end
 
   # to allow display input dhis2 data elements
