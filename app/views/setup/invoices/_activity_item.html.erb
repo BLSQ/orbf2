@@ -12,7 +12,12 @@
         </span>
           <div class="popper-content hide">
           <% variable = activity_item.variable(header)%>
-            <h3> <%=variable.state %></h3>
+          <%if variable.formula %>
+          <% package_activity = @invoice_activities[[variable.formula.rule.kind, variable.formula.code]] %>
+            <h3><%= link_to(variable.state, edit_setup_project_package_rule_path(@project, package_activity.package.id, package_activity.rule.id, anchor: "formula_#{variable.state}"), target: "_blank") %></h3>
+          <% else %>
+            <h3><%= variable.state %></h3>
+          <%end%>
             <ul>
                 <li><%= variable.key %></li>
                 <li><code><%= variable.expression %></code></li>

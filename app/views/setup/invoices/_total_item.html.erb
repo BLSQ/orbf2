@@ -6,7 +6,13 @@
       <div class="col-md-3 popper <%= invoice_output_input_class(total_item) %>" data-toggle="popover"  data-placement="bottom">
         <%= total_item.value %>
           <div class="popper-content hide">
-            <h3><%= total_item.formula.code%></h3>
+            <% if total_item.formula.rule.kind!="payment" %>
+            <% package_formula = @invoice_activities[[total_item.formula.rule.kind, total_item.formula.code]] %>
+            <h3><%= link_to(total_item.formula.code, edit_setup_project_package_rule_path(@project, package_formula.package.id, package_formula.rule.id, anchor: "formula_#{total_item.formula.code}"), target: "_blank") %></h3>
+            <% else %>
+            <% package_formula = @invoice_payment_formula[[total_item.formula.rule.kind, total_item.formula.code]] %>
+            <h3><%= link_to(total_item.formula.code, edit_setup_project_rule_path(@project, package_formula.rule.id, anchor: "formula_#{total_item.formula.code}"), target: "_blank") %></h3>
+            <% end %>
             <ul>
             <li><%= total_item.value %></li>
             <li><%= total_item.formula.code %></li>

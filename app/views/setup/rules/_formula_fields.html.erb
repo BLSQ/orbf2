@@ -1,7 +1,7 @@
 <br>
-<div class="nested-fields">
+<div class="nested-fields" id="formula_<%=f.object.code%>">
   <fieldset class="form-group">
-    <legend>Formula <%=f.object.code%>    </legend>
+    <legend>Formula <%=f.object.code%></legend>
       <a class="btn pull-right" data-toggle="collapse" data-target="#cheat_sheet_expression">
               <%= icon("question-circle fa-2x") %>
             </a>
@@ -15,12 +15,12 @@
                                           input_html: {style: 'font-family: monospace ', rows: 4, class: "fomula-editor"}
                                           %>
                                         </div>
-                              
+
       <div class="col-md-1"><%= link_to_remove_association icon("trash text-danger fa-lg"), f , title: "This will delete the formula #{f.object.code} -#{f.object.description} ", class: "btn pull-right"  %></div>
     </div>
-    <div class="row">      
-     <div class="col-md-5">                                     
-        <%= f.input :frequency, collection: Formula::FREQUENCIES, as: :select, prompt: "(default to package frequency)" %>                                      
+    <div class="row">
+     <div class="col-md-5">
+        <%= f.input :frequency, collection: Formula::FREQUENCIES, as: :select, prompt: "(default to package frequency)" %>
      </div>
     </div>
 
