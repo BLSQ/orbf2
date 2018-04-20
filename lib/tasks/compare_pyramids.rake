@@ -1,0 +1,125 @@
+namespace :compare do
+  TAB = "\t".freeze
+
+  def fetch_selected_orgunits(project, pyramids, selected_region, rejected_districts)
+    orgunits = Set.new
+    pyramids.each do |_month, pyramid|
+      contracted = pyramid.org_units_in_group(project.entity_group.external_reference)
+      orgunits.merge(contracted)
+    end
+
+    orgunits = orgunits.to_a.index_by(&:id).values
+
+    selected_orgunits = orgunits.select do |ou|
+      ou.path.include?(selected_region) &&
+        rejected_districts.none? { |rejected_district| ou.path.include?(rejected_district) }
+    end
+    selected_orgunits.sort_by(&:path)
+  end
+
+  def fetch_pyramids(project, months)
+    months.each_with_object({}) do |month_period, hash|
+      pyramid = project.project_anchor.nearest_pyramid_for(month_period.end_date)
+      hash[month_period] = pyramid
+    end
+  end
+
+  def diff_orgunit_groups(selected_orgunits, pyramids)
+    selected_orgunits.each do |orgunit|
+      results = pyramids.keys.map do |month|
+        pyramid = pyramids[month]
+        next unless orgunit
+        orgunit = pyramid.org_unit(orgunit.id)
+        next unless orgunit
+        orgunit_group_ids = orgunit.organisation_unit_groups.map { |g| g["id"] }.sort
+        orgunit_groups = pyramid.org_unit_groups(orgunit_group_ids.sort)
+        parents = pyramid.org_unit_parents(orgunit.id)[1..-1]
+
+        [
+          parents.map(&:name).join(" > "),
+          parents.map(&:id).join(" > "),
+          orgunit.name,
+          orgunit_groups.compact.map(&:name).sort.join(","),
+          orgunit_group_ids.join(",")
+        ].join(TAB)
+      end
+      next unless results.uniq.size > 1
+
+      yield(results, orgunit)
+    end
+  end
+
+  desc "compare pyramid snapshots"
+  task pyramids: :environment do
+    write = ENV.fetch("MODIFY") == "true"
+    project = Project.find(9)
+    quarter_period = Periods.from_dhis2_period("2018Q1")
+    reference_period = Periods.from_dhis2_period("201804")
+    selected_region = "xdxTFCAsoWc"
+    # Est
+    rejected_districts = %w[nRIWNFOJ8xp K9AF7I6xm7O G4jArMiwRoS CFkAxnes0Kg]
+    # Lomié, Messamena, Ketté and Garoua Boulai
+
+    months = quarter_period.months + [reference_period]
+    pyramids = fetch_pyramids(project, months)
+    selected_orgunits = fetch_selected_orgunits(project, pyramids, selected_region, rejected_districts)
+
+    if !write
+      diff_orgunit_groups(selected_orgunits, pyramids) do |results, _orgunit|
+        # report to stdout diff
+        months.each_with_index do |month, index|
+          puts month.to_dhis2 + TAB + results[index]
+        end
+      end
+    else
+
+      orgunits_to_fix = []
+
+      diff_orgunit_groups(selected_orgunits, pyramids) do |_results, orgunit|
+        orgunits_to_fix << orgunit
+      end
+
+      quarter_period.months.each do |month|
+        puts "****** fixing #{month}"
+        ou_dhis2_snapshot = project.project_anchor.dhis2_snapshots.where(kind: "organisation_units", year: month.year, month: month.month).first
+        puts "found to fix #{ou_dhis2_snapshot.id} #{ou_dhis2_snapshot.year} #{ou_dhis2_snapshot.month}"
+        ou_reference_snapshot = project.project_anchor.dhis2_snapshots.where(kind: "organisation_units", year: reference_period.year, month: reference_period.month).first
+        puts "found as ref #{ou_reference_snapshot.id} #{ou_reference_snapshot.year} #{ou_reference_snapshot.month}"
+
+        group_dhis2_snapshot = project.project_anchor.dhis2_snapshots.where(kind: "organisation_unit_groups", year: month.year, month: month.month).first
+        puts "found as oug_fix #{group_dhis2_snapshot.id} #{group_dhis2_snapshot.year} #{group_dhis2_snapshot.month}"
+
+        group_reference_snapshot = project.project_anchor.dhis2_snapshots.where(kind: "organisation_unit_groups", year: reference_period.year, month: reference_period.month).first
+        puts "found as oug_ref #{group_reference_snapshot.id} #{group_reference_snapshot.year} #{group_reference_snapshot.month}"
+
+        orgunits_to_fix.each do |orgunit|
+          ou_to_fix = ou_dhis2_snapshot.content_for_id(orgunit.id)
+          ou_reference = ou_reference_snapshot.content_for_id(orgunit.id)
+          puts "  fixing #{orgunit.id} #{orgunit.name}\n\t#{ou_to_fix['organisation_unit_groups']}\n\t#{ou_reference['organisation_unit_groups']}"
+          ou_to_fix["organisation_unit_groups"] = ou_reference["organisation_unit_groups"]
+
+          ou_reference["organisation_unit_groups"].each do |group_added|
+            puts group_added
+            group_to_fix = group_dhis2_snapshot.content_for_id(group_added["id"])
+            puts group_to_fix["name"] if group_to_fix
+            if group_to_fix
+              if group_to_fix["organisation_units"].include?("id" => orgunit.id)
+                puts "group #{group_to_fix["name"]} already exist and contains #{orgunit.id}"
+              else
+                puts "group #{group_to_fix["name"]} doesn't contains #{orgunit.id}"
+                group_to_fix["organisation_units"] << { "id" => orgunit.id }
+              end
+            else
+              puts "group doesn't exist"
+              group_to_add = group_reference_snapshot.content_for_id(group_added["id"])
+              group_dhis2_snapshot.content << {"table"=> group_to_add }
+            end
+          end
+        end
+        group_dhis2_snapshot.save!
+
+        ou_dhis2_snapshot.save!
+      end
+    end
+  end
+end
