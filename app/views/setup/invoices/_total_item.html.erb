@@ -6,13 +6,14 @@
       <div class="col-md-3 popper <%= invoice_output_input_class(total_item) %>" data-toggle="popover"  data-placement="bottom">
         <%= total_item.value %>
           <div class="popper-content hide">
-            <% if total_item.formula.rule.kind!="payment" %>
-            <% package_formula = @invoice_activities[[total_item.formula.rule.kind, total_item.formula.code]] %>
-            <h3><%= link_to(total_item.formula.code, edit_setup_project_package_rule_path(@project, package_formula.package.id, package_formula.rule.id, anchor: "formula_#{total_item.formula.code}"), target: "_blank") %></h3>
+            <% formula_lookup = indexed_project.lookup_rule(total_item) %>
+            <h3>
+            <% if formula_lookup.package %>
+            <%= link_to(total_item.formula.code, edit_setup_project_package_rule_path(formula_lookup.project, formula_lookup.package, formula_lookup.rule, anchor: "formula_#{total_item.formula.code}"), target: "_blank") %>
             <% else %>
-            <% package_formula = @invoice_payment_formula[[total_item.formula.rule.kind, total_item.formula.code]] %>
-            <h3><%= link_to(total_item.formula.code, edit_setup_project_rule_path(@project, package_formula.rule.id, anchor: "formula_#{total_item.formula.code}"), target: "_blank") %></h3>
+            <%= link_to(total_item.formula.code, edit_setup_project_rule_path(formula_lookup.project, formula_lookup.payment_rule, anchor: "formula_#{total_item.formula.code}"), target: "_blank") %>
             <% end %>
+          </h3>
             <ul>
             <li><%= total_item.value %></li>
             <li><%= total_item.formula.code %></li>

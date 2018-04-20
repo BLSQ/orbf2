@@ -1,9 +1,9 @@
 require "natural_sort"
 
 class Setup::InvoicesController < PrivateController
-  attr_reader :invoicing_request
+  attr_reader :invoicing_request, :indexed_project
   helper_method :invoicing_request
-  ActivitiesForInvoice = Struct.new(:package, :rule)
+  helper_method :indexed_project
 
   def new
     project = current_project(project_scope: :fully_loaded) if params["calculate"]
@@ -58,18 +58,14 @@ class Setup::InvoicesController < PrivateController
 
     @invoice_entity = Invoicing::InvoiceEntity.new(project.project_anchor, invoicing_request, options)
     @invoice_entity.call
+    @indexed_project ||= Invoicing::IndexedProject.new(project, @invoice_entity.orbf_project)
     Invoicing::MapToInvoices.new(invoicing_request, @invoice_entity.fetch_and_solve.solver).call
 
     @dhis2_export_values = @invoice_entity.fetch_and_solve.exported_values
     @dhis2_input_values = @invoice_entity.fetch_and_solve.dhis2_values
     @pyramid = @invoice_entity.pyramid
     @data_compound = @invoice_entity.data_compound
-    @project = current_project
 
-    @activity_mappings = activity_mappings
-
-    @invoice_activities = activities_for_invoice(current_project)
-    @invoice_payment_formula = invoice_payment_formula(current_project)
     @org_unit_summaries = Invoicing::EntitySignalitic.new(
       @pyramid,
       invoicing_request.entity
@@ -168,39 +164,4 @@ class Setup::InvoicesController < PrivateController
   end
 
   # to allow display input dhis2 data elements
-  def activity_mappings
-    @invoice_entity.orbf_project
-                   .packages
-                   .each_with_object({}) do |package, activity_mappings|
-      package.activities.each do |activity|
-        activity.activity_states.each do |activity_state|
-          activity_mappings[[activity.activity_code, activity_state.state]] = activity_state
-        end
-      end
-    end
-  end
-
-  def activities_for_invoice(project)
-    project.packages.each_with_object({}) do |package, invoice_activities|
-      package.rules.each do |rule|
-        rule.formulas.each do |formula|
-          invoice_activities[[rule.kind, formula.code]] = ActivitiesForInvoice.new(
-            package,
-            rule
-          )
-        end
-      end
-    end
-  end
-
-  def invoice_payment_formula(project)
-    project.payment_rules.each_with_object({}) do |payment_rule, invoice_payment_formula|
-      payment_rule.rule.formulas.each do |formula|
-        invoice_payment_formula[[payment_rule.rule.kind, formula.code]] = ActivitiesForInvoice.new(
-          nil,
-          payment_rule
-        )
-      end
-    end
-  end
 end
