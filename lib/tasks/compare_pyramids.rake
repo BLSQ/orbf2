@@ -24,7 +24,7 @@ namespace :compare do
     end
   end
 
-  def diff_orgunit_groups(selected_orgunits, pyramids)
+  def diff_orgunit_groups(selected_orgunits, pyramids, subcontract_groupset_id)
     selected_orgunits.each do |orgunit|
       results = pyramids.keys.map do |month|
         pyramid = pyramids[month]
@@ -35,12 +35,21 @@ namespace :compare do
         orgunit_groups = pyramid.org_unit_groups(orgunit_group_ids.sort)
         parents = pyramid.org_unit_parents(orgunit.id)[1..-1]
 
+        subcontracted_ous = pyramid.org_units_in_same_group(orgunit, subcontract_groupset_id)
+
+        groupset_group_ids = pyramid.org_unit_group_set(subcontract_groupset_id).organisation_unit_groups.map { |e| e["id"] }
+        groupet_org_unit_group_ids = orgunit.organisation_unit_groups.map { |e| e["id"] }
+        common_group_ids = (groupset_group_ids & groupet_org_unit_group_ids).sort
+        common_groups = pyramid.org_unit_groups(common_group_ids)
         [
           parents.map(&:name).join(" > "),
           parents.map(&:id).join(" > "),
           orgunit.name,
           orgunit_groups.compact.map(&:name).sort.join(","),
-          orgunit_group_ids.join(",")
+          orgunit_group_ids.join(","),
+          common_group_ids.join(","),
+          common_groups.map(&:name).join(","),
+          subcontracted_ous.map(&:name).join(","),
         ].join(TAB)
       end
       next unless results.uniq.size > 1
@@ -59,13 +68,14 @@ namespace :compare do
     # Est
     rejected_districts = %w[nRIWNFOJ8xp K9AF7I6xm7O G4jArMiwRoS CFkAxnes0Kg]
     # Lomié, Messamena, Ketté and Garoua Boulai
+    subcontract_groupset_id = "pHH6kYd3i98"
 
     months = quarter_period.months + [reference_period]
     pyramids = fetch_pyramids(project, months)
     selected_orgunits = fetch_selected_orgunits(project, pyramids, selected_region, rejected_districts)
 
     if !write
-      diff_orgunit_groups(selected_orgunits, pyramids) do |results, _orgunit|
+      diff_orgunit_groups(selected_orgunits, pyramids, subcontract_groupset_id) do |results, _orgunit|
         # report to stdout diff
         months.each_with_index do |month, index|
           puts month.to_dhis2 + TAB + results[index]
@@ -75,7 +85,7 @@ namespace :compare do
 
       orgunits_to_fix = []
 
-      diff_orgunit_groups(selected_orgunits, pyramids) do |_results, orgunit|
+      diff_orgunit_groups(selected_orgunits, pyramids, subcontract_groupset_id) do |_results, orgunit|
         orgunits_to_fix << orgunit
       end
 
@@ -92,6 +102,12 @@ namespace :compare do
         group_reference_snapshot = project.project_anchor.dhis2_snapshots.where(kind: "organisation_unit_groups", year: reference_period.year, month: reference_period.month).first
         puts "found as oug_ref #{group_reference_snapshot.id} #{group_reference_snapshot.year} #{group_reference_snapshot.month}"
 
+        groupset_dhis2_snapshot = project.project_anchor.dhis2_snapshots.where(kind: "organisation_unit_group_sets", year: month.year, month: month.month).first
+        puts "found as ougs_fix #{groupset_dhis2_snapshot.id} #{groupset_dhis2_snapshot.year} #{groupset_dhis2_snapshot.month}"
+
+        groupset_reference_snapshot = project.project_anchor.dhis2_snapshots.where(kind: "organisation_unit_group_sets", year: reference_period.year, month: reference_period.month).first
+        puts "found as ougs_ref #{groupset_reference_snapshot.id} #{groupset_reference_snapshot.year} #{groupset_reference_snapshot.month}"
+
         orgunits_to_fix.each do |orgunit|
           ou_to_fix = ou_dhis2_snapshot.content_for_id(orgunit.id)
           ou_reference = ou_reference_snapshot.content_for_id(orgunit.id)
@@ -104,18 +120,30 @@ namespace :compare do
             puts group_to_fix["name"] if group_to_fix
             if group_to_fix
               if group_to_fix["organisation_units"].include?("id" => orgunit.id)
-                puts "group #{group_to_fix["name"]} already exist and contains #{orgunit.id}"
+                puts "group #{group_to_fix['name']} already exist and contains #{orgunit.id}"
               else
-                puts "group #{group_to_fix["name"]} doesn't contains #{orgunit.id}"
+                puts "group #{group_to_fix['name']} doesn't contains #{orgunit.id}"
                 group_to_fix["organisation_units"] << { "id" => orgunit.id }
               end
             else
               puts "group doesn't exist"
               group_to_add = group_reference_snapshot.content_for_id(group_added["id"])
-              group_dhis2_snapshot.content << {"table"=> group_to_add }
+              group_dhis2_snapshot.content << { "table"=> group_to_add }
             end
           end
         end
+
+
+        # remove confessional from contract groups
+        confessional_id = "DMRsfc2ooGX"
+
+        contract_group_set =groupset_dhis2_snapshot.content_for_id(subcontract_groupset_id)
+        if contract_group_set["organisation_unit_groups"].include?("id" => confessional_id)
+          contract_group_set["organisation_unit_groups"].delete("id" => confessional_id)
+          groupset_dhis2_snapshot.save!
+        end
+
+
         group_dhis2_snapshot.save!
 
         ou_dhis2_snapshot.save!
