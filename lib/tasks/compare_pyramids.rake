@@ -49,7 +49,7 @@ namespace :compare do
           orgunit_group_ids.join(","),
           common_group_ids.join(","),
           common_groups.map(&:name).join(","),
-          subcontracted_ous.map(&:name).join(","),
+          subcontracted_ous.map(&:name).join(",")
         ].join(TAB)
       end
       next unless results.uniq.size > 1
@@ -108,11 +108,16 @@ namespace :compare do
         groupset_reference_snapshot = project.project_anchor.dhis2_snapshots.where(kind: "organisation_unit_group_sets", year: reference_period.year, month: reference_period.month).first
         puts "found as ougs_ref #{groupset_reference_snapshot.id} #{groupset_reference_snapshot.year} #{groupset_reference_snapshot.month}"
 
+        contract_group_set_reference = groupset_reference_snapshot.content_for_id(subcontract_groupset_id)
+
+
         orgunits_to_fix.each do |orgunit|
           ou_to_fix = ou_dhis2_snapshot.content_for_id(orgunit.id)
           ou_reference = ou_reference_snapshot.content_for_id(orgunit.id)
           puts "  fixing #{orgunit.id} #{orgunit.name}\n\t#{ou_to_fix['organisation_unit_groups']}\n\t#{ou_reference['organisation_unit_groups']}"
           ou_to_fix["organisation_unit_groups"] = ou_reference["organisation_unit_groups"]
+
+          contract_group_set_to_fix = groupset_dhis2_snapshot.content_for_id(subcontract_groupset_id)
 
           ou_reference["organisation_unit_groups"].each do |group_added|
             puts group_added
@@ -130,19 +135,28 @@ namespace :compare do
               group_to_add = group_reference_snapshot.content_for_id(group_added["id"])
               group_dhis2_snapshot.content << { "table"=> group_to_add }
             end
+
+            to_check = {"id" => group_added["id"]}
+            included_in_to_fix = contract_group_set_to_fix["organisation_unit_groups"].include?(to_check)
+            included_in_reference = contract_group_set_reference["organisation_unit_groups"].include?(to_check)
+
+            if included_in_reference && !included_in_to_fix
+              contract_group_set_to_fix["organisation_unit_groups"] << to_check
+            end
+
           end
+
         end
 
-
-        # remove confessional from contract groups
+        # whatever remove confessional from contract groups
         confessional_id = "DMRsfc2ooGX"
 
-        contract_group_set =groupset_dhis2_snapshot.content_for_id(subcontract_groupset_id)
+        contract_group_set = groupset_dhis2_snapshot.content_for_id(subcontract_groupset_id)
         if contract_group_set["organisation_unit_groups"].include?("id" => confessional_id)
           contract_group_set["organisation_unit_groups"].delete("id" => confessional_id)
-          groupset_dhis2_snapshot.save!
         end
 
+        groupset_dhis2_snapshot.save!
 
         group_dhis2_snapshot.save!
 
