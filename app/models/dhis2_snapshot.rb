@@ -51,4 +51,9 @@ class Dhis2Snapshot < ApplicationRecord
   def snapshoted_at
     Date.parse("#{year}-#{month}-01").end_of_month
   end
+
+  def content_for_id(id)
+    item = content.detect { |row| row["table"]["id"] == id }
+    item ? item["table"] : nil
+  end
 end
