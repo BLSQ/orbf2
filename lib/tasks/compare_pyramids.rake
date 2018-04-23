@@ -25,11 +25,9 @@ namespace :compare do
   end
 
   def diff_orgunit_groups(selected_orgunits, pyramids, subcontract_groupset_id)
-    selected_orgunits.each do |orgunit|
-      results = pyramids.keys.map do |month|
-        pyramid = pyramids[month]
-        next unless orgunit
-        orgunit = pyramid.org_unit(orgunit.id)
+    selected_orgunits.each do |selected_orgunit|
+      results = pyramids.values.map do |pyramid|
+        orgunit = pyramid.org_unit(selected_orgunit.id)
         next unless orgunit
         orgunit_group_ids = orgunit.organisation_unit_groups.map { |g| g["id"] }.sort
         orgunit_groups = pyramid.org_unit_groups(orgunit_group_ids.sort)
@@ -54,7 +52,7 @@ namespace :compare do
       end
       next unless results.uniq.size > 1
 
-      yield(results, orgunit)
+      yield(results, selected_orgunit)
     end
   end
 
@@ -110,7 +108,6 @@ namespace :compare do
 
         contract_group_set_reference = groupset_reference_snapshot.content_for_id(subcontract_groupset_id)
 
-
         orgunits_to_fix.each do |orgunit|
           ou_to_fix = ou_dhis2_snapshot.content_for_id(orgunit.id)
           ou_reference = ou_reference_snapshot.content_for_id(orgunit.id)
@@ -136,16 +133,14 @@ namespace :compare do
               group_dhis2_snapshot.content << { "table"=> group_to_add }
             end
 
-            to_check = {"id" => group_added["id"]}
+            to_check = { "id" => group_added["id"] }
             included_in_to_fix = contract_group_set_to_fix["organisation_unit_groups"].include?(to_check)
             included_in_reference = contract_group_set_reference["organisation_unit_groups"].include?(to_check)
 
             if included_in_reference && !included_in_to_fix
               contract_group_set_to_fix["organisation_unit_groups"] << to_check
             end
-
           end
-
         end
 
         # whatever remove confessional from contract groups
