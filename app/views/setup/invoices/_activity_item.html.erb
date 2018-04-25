@@ -7,20 +7,28 @@
           <% if formatted_amount && formatted_amount.to_d!= activity_item.solution[header].to_s.to_d%>
            <span title="Rounded for display <%= activity_item.solution[header] %>" class="text-danger" role="button">*</span>
         <% end %>
-        <%= formatted_amount%>
+        <%= formatted_amount %>
 
         </span>
           <div class="popper-content hide">
           <% variable = activity_item.variable(header)%>
-            <h3> <%=variable.state %></h3>
+          <%if variable.formula %>
+          <% activity_lookup = indexed_project.lookup_package_rule(activity_item, header) %>
+            <h3><%= link_to(variable.state, edit_setup_project_package_rule_path(activity_lookup.project, activity_lookup.package, activity_lookup.rule, anchor: "formula_#{variable.state}"), target: "_blank") %></h3>
+          <% else %>
+            <h3><%= variable.state %></h3>
+          <%end%>
             <ul>
                 <li><%= variable.key %></li>
                 <li><code><%= variable.expression %></code></li>
-                <% activity_state = @activity_mappings[[variable.activity_code, variable.state]] %>
+                <% activity_state = indexed_project.lookup_activity_state(variable) %>
                 <%if variable.formula %>
                    <li><code><%= variable.formula.code %> = <%= variable.formula.expression %></code></li>
                    <li><code><%= variable.formula.code %> = <%= activity_item.substitued[variable.formula.code] %></code></li>
                    <li><code><%= variable.formula.code %> = <%= activity_item.solution[variable.formula.code] %></code></li>
+                   <% if !variable.formula.frequency.nil? && (variable.formula.frequency!=variable.formula.rule.package.frequency) %>
+                   <li><code><%= variable.formula.frequency %></code></li>
+                   <% end %>
                 <%end%>
                 <%if variable.dhis2_data_element %>
                   <li><%= variable.dhis2_data_element %></li>

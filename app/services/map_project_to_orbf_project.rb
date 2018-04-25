@@ -34,7 +34,7 @@ class MapProjectToOrbfProject
     return from_cache if from_cache
 
     @cache_package[package] = Orbf::RulesEngine::Package.new(
-      code:                   Orbf::RulesEngine::Codifier.codify(package.name),
+      code:                   package.code,
       kind:                   PACKAGE_KINDS[package.kind] || package.kind,
       frequency:              package.frequency,
       org_unit_group_ext_ids: package.package_entity_groups.map(&:organisation_unit_group_ext_ref).compact,

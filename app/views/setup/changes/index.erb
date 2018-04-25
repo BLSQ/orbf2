@@ -13,20 +13,27 @@
 	<tbody>
 	<% @versions.each do |version| %>
 		<tr>
-			<td><%= version.item_type %>-<%=version.item_id%></td>
+			<td>
+        <%= version.item_type %>-<%=version.item_id%><br>
+        <% item_type = instance_eval(version.item_type).find_by_id(version.item_id) %>
+        <% if item_type %>
+        <small><i><%= item_type.try(:name) || item_type.try(:code) || item_type.try(:description) %></i></small>
+        <% end %>
+      </td>
       <td><%= version.event %></td>
       <td><%= version.author ? version.author.email : "System" %></td>
       <td><%= time_ago_in_words(version.created_at) %> </td>
 			<td>
+        <small>
         <% version.diffs.each do |attribute_name, change| %>
            <%= attribute_name %> <br>
            <ul>
              <%= change.diff.format_as(:html).html_safe %>
           </ul>
         <%end%>
+      </small>
      </td>
 		</tr>
-
 	<% end%>
 	</tbody>
 </table>

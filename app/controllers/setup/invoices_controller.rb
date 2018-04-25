@@ -1,8 +1,9 @@
 require "natural_sort"
 
 class Setup::InvoicesController < PrivateController
-  attr_reader :invoicing_request
+  attr_reader :invoicing_request, :indexed_project
   helper_method :invoicing_request
+  helper_method :indexed_project
 
   def new
     project = current_project(project_scope: :fully_loaded) if params["calculate"]
@@ -57,6 +58,7 @@ class Setup::InvoicesController < PrivateController
 
     @invoice_entity = Invoicing::InvoiceEntity.new(project.project_anchor, invoicing_request, options)
     @invoice_entity.call
+    @indexed_project = Invoicing::IndexedProject.new(project, @invoice_entity.orbf_project)
     Invoicing::MapToInvoices.new(invoicing_request, @invoice_entity.fetch_and_solve.solver).call
 
     @dhis2_export_values = @invoice_entity.fetch_and_solve.exported_values
@@ -64,12 +66,12 @@ class Setup::InvoicesController < PrivateController
     @pyramid = @invoice_entity.pyramid
     @data_compound = @invoice_entity.data_compound
 
-    activity_mappings
-
     @org_unit_summaries = Invoicing::EntitySignalitic.new(
       @pyramid,
       invoicing_request.entity
     ).call
+
+    add_contract_warning_if_non_contracted(invoicing_request, project)
 
     render "new_invoice"
   rescue StandardError => e
@@ -150,16 +152,20 @@ class Setup::InvoicesController < PrivateController
                   :legacy_engine)
   end
 
-  # to allow display input dhis2 data elements
-  def activity_mappings
-    @activity_mappings = @invoice_entity.orbf_project
-                                        .packages
-                                        .each_with_object({}) do |package, activity_mappings|
-      package.activities.each do |activity|
-        activity.activity_states.each do |activity_state|
-          activity_mappings[[activity.activity_code, activity_state.state]] = activity_state
-        end
-      end
-    end
+  def add_contract_warning_if_non_contracted(invoicing_request, project)
+    return if contracted?(invoicing_request, project)
+    flash[:failure] = non_contracted_orgunit_message(project)
+  end
+
+  def contracted?(invoicing_request, project)
+    org_unit = @pyramid.org_unit(invoicing_request.entity)
+    org_unit.group_ext_ids.include?(project.entity_group.external_reference)
+  end
+
+  def non_contracted_orgunit_message(project)
+    "Entity is not in the contracted entity group : #{project.entity_group.name}." \
+     " (Snaphots last updated on #{project.project_anchor.updated_at.to_date})." \
+     " Only simulation will work. Update the group and trigger a dhis2 snaphots." \
+     " Note that it will only fix this issue for current or futur periods."
   end
 end

@@ -48,45 +48,6 @@ $(document).ready(function() {
     });
   });
 
-  $(".fomula-editor").textcomplete([
-    {
-      match: /(^|\b)(\w{2,})$/,
-      search: function(term, callback) {
-        var words = $("#words").data("dictionary");
-        callback(
-          $.map(words, function(word) {
-            var index = word.indexOf(term);
-            if (index === 0) {
-              return word;
-            }
-            return null;
-          })
-        );
-      },
-      replace: function(word) {
-        return word + " ";
-      }
-    },
-    {
-      match: /(%{)([\-+\w]*)$/,
-      search: function(term, callback) {
-        var words = $("#words").data("dictionary");
-        callback(
-          $.map(words, function(word) {
-            var index = word.indexOf("%{" + term);
-            if (index === 0) {
-              return word;
-            }
-            return null;
-          })
-        );
-      },
-      replace: function(word) {
-        return word;
-      }
-    }
-  ]);
-
   $("#searchEquation").keyup(function() {
     filter = new RegExp($(this).val(), "i");
     $("#equationsTable tbody tr").filter(function() {

@@ -43,6 +43,10 @@ class Package < ApplicationRecord
 
   accepts_nested_attributes_for :states
 
+  def code
+    @code ||= Orbf::RulesEngine::Codifier.codify(name)
+  end
+
   def invoice_details
     states.select(&:activity_level?).map(&:code) + activity_rule.formulas.map(&:code) + ["activity_name"]
   end
@@ -155,7 +159,7 @@ class Package < ApplicationRecord
     status = dhis2.data_element_groups.create(deg)
     created_deg = dhis2.data_element_groups.find_by(name: name)
     raise "data element group not created #{name} : #{deg} : #{status.inspect}" unless created_deg
-    return created_deg
+    created_deg
   rescue RestClient::Exception => e
     raise "Failed to create data element group #{deg} #{e.message} with #{project.dhis2_url}"
   end

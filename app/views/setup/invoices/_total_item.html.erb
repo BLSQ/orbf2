@@ -6,7 +6,14 @@
       <div class="col-md-3 popper <%= invoice_output_input_class(total_item) %>" data-toggle="popover"  data-placement="bottom">
         <%= total_item.value %>
           <div class="popper-content hide">
-            <h3><%= total_item.formula.code%></h3>
+            <% formula_lookup = indexed_project.lookup_rule(total_item) %>
+            <h3>
+            <% if formula_lookup.package %>
+            <%= link_to(total_item.formula.code, edit_setup_project_package_rule_path(formula_lookup.project, formula_lookup.package, formula_lookup.rule, anchor: "formula_#{total_item.formula.code}"), target: "_blank") %>
+            <% else %>
+            <%= link_to(total_item.formula.code, edit_setup_project_rule_path(formula_lookup.project, formula_lookup.payment_rule, anchor: "formula_#{total_item.formula.code}"), target: "_blank") %>
+            <% end %>
+          </h3>
             <ul>
             <li><%= total_item.value %></li>
             <li><%= total_item.formula.code %></li>
