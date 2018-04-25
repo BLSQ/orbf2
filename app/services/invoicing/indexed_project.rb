@@ -43,12 +43,8 @@ module Invoicing
       project.packages.each_with_object({}) do |package, invoice_activities|
         package.rules.each do |rule|
           rule.formulas.each do |formula|
-            invoice_activities[[rule.kind, formula.code]] = LookupRules.new(
-              project,
-              package,
-              rule,
-              nil
-            )
+            invoice_activities[[rule.kind, formula.code]] =
+              LookupRules.new(project, package, rule, nil)
           end
         end
       end
@@ -57,12 +53,8 @@ module Invoicing
     def total_item_lookup
       project.payment_rules.each_with_object({}) do |payment_rule, invoice_payment_formula|
         payment_rule.rule.formulas.each do |formula|
-          invoice_payment_formula[[payment_rule.rule.kind, formula.code]] = LookupRules.new(
-            project,
-            nil,
-            nil,
-            payment_rule
-          )
+          invoice_payment_formula[[payment_rule.rule.kind, formula.code]] =
+            LookupRules.new(project, nil, nil, payment_rule)
         end
       end
     end

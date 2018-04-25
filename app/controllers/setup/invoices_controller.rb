@@ -58,7 +58,7 @@ class Setup::InvoicesController < PrivateController
 
     @invoice_entity = Invoicing::InvoiceEntity.new(project.project_anchor, invoicing_request, options)
     @invoice_entity.call
-    @indexed_project ||= Invoicing::IndexedProject.new(project, @invoice_entity.orbf_project)
+    @indexed_project = Invoicing::IndexedProject.new(project, @invoice_entity.orbf_project)
     Invoicing::MapToInvoices.new(invoicing_request, @invoice_entity.fetch_and_solve.solver).call
 
     @dhis2_export_values = @invoice_entity.fetch_and_solve.exported_values
@@ -71,11 +71,7 @@ class Setup::InvoicesController < PrivateController
       invoicing_request.entity
     ).call
 
-    unless check_contract(invoicing_request, project)
-      flash[:failure] = "Entity is not in the contracted entity group : #{project.entity_group.name}."
-      flash[:failure] += " (Snaphots last updated on #{project.project_anchor.updated_at.to_date})."
-      flash[:failure] += " Only simulation will work. Update the group and trigger a dhis2 snaphots."
-    end
+    add_contract_warning_if_non_contracted(invoicing_request, project)
 
     render "new_invoice"
   rescue StandardError => e
@@ -156,12 +152,19 @@ class Setup::InvoicesController < PrivateController
                   :legacy_engine)
   end
 
-  def check_contract(invoicing_request, project)
-    org_unit = @pyramid.org_units.find do |ou|
-      ou.ext_id == invoicing_request.entity
-    end
+  def add_contract_warning_if_non_contracted(invoicing_request, project)
+    return if is_contracted?(invoicing_request, project)
+    flash[:failure] = non_contracted_orgunit_message(project)
+  end
+
+  def is_contracted?(invoicing_request, project)
+    org_unit = @pyramid.org_unit(invoicing_request.entity)
     org_unit.group_ext_ids.include?(project.entity_group.external_reference)
   end
 
-  # to allow display input dhis2 data elements
+  def non_contracted_orgunit_message(project)
+    "Entity is not in the contracted entity group : #{project.entity_group.name}." \
+     " (Snaphots last updated on #{project.project_anchor.updated_at.to_date})." \
+     " Only simulation will work. Update the group and trigger a dhis2 snaphots." \
+  end
 end
