@@ -16,10 +16,11 @@ module Invoicing
     end
 
     def lookup_rule(total_item)
-      if total_item.formula.rule.kind != "payment"
-        @activity_items_lookup[[total_item.formula.rule.kind, total_item.formula.code]]
+      key = [total_item.formula.rule.kind, total_item.formula.code]
+      if total_item.formula.rule.payment_kind?
+        @total_items_lookup[key]
       else
-        @total_items_lookup[[total_item.formula.rule.kind, total_item.formula.code]]
+        @activity_items_lookup[key]
       end
     end
 

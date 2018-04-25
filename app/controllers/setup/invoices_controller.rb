@@ -153,11 +153,11 @@ class Setup::InvoicesController < PrivateController
   end
 
   def add_contract_warning_if_non_contracted(invoicing_request, project)
-    return if is_contracted?(invoicing_request, project)
+    return if contracted?(invoicing_request, project)
     flash[:failure] = non_contracted_orgunit_message(project)
   end
 
-  def is_contracted?(invoicing_request, project)
+  def contracted?(invoicing_request, project)
     org_unit = @pyramid.org_unit(invoicing_request.entity)
     org_unit.group_ext_ids.include?(project.entity_group.external_reference)
   end
@@ -166,5 +166,6 @@ class Setup::InvoicesController < PrivateController
     "Entity is not in the contracted entity group : #{project.entity_group.name}." \
      " (Snaphots last updated on #{project.project_anchor.updated_at.to_date})." \
      " Only simulation will work. Update the group and trigger a dhis2 snaphots." \
+     " Note that it will only fix this issue for current or futur periods."
   end
 end
