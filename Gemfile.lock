@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/BLSQ/orbf-rules_engine.git
-  revision: 5676249e7cf44f5ea4716b5ab68de5a37a8dad5e
+  revision: f130e167f7f2cae02df044fc156c4e6850d48750
   specs:
     orbf-rules_engine (0.1.0)
       activesupport
@@ -105,7 +105,7 @@ GEM
     diff-lcs (1.2.5)
     differ (0.1.2)
     docile (1.1.5)
-    domain_name (0.5.20170404)
+    domain_name (0.5.20180417)
       unf (>= 0.0.5, < 1.0.0)
     easy_diff (1.0.0)
     erubis (2.7.0)

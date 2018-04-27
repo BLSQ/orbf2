@@ -13,8 +13,14 @@ module InvoicesHelper
 
   def project_descriptor(project)
     {
-      payment_rules: project.payment_rules.map { |payment_rule| payment_descriptor(payment_rule) }
+      payment_rules: project.payment_rules.each_with_object({}) do |payment_rule, hash|
+        hash[codify(payment_rule.rule.name)] = payment_descriptor(payment_rule)
+      end
     }
+  end
+
+  def codify(code)
+    Orbf::RulesEngine::Codifier.codify(code)
   end
 
   def package_descriptor(package)
@@ -51,7 +57,9 @@ module InvoicesHelper
     {
       name:     payment_rule.rule.name,
       formulas: formulas_descriptors(payment_rule.rule),
-      packages: payment_rule.packages.map { |package| package_descriptor(package) }
+      packages: payment_rule.packages.each_with_object({}) do |package, hash|
+        hash[package.code] = package_descriptor(package)
+      end
     }
   end
 

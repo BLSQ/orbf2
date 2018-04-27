@@ -25,4 +25,8 @@ class InvoicingRequest
   def legacy_engine?
     legacy_engine == "1" || legacy_engine == "true"
   end
+
+  def mock_values?
+    mock_values == "1"
+  end
 end
