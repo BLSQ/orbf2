@@ -15,11 +15,15 @@ module Invoicing
 
     def fetch_and_solve
       @fetch_and_solve ||= begin
+          solve_options = {
+            pyramid:     pyramid,
+            mock_values: invoicing_request.mock_values? ? [] : nil
+          }
           fetch_and_solve = Orbf::RulesEngine::FetchAndSolve.new(
             orbf_project,
             invoicing_request.entity,
             invoicing_request.year_quarter.to_dhis2,
-            pyramid
+            solve_options
           )
           @pyramid = fetch_and_solve.pyramid
           @dhis2_export_values = fetch_and_solve.call

@@ -109,7 +109,7 @@ class Setup::InvoicesController < PrivateController
 
     options = {
       publisher_ids: [],
-      mock_values:   invoicing_request.mock_values == "1"
+      mock_values:   invoicing_request.mock_values?
     }
 
     if params[:simulate_draft]
