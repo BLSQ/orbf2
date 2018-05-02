@@ -269,9 +269,16 @@ RSpec.describe Rule, kind: :model do
       rule.formulas.build(
         rule:        rule,
         code:        :zone_attributed_points,
-        expression:  "SUM(%{fosa_attributed_points_values})",
+        expression:  "SUM(%{fosa_attributed_points_values}) / zone_constant",
         description: "Quality score"
       )
+      rule.formulas.build(
+        rule:        rule,
+        code:        :zone_constant,
+        expression:  "10",
+        description: "constant"
+      )
+
       rule
     end
 
@@ -313,11 +320,18 @@ RSpec.describe Rule, kind: :model do
     end
 
     it "has available_variables for package_rule" do
-      expect(package_rule.available_variables).to eq ["%{attributed_points_values}", "zone_attributed_points"]
+      expect(package_rule.available_variables).to eq [
+        "%{attributed_points_values}",
+        "zone_attributed_points", "zone_constant"
+      ]
     end
 
     it "has available_variables for zone_rule" do
-      expect(zone_rule.available_variables).to eq ["%{fosa_attributed_points_values}"]
+      expect(zone_rule.available_variables).to eq [
+        "%{fosa_attributed_points_values}",
+        "zone_attributed_points",
+        "zone_constant"
+      ]
     end
 
     it "detects cycles" do
