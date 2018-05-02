@@ -13,6 +13,7 @@ module RuleTypes
       var_names = []
 
       var_names << available_variables_for_values.map { |code| "%{#{code}}" }
+      var_names << package.zone_rule.formulas.map(&:code) if package.zone_rule
 
       var_names.flatten.uniq.reject(&:nil?).sort
     end
