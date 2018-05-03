@@ -23,41 +23,42 @@
 <br>
 <br>
 
-<h3> Dhis2 output values </h3>
-<button class="btn btn-default" data-toggle="collapse" data-target="#dhis2-output-values">Show values</button>
-  <div id="dhis2-output-values" class="collapse">
-    <pre><%=JSON.pretty_generate(@dhis2_export_values)%></pre>
-</div>
+<%if  @invoice_entity.success? %>
+  <h3> Dhis2 output values </h3>
+  <button class="btn btn-default" data-toggle="collapse" data-target="#dhis2-output-values">Show values</button>
+    <div id="dhis2-output-values" class="collapse">
+      <pre><%=JSON.pretty_generate(@dhis2_export_values)%></pre>
+  </div>
 
-<h3> Dhis2 input values </h3>
-<button class="btn btn-default" data-toggle="collapse" data-target="#dhis2-input-values">Show values</button>
-  <div id="dhis2-input-values" class="collapse">
-    <pre><%=JSON.pretty_generate(@dhis2_input_values) %></pre>
-</div>
+  <h3> Dhis2 input values </h3>
+  <button class="btn btn-default" data-toggle="collapse" data-target="#dhis2-input-values">Show values</button>
+    <div id="dhis2-input-values" class="collapse">
+      <pre><%=JSON.pretty_generate(@dhis2_input_values) %></pre>
+  </div>
 
-<h3> Equations</h3>
-<button class="btn btn-default" data-toggle="collapse" data-target="#equations">Show Equations</button>
-  <div id="equations" class="collapse">
-  <% problem = @invoice_entity.fetch_and_solve.solver.build_problem %>
-  <% solution = @invoice_entity.fetch_and_solve.solver.solution %>
-<input type="text" id="searchEquation" class="pull-right" placeholder="Search for equations">
-<table class="table table-striped compact" id="equationsTable">
- <thead>
- <tr>
- <th>Key</th>
- <th>Equations</th>
- <th>Value</th>
- </tr>
-  </thead>
-  <tbody>
-    <% problem.each do |key, equation|%>
-      <tr>
-          <td><%= key %></td>
-          <td><%= equation %></td>
-          <td><%= solution[key] %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
-
+  <h3> Equations</h3>
+  <button class="btn btn-default" data-toggle="collapse" data-target="#equations">Show Equations</button>
+    <div id="equations" class="collapse">
+    <% problem = @invoice_entity.fetch_and_solve.solver.build_problem %>
+    <% solution = @invoice_entity.fetch_and_solve.solver.solution %>
+  <input type="text" id="searchEquation" class="pull-right" placeholder="Search for equations">
+  <table class="table table-striped compact" id="equationsTable">
+  <thead>
+  <tr>
+  <th>Key</th>
+  <th>Equations</th>
+  <th>Value</th>
+  </tr>
+    </thead>
+    <tbody>
+      <% problem.each do |key, equation|%>
+        <tr>
+            <td><%= key %></td>
+            <td><%= equation %></td>
+            <td><%= solution[key] %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<%end%>
 </div>

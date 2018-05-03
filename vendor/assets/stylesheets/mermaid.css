@@ -259,10 +259,11 @@ text.actor {
   font-size: 14px;
 }
 div.mermaidTooltip {
+  opacity:1!important;
   position: absolute;
-  text-align: center;
-  max-width: 200px;
-  padding: 2px;
+  text-align: left;
+  max-width: 100%;
+  padding: 4px;
   font-family: 'trebuchet ms', verdana, arial;
   font-size: 12px;
   background: #ffffde;

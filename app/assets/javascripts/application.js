@@ -24,6 +24,13 @@
 //= require_tree .
 
 $(document).ready(function() {
+  mermaid.initialize({
+    startOnLoad: true,
+    flowchart: {
+      useMaxWidth: false,
+      htmlLabels: true
+    }
+  });
   $(".popper").popover({
     container: "body",
     html: true,

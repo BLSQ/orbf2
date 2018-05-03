@@ -1,7 +1,7 @@
 
-<% @orbf_project.packages.each do |package|%>
+<% @packages.each_with_index do |package, index|%>
 
-<h1><%= package.code.humanize %></h1>
+<h1><a href="?package=<%=index + 1 %>"><%= package.code.humanize %></a></h1>
 <div class="mermaid" style="width: 100%">
 graph TD
 <%= Orbf::RulesEngine::GraphvizProjectPrinter.new.print_packages([package]).first%>

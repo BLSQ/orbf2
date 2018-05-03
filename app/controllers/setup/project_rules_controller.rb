@@ -7,7 +7,13 @@ class Setup::ProjectRulesController < PrivateController
     @orbf_project = MapProjectToOrbfProject.new(
       current_project,
       data_compound.indicators
-      ).map
+    ).map
+
+    @packages = if params[:package]
+                  [@orbf_project.packages[params[:package].to_i - 1]]
+                else
+                  @orbf_project.packages
+                end
   end
 
   def new
@@ -38,7 +44,7 @@ class Setup::ProjectRulesController < PrivateController
 
   def update
     @project_rule = current_project.payment_rules.find(params[:id])
-    project_rule.update_attributes(rule_params)
+    project_rule.update(rule_params)
     Rails.logger.info project_rule.valid?
     Rails.logger.info project_rule.errors.full_messages
     if project_rule.save

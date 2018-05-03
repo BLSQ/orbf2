@@ -9,6 +9,11 @@ module Invoicing
     def call
       fetch_and_solve
       publish_to_dhis2 if options.publish_to_dhis2?
+      @success = true
+    end
+
+    def success?
+      @success
     end
 
     attr_reader :invoicing_request, :project_anchor, :options
