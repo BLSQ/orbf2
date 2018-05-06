@@ -23,7 +23,7 @@ class Activity < ApplicationRecord
 
   validates :name, presence: true
   validates :short_name, allow_blank: true, length: { minimum: 1 }
-  
+
   validates :activity_states, length: { minimum: 1 }
   validates :code, allow_blank: true, format: {
     with:    Formula::REGEXP_VALIDATION,
