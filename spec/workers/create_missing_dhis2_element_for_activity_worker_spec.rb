@@ -13,14 +13,16 @@ RSpec.describe CreateMissingDhis2ElementForActivityWorker do
     stub_create_dataelement
     stub_find_data_element
 
-    worker.perform(full_project.id,
-                   "activity_id"  => activity.id,
-                   "state_id"     => state.id,
-                   "data_element" => {
-                     "name"       => "long and descriptrive name",
-                     "short_name" => "short name",
-                     "code"       => "code"
-                   })
+    worker.perform(
+      full_project.id,
+      "activity_id"  => activity.id,
+      "state_id"     => state.id,
+      "data_element" => {
+        "name"       => "long and descriptrive name",
+        "short_name" => "short name",
+        "code"       => "code"
+      }
+    )
 
     activity_state = activity.activity_states.where(state: state, activity: activity).first
     expect(activity_state.external_reference).to eq("azeaze")
@@ -33,7 +35,16 @@ RSpec.describe CreateMissingDhis2ElementForActivityWorker do
   def stub_create_dataelement
     stub_dhis2(:post, "/metadata?preheatCache=false")
       .with(body: "{\"dataElements\":[{\"name\":\"long and descriptrive name\",\"shortName\":\"short name\",\"code\":\"code\",\"domainType\":\"AGGREGATE\",\"valueType\":\"NUMBER\",\"aggregationType\":\"SUM\",\"type\":\"int\",\"aggregationOperator\":\"SUM\",\"zeroIsSignificant\":true,\"categoryCombo\":{\"id\":\"p0KPaWEg3cf\",\"name\":\"default\"}}]}")
-      .to_return(status: 200, body: "")
+      .to_return(status: 200, body:  {
+        "httpStatus":     "Created",
+        "httpStatusCode": 201,
+        "status":         "OK",
+        "response":       {
+          "responseType": "ObjectReport",
+          "uid":          "azeaze",
+          "klass":        "org.hisp.dhis.dataelement.DataElement"
+        }
+      }.to_json)
   end
 
   def stub_default_category_success

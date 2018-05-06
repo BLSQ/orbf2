@@ -14,7 +14,7 @@ $(document).ready(function () {
 
         if (remaining < 0) {
             messages.push(
-                "too long : should be " + Math.abs(remaining) + " char shorter"
+                "too long : should be " + Math.abs(remaining) + " chars shorter"
             );
         }
         var error_messages = input.parent().find(".error-messages");
