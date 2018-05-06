@@ -5,7 +5,6 @@
 <%= link_to "Package", new_setup_project_formula_mapping_path(formula_mappings.project, mode: :package_only), class: "btn btn-default" %>
 <%= link_to "Payment", new_setup_project_formula_mapping_path(formula_mappings.project, mode: :payment_only), class: "btn btn-default" %>
 <%= link_to "All", new_setup_project_formula_mapping_path(formula_mappings.project, mode: :all), class: "btn btn-default" %>
-
 <%= link_to 'Trigger a data element dhis2 snapshot', setup_project_snapshots_path(formula_mappings.project), class: 'btn btn-default pull-right', method: :post %>
 </div>
 <br>
@@ -46,3 +45,7 @@ This might cause infinite loop or data loss.</p>
 
 <% end %>
 </div>
+
+<div>
+  <%= render partial: "formula_mapping_create", collection: formula_mappings.mappings, as: 'formula_mapping', locals: { project: formula_mappings.project }%>
+<div>

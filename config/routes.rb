@@ -30,7 +30,11 @@ Rails.application.routes.draw do
         resources :snapshots, only: [:create]
         resources :states, only: %i[new create]
         resources :invoices, only: %i[new create]
-        resources :formula_mappings, only: %i[new create]
+        resources :formula_mappings, only: %i[new create] do
+          collection do
+            post :create_data_element
+          end
+        end
         resources :changes, only: [:index]
         resources :activities, only: %i[new create edit update mass_creation] do
           collection do

@@ -1,0 +1,28 @@
+<%if formula_mapping.activity && formula_mapping.external_reference.nil?%>
+   <hr>
+   <h3><%= formula_mapping.formula.rule.package.name %> : <%= formula_mapping.formula.description %> : <code><%= formula_mapping.formula.expression %></code></h3>
+ 
+ <div id="update-container-activity-<%= formula_mapping.activity.id %>-formula-<%=formula_mapping.formula.id%>">
+      <ul>
+      <%= form_tag create_data_element_setup_project_formula_mappings_path,
+                          remote: true, authenticity_token: true,
+                          'data-update-target' => "update-container-activity-#{formula_mapping.activity.id}-formula-#{formula_mapping.formula.id}" do %>     
+ 
+        <div class="form-group">     
+                <%=label_tag "name"%><span class="error-messages pull-right"></span>
+                <%= text_field_tag "name", "#{formula_mapping.activity.name} - #{formula_mapping.formula.code.humanize}", class: "form-control dhis2-name", data: {maxlength: 200}%>
+              </div>
+              <div class="form-group">     
+                <%=label_tag "short_name"%><span class="error-messages pull-right"></span>
+                <%= text_field_tag "short_name", "#{formula_mapping.activity.short_name} - #{formula_mapping.formula.code.humanize}", class: "form-control dhis2-name", data: {maxlength: 49} %>
+              </div>          
+              <div class="form-group">     
+                <%=label_tag "code"%><span class="error-messages pull-right"></span>
+                <%= text_field_tag "code", "#{formula_mapping.activity.code} - #{formula_mapping.formula.code}", class: "form-control dhis2-name", data: {maxlength: 49} %>
+              </div>
+              <%= submit_tag "Confirm", class: "btn btn-primary submit", :disable_with => 'Please wait...' %>
+        </div>
+      <%end%>
+      </ul>
+  </div>
+<%end%>

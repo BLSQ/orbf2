@@ -22,6 +22,10 @@ class Setup::FormulaMappingsController < PrivateController
     render :new
   end
 
+  def create_data_element
+    render partial: "create_data_element"
+  end
+
   private
 
   def check_problems
