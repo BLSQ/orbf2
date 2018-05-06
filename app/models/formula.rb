@@ -9,6 +9,7 @@
 #  rule_id     :integer
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
+#  frequency   :string
 #
 
 class Formula < ApplicationRecord

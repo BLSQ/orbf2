@@ -1,5 +1,7 @@
 <%= f.input :name, input_html: {value: params.has_key?(:activity) ? params[:activity][:name] : @activity.name} %>
+<%= f.input :short_name, input_html: {value: params.has_key?(:activity) ? params[:activity][:short_name] : @activity.short_name} %>
 <%= f.input :code, input_html: {value: params.has_key?(:activity) ? params[:activity][:code] : @activity.code} %>
+<hr>
 <div class="row">
     <div class="col-md-6">
       <div class="form-group">
@@ -15,6 +17,7 @@
     </div>
   </div>
 </div>
+<hr>
 
 <div class="row">
     <div class="col-md-6">
@@ -32,6 +35,7 @@
   </div>
 </div>
 
+<hr>
 
 <% if params.has_key?(:activity) || activity.activity_states.present? %>
 

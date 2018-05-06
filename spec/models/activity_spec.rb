@@ -1,3 +1,16 @@
+# == Schema Information
+#
+# Table name: activities
+#
+#  id         :integer          not null, primary key
+#  name       :string           not null
+#  project_id :integer          not null
+#  stable_id  :uuid             not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  code       :string
+#
+
 require "rails_helper"
 
 RSpec.describe Activity, type: :model do
