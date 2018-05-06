@@ -4,3 +4,5 @@ Style/BlockDelimiters:
   Enabled: false
 Metrics/BlockLength:
   Enabled: false
+ Metrics/LineLength:
+  Enabled: false
