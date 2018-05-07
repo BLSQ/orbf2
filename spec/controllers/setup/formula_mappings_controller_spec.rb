@@ -33,6 +33,9 @@ RSpec.describe Setup::FormulaMappingsController, type: :controller do
       expect(assigns(:formula_mappings).project).to eq project
     end
 
+
+
+
     #  id                 :integer          not null, primary key
     #  formula_id         :integer          not null
     #  activity_id        :integer
@@ -78,6 +81,40 @@ RSpec.describe Setup::FormulaMappingsController, type: :controller do
 
       after = FormulaMapping.count
       expect(after).to eq(before - 1)
+    end
+
+    describe "creation of data elements" do
+      it "display to allow create screen without crashing" do
+        get :new, params: { project_id: project.id, mode: :create }
+      end
+
+      it "schedules worker when confirming data element" do
+        package = project.packages.first
+        activity = package.activities.first
+        formula = package.activity_rule.formulas.first
+
+        post :create_data_element, params: {
+          project_id: project.id,
+          formula_id: formula.id,
+          activity_id: activity.id,
+          kind: "activity",
+          name:        "long and descriptrive name",
+          short_name:  "short name",
+          code:        "code"
+
+        }
+
+        expect(CreateDhis2ElementForFormulaMappingWorker).to have_enqueued_sidekiq_job(
+          project.id,
+          "activity_id"  => activity.id,
+          "formula_id"     => formula.id,
+          "data_element" => {
+            "name"       => "long and descriptrive name",
+            "short_name" => "short name",
+            "code"       => "code"
+          }
+        )
+      end
     end
   end
 end
