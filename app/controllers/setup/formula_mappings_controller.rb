@@ -55,6 +55,7 @@ class Setup::FormulaMappingsController < PrivateController
       package_only: { activity: false, payment: false },
       payment_only: { package: false, activity: false },
       all: {},
+      create: { missing_only: true },
       nil => { missing_only: true }
     }
     mode_options[params[:mode] ? params[:mode].to_sym : nil]

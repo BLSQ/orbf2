@@ -1,0 +1,16 @@
+<div class="form-group">
+    <%=label_tag "name"%><span class="error-messages pull-right"></span>
+    <%= text_field_tag "name", name,
+                        class: "form-control dhis2-name", data: { maxlength: 200 }%>
+</div>
+<div class="form-group">
+    <%=label_tag "short_name"%><span class="error-messages pull-right"></span>
+    <%= text_field_tag "short_name", short_name,
+                        class: "form-control dhis2-name", data: { maxlength: 49 } %>
+</div>
+<div class="form-group">
+    <%=label_tag "code"%><span class="error-messages pull-right"></span>
+    <%= text_field_tag "code", code,
+                        class: "form-control dhis2-name", data: { maxlength: 49 } %>
+</div>
+<%= submit_tag "Confirm", class: "btn btn-primary submit", :disable_with => 'Please wait...' %>
