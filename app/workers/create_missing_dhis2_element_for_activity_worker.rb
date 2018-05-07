@@ -6,7 +6,6 @@ class CreateMissingDhis2ElementForActivityWorker < CreateDhis2ElementWorker
     @state = project.states.find(payload.fetch("state_id"))
     @data_element = payload.fetch("data_element")
     create_data_element
-    SynchroniseDegDsWorker.perform_async(project.project_anchor.id)
   end
 
   private
