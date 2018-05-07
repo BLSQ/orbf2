@@ -42,7 +42,28 @@ RSpec.describe Setup::ActivitiesController, type: :controller do
       end
 
       it "should create asynch the missing data element " do
-        post :confirm_mass_creation, params: { project_id: project.id }
+        project.missing_activity_states.first
+        activity_id = project.missing_activity_states.first.first.id
+        state_id = project.missing_activity_states.first.last.first.id
+        post :confirm_mass_creation, params: {
+          project_id:  project.id,
+          activity_id: activity_id,
+          state_id:    state_id,
+          name:        "long and descriptrive name",
+          short_name:  "short name",
+          code:        "code"
+        }
+
+        expect(CreateMissingDhis2ElementForActivityWorker).to have_enqueued_sidekiq_job(
+          project.id,
+          "activity_id"  => activity_id,
+          "state_id"     => state_id,
+          "data_element" => {
+            "name"       => "long and descriptrive name",
+            "short_name" => "short name",
+            "code"       => "code"
+          }
+        )
       end
     end
 

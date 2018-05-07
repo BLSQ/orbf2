@@ -21,7 +21,7 @@ class Setup::ActivitiesController < PrivateController
   def update
     @states = activity_level_states
     @activity = current_project.activities.find(params[:id])
-    @activity.update_attributes(params_activity)
+    @activity.update(params_activity)
     handle_action(:edit)
   end
 
@@ -31,9 +31,17 @@ class Setup::ActivitiesController < PrivateController
   end
 
   def confirm_mass_creation
-    CreateMissingDhis2ElementsWorker.perform_async(current_project.project_anchor.id)
-    flash[:notice] = "creation of missing dhis2 and activity states scheduled."
-    redirect_to(root_path)
+    CreateMissingDhis2ElementForActivityWorker.perform_async(
+      current_project.id,
+      "activity_id"  => current_project.activities.find(params[:activity_id]).id,
+      "state_id"     => current_project.states.find(params[:state_id]).id,
+      "data_element" => {
+        "name"       => params[:name],
+        "short_name" => params[:short_name],
+        "code"       => params[:code]
+      }
+    )
+    render partial: "create_data_element"
   end
 
   private
@@ -43,7 +51,7 @@ class Setup::ActivitiesController < PrivateController
   end
 
   def handle_action(template)
-    if params[:commit] && params[:commit].starts_with?("Add data elements")
+    if params[:commit]&.starts_with?("Add data elements")
       data_compound = DataCompound.from(current_project)
       existing_element_ids = @activity.activity_states.map(&:external_reference)
       selectable_element_ids = params[:data_elements] - existing_element_ids
@@ -58,7 +66,7 @@ class Setup::ActivitiesController < PrivateController
       end
       flash[:notice] = "Assign states to desired data elements "
       render template
-    elsif params[:commit] && params[:commit].starts_with?("Add indicators")
+    elsif params[:commit]&.starts_with?("Add indicators")
       data_compound = DataCompound.from(current_project)
       existing_element_ids = @activity.activity_states.map(&:external_reference)
       selectable_element_ids = params[:indicators] - existing_element_ids

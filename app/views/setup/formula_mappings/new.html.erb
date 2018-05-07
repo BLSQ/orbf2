@@ -1,11 +1,11 @@
 
 <div class="formula-filters">
-<%= link_to "Missing & problematic", new_setup_project_formula_mapping_path(formula_mappings.project, mode: :missing_only), class: "btn btn-default" %>
-<%= link_to "Activity", new_setup_project_formula_mapping_path(formula_mappings.project, mode: :activity_only), class: "btn btn-default" %>
-<%= link_to "Package", new_setup_project_formula_mapping_path(formula_mappings.project, mode: :package_only), class: "btn btn-default" %>
-<%= link_to "Payment", new_setup_project_formula_mapping_path(formula_mappings.project, mode: :payment_only), class: "btn btn-default" %>
-<%= link_to "All", new_setup_project_formula_mapping_path(formula_mappings.project, mode: :all), class: "btn btn-default" %>
-
+<%= link_to "Link Missing & problematic", new_setup_project_formula_mapping_path(formula_mappings.project, mode: :missing_only), class: "btn btn-default" %>
+<%= link_to "Create Missing", new_setup_project_formula_mapping_path(formula_mappings.project, mode: :create), class: "btn btn-default" %>
+<%= link_to "Link Activity", new_setup_project_formula_mapping_path(formula_mappings.project, mode: :activity_only), class: "btn btn-default" %>
+<%= link_to "Link Package", new_setup_project_formula_mapping_path(formula_mappings.project, mode: :package_only), class: "btn btn-default" %>
+<%= link_to "Link Payment", new_setup_project_formula_mapping_path(formula_mappings.project, mode: :payment_only), class: "btn btn-default" %>
+<%= link_to "Link All", new_setup_project_formula_mapping_path(formula_mappings.project, mode: :all), class: "btn btn-default" %>
 <%= link_to 'Trigger a data element dhis2 snapshot', setup_project_snapshots_path(formula_mappings.project), class: 'btn btn-default pull-right', method: :post %>
 </div>
 <br>
@@ -23,26 +23,31 @@ This might cause infinite loop or data loss.</p>
   </div>
 <%end%>
 
-<div class="formula-mappings">
-<%= simple_form_for(formula_mappings,  url: setup_project_formula_mappings_path(formula_mappings.project, formula_mappings), method: :post) do |f| %>
-  <input type="hidden" name="mode" value="<%=params[:mode] || "missing_only"%>"/>
-  <div>
-      <table class="table table-striped table-condensed">
-          <thead>
-              <tr>
-                  <th>Package or Rule name</th>
-                  <th>Kind</th>
-                  <th>Activity</th>
-                  <th>Formula</th>
-                  <th style="width: 400px">Data element</th>
-              </tr>
-          </thead>
-    <tbody>
-  <%= render partial: "formula_mapping", collection: formula_mappings.mappings, locals: { project: formula_mappings.project }%>
-    </tbody>
-    </table>
+<% if params[:mode] != "create" %>
+  <div class="formula-mappings">
+    <%= simple_form_for(formula_mappings,  url: setup_project_formula_mappings_path(formula_mappings.project, formula_mappings), method: :post) do |f| %>
+    <input type="hidden" name="mode" value="<%=params[:mode] || "missing_only"%>"/>
+    <div>
+        <table class="table table-striped table-condensed">
+            <thead>
+                <tr>
+                    <th>Package or Rule name</th>
+                    <th>Kind</th>
+                    <th>Activity</th>
+                    <th>Formula</th>
+                    <th style="width: 400px">Data element</th>
+                </tr>
+            </thead>
+      <tbody>
+    <%= render partial: "formula_mapping", collection: formula_mappings.mappings, locals: { project: formula_mappings.project }%>
+      </tbody>
+      </table>
+    </div>
+    <%= f.submit 'Update mappings', name: :set_values ,  class: "btn btn-danger pull-right" %>
+  <% end %>
   </div>
-  <%= f.submit 'Update mappings', name: :set_values ,  class: "btn btn-danger pull-right" %>
-
-<% end %>
-</div>
+<%else%>
+<div>
+  <%= render partial: "formula_mapping_create", collection: formula_mappings.mappings, as: 'formula_mapping', locals: { project: formula_mappings.project }%>
+<div>
+<%end%>

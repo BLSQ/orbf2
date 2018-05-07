@@ -22,6 +22,24 @@ class Setup::FormulaMappingsController < PrivateController
     render :new
   end
 
+  def create_data_element
+    activity = current_project.activities.find(params[:activity_id]) if params[:activity_id]
+    formula = Formula.find(params[:formula_id])
+    raise "invalid formula id" if formula.project_id != current_project.id
+
+    CreateDhis2ElementForFormulaMappingWorker.perform_async(
+      current_project.id,
+      "activity_id"  => activity&.id,
+      "formula_id"   => formula.id,
+      "data_element" => {
+        "name"       => params[:name],
+        "short_name" => params[:short_name],
+        "code"       => params[:code]
+      }
+    )
+    render partial: "create_data_element"
+  end
+
   private
 
   def check_problems
@@ -51,6 +69,7 @@ class Setup::FormulaMappingsController < PrivateController
       package_only: { activity: false, payment: false },
       payment_only: { package: false, activity: false },
       all: {},
+      create: { missing_only: true },
       nil => { missing_only: true }
     }
     mode_options[params[:mode] ? params[:mode].to_sym : nil]

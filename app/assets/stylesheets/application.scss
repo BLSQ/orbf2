@@ -73,3 +73,11 @@ del.differ {
 ins.differ {
   background-color: rgba( lightgreen, .2);
 }
+
+input:invalid {
+	border: 1px solid red;
+}
+
+.error-message {
+	color: red;
+}

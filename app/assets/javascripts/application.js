@@ -31,6 +31,17 @@ $(document).ready(function() {
       htmlLabels: true
     }
   });
+
+  $("form[data-update-target]").on("ajax:complete", function(
+    evt,
+    data,
+    status,
+    xhr
+  ) {
+    var target = $(this).data("update-target");
+    $("#" + target).html(data.responseText);
+  });
+
   $(".popper").popover({
     container: "body",
     html: true,

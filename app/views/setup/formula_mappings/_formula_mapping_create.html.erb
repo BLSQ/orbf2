@@ -1,0 +1,56 @@
+<%if formula_mapping.external_reference.nil? %>
+  <%if formula_mapping.activity %>
+
+ <% formula = formula_mapping.formula %>
+ <% activity = formula_mapping.activity %>
+ <% div_id = "update-container-activity-#{activity.id}-formula-#{formula.id}"%>
+
+    <hr>
+    <h3><%= formula.rule.package.name %> : <%= formula.description %> : <code><%= formula.expression %></code></h3>
+
+  <div id="<%= div_id %>">
+        <ul>
+        <%= form_tag create_data_element_setup_project_formula_mappings_path,
+                            remote: true, authenticity_token: true,
+                            'data-update-target' => div_id do %>
+                <%= hidden_field_tag "formula_id", formula_mapping.formula_id %>
+                <%= hidden_field_tag "kind", formula_mapping.kind %>
+                <%= hidden_field_tag "activity_id", formula_mapping.activity_id %>
+
+                <%= render partial: "setup/shared/dhis2_names", locals: {
+                      name: "#{activity.name} - #{formula.code.humanize}",
+                      short_name: "#{activity.short_name} - #{formula.code.humanize}",
+                      code: "#{activity.code} - #{formula.code}"
+                    }
+                %>
+          </div>
+        <%end%>
+        </ul>
+    </div>
+
+  <%elsif formula_mapping.formula.rule.package %>
+    <hr>
+    <% package = formula_mapping.formula.rule.package%>
+    <% formula = formula_mapping.formula%>
+    <h3><%= package.name %> : <%= formula_mapping.formula.description %> : <br> <code><%= formula.expression %></code></h3>
+
+        <%= form_tag create_data_element_setup_project_formula_mappings_path,
+                            remote: true, authenticity_token: true,
+                            'data-update-target' => "update-container-package-#{package.id}-formula-#{formula.id}" do %>
+
+        <div id="update-container-package-<%= package.id %>-formula-<%=formula.id%>">
+           <ul>
+                <%= hidden_field_tag "formula_id", formula_mapping.formula_id %>
+                <%= hidden_field_tag "kind", formula_mapping.kind %>
+
+                <%= render partial: "setup/shared/dhis2_names", locals: {
+                      name: "#{package.name} - #{formula.code.humanize}",
+                      short_name: "#{package.name} - #{formula.code.humanize}",
+                      code: "#{package.code} - #{formula.code}"
+                    }
+                %>
+           </ul>
+        </div>
+      <%end%>
+  <%end%>
+<%end%>
