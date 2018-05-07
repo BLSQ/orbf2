@@ -1,15 +1,17 @@
 require "rails_helper"
+
 require_relative 'dhis2_stubs'
 
-RSpec.describe CreateMissingDhis2ElementForActivityWorker do
-  include_context "basic_context"
+RSpec.describe CreateDhis2ElementForFormulaMappingWorker do
   include Dhis2Stubs
+  include_context "basic_context"
 
   let(:worker) { described_class.new }
 
   it "create a data element and associated activity state" do
-    activity, states = full_project.missing_activity_states.first
-    state = states.first
+    package = full_project.packages.first
+    activity = package.activities.first
+    formula = package.activity_rule.formulas.first
 
     stub_default_category_success
     stub_create_dataelement
@@ -18,7 +20,8 @@ RSpec.describe CreateMissingDhis2ElementForActivityWorker do
     worker.perform(
       full_project.id,
       "activity_id"  => activity.id,
-      "state_id"     => state.id,
+      "formula_id"   => formula.id,
+      "kind"         => "activity",
       "data_element" => {
         "name"       => "long and descriptrive name",
         "short_name" => "short name",
@@ -26,7 +29,7 @@ RSpec.describe CreateMissingDhis2ElementForActivityWorker do
       }
     )
 
-    activity_state = activity.activity_states.where(state: state, activity: activity).first
-    expect(activity_state.external_reference).to eq("azeaze")
+    formula_mapping = FormulaMapping.last
+    expect(formula_mapping.external_reference).to eq("azeaze")
   end
 end

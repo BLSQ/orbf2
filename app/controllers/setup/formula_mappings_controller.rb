@@ -23,6 +23,22 @@ class Setup::FormulaMappingsController < PrivateController
   end
 
   def create_data_element
+    activity = current_project.activities.find(params[:activity_id])
+    formula = current_project.states.find(params[:state_id]).id
+    if formula.project_id != current_project.id
+      raise "invalid formula id"
+    end
+
+    CreateDhis2ElementForFormulaMappingWorker.perform_async(
+      current_project.id,
+      "activity_id"  => activity&.id,
+      "formula_id"   => formula.id,
+      "data_element" => {
+        "name"       => params[:name],
+        "short_name" => params[:short_name],
+        "code"       => params[:code]
+      }
+    )
     render partial: "create_data_element"
   end
 
