@@ -1,6 +1,6 @@
 require "rails_helper"
 
-require_relative 'dhis2_stubs'
+require_relative "dhis2_stubs"
 
 RSpec.describe CreateDhis2ElementForFormulaMappingWorker do
   include Dhis2Stubs

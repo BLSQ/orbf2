@@ -1,6 +1,4 @@
 class CreateDhis2ElementForFormulaMappingWorker < CreateDhis2ElementWorker
-
-
   def perform(project_id, payload)
     @project = Project.find(project_id)
     @activity = project.activities.find(payload["activity_id"]) if payload["activity_id"].present?
@@ -18,9 +16,9 @@ class CreateDhis2ElementForFormulaMappingWorker < CreateDhis2ElementWorker
 
   def create_formula_mapping(new_data_element)
     formula.formula_mappings.create!(
-        activity:           activity,
-        kind:               kind,
-        external_reference: new_data_element.id
-      )
-    end
+      activity:           activity,
+      kind:               kind,
+      external_reference: new_data_element.id
+    )
+  end
 end

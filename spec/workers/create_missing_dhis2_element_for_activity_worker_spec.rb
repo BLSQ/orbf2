@@ -1,5 +1,5 @@
 require "rails_helper"
-require_relative 'dhis2_stubs'
+require_relative "dhis2_stubs"
 
 RSpec.describe CreateMissingDhis2ElementForActivityWorker do
   include_context "basic_context"
