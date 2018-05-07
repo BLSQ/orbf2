@@ -31,6 +31,7 @@ class Setup::FormulaMappingsController < PrivateController
       current_project.id,
       "activity_id"  => activity&.id,
       "formula_id"   => formula.id,
+      "kind"         => params[:kind],
       "data_element" => {
         "name"       => params[:name],
         "short_name" => params[:short_name],

@@ -107,7 +107,8 @@ RSpec.describe Setup::FormulaMappingsController, type: :controller do
         expect(CreateDhis2ElementForFormulaMappingWorker).to have_enqueued_sidekiq_job(
           project.id,
           "activity_id"  => activity.id,
-          "formula_id"     => formula.id,
+          "formula_id"   => formula.id,
+          "kind"         => "activity",
           "data_element" => {
             "name"       => "long and descriptrive name",
             "short_name" => "short name",
