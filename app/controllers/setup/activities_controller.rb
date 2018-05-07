@@ -97,6 +97,7 @@ class Setup::ActivitiesController < PrivateController
   def params_activity
     params.require(:activity).permit(
       :name,
+      :short_name,
       :code,
       activity_states_attributes: %i[
         id
