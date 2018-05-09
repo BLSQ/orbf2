@@ -316,14 +316,16 @@ RSpec.describe Rule, kind: :model do
         month_of_year
         quarter_of_year
       ]
-      expect(activity_rule.available_variables).to eq(expected), " got : \n" +
-                                                                 activity_rule.available_variables.join("\n") +
-                                                                 "\n expected \n " +
-                                                                 expected.join("\n") +
-                                                                 "\ndiff 1\n" +
-                                                                 (activity_rule.available_variables - expected).join("\n") +
-                                                                 "\n diff 2" +
-                                                                 (expected - activity_rule.available_variables).join("\n")
+      expect(activity_rule.available_variables).to eq(expected), [
+        " got : \n" +
+        activity_rule.available_variables.join("\n"),
+        "\n expected \n ",
+        expected.join("\n"),
+        "\ndiff 1\n",
+        (activity_rule.available_variables - expected).join("\n"),
+        "\n diff 2",
+        (expected - activity_rule.available_variables).join("\n")
+      ].join
     end
 
     it "has available_variables for package_rule" do

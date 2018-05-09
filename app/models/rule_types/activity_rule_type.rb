@@ -30,10 +30,7 @@ module RuleTypes
         var_names.push("org_units_count")
       end
 
-      if package&.zone_kind?
-        var_names.push(*main_orgunit_states)
-      end
-
+      var_names.push(*main_orgunit_states) if package&.zone_kind?
 
       var_names.push(*decision_tables.flat_map(&:out_headers)) if decision_tables.any?
       var_names.uniq.reject(&:nil?).sort
@@ -73,7 +70,7 @@ module RuleTypes
     private
 
     def main_orgunit_states
-      package.states.select(&:activity_level?).map { |state| "#{state.code}_zone_main_orgunit"}
+      package.states.select(&:activity_level?).map { |state| "#{state.code}_zone_main_orgunit" }
     end
 
     def main_orgunit_facts
