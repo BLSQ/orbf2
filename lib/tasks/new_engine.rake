@@ -55,9 +55,17 @@ namespace :new_engine do
       project = Project.fully_loaded.find(test_case.project_id)
       data_compound = DataCompound.from(project)
       orbf_project = MapProjectToOrbfProject.new(project, data_compound.indicators).map
-      fetch_and_solve = Orbf::RulesEngine::FetchAndSolve.new(orbf_project, test_case.orgunit_ext_id, invoicing_period)
-      fetch_and_solve.call
-      clean_values(fetch_and_solve.exported_values)
+      invoicing_request = InvoicingRequest.new(entity:  test_case.orgunit_ext_id,
+                                               year:    test_case.year,
+                                               quarter: test_case.quarter)
+      options = Invoicing::InvoicingOptions.new(
+        publish_to_dhis2: false,
+        force_project_id: test_case.project_id
+      )
+
+      invoice_entity = Invoicing::InvoiceEntity.new(project.project_anchor, invoicing_request, options)
+      invoice_entity.call
+      clean_values(invoice_entity.fetch_and_solve.exported_values)
     end
   end
 
