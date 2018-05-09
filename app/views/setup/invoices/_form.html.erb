@@ -9,7 +9,8 @@
                      data: { autocomplete: organisation_units_setup_project_autocomplete_index_path(invoicing_request.project) ,
                              id_element: "#invoicing_request_entity" },
                      class: "form-control autocomplete-data-element",
-                     placeholder: "Type some letters to start searching organisation unit..." %>
+                     placeholder: "Type some letters to start searching organisation unit...",
+                     delay: 700 %>
 </div>
   <%= f.input :year %>
   <%= f.input :quarter %>
