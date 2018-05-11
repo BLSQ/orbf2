@@ -3,7 +3,8 @@ namespace :db do
   desc "pull db and create dhis2 logs table if not present"
   task fetch: :environment do
     app_name = ENV.fetch("APP_NAME")
-    command = "heroku pg:pull DATABASE_URL orbf2 --app #{app_name} --exclude-table-data dhis2_logs"
+    db_name = ENV.fetch("DB_NAME", "orbf2")
+    command = "heroku pg:pull DATABASE_URL #{db_name} --app #{app_name} --exclude-table-data dhis2_logs"
     puts command
     `#{command}`
     unless ActiveRecord::Base.connection.table_exists?("dhis2_logs")
