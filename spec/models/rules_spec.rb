@@ -298,25 +298,34 @@ RSpec.describe Rule, kind: :model do
     end
 
     it "has available_variables for activity_rules" do
-      expect(activity_rule.available_variables).to eq(
-        %w[
-          %{attributed_points_current_quarter_values}
-          %{claimed_current_cycle_values}
-          %{claimed_previous_year_same_quarter_values}
-          %{claimed_previous_year_values}
-          attributed_points
-          claimed
-          claimed_is_null
-          claimed_level_1
-          claimed_level_2
-          claimed_level_3
-          claimed_level_4
-          claimed_level_5
-          fosa_attributed_points
-          month_of_year
-          quarter_of_year
-        ]
-      ), activity_rule.available_variables.join("\n")
+      expected = %w[
+        %{attributed_points_current_quarter_values}
+        %{claimed_current_cycle_values}
+        %{claimed_previous_year_same_quarter_values}
+        %{claimed_previous_year_values}
+        attributed_points
+        claimed
+        claimed_is_null
+        claimed_level_1
+        claimed_level_2
+        claimed_level_3
+        claimed_level_4
+        claimed_level_5
+        claimed_zone_main_orgunit
+        fosa_attributed_points
+        month_of_year
+        quarter_of_year
+      ]
+      expect(activity_rule.available_variables).to eq(expected), [
+        " got : \n" +
+        activity_rule.available_variables.join("\n"),
+        "\n expected \n ",
+        expected.join("\n"),
+        "\ndiff 1\n",
+        (activity_rule.available_variables - expected).join("\n"),
+        "\n diff 2",
+        (expected - activity_rule.available_variables).join("\n")
+      ].join
     end
 
     it "has available_variables for package_rule" do

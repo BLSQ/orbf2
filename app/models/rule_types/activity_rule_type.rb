@@ -10,6 +10,7 @@ module RuleTypes
 
     def available_variables
       var_names = []
+
       if package
         var_names.push(*package.states.select(&:activity_level?).map(&:code))
         var_names.push(*null_states)
@@ -28,6 +29,8 @@ module RuleTypes
         var_names.push("org_units_sum_if_count") if package.multi_entities_rule
         var_names.push("org_units_count")
       end
+
+      var_names.push(*main_orgunit_states) if package&.zone_kind?
 
       var_names.push(*decision_tables.flat_map(&:out_headers)) if decision_tables.any?
       var_names.uniq.reject(&:nil?).sort
@@ -61,9 +64,20 @@ module RuleTypes
         .merge("org_units_count" => "1", "org_units_sum_if_count" => "1")
         .merge(package_rules_facts)
         .merge(null_facts)
+        .merge(main_orgunit_facts)
     end
 
     private
+
+    def main_orgunit_states
+      package.states.select(&:activity_level?).map { |state| "#{state.code}_zone_main_orgunit" }
+    end
+
+    def main_orgunit_facts
+      main_orgunit_states.each_with_object({}) do |main_orgunit_state, hash|
+        hash[main_orgunit_state] = 0
+      end
+    end
 
     def null_states
       package.states.select(&:activity_level?).map { |state| "#{state.code}_is_null" }
