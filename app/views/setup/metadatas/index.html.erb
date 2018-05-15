@@ -1,0 +1,14 @@
+<h1>Dhis2 Metadata (<%= @metadatas.map(&:dhis2_id).uniq.size%> unique)</h1>
+<input type="text" id="searchMeta" class="pull-right" placeholder="Search for meta data">
+<table class="table stripped" id="metaTable">
+  <thead>
+    <tr>
+        <th>Dhis2</th>
+        <th>ORBF</th>
+        <th>Names</th>
+    </tr>
+  </thead>
+  <tbody>
+    <%= render partial: "metadata", collection: @metadatas, as: 'metadata' %>
+  </tbody>
+</table>

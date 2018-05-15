@@ -51,6 +51,10 @@ class Activity < ApplicationRecord
     activity_states.find { |as| as.state.id == state.id }
   end
 
+  def missing_activity_states?
+    activity_packages.any? { |activity_package| activity_package.package.missing_activity_states[self].any? }
+  end
+
   def to_unified_h
     {
       name:            name,
