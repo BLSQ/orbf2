@@ -52,7 +52,9 @@ class Activity < ApplicationRecord
   end
 
   def missing_activity_states?
-    activity_packages.any? { |activity_package| activity_package.package.missing_activity_states[self].any? }
+    activity_packages.any? do |activity_package|
+      activity_package.package.missing_activity_states[self].any?
+    end
   end
 
   def to_unified_h

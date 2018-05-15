@@ -5,6 +5,8 @@
       <%= link_to metadata.orbf_type, edit_setup_project_activity_path(@current_project, metadata.activity_state.activity) %>
   <%elsif metadata.orbf_type == "Formula mapping"%>
       <%= link_to metadata.orbf_type, edit_setup_project_package_rule_path(@current_project, metadata.package, metadata.formula_mapping.formula.rule, anchor: "formula_"+metadata.formula_mapping.formula.code )%>
+  <%elsif metadata.orbf_type == "Payment mapping" %>
+      <%= link_to metadata.orbf_type, edit_setup_project_rule_path(@current_project, metadata.formula_mapping.formula.rule, anchor: "formula_"+metadata.formula_mapping.formula.code )%>
   <%else%>
    <%=metadata.orbf_type%>
   <%end%>

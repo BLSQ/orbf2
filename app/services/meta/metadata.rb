@@ -2,11 +2,11 @@ module Meta
   class Metadata
     attr_reader :dhis2_id, :dhis2_name, :dhis2_short_name, :dhis2_code,
                 :orbf_name, :orbf_short_name, :orbf_code, :orbf_type,
-                :activity_state, :package, :formula_mapping
+                :activity_state, :package, :formula_mapping, :payment_rule
 
     def initialize(
         dhis2_id:, dhis2_name:, dhis2_short_name:, dhis2_code:,
-        activity_state: nil, package: nil, formula_mapping: nil,
+        activity_state: nil, package: nil, formula_mapping: nil, payment_rule: nil,
         orbf_name:, orbf_short_name:, orbf_code:, orbf_type:
     )
       @orbf_name = orbf_name
@@ -20,6 +20,7 @@ module Meta
       @formula_mapping = formula_mapping
       @activity_state = activity_state
       @package = package
+      @payment_rule = payment_rule
     end
 
     def dhis2_type
