@@ -1,7 +1,7 @@
 namespace :compare do
   TAB = "\t".freeze
 
-  def fetch_selected_orgunits(project, pyramids, selected_region, rejected_districts)
+  def fetch_selected_orgunits(project, pyramids, selected_regions, rejected_districts)
     orgunits = Set.new
     pyramids.each do |_month, pyramid|
       contracted = pyramid.org_units_in_group(project.entity_group.external_reference)
@@ -11,7 +11,7 @@ namespace :compare do
     orgunits = orgunits.to_a.index_by(&:id).values
 
     selected_orgunits = orgunits.select do |ou|
-      ou.path.include?(selected_region) &&
+      selected_regions.any? { |selected_region| ou.path.include?(selected_region) } &&
         rejected_districts.none? { |rejected_district| ou.path.include?(rejected_district) }
     end
     selected_orgunits.sort_by(&:path)
@@ -47,7 +47,8 @@ namespace :compare do
           orgunit_group_ids.join(","),
           common_group_ids.join(","),
           common_groups.map(&:name).join(","),
-          subcontracted_ous.map(&:name).join(",")
+          subcontracted_ous.map(&:name).join(","),
+          subcontracted_ous.map(&:id).join(",")
         ].join(TAB)
       end
       next unless results.uniq.size > 1
@@ -60,23 +61,36 @@ namespace :compare do
   task pyramids: :environment do
     write = ENV.fetch("MODIFY") == "true"
     project = Project.find(9)
-    quarter_period = Periods.from_dhis2_period("2018Q1")
-    reference_period = Periods.from_dhis2_period("201804")
-    selected_region = "xdxTFCAsoWc"
+    quarter_periods = [Periods.from_dhis2_period("2018Q2"), Periods.from_dhis2_period("2018Q1")]
+    compared_months = quarter_periods.flat_map(&:months).sort
+    reference_period = Periods.from_dhis2_period("201805")
+    compared_months -= [reference_period]
+    selected_regions = %w[
+      x0GbxmB4a0T
+      BfD6kZSmKjb
+
+      lr8un7u9V0s
+      HZkms5QPpoD
+      MEUzb5Br39P
+      YYmAhyUwb1q
+      BkqmnUS612P
+      QC75ingyLVz
+      vVJdgAW1rrp
+      QHwsuxXIpWB
+      xv7AAEZfW26
+    ]
     # Est
-    rejected_districts = %w[nRIWNFOJ8xp K9AF7I6xm7O G4jArMiwRoS CFkAxnes0Kg]
-    # Lomié, Messamena, Ketté and Garoua Boulai
+    rejected_districts = %w[]
     subcontract_groupset_id = "pHH6kYd3i98"
 
-    months = quarter_period.months + [reference_period]
+    months = compared_months + [reference_period]
     pyramids = fetch_pyramids(project, months)
-    selected_orgunits = fetch_selected_orgunits(project, pyramids, selected_region, rejected_districts)
-
+    selected_orgunits = fetch_selected_orgunits(project, pyramids, selected_regions, rejected_districts)
     if !write
       diff_orgunit_groups(selected_orgunits, pyramids, subcontract_groupset_id) do |results, _orgunit|
         # report to stdout diff
         months.each_with_index do |month, index|
-          puts month.to_dhis2 + TAB + results[index]
+          puts month.to_dhis2 + TAB + results[index].to_s
         end
       end
     else
@@ -87,9 +101,10 @@ namespace :compare do
         orgunits_to_fix << orgunit
       end
 
-      quarter_period.months.each do |month|
+      compared_months.each do |month|
         puts "****** fixing #{month}"
         ou_dhis2_snapshot = project.project_anchor.dhis2_snapshots.where(kind: "organisation_units", year: month.year, month: month.month).first
+        next unless ou_dhis2_snapshot
         puts "found to fix #{ou_dhis2_snapshot.id} #{ou_dhis2_snapshot.year} #{ou_dhis2_snapshot.month}"
         ou_reference_snapshot = project.project_anchor.dhis2_snapshots.where(kind: "organisation_units", year: reference_period.year, month: reference_period.month).first
         puts "found as ref #{ou_reference_snapshot.id} #{ou_reference_snapshot.year} #{ou_reference_snapshot.month}"
@@ -111,6 +126,11 @@ namespace :compare do
         orgunits_to_fix.each do |orgunit|
           ou_to_fix = ou_dhis2_snapshot.content_for_id(orgunit.id)
           ou_reference = ou_reference_snapshot.content_for_id(orgunit.id)
+
+          unless ou_to_fix
+            ou_to_fix = JSON.parse(JSON.generate(ou_reference))
+            ou_dhis2_snapshot.content << { "table"=> ou_to_fix }
+          end
           puts "  fixing #{orgunit.id} #{orgunit.name}\n\t#{ou_to_fix['organisation_unit_groups']}\n\t#{ou_reference['organisation_unit_groups']}"
           ou_to_fix["organisation_unit_groups"] = ou_reference["organisation_unit_groups"]
 
