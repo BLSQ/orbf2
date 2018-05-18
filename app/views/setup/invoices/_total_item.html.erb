@@ -19,7 +19,7 @@
             <li><%= total_item.formula.code %></li>
             <li><%= total_item.formula.expression %></li>
             <% if total_item.formula.dhis2_mapping %>
-              <li><%= total_item.formula.dhis2_mapping %><l/i>
+              <li><%= link_to_data_element(@current_project, total_item.formula.dhis2_mapping) %></li>
               <li><%= @data_compound.data_element(total_item.formula.dhis2_mapping)&.name%> </li>
             <%end%>
             </ul>

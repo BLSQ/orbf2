@@ -37,8 +37,8 @@ class SynchroniseDegDsWorker
   end
 
   def create_data_element_group(package, state, data_element_ids)
-    deg_code = "#{state.code}-#{package.name}"[0..49]
-    deg_name = "#{state.name.pluralize} - #{package.name}"
+    deg_code = "ORBF-#{state.code}-#{package.name}"[0..49]
+    deg_name = "ORBF - #{state.name.pluralize.humanize} - #{package.name}"
     deg = [
       { name:          deg_name,
         short_name:    deg_code,
@@ -49,24 +49,32 @@ class SynchroniseDegDsWorker
         end }
     ]
     dhis2 = package.project.dhis2_connection
-    status = dhis2.data_element_groups.create(deg)
+    status = nil
+    deg_id = package.package_states.find { |ps| ps.state == state }.deg_external_reference
+    if deg_id
+      created_deg = dhis2.data_element_groups.find(deg_id)
+      created_deg.update_attributes(deg.first) # rubocop:disable Rails/ActiveRecordAliases
+    else
+      status = dhis2.data_element_groups.create(deg)
+    end
     created_deg = dhis2.data_element_groups.find_by(name: deg_name)
     raise "data element group not created #{deg_name} : #{deg} : #{status.inspect}" unless created_deg
-    return created_deg
+    created_deg
   rescue RestClient::Exception => e
     raise "Failed to create data element group #{deg} #{e.message} with #{package.project.dhis2_url}  #{e.response.body}"
   end
 
   def create_dataset(package, state, data_element_ids)
-    ds_code = "#{state.code}-#{package.name}"[0..49]
-    ds_name = "#{state.name.pluralize} - #{package.name}"
+    ds_code = "ORBF-#{state.code}-#{package.name}"[0..49]
+    ds_name = "ORBF - #{state.name.pluralize.humanize} - #{package.name}"
     ds = [
-      { name:          ds_name,
-        short_name:    ds_code,
-        code:          ds_code,
-        period_type:   package.frequency.capitalize,
-        display_name:  ds_name,
-        data_elements: data_element_ids.map do |data_element_id|
+      { name:                ds_name,
+        short_name:          ds_code,
+        code:                ds_code,
+        period_type:         package.frequency.capitalize,
+        display_name:        ds_name,
+        open_future_periods: 13,
+        data_elements:       data_element_ids.map do |data_element_id|
           { id: data_element_id }
         end }
     ]
@@ -74,8 +82,19 @@ class SynchroniseDegDsWorker
       { "data_element" => de }
     end
     dhis2 = package.project.dhis2_connection
-    status = dhis2.data_sets.create(ds)
-    created_ds = dhis2.data_sets.find_by(name: ds_name)
+
+    status = nil
+
+    ds_id = package.package_states.find { |ps| ps.state == state }.ds_external_reference
+    if ds_id
+      created_ds = dhis2.data_sets.find(ds_id)
+      created_ds.update_attributes(ds.first) # rubocop:disable Rails/ActiveRecordAliases
+    else
+      status = dhis2.data_sets.create(ds)
+    end
+
+    status =
+      created_ds = dhis2.data_sets.find_by(name: ds_name)
     Rails.logger.info JSON.pretty_generate(created_ds.to_h)
     created_ds[:data_set_elements] = ds.first[:data_elements].map do |de|
       { "data_element" => de }
@@ -87,11 +106,11 @@ class SynchroniseDegDsWorker
       begin
         Rails.logger.info "adding element #{data_element_id} to #{created_ds.id} #{created_ds.name}"
         created_ds.add_relation(:dataElements, data_element_id)
-      rescue => e
+      rescue StandardError => e
         Rails.logger.info "failed to associate data_element_id with dataset #{e.message}"
       end
     end
-    return created_ds
+    created_ds
   rescue RestClient::Exception => e
     raise "Failed to create dataset #{ds} #{e.message} with #{package.project.dhis2_url} #{e.response.body}"
   end

@@ -32,6 +32,10 @@ $(document).ready(function() {
     }
   });
 
+  $("a.external").each(function() {
+    $(this).append(' <i class="fa fa-external-link external-link"></i> ');
+  });
+
   $("form[data-update-target]").on("ajax:complete", function(
     evt,
     data,
@@ -66,25 +70,31 @@ $(document).ready(function() {
     });
   });
 
-  $("#searchEquation").keyup(function() {
-    filter = new RegExp($(this).val(), "i");
-    $("#equationsTable tbody tr").filter(function() {
-      $(this).each(function() {
-        found = false;
-        $(this)
-          .children()
-          .each(function() {
-            content = $(this).html();
-            if (content.match(filter)) {
-              found = true;
-            }
-          });
-        if (!found) {
-          $(this).hide();
-        } else {
-          $(this).show();
-        }
+  var filter_table = function(field_selector, table_selector) {
+    $(field_selector).keyup(function() {
+      filter = new RegExp($(this).val(), "i");
+      $(table_selector+" tbody tr").filter(function() {
+        $(this).each(function() {
+          found = false;
+          $(this)
+            .children()
+            .each(function() {
+              content = $(this).html();
+              if (content.match(filter)) {
+                found = true;
+              }
+            });
+          if (!found) {
+            $(this).hide();
+          } else {
+            $(this).show();
+          }
+        });
       });
     });
-  });
+ }
+
+  filter_table("#searchEquation","#equationsTable")
+  filter_table("#searchMeta","#metaTable")
+
 });

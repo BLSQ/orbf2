@@ -4,66 +4,34 @@ RSpec.describe SynchroniseDegDsWorker do
   include_context "basic_context"
   let(:project) { full_project }
 
-  let(:claimed_deg) { "{\"dataElementGroups\":[{\"name\":\"Claimeds - Quantity PMA\",\"shortName\":\"claimed-Quantity PMA\",\"code\":\"claimed-Quantity PMA\",\"dataElements\":[{\"id\":\"cl-ext-1\"},{\"id\":\"cl-ext-2\"}]}]}" }
-  let(:verified_deg) { "{\"dataElementGroups\":[{\"name\":\"Verifieds - Quantity PMA\",\"shortName\":\"verified-Quantity PMA\",\"code\":\"verified-Quantity PMA\",\"dataElements\":[]}]}" }
-  let(:tarif_deg) { "{\"dataElementGroups\":[{\"name\":\"Tarifs - Quantity PMA\",\"shortName\":\"tarif-Quantity PMA\",\"code\":\"tarif-Quantity PMA\",\"dataElements\":[{\"id\":\"tarif-ext-1\"},{\"id\":\"tarif-ext-2\"}]}]}" }
+  let(:claimed_deg) { "{\"dataElementGroups\":[{\"name\":\"ORBF - Claimeds - Quantity PMA\",\"shortName\":\"ORBF-claimed-Quantity PMA\",\"code\":\"ORBF-claimed-Quantity PMA\",\"dataElements\":[{\"id\":\"cl-ext-1\"},{\"id\":\"cl-ext-2\"}]}]}" }
+  let(:verified_deg) { "{\"dataElementGroups\":[{\"name\":\"ORBF - Verifieds - Quantity PMA\",\"shortName\":\"ORBF-verified-Quantity PMA\",\"code\":\"ORBF-verified-Quantity PMA\",\"dataElements\":[]}]}" }
+  let(:tarif_deg) { "{\"dataElementGroups\":[{\"name\":\"ORBF - Tarifs - Quantity PMA\",\"shortName\":\"ORBF-tarif-Quantity PMA\",\"code\":\"ORBF-tarif-Quantity PMA\",\"dataElements\":[{\"id\":\"tarif-ext-1\"},{\"id\":\"tarif-ext-2\"}]}]}" }
 
-  let(:claimed_dataset) { "{\"dataSets\":[{\"name\":\"Claimeds - Quantity PMA\",\"shortName\":\"claimed-Quantity PMA\",\"code\":\"claimed-Quantity PMA\",\"periodType\":\"Monthly\",\"dataElements\":[],\"organisationUnits\":[],\"categoryCombo\":{\"id\":\"p0KPaWEg3cf\",\"name\":\"default\"}}]}" }
-  let(:verified_dataset) { "{\"dataSets\":[{\"name\":\"Verifieds - Quantity PMA\",\"shortName\":\"verified-Quantity PMA\",\"code\":\"verified-Quantity PMA\",\"periodType\":\"Monthly\",\"dataElements\":[],\"organisationUnits\":[],\"categoryCombo\":{\"id\":\"p0KPaWEg3cf\",\"name\":\"default\"}}]}" }
-  let(:tarif_dataset) { "{\"dataSets\":[{\"name\":\"Tarifs - Quantity PMA\",\"shortName\":\"tarif-Quantity PMA\",\"code\":\"tarif-Quantity PMA\",\"periodType\":\"Monthly\",\"dataElements\":[],\"organisationUnits\":[],\"categoryCombo\":{\"id\":\"p0KPaWEg3cf\",\"name\":\"default\"}}]}" }
-
-  let(:claimed_quantity_deg) { "{\"dataElementGroups\":[{\"name\":\"Claimeds - Quantity PCA\",\"shortName\":\"claimed-Quantity PCA\",\"code\":\"claimed-Quantity PCA\",\"dataElements\":[{\"id\":\"cl-ext-1\"},{\"id\":\"cl-ext-2\"}]}]}" }
-  let(:claimed_quantity_dataset) { "{\"dataSets\":[{\"name\":\"Claimeds - Quantity PCA\",\"shortName\":\"claimed-Quantity PCA\",\"code\":\"claimed-Quantity PCA\",\"periodType\":\"Monthly\",\"dataElements\":[],\"organisationUnits\":[],\"categoryCombo\":{\"id\":\"p0KPaWEg3cf\",\"name\":\"default\"}}]}" }
-  let(:verified_quantity_deg) { "{\"dataElementGroups\":[{\"name\":\"Verifieds - Quantity PCA\",\"shortName\":\"verified-Quantity PCA\",\"code\":\"verified-Quantity PCA\",\"dataElements\":[]}]}" }
-  let(:verified_quantity_dataset) { "{\"dataSets\":[{\"name\":\"Verifieds - Quantity PCA\",\"shortName\":\"verified-Quantity PCA\",\"code\":\"verified-Quantity PCA\",\"periodType\":\"Monthly\",\"dataElements\":[],\"organisationUnits\":[],\"categoryCombo\":{\"id\":\"p0KPaWEg3cf\",\"name\":\"default\"}}]}" }
-  let(:tarif_quantity_deg) { "{\"dataElementGroups\":[{\"name\":\"Tarifs - Quantity PCA\",\"shortName\":\"tarif-Quantity PCA\",\"code\":\"tarif-Quantity PCA\",\"dataElements\":[{\"id\":\"tarif-ext-1\"},{\"id\":\"tarif-ext-2\"}]}]}" }
-  let(:tarif_quantity_dataset) { "{\"dataSets\":[{\"name\":\"Tarifs - Quantity PCA\",\"shortName\":\"tarif-Quantity PCA\",\"code\":\"tarif-Quantity PCA\",\"periodType\":\"Monthly\",\"dataElements\":[],\"organisationUnits\":[],\"categoryCombo\":{\"id\":\"p0KPaWEg3cf\",\"name\":\"default\"}}]}" }
-
-  let(:claimed_quality_deg) { "{\"dataElementGroups\":[{\"name\":\"Claimeds - Quality\",\"shortName\":\"claimed-Quality\",\"code\":\"claimed-Quality\",\"dataElements\":[{\"id\":\"cl-ext-1\"},{\"id\":\"cl-ext-2\"}]}]}" }
-  let(:claimed_quality_dataset) { "{\"dataSets\":[{\"name\":\"Claimeds - Quality\",\"shortName\":\"claimed-Quality\",\"code\":\"claimed-Quality\",\"periodType\":\"Monthly\",\"dataElements\":[],\"organisationUnits\":[],\"categoryCombo\":{\"id\":\"p0KPaWEg3cf\",\"name\":\"default\"}}]}" }
-  let(:verified_quality_deg) { "{\"dataElementGroups\":[{\"name\":\"Verifieds - Quality\",\"shortName\":\"verified-Quality\",\"code\":\"verified-Quality\",\"dataElements\":[]}]}" }
-  let(:verified_quality_dataset) { "{\"dataSets\":[{\"name\":\"Verifieds - Quality\",\"shortName\":\"verified-Quality\",\"code\":\"verified-Quality\",\"periodType\":\"Monthly\",\"dataElements\":[],\"organisationUnits\":[],\"categoryCombo\":{\"id\":\"p0KPaWEg3cf\",\"name\":\"default\"}}]}" }
-
-  let(:maxscore_quality_deg) { "{\"dataElementGroups\":[{\"name\":\"Max. Scores - Quality\",\"shortName\":\"max_score-Quality\",\"code\":\"max_score-Quality\",\"dataElements\":[]}]}" }
-  let(:maxscore_quality_dataset) { "{\"dataSets\":[{\"name\":\"Max. Scores - Quality\",\"shortName\":\"max_score-Quality\",\"code\":\"max_score-Quality\",\"periodType\":\"Monthly\",\"dataElements\":[],\"organisationUnits\":[],\"categoryCombo\":{\"id\":\"p0KPaWEg3cf\",\"name\":\"default\"}}]}" }
-
-  let(:claimed_perf_deg) { "{\"dataElementGroups\":[{\"name\":\"Claimeds - Performance Adm\",\"shortName\":\"claimed-Performance Adm\",\"code\":\"claimed-Performance Adm\",\"dataElements\":[{\"id\":\"cl-ext-1\"},{\"id\":\"cl-ext-2\"}]}]}" }
-  let(:claimed_perf_dataset) { "{\"dataSets\":[{\"name\":\"Claimeds - Performance Adm\",\"shortName\":\"claimed-Performance Adm\",\"code\":\"claimed-Performance Adm\",\"periodType\":\"Monthly\",\"dataElements\":[],\"organisationUnits\":[],\"categoryCombo\":{\"id\":\"p0KPaWEg3cf\",\"name\":\"default\"}}]}" }
-
-  let(:max_score_perf_deg) { "{\"dataElementGroups\":[{\"name\":\"Max. Scores - Performance Adm\",\"shortName\":\"max_score-Performance Adm\",\"code\":\"max_score-Performance Adm\",\"dataElements\":[]}]}" }
-  let(:max_score_perf_dataset) { "{\"dataSets\":[{\"name\":\"Max. Scores - Performance Adm\",\"shortName\":\"max_score-Performance Adm\",\"code\":\"max_score-Performance Adm\",\"periodType\":\"Monthly\",\"dataElements\":[],\"organisationUnits\":[],\"categoryCombo\":{\"id\":\"p0KPaWEg3cf\",\"name\":\"default\"}}]}" }
-  let(:budget_perf_deg) { "{\"dataElementGroups\":[{\"name\":\"Budgets - Performance Adm\",\"shortName\":\"budget-Performance Adm\",\"code\":\"budget-Performance Adm\",\"dataElements\":[]}]}" }
-  let(:budget_perf_dataset) { "{\"dataSets\":[{\"name\":\"Budgets - Performance Adm\",\"shortName\":\"budget-Performance Adm\",\"code\":\"budget-Performance Adm\",\"periodType\":\"Monthly\",\"dataElements\":[],\"organisationUnits\":[],\"categoryCombo\":{\"id\":\"p0KPaWEg3cf\",\"name\":\"default\"}}]}" }
+  let(:claimed_dataset) { "{\"dataSets\":[{\"name\":\"ORBF - Claimeds - Quantity PMA\",\"shortName\":\"ORBF-claimed-Quantity PMA\",\"code\":\"ORBF-claimed-Quantity PMA\",\"periodType\":\"Monthly\",\"dataElements\":[],\"organisationUnits\":[],\"categoryCombo\":{\"id\":\"p0KPaWEg3cf\",\"name\":\"default\"}}]}" }
+  let(:verified_dataset) { "{\"dataSets\":[{\"name\":\"ORBF - Verifieds - Quantity PMA\",\"shortName\":\"ORBF-verified-Quantity PMA\",\"code\":\"ORBF-verified-Quantity PMA\",\"periodType\":\"Monthly\",\"dataElements\":[],\"organisationUnits\":[],\"categoryCombo\":{\"id\":\"p0KPaWEg3cf\",\"name\":\"default\"}}]}" }
+  let(:tarif_dataset) { "{\"dataSets\":[{\"name\":\"ORBF - Tarifs - Quantity PMA\",\"shortName\":\"ORBF-tarif-Quantity PMA\",\"code\":\"ORBF-tarif-Quantity PMA\",\"periodType\":\"Monthly\",\"dataElements\":[],\"organisationUnits\":[],\"categoryCombo\":{\"id\":\"p0KPaWEg3cf\",\"name\":\"default\"}}]}" }
   let(:all_deg) do
-    [claimed_deg, verified_deg,
-     tarif_deg,
-     claimed_quantity_deg,
-     verified_quantity_deg,
-     tarif_quantity_deg,
-     claimed_quality_deg,
-     verified_quality_deg,
-     maxscore_quality_deg,
-     claimed_perf_deg,
-     max_score_perf_deg,
-     budget_perf_deg]
+    [
+      claimed_deg,
+      verified_deg,
+      tarif_deg
+    ]
   end
 
   let(:all_dataset) do
-    [claimed_dataset,
-     verified_dataset,
-     tarif_dataset,
-     claimed_quantity_dataset,
-     verified_quantity_dataset,
-     tarif_quantity_dataset,
-     claimed_quality_dataset,
-     verified_quality_dataset,
-     maxscore_quality_dataset,
-     claimed_perf_dataset,
-     max_score_perf_dataset,
-     budget_perf_dataset]
+    [
+      claimed_dataset,
+      verified_dataset,
+      tarif_dataset
+    ]
   end
 
   it "should create" do
+    # minimize the project packages to ease stubbing
+    project.payment_rules.destroy_all
+    project.packages[1..-1].map(&:destroy)
+
     stub_all_indicators
     all_deg.each do |deg|
       stub_data_elements_groups_creation(deg)

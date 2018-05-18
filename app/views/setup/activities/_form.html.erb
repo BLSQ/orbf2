@@ -1,6 +1,25 @@
 <%= f.input :name, input_html: {value: params.has_key?(:activity) ? params[:activity][:name] : @activity.name} %>
 <%= f.input :short_name, input_html: {value: params.has_key?(:activity) ? params[:activity][:short_name] : @activity.short_name} %>
 <%= f.input :code, input_html: {value: params.has_key?(:activity) ? params[:activity][:code] : @activity.code} %>
+
+<%if activity.missing_activity_states? %>
+<hr>
+<h3>Some data elements are not mapped for the state used by the following packages</h3>
+      <% activity.activity_packages.each do |activity_package| %>
+
+        <li><%= activity_package.package.name %>
+          <% if activity_package.package.missing_activity_states[activity] && activity_package.package.missing_activity_states[activity].any? %>
+            <br>
+            <%= icon("exclamation-triangle text-warning ")%> Missing element for :  <%= activity_package.package.missing_activity_states[activity].map(&:name).join(',') %>
+          <% end%>
+        </li>
+      <%end%>
+<br>
+<p>If the data element exists us the "Add data element for state mapping" feature below.<p>
+<p>
+If they don't exist yet in dhis2, you can create them via this <%= link_to "page", mass_creation_setup_project_activities_path(@current_project, activity_id: activity) %>
+</p>
+<%end%>
 <hr>
 <div class="row">
     <div class="col-md-6">
