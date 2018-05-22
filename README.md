@@ -115,4 +115,10 @@ get a fresh copy using Heroku
 heroku pg:pull DATABASE_URL orbf2 --app yourappname
 ```
 
+to speed up things you can a copy without the dhis2_logs table
+
+```
+bundle exec rake db:fetch APP_NAME=yourappname
+```
+
 note that you need a pg 9.6.1 version
