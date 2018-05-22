@@ -4,6 +4,9 @@ RSpec.describe MapProjectToOrbfProject do
 
   it "should instantiate a valid project" do
     project = full_project
+    project.default_coc_reference = "coc_reference"
+    project.default_aoc_reference = "aoc_reference"
+
     package = project.packages.last
     activity = package.activities.first
     formula_with_frequency = package.activity_rule.formulas.last
@@ -22,6 +25,10 @@ RSpec.describe MapProjectToOrbfProject do
 
     orbf_project = MapProjectToOrbfProject.new(project, []).map
     expect(orbf_project).to be_a(Orbf::RulesEngine::Project)
+    expect(orbf_project.default_combos_ext_ids).to eq(
+      default_attribute_option_combo_ext_id: "aoc_reference",
+      default_category_option_combo_ext_id: "coc_reference",
+    )
     expect(orbf_project.packages.first).to be_a(Orbf::RulesEngine::Package)
     expect(orbf_project.packages.size).to eq project.packages.size
 
