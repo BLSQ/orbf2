@@ -27,7 +27,7 @@ RSpec.describe MapProjectToOrbfProject do
     expect(orbf_project).to be_a(Orbf::RulesEngine::Project)
     expect(orbf_project.default_combos_ext_ids).to eq(
       default_attribute_option_combo_ext_id: "aoc_reference",
-      default_category_option_combo_ext_id: "coc_reference",
+      default_category_option_combo_ext_id:  "coc_reference"
     )
     expect(orbf_project.packages.first).to be_a(Orbf::RulesEngine::Package)
     expect(orbf_project.packages.size).to eq project.packages.size
