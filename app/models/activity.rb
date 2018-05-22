@@ -24,7 +24,6 @@ class Activity < ApplicationRecord
   validates :name, presence: true
   validates :short_name, allow_blank: true, length: { minimum: 1, maximum: 40 }
 
-  validates :activity_states, length: { minimum: 1 }
   validates :code, allow_blank: true, format: {
     with:    Formula::REGEXP_VALIDATION,
     message: ": should only contains lowercase letters and _ like 'assisted_deliveries' or 'vaccination_under_one_year' vs %{value}"

@@ -1,5 +1,3 @@
-require "natural_sort"
-
 class Setup::InvoicesController < PrivateController
   attr_reader :invoicing_request, :indexed_project
   helper_method :invoicing_request
