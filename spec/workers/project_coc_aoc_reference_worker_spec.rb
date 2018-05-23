@@ -29,6 +29,7 @@ RSpec.describe ProjectCocAocReferenceWorker do
     expect(project.default_coc_reference).to eq(default_category_combo_id)
     expect(project.default_aoc_reference).to eq(default_category_combo_id)
   end
+
   def stub_category_option_combos
     stub_request(:get, "http://play.dhis2.org/demo/api/categoryOptionCombos?fields=id,name,categoryCombo&filter=name:eq:default")
       .to_return(body: JSON.pretty_generate(
@@ -51,7 +52,7 @@ RSpec.describe ProjectCocAocReferenceWorker do
   end
 
   def stub_default_category_combos
-    stub_request(:get, "http://play.dhis2.org/demo/api/categoryCombos?fields=id,name,isDefault&filter=name:eq:default").
-      to_return(body: fixture_content(:dhis2, "default_category.json"))
+    stub_request(:get, "http://play.dhis2.org/demo/api/categoryCombos?fields=id,name,isDefault&filter=name:eq:default")
+      .to_return(body: fixture_content(:dhis2, "default_category.json"))
   end
 end

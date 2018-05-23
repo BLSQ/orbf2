@@ -7,7 +7,7 @@ class ProjectCocAocReferenceWorker
     @dhis2 = project.dhis2_connection
 
     category_option_combo = default_category_option_combo
-    set_references(category_option_combo)
+    assign_references(category_option_combo)
   end
 
   private
@@ -28,13 +28,16 @@ class ProjectCocAocReferenceWorker
 
   def default_category_combo
     @default_category_combo ||= begin
-      category_combos = dhis2.category_combos.list(filter: "name:eq:default", fields: "id,name,isDefault")
+      category_combos = dhis2.category_combos.list(
+        filter: "name:eq:default",
+        fields: "id,name,isDefault"
+      )
       category_combos.sort_by! { |cc| cc.is_default == true }
-      category_combo = category_combos.first
+      category_combos.first
     end
   end
 
-  def set_references(category_option_combo)
+  def assign_references(category_option_combo)
     project.default_coc_reference ||= category_option_combo.id
     project.default_aoc_reference ||= category_option_combo.id
     project.save!
