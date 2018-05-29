@@ -61,24 +61,14 @@ namespace :compare do
   task pyramids: :environment do
     write = ENV.fetch("MODIFY") == "true"
     project = Project.find(9)
-    quarter_periods = [Periods.from_dhis2_period("2018Q2"), Periods.from_dhis2_period("2018Q1")]
+    quarter_periods = [
+      Periods.from_dhis2_period("2018Q1"),
+      Periods.from_dhis2_period("2018Q2")
+    ]
     compared_months = quarter_periods.flat_map(&:months).sort
     reference_period = Periods.from_dhis2_period("201805")
     compared_months -= [reference_period]
-    selected_regions = %w[
-      x0GbxmB4a0T
-      BfD6kZSmKjb
-
-      lr8un7u9V0s
-      HZkms5QPpoD
-      MEUzb5Br39P
-      YYmAhyUwb1q
-      BkqmnUS612P
-      QC75ingyLVz
-      vVJdgAW1rrp
-      QHwsuxXIpWB
-      xv7AAEZfW26
-    ]
+    selected_regions = ENV.fetch("SELECTED_ORGUNITS").split(",")
     # Est
     rejected_districts = %w[]
     subcontract_groupset_id = "pHH6kYd3i98"
