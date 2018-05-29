@@ -7,7 +7,7 @@ namespace :db do
     command = "heroku pg:pull DATABASE_URL #{db_name} --app #{app_name} --exclude-table-data dhis2_logs"
     puts command
     `#{command}`
-    unless ActiveRecord::Base.connection.table_exists?("dhis2_logs")
+    unless ActiveRecord::Base.connection.data_source_exists?("dhis2_logs")
       puts "creating dhis2_logs"
       ActiveRecord::Base.connection.create_table "dhis2_logs", force: :cascade do |t|
         t.jsonb "sent"
