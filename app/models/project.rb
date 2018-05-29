@@ -82,9 +82,10 @@ class Project < ApplicationRecord
   end
 
   def naming_pattern
+    qualifier ||= "RBF"
     {
-      :short => "%{activity_short_name} - %{state_short_name}%{activity_code}",
-      :long  => "#{qualifier} - %{state_short_name} (%{activity_code} %{activity_name})"
+      short: "%{activity_short_name} (%{state_short_name}%{activity_code})",
+      long:  "#{qualifier} - %{state_short_name} - %{activity_code} %{activity_name}"
     }
   end
 

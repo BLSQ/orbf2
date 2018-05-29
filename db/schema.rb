@@ -194,6 +194,7 @@ ActiveRecord::Schema.define(version: 20180529094514) do
     t.integer  "project_anchor_id"
     t.integer  "original_id"
     t.string   "cycle",             default: "quarterly", null: false
+    t.string   "dhis2_version",     default: "2.24",      null: false
     t.integer  "engine_version",    default: 1,           null: false
     t.string   "qualifier"
     t.index ["project_anchor_id"], name: "index_projects_on_project_anchor_id", using: :btree

@@ -35,6 +35,13 @@ RSpec.describe Setup::ActivitiesController, type: :controller do
     end
 
     describe "#mass_creation" do
+      it "should name data elements according to naming pattern" do
+        get :mass_creation, params: { project_id: project.id }
+        missing_activity_states = assigns(:missing_activity_states)
+        names = missing_activity_states.first[1].first.name_for_mass_creation(project.naming_pattern, missing_activity_states.first[0], missing_activity_states.first[1].first)
+        expect(names).to eq(short: "(VerifiedVaccination)", long: "RBF - Verified - Vaccination Vaccination")
+      end
+
       it "should validate before creating " do
         get :mass_creation, params: { project_id: project.id }
         missing_activity_states = assigns(:missing_activity_states)
