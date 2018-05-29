@@ -1,17 +1,19 @@
 
-<p>
+<p class="text-danger">
 Looks like you don't have yet data elements for these activity and states.
 You can create them one by one
 <p>
 
 <br>
 
-<% @missing_activity_states.each do |activity, states|  %>
-  <% next unless states.any? %>
+<% @missing_activity_states.each do |activity, states| %>
+<% next unless states.any? %>
 
-    <h3><%=activity.name%></h3>
-    <p>used in <%=activity.activity_packages.map(&:package).map(&:name).join(",")%></p>
-    <% states.each do |state| %>
+    <h3><%=activity.name%> <small>(Used in <%=activity.activity_packages.map(&:package).map(&:name).join(",")%> Package)<small></h3>
+
+    <% states.each do |state|
+      name = state.name_for_mass_creation(@naming_pattern, activity, state)
+    %>
     <div id="update-container-activity-<%=activity.id %>-state-<%=state.id%>">
       <ul>
       <%= form_tag confirm_mass_creation_setup_project_activities_path,
@@ -21,8 +23,8 @@ You can create them one by one
             <%= hidden_field_tag "state_id", state.id %>
 
             <%= render partial: "setup/shared/dhis2_names", locals: {
-                      name: "#{activity.name} - #{state.name.humanize}",
-                      short_name: "#{activity.short_name} - #{state.name.humanize}",
+                      name: name[:long],
+                      short_name: name[:short],
                       code: "#{activity.code} - #{state.code}"
                     }
                 %>
@@ -32,4 +34,3 @@ You can create them one by one
     </div>
     <%end%>
 <%end%>
-

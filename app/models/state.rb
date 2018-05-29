@@ -9,6 +9,7 @@
 #  configurable :boolean          default(FALSE), not null
 #  level        :string           default("activity"), not null
 #  project_id   :integer          not null
+#  short_name   :string
 #
 
 class State < ApplicationRecord
@@ -21,7 +22,7 @@ class State < ApplicationRecord
 
   validates :name, uniqueness: {
     scope:   :project_id,
-    message: "should be unique per project"
+    message: "state name should be unique per project"
   }
 
   def self.configurables(conf = "")
@@ -46,5 +47,12 @@ class State < ApplicationRecord
 
   def to_unified_h
     { name: name }
+  end
+
+  def name_for_mass_creation(naming_pattern, activity, state)
+    {
+      short: format(naming_pattern[:short], activity_short_name: activity.short_name, state_short_name: state.short_name, activity_code: activity.code),
+      long:  format(naming_pattern[:long], state_short_name: state.short_name, activity_code: activity.code, activity_name: activity.name)
+    }
   end
 end
