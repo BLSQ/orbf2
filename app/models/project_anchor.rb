@@ -21,7 +21,7 @@ class ProjectAnchor < ApplicationRecord
   end
 
   def project
-    projects.first
+    projects.last
   end
 
   def latest_draft
