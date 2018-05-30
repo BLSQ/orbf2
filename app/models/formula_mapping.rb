@@ -23,4 +23,22 @@ class FormulaMapping < ApplicationRecord
   validates :external_reference, presence: true
   belongs_to :formula, inverse_of: :formula_mappings
   belongs_to :activity
+
+  def names
+    naming_patterns = activity.project.naming_patterns
+    activity_short_name = activity.short_name || activity.name
+    substitutions = {
+      state_short_name:    formula.code.humanize,
+      raw_activity_code:   activity.code,
+      activity_code:       activity.code.humanize,
+      activity_name:       activity.name,
+      activity_short_name: activity_short_name,
+      state_code:          formula.code
+    }
+    {
+      long:  format(naming_patterns[:long], substitutions).strip,
+      short: format(naming_patterns[:short], substitutions).strip,
+      code:  format(naming_patterns[:code], substitutions).strip
+    }
+  end
 end

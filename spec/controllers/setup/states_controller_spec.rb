@@ -21,10 +21,13 @@ RSpec.describe Setup::StatesController, type: :controller do
     end
 
     it "should allow to create a new project's state" do
-      post :create, params: { project_id: project.id, state: { name: "sample", short_name: "short_sample" } }
+      post :create, params: { project_id: project.id, state: { name: "Maximum Score", short_name: "Max Score" } }
       expect(flash[:notice]).to eq "State created !"
-      expect(project.states.where(name: "sample").first.code).to eq("sample")
-      expect(project.states.where(short_name: "short_sample").first.code).to eq("sample")
+      project.reload
+      last_created_state = project.states.last
+      expect(last_created_state.name).to eq("Maximum Score")
+      expect(last_created_state.code).to eq("maximum_score")
+      expect(last_created_state.short_name).to eq("Max Score")
     end
 
     it "should reject to create a state with same name" do

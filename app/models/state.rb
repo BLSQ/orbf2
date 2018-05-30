@@ -49,11 +49,21 @@ class State < ApplicationRecord
     { name: name }
   end
 
-  def name_for_mass_creation(naming_pattern, activity, state)
-    state_short_name = state.short_name ||= state.name
+  def names(naming_patterns, activity, state)
+    state_short_name = state.short_name || state.name
+    activity_short_name = activity.short_name || activity.name
+    substitutions = {
+      state_short_name:    state_short_name,
+      raw_activity_code:   activity.code,
+      activity_code:       activity.code.humanize,
+      activity_name:       activity.name,
+      activity_short_name: activity_short_name,
+      state_code:          state.code
+    }
     {
-      short: format(naming_pattern[:short], activity_short_name: activity.short_name, state_short_name: state_short_name, activity_code: activity.code.humanize).strip,
-      long:  format(naming_pattern[:long], state_short_name: state_short_name, activity_code: activity.code.humanize, activity_name: activity.name).strip
+      long:  format(naming_patterns[:long], substitutions).strip,
+      short: format(naming_patterns[:short], substitutions).strip,
+      code:  format(naming_patterns[:code], substitutions).strip
     }
   end
 end

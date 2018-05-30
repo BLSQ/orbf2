@@ -81,11 +81,12 @@ class Project < ApplicationRecord
     periods(year_quarter).map { |period| [period.start_date, period.end_date] }.flatten.minmax
   end
 
-  def naming_pattern
+  def naming_patterns
     qualifier ||= "RBF"
     {
+      long:  "#{qualifier} - %{state_short_name} - %{activity_code} %{activity_name}",
       short: "%{activity_short_name} (%{state_short_name}%{activity_code})",
-      long:  "#{qualifier} - %{state_short_name} - %{activity_code} %{activity_name}"
+      code:  "%{raw_activity_code} - %{state_code}"
     }
   end
 

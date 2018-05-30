@@ -72,14 +72,15 @@ module Meta
     end
 
     def new_meta_activity_state(activity_state, activity_package)
+      names = activity_state.state.names(project.naming_patterns, activity_state.activity, activity_state.state)
       Meta::Metadata.new(
         dhis2_props(activity_state.external_reference).merge(
           activity_state:  activity_state,
           package:         activity_package.package,
           orbf_type:       "Activity state",
-          orbf_code:       activity_state.activity.code + "-" + activity_state.state.code,
-          orbf_name:       activity_state.activity.name + " - " + activity_state.state.name,
-          orbf_short_name: activity_state.activity.short_name
+          orbf_code:       names[:code],
+          orbf_name:       names[:long],
+          orbf_short_name: names[:short]
         )
       )
     end

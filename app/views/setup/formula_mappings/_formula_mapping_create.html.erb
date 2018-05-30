@@ -3,6 +3,7 @@
 
  <% formula = formula_mapping.formula %>
  <% activity = formula_mapping.activity %>
+ <% names = formula_mapping.names %>
  <% div_id = "update-container-activity-#{activity.id}-formula-#{formula.id}"%>
 
     <hr>
@@ -18,9 +19,9 @@
                 <%= hidden_field_tag "activity_id", formula_mapping.activity_id %>
 
                 <%= render partial: "setup/shared/dhis2_names", locals: {
-                      name: "#{activity.name} - #{formula.code.humanize}",
-                      short_name: "#{activity.short_name} - #{formula.code.humanize}",
-                      code: "#{activity.code} - #{formula.code}"
+                      name: names[:long],
+                      short_name: names[:short],
+                      code: names[:code]
                     }
                 %>
           </div>
