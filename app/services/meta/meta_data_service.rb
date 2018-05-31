@@ -39,23 +39,15 @@ module Meta
     end
 
     def new_meta_formula_mapping(formula_mapping, package)
+      names = formula_mapping.names
       Meta::Metadata.new(
         dhis2_props(formula_mapping.external_reference).merge(
           formula_mapping: formula_mapping,
           package:         package,
           orbf_type:       "Formula mapping",
-          orbf_code:       [
-            formula_mapping.activity&.code,
-            formula_mapping.formula.code
-          ].join(" - "),
-          orbf_name:       [
-            formula_mapping.activity&.name,
-            formula_mapping.formula.code.humanize
-          ].join(" - "),
-          orbf_short_name: [
-            formula_mapping.activity&.short_name,
-            formula_mapping.formula.code.humanize
-          ].join(" - ")
+          orbf_name:       names[:long],
+          orbf_short_name: names[:short],
+          orbf_code:       names[:code]
         )
       )
     end
