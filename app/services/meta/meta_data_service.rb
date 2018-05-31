@@ -64,7 +64,9 @@ module Meta
     end
 
     def new_meta_activity_state(activity_state, activity_package)
-      names = activity_state.state.names(project.naming_patterns, activity_state.activity, activity_state.state)
+      names = activity_state.state.names(
+        project.naming_patterns, activity_state.activity, activity_state.state
+      )
       Meta::Metadata.new(
         dhis2_props(activity_state.external_reference).merge(
           activity_state:  activity_state,
