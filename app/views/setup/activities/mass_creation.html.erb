@@ -7,14 +7,17 @@ You can create them one by one
 <% @missing_activity_states.each do |activity, states| %>
 <% next unless states.any? %>
 
-    <h3><%=activity.name%> <small>(Used in <%=activity.activity_packages.map(&:package).map(&:name).join(",")%> Package)<small></h3>
+    <h3><%=activity.name%> <small>(Used in <%=activity.activity_packages.map(&:package).map(&:name).join(",")%> Package)</small></h3>
 
     <% states.each do |state|
       name = state.names(state.project.naming_patterns, activity)
     %>
     <div id="update-container-activity-<%=activity.id %>-state-<%=state.id%>">
+      <hr>
       <ul>
-      <%= form_tag confirm_mass_creation_setup_project_activities_path,
+        <h4 class="text-info"><%= state.name %></h4>
+        <ul>
+          <%= form_tag confirm_mass_creation_setup_project_activities_path,
                           remote: true, authenticity_token: true,
                           'data-update-target' => "update-container-activity-#{activity.id}-state-#{state.id}" do %>
             <%= hidden_field_tag "activity_id", activity.id %>
@@ -26,9 +29,10 @@ You can create them one by one
                       code: name.code
                     }
                 %>
-      <%end%>
+                <%end%>
+        </ul>
       </ul>
       <br>
     </div>
-    <%end%>
+  <%end%>
 <%end%>
