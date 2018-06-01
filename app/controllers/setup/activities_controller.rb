@@ -27,7 +27,6 @@ class Setup::ActivitiesController < PrivateController
 
   def mass_creation
     @missing_activity_states = current_project.missing_activity_states
-
     if params[:activity_id]
       @missing_activity_states = @missing_activity_states.select do |k, _v|
         k.id == params[:activity_id].to_i

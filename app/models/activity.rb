@@ -9,6 +9,7 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  code       :string
+#  short_name :string
 #
 
 class Activity < ApplicationRecord

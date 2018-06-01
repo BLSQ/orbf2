@@ -1,6 +1,7 @@
 
 <%= f.object.errors.full_messages.join(",")%>
 <%= f.input :name %>
+<%= f.input :short_name %>
 <%= f.input :configurable %>
 <p>leave uncheck if defined by decision table</p>
 <%= f.button :submit, class: "btn btn-success" %>

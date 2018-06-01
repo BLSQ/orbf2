@@ -1,6 +1,7 @@
 
 <tr>
-<td><%= state.name %></td>
+<td><%= link_to state.name, edit_setup_project_state_path(project,state.id) %></td>
+<td><%= state.short_name %></td>
 <td><%= state.code %></td>
 <td><%= state.configurable %></td>
 </tr>

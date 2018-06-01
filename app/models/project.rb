@@ -17,6 +17,7 @@
 #  original_id       :integer
 #  cycle             :string           default("quarterly"), not null
 #  engine_version    :integer          default(1), not null
+#  qualifier         :string
 #
 
 class Project < ApplicationRecord
@@ -61,7 +62,7 @@ class Project < ApplicationRecord
   end
 
   def engine_version_enum
-    {"legacy" => 1, "new" => 2}
+    { "legacy" => 1, "new" => 2 }
   end
 
   def cycle_yearly?
@@ -78,6 +79,15 @@ class Project < ApplicationRecord
 
   def date_range(year_quarter)
     periods(year_quarter).map { |period| [period.start_date, period.end_date] }.flatten.minmax
+  end
+
+  def naming_patterns
+    qualifier ||= "RBF"
+    {
+      long:  "#{qualifier} - %{state_short_name} - %{activity_code} %{activity_name}",
+      short: "%{activity_short_name} (%{state_short_name}%{activity_code})",
+      code:  "%{raw_activity_code} - %{state_code}"
+    }
   end
 
   def self.no_includes
@@ -210,9 +220,9 @@ class Project < ApplicationRecord
   def verify_connection
     return { status: :ko, message: errors.full_messages.join(",") } if invalid?
     infos = dhis2_connection.system_infos.get
-    return { status: :ok, message: infos }
-  rescue => e
-    return { status: :ko, message: e.message }
+    { status: :ok, message: infos }
+  rescue StandardError => e
+    { status: :ko, message: e.message }
   end
 
   def dhis2_connection

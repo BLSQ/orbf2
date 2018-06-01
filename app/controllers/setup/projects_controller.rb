@@ -16,7 +16,7 @@ class Setup::ProjectsController < PrivateController
 
   def update
     project = current_project
-    project.update_attributes(project_params)
+    project.update(project_params)
     answer = project.verify_connection
 
     if answer[:status] == :ok
@@ -31,7 +31,15 @@ class Setup::ProjectsController < PrivateController
   private
 
   def project_params
-    params.require(:project).permit(:name, :dhis2_url, :password, :user, :bypass_ssl, :cycle)
+    params.require(:project).permit(
+      :name,
+      :dhis2_url,
+      :password,
+      :user,
+      :bypass_ssl,
+      :cycle,
+      :qualifier
+    )
   end
 
   def current_project(options = { raise_if_published: true })

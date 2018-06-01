@@ -17,6 +17,7 @@
 #  original_id       :integer
 #  cycle             :string           default("quarterly"), not null
 #  engine_version    :integer          default(1), not null
+#  qualifier         :string
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

@@ -1,35 +1,38 @@
 
-<p>
+<p class="text-danger">
 Looks like you don't have yet data elements for these activity and states.
 You can create them one by one
 <p>
 
-<br>
+<% @missing_activity_states.each do |activity, states| %>
+<% next unless states.any? %>
 
-<% @missing_activity_states.each do |activity, states|  %>
-  <% next unless states.any? %>
+    <h3><%=activity.name%> <small>(Used in <%=activity.activity_packages.map(&:package).map(&:name).join(",")%> Package)</small></h3>
 
-    <h3><%=activity.name%></h3>
-    <p>used in <%=activity.activity_packages.map(&:package).map(&:name).join(",")%></p>
-    <% states.each do |state| %>
+    <% states.each do |state|
+      name = state.names(state.project.naming_patterns, activity)
+    %>
     <div id="update-container-activity-<%=activity.id %>-state-<%=state.id%>">
+      <hr>
       <ul>
-      <%= form_tag confirm_mass_creation_setup_project_activities_path,
+        <h4 class="text-info"><%= state.name %></h4>
+        <ul>
+          <%= form_tag confirm_mass_creation_setup_project_activities_path,
                           remote: true, authenticity_token: true,
                           'data-update-target' => "update-container-activity-#{activity.id}-state-#{state.id}" do %>
             <%= hidden_field_tag "activity_id", activity.id %>
             <%= hidden_field_tag "state_id", state.id %>
 
             <%= render partial: "setup/shared/dhis2_names", locals: {
-                      name: "#{activity.name} - #{state.name.humanize}",
-                      short_name: "#{activity.short_name} - #{state.name.humanize}",
-                      code: "#{activity.code} - #{state.code}"
+                      name: name.long,
+                      short_name: name.short,
+                      code: name.code
                     }
                 %>
-      <%end%>
+                <%end%>
+        </ul>
       </ul>
       <br>
     </div>
-    <%end%>
+  <%end%>
 <%end%>
-
