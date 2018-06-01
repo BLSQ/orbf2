@@ -39,15 +39,15 @@ module Meta
     end
 
     def new_meta_formula_mapping(formula_mapping, package)
-      names = formula_mapping.names
+      name = formula_mapping.names
       Meta::Metadata.new(
         dhis2_props(formula_mapping.external_reference).merge(
           formula_mapping: formula_mapping,
           package:         package,
           orbf_type:       "Formula mapping",
-          orbf_name:       names[:long],
-          orbf_short_name: names[:short],
-          orbf_code:       names[:code]
+          orbf_name:       name.long,
+          orbf_short_name: name.short,
+          orbf_code:       name.code
         )
       )
     end
@@ -64,17 +64,17 @@ module Meta
     end
 
     def new_meta_activity_state(activity_state, activity_package)
-      names = activity_state.state.names(
-        project.naming_patterns, activity_state.activity, activity_state.state
+      name = activity_state.state.names(
+        project.naming_patterns, activity_state.activity
       )
       Meta::Metadata.new(
         dhis2_props(activity_state.external_reference).merge(
           activity_state:  activity_state,
           package:         activity_package.package,
           orbf_type:       "Activity state",
-          orbf_code:       names[:code],
-          orbf_name:       names[:long],
-          orbf_short_name: names[:short]
+          orbf_code:       name.code,
+          orbf_name:       name.long,
+          orbf_short_name: name.short
         )
       )
     end

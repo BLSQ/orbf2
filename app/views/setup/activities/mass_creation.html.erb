@@ -10,7 +10,7 @@ You can create them one by one
     <h3><%=activity.name%> <small>(Used in <%=activity.activity_packages.map(&:package).map(&:name).join(",")%> Package)<small></h3>
 
     <% states.each do |state|
-      names = state.names(state.project.naming_patterns, activity, state)
+      name = state.names(state.project.naming_patterns, activity)
     %>
     <div id="update-container-activity-<%=activity.id %>-state-<%=state.id%>">
       <ul>
@@ -21,9 +21,9 @@ You can create them one by one
             <%= hidden_field_tag "state_id", state.id %>
 
             <%= render partial: "setup/shared/dhis2_names", locals: {
-                      name: names[:long],
-                      short_name: names[:short],
-                      code: names[:code]
+                      name: name.long,
+                      short_name: name.short,
+                      code: name.code
                     }
                 %>
       <%end%>

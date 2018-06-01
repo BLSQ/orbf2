@@ -25,6 +25,11 @@ class State < ApplicationRecord
     message: "state name should be unique per project"
   }
 
+  validates :short_name, allow_blank: true, allow_nil: true, uniqueness: {
+    scope:   :project_id,
+    message: "Short name should be unique per project"
+  }
+
   def self.configurables(conf = "")
     if conf == ""
       where("configurable= ? OR configurable= ?", true, false)
@@ -49,21 +54,23 @@ class State < ApplicationRecord
     { name: name }
   end
 
-  def names(naming_patterns, activity, state)
-    state_short_name = state.short_name || state.name
-    activity_short_name = activity.short_name || activity.name
-    substitutions = {
-      state_short_name:    state_short_name,
-      raw_activity_code:   activity.code,
-      activity_code:       activity.code.humanize,
-      activity_name:       activity.name,
-      activity_short_name: activity_short_name,
-      state_code:          state.code
-    }
-    {
+  def names(naming_patterns, activity)
+    substitutions = substitutions_for(activity)
+    Dhis2Name.new(
       long:  format(naming_patterns[:long], substitutions).strip,
       short: format(naming_patterns[:short], substitutions).strip,
       code:  format(naming_patterns[:code], substitutions).strip
+    )
+  end
+
+  def substitutions_for(activity)
+    {
+      state_short_name:    short_name || name,
+      raw_activity_code:   activity.code,
+      activity_code:       activity.code.humanize,
+      activity_name:       activity.name,
+      activity_short_name: activity.short_name || activity.name,
+      state_code:          code
     }
   end
 end

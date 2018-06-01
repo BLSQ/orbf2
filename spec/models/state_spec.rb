@@ -36,12 +36,23 @@ RSpec.describe State, type: :model do
     )
   end
 
+  let(:dhis2_name) do
+    state.names(project.naming_patterns, activity)
+  end
+
   it "should name data elements according to naming pattern" do
-    names = state.names(project.naming_patterns, activity, state)
-    expect(names).to eq(
-      short: "short_activity_name (Max ScoreActivity code)",
-      long:  "RBF - Max Score - Activity code very_very_long_activity_name",
-      code:  "activity_code - maximum_score"
+    expect(dhis2_name.long).to eq("RBF - Max Score - Activity code very_very_long_activity_name")
+    expect(dhis2_name.short).to eq("short_activity_name (Max ScoreActivity code)")
+    expect(dhis2_name.code).to eq("activity_code - maximum_score")
+  end
+
+  it "should name DHIS2 data elements according to naming pattern and return a Dhis2Name Class" do
+    expect(dhis2_name).to eq(
+      Dhis2Name.new(
+        long:  "RBF - Max Score - Activity code very_very_long_activity_name",
+        short: "short_activity_name (Max ScoreActivity code)",
+        code:  "activity_code - maximum_score"
+      )
     )
   end
 end
