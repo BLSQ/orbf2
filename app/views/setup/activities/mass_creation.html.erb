@@ -7,7 +7,7 @@ You can create them one by one
 <% @missing_activity_states.each do |activity, states| %>
 <% next unless states.any? %>
 
-    <h3><%=activity.name%> <small>(Used in <%=activity.activity_packages.map(&:package).map(&:name).join(",")%> Package)</small></h3>
+    <h3><%=activity.name%> <small>(Used in <%=activity.activity_packages.map(&:package).map(&:name).join(", ")%> Package)</small></h3>
 
     <% states.each do |state|
       name = state.names(state.project.naming_patterns, activity)
