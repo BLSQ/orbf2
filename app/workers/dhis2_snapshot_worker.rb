@@ -1,14 +1,13 @@
 class Dhis2SnapshotWorker
   include Sidekiq::Worker
 
-  def perform(project_anchor_id)
-    now = Time.now.utc
-
+  def perform(project_anchor_id, filter: nil, now: Time.now.utc)
     project_anchor = ProjectAnchor.find(project_anchor_id)
 
     project = project_anchor.projects.for_date(now) || project_anchor.latest_draft
 
     Dhis2Snapshot::KINDS.each do |kind|
+      next if filter && !filter.include?(kind.to_s)
       snapshot(project, kind, now)
     end
   end

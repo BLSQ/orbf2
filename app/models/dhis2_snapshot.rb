@@ -15,6 +15,8 @@
 #
 
 class Dhis2Snapshot < ApplicationRecord
+  has_paper_trail meta: { project_id: :project_id, program_id: :program_id }
+
   belongs_to :project_anchor
 
   KINDS = %i[data_elements

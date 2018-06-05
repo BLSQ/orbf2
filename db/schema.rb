@@ -10,7 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20_180_529_094_514) do
+ActiveRecord::Schema.define(version: 20180529094514) do
+
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "uuid-ossp"
@@ -18,24 +19,24 @@ ActiveRecord::Schema.define(version: 20_180_529_094_514) do
   create_table "activities", force: :cascade do |t|
     t.string   "name",                                             null: false
     t.integer  "project_id",                                       null: false
-    t.uuid     "stable_id", default: -> { "uuid_generate_v4()" }, null: false
+    t.uuid     "stable_id",  default: -> { "uuid_generate_v4()" }, null: false
     t.datetime "created_at",                                       null: false
     t.datetime "updated_at",                                       null: false
     t.string   "code"
     t.string   "short_name"
-    t.index %w[name project_id], name: "index_activities_on_name_and_project_id", unique: true, using: :btree
-    t.index %w[project_id code], name: "index_activities_on_project_id_and_code", unique: true, using: :btree
+    t.index ["name", "project_id"], name: "index_activities_on_name_and_project_id", unique: true, using: :btree
+    t.index ["project_id", "code"], name: "index_activities_on_project_id_and_code", unique: true, using: :btree
     t.index ["project_id"], name: "index_activities_on_project_id", using: :btree
   end
 
   create_table "activity_packages", force: :cascade do |t|
     t.integer  "activity_id",                                       null: false
     t.integer  "package_id",                                        null: false
-    t.uuid     "stable_id", default: -> { "uuid_generate_v4()" }, null: false
+    t.uuid     "stable_id",   default: -> { "uuid_generate_v4()" }, null: false
     t.datetime "created_at",                                        null: false
     t.datetime "updated_at",                                        null: false
     t.index ["activity_id"], name: "index_activity_packages_on_activity_id", using: :btree
-    t.index %w[package_id activity_id], name: "index_activity_packages_on_package_id_and_activity_id", unique: true, using: :btree
+    t.index ["package_id", "activity_id"], name: "index_activity_packages_on_package_id_and_activity_id", unique: true, using: :btree
     t.index ["package_id"], name: "index_activity_packages_on_package_id", using: :btree
   end
 
@@ -44,13 +45,13 @@ ActiveRecord::Schema.define(version: 20_180_529_094_514) do
     t.string   "name",                                                     null: false
     t.integer  "state_id",                                                 null: false
     t.integer  "activity_id",                                              null: false
-    t.uuid     "stable_id", default: -> { "uuid_generate_v4()" }, null: false
+    t.uuid     "stable_id",          default: -> { "uuid_generate_v4()" }, null: false
     t.datetime "created_at",                                               null: false
     t.datetime "updated_at",                                               null: false
-    t.string   "kind", default: "data_element", null: false
+    t.string   "kind",               default: "data_element",              null: false
     t.string   "formula"
     t.index ["activity_id"], name: "index_activity_states_on_activity_id", using: :btree
-    t.index %w[external_reference activity_id], name: "index_activity_states_on_external_reference_and_activity_id", unique: true, using: :btree
+    t.index ["external_reference", "activity_id"], name: "index_activity_states_on_external_reference_and_activity_id", unique: true, using: :btree
     t.index ["state_id"], name: "index_activity_states_on_state_id", using: :btree
   end
 
@@ -137,9 +138,9 @@ ActiveRecord::Schema.define(version: 20_180_529_094_514) do
     t.string   "ds_external_reference"
     t.string   "deg_external_reference"
     t.string   "de_external_reference"
-    t.index %w[package_id state_id], name: "index_package_states_on_package_id_and_state_id", unique: true, using: :btree
+    t.index ["package_id", "state_id"], name: "index_package_states_on_package_id_and_state_id", unique: true, using: :btree
     t.index ["package_id"], name: "index_package_states_on_package_id", using: :btree
-    t.index %w[state_id package_id], name: "index_package_states_on_state_id_and_package_id", unique: true, using: :btree
+    t.index ["state_id", "package_id"], name: "index_package_states_on_state_id_and_package_id", unique: true, using: :btree
     t.index ["state_id"], name: "index_package_states_on_state_id", using: :btree
   end
 
@@ -160,7 +161,7 @@ ActiveRecord::Schema.define(version: 20_180_529_094_514) do
     t.integer  "project_id",                       null: false
     t.datetime "created_at",                       null: false
     t.datetime "updated_at",                       null: false
-    t.string   "frequency", default: "quarterly", null: false
+    t.string   "frequency",  default: "quarterly", null: false
     t.index ["project_id"], name: "index_payment_rules_on_project_id", using: :btree
   end
 
@@ -180,20 +181,22 @@ ActiveRecord::Schema.define(version: 20_180_529_094_514) do
   end
 
   create_table "projects", force: :cascade do |t|
-    t.string   "name",                                    null: false
-    t.string   "dhis2_url",                               null: false
+    t.string   "name",                                        null: false
+    t.string   "dhis2_url",                                   null: false
     t.string   "user"
     t.string   "password"
-    t.boolean  "bypass_ssl",        default: false
-    t.boolean  "boolean",           default: false
-    t.datetime "created_at",                              null: false
-    t.datetime "updated_at",                              null: false
-    t.string   "status", default: "draft", null: false
+    t.boolean  "bypass_ssl",            default: false
+    t.boolean  "boolean",               default: false
+    t.datetime "created_at",                                  null: false
+    t.datetime "updated_at",                                  null: false
+    t.string   "status",                default: "draft",     null: false
     t.datetime "publish_date"
     t.integer  "project_anchor_id"
     t.integer  "original_id"
-    t.string   "cycle",             default: "quarterly", null: false
-    t.integer  "engine_version",    default: 1,           null: false
+    t.string   "cycle",                 default: "quarterly", null: false
+    t.integer  "engine_version",        default: 1,           null: false
+    t.string   "default_coc_reference"
+    t.string   "default_aoc_reference"
     t.string   "qualifier"
     t.index ["project_anchor_id"], name: "index_projects_on_project_anchor_id", using: :btree
   end
@@ -218,7 +221,7 @@ ActiveRecord::Schema.define(version: 20_180_529_094_514) do
     t.string   "level",        default: "activity", null: false
     t.integer  "project_id",                        null: false
     t.string   "short_name"
-    t.index %w[project_id name], name: "index_states_on_project_id_and_name", unique: true, using: :btree
+    t.index ["project_id", "name"], name: "index_states_on_project_id_and_name", unique: true, using: :btree
     t.index ["project_id"], name: "index_states_on_project_id", using: :btree
   end
 
@@ -228,7 +231,7 @@ ActiveRecord::Schema.define(version: 20_180_529_094_514) do
     t.string   "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count", default: 0, null: false
+    t.integer  "sign_in_count",          default: 0,  null: false
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.inet     "current_sign_in_ip"
@@ -245,7 +248,7 @@ ActiveRecord::Schema.define(version: 20_180_529_094_514) do
     t.integer "version_id"
     t.string  "foreign_key_name", null: false
     t.integer "foreign_key_id"
-    t.index %w[foreign_key_name foreign_key_id], name: "index_version_associations_on_foreign_key", using: :btree
+    t.index ["foreign_key_name", "foreign_key_id"], name: "index_version_associations_on_foreign_key", using: :btree
     t.index ["version_id"], name: "index_version_associations_on_version_id", using: :btree
   end
 
@@ -261,7 +264,7 @@ ActiveRecord::Schema.define(version: 20_180_529_094_514) do
     t.integer  "program_id"
     t.integer  "project_id"
     t.jsonb    "object_changes"
-    t.index %w[item_type item_id], name: "index_versions_on_item_type_and_item_id", using: :btree
+    t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id", using: :btree
     t.index ["program_id"], name: "index_versions_on_program_id", using: :btree
     t.index ["project_id"], name: "index_versions_on_project_id", using: :btree
     t.index ["transaction_id"], name: "index_versions_on_transaction_id", using: :btree
