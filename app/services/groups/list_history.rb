@@ -97,8 +97,12 @@ class Groups::ListHistory
 
   def to_group(g, pyramid)
     result = { id: g.id, name: g.name }
-    group_set = g.organisation_unit_group_set ? pyramid.org_unit_group_set(g.organisation_unit_group_set["id"]) : nil
-    result[:organisation_unit_group_set] = { id: group_set.id, name: name(group_set) } if group_set
+    if g.organisation_unit_group_set
+      group_set = pyramid.org_unit_group_set(g.organisation_unit_group_set["id"])
+      if group_set
+        result[:organisation_unit_group_set] = { id: group_set.id, name: name(group_set) }
+      end
+    end
     result
   end
 end

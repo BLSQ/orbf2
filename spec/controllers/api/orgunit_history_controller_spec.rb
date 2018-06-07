@@ -95,7 +95,7 @@ RSpec.describe Api::OrgunitHistoryController, type: :controller do
       create_snaphots(project, "201802")
       create_snaphots(project, "201803")
       patch :apply, params: {
-        periods:          "201801,201802,201803",
+        periods:          ["201802","201803"],
         token:            project.project_anchor.token,
         reference_period: expected_period
       }

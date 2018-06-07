@@ -1,5 +1,5 @@
 module Api
-  class OrgunitHistoryController < Api::Base
+  class OrgunitHistoryController < Api::ApplicationController
     def index
       project_anchor = current_project_anchor
       group_params = Groups::GroupParams.new(project_anchor, params)
@@ -8,7 +8,6 @@ module Api
     end
 
     def apply
-
       # TODO
       #  - reject or ignore current month and futur
       #  - compare reference period with db, tell that the data is no more in the same state
