@@ -17,11 +17,13 @@ RSpec.describe Rule, kind: :model do
     p.states << p.project.states.select { |state| %w[Claimed Verified Tarif].include?(state.name) }.to_a
     p
   end
+
   let(:quality_package) do
     p = project.packages.build
     p.states << p.project.states.select { |state| ["Claimed", "Verified", "Max. Score"].include?(state.name) }.to_a
     p
   end
+
   let(:valid_activity_quantity_rule) do
     rule = quantity_package.rules.build(
       name: "Quantité PMA",
@@ -280,12 +282,6 @@ RSpec.describe Rule, kind: :model do
 
     let(:quantity_package) do
       p = project.packages.build(kind: "zone")
-      p.states << p.project.states.select { |state| %w[Claimed].include?(state.name) }.to_a
-      p
-    end
-
-    let(:quality_package) do
-      p = project.packages.build(kind: "single")
       p.states << p.project.states.select { |state| %w[Claimed].include?(state.name) }.to_a
       p
     end
