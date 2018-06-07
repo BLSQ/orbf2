@@ -21,6 +21,11 @@ namespace :fix_groups do
       "organisation_unit_groups" => [{ "id"=>"g5G55uqglob" }, { "id"=>"TSMwQ2oCDL1" }]
   }.freeze
 
+  def ensure_content(snaphot, dhis2_id, attribute_key, content)
+    rec = snaphot.content_for_id(dhis2_id)
+    rec[attribute_key] = content unless rec[attribute_key] == content
+  end
+
   task fix: :environment do
     project_anchor_id = 6
     project_anchor = ProjectAnchor.find(project_anchor_id)
@@ -42,16 +47,16 @@ namespace :fix_groups do
 
     puts "groups"
     project_anchor.dhis2_snapshots.where(kind: "organisation_unit_groups").each do |groups_snapshot|
-      puts "fixing #{groups_snapshot.id} : #{groups_snapshot.year}#{groups_snapshot.month}"
-      groups_snapshot.content_for_id(groups.primary.id)["organisation_unit_group_set"] = { "id" => groupsets.primary.id }
-      groups_snapshot.content_for_id(groups.secondary.id)["organisation_unit_group_set"] = { "id" => groupsets.primary.id }
+      puts "fixing groups #{groups_snapshot.id} : #{groups_snapshot.year}#{groups_snapshot.month}"
+      ensure_content(groups_snapshot, groups.primary.id, "organisation_unit_group_set", "id" => groupsets.primary.id)
+      ensure_content(groups_snapshot, groups.secondary.id, "organisation_unit_group_set", "id" => groupsets.primary.id)
       groups_snapshot.save!
     end
 
     puts "groupsets"
 
     project_anchor.dhis2_snapshots.where(kind: "organisation_unit_group_sets").each do |groupset_snapshot|
-      puts "fixing #{groupset_snapshot.id} : #{groupset_snapshot.year}#{groupset_snapshot.month}"
+      puts "fixing groupsets #{groupset_snapshot.id} : #{groupset_snapshot.year}#{groupset_snapshot.month}"
 
       groupset = groupset_snapshot.content_for_id(groupsets.primary.id)
       if groupset
