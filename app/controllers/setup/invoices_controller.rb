@@ -73,6 +73,7 @@ class Setup::InvoicesController < PrivateController
 
     render "new_invoice"
   rescue StandardError => e
+    puts "An error occured during simulation #{e.class.name} #{e.message}" + e.backtrace.join("\n")
     flash[:failure] = "An error occured during simulation #{e.class.name} #{e.message[0..100]}"
     render "new_invoice"
   end

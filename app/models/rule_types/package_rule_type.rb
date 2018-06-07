@@ -57,8 +57,8 @@ module RuleTypes
       return {} unless package.zone_rule
 
       zone_formula_codes = rule
-                                  .formulas
-                                  .each_with_object({}) do |formula, hash|
+                           .formulas
+                           .each_with_object({}) do |formula, hash|
         hash["#{formula.code}_values".to_sym] = formula.code
       end
 

@@ -65,6 +65,7 @@ module RuleTypes
         .merge(package_rules_facts)
         .merge(null_facts)
         .merge(main_orgunit_facts)
+        .merge(package_decision_table_facts)
     end
 
     private
@@ -101,6 +102,18 @@ module RuleTypes
       end
 
       zone_facts.merge(package_facts)
+    end
+
+    def package_decision_table_facts
+      return {} unless project.new_engine? && package.package_rule
+      package.package_rule
+             .decision_tables
+             .each_with_object({})
+             .each do |decision_table, facts|
+        decision_table.out_headers.each do |header|
+          facts[header] = "1"
+        end
+      end
     end
 
     def activity_formula_as_values
