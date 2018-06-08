@@ -9,21 +9,27 @@ module Groups
     end
 
     def call
-      update_params.compared_months.each do |month|
-        snapshots_to_fix = snapshots(month)
-        snapshots_reference = snapshots(update_params.reference_period)
-        orgunit_to_fix_ids.each do |orgunit_id|
-          puts "PATCHING #{month} for #{orgunit_id}"
-          fix(orgunit_id, snapshots_to_fix, snapshots_reference)
+      project_anchor.with_lock do
+        update_params.compared_months.each do |month|
+          snapshots_to_fix = snapshots(month)
+          snapshots_reference = snapshots(update_params.reference_period)
+          orgunit_to_fix_ids.each do |orgunit_id|
+            puts "PATCHING #{month} for #{orgunit_id}"
+            fix(orgunit_id, snapshots_to_fix, snapshots_reference)
+          end
+          puts "SAVING!"
+          snapshots_to_fix.organisation_unit_group_sets.save_mutation!(whodunnit)
+          snapshots_to_fix.organisation_unit_groups.save_mutation!(whodunnit)
+          snapshots_to_fix.organisation_units.save_mutation!(whodunnit)
         end
-        puts "SAVING!"
-        snapshots_to_fix.organisation_unit_group_sets.save!
-        snapshots_to_fix.organisation_unit_groups.save!
-        snapshots_to_fix.organisation_units.save!
       end
     end
 
     private
+
+    def whodunnit
+      @whodunnit = @update_params.whodunnit
+    end
 
     class Snapshots
       attr_reader :organisation_units, :organisation_unit_groups, :organisation_unit_group_sets
@@ -53,7 +59,7 @@ module Groups
         month: period.month
       ).first
 
-      puts "#{kind} #{period} => snapshot#{snap.id}"
+#      puts "#{kind} #{period} => snapshot#{snap.id}"
       snap
     end
 
@@ -82,19 +88,14 @@ module Groups
       group_dhis2_snapshot = snapshots_to_fix.organisation_unit_groups
 
       ou_reference["organisation_unit_groups"].each do |group_added|
-        puts group_added
         group_to_fix = group_dhis2_snapshot.content_for_id(group_added["id"])
-        puts "GROUP " + group_to_fix["name"] + " " + group_added["id"] if group_to_fix
         if group_to_fix
           ou_to_check = { "id" => orgunit_id }
-          if group_to_fix["organisation_units"].include?(ou_to_check)
-            puts "group #{group_to_fix['name']} already exist and contains #{orgunit_id}"
-          else
-            puts "group #{group_to_fix['name']} doesn't contains #{orgunit_id}"
+          if !group_to_fix["organisation_units"].include?(ou_to_check)
             group_to_fix["organisation_units"] << ou_to_check
           end
         else
-          puts "group doesn't exist"
+          # group doesn't exist at all
           group_to_add = snapshots_reference.organisation_unit_groups.content_for_id(group_added["id"])
           group_dhis2_snapshot.content << { "table"=> group_to_add }
         end
@@ -107,22 +108,6 @@ module Groups
           contract_group_set_to_fix["organisation_unit_groups"] << to_check
         end
       end
-
-      # "g5G55uqglob"
-      # group_set = organisation_unit_group_sets.content_for_id("jha5hRorWlK")
-      # group_set_to_add = organisation_unit_group_sets.content_for_id("jha5hRorWlK")
-      # byebug
-      # unless group_set
-      #   byebug
-      #   group_dhis2_snapshot.content << { "table"=> group_set_to_add }
-      # end
-
-      #       "id": "g5G55uqglob",
-      # "name": "Primary",
-      # "organisationUnitGroupSet": {
-      # "id": ,
-      # "name": "Primary"
-      # }
     end
   end
 end

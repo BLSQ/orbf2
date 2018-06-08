@@ -30,41 +30,44 @@ namespace :fix_groups do
     project_anchor_id = 6
     project_anchor = ProjectAnchor.find(project_anchor_id)
 
-    groups = OpenStruct.new(
-      primary:   OpenStruct.new(id: "TSMwQ2oCDL1"),
-      secondary: OpenStruct.new(id: "g5G55uqglob")
-    )
-    groupsets = OpenStruct.new({})
-    groupsets.primary = OpenStruct.new(
-      id:     "jha5hRorWlK"
-    ).freeze
+    byebug
+    project_anchor.with_lock do
+      groups = OpenStruct.new(
+        primary:   OpenStruct.new(id: "TSMwQ2oCDL1"),
+        secondary: OpenStruct.new(id: "g5G55uqglob")
+      )
+      groupsets = OpenStruct.new({})
+      groupsets.primary = OpenStruct.new(
+        id:     "jha5hRorWlK"
+      ).freeze
 
-    groupsets.subcontracted = OpenStruct.new(
-      id:     "h13NHwS8ljU"
-    ).freeze
+      groupsets.subcontracted = OpenStruct.new(
+        id:     "h13NHwS8ljU"
+      ).freeze
 
-    groupsets.freeze
+      groupsets.freeze
 
-    puts "groups"
-    project_anchor.dhis2_snapshots.where(kind: "organisation_unit_groups").each do |groups_snapshot|
-      puts "fixing groups #{groups_snapshot.id} : #{groups_snapshot.year}#{groups_snapshot.month}"
-      ensure_content(groups_snapshot, groups.primary.id, "organisation_unit_group_set", "id" => groupsets.primary.id)
-      ensure_content(groups_snapshot, groups.secondary.id, "organisation_unit_group_set", "id" => groupsets.primary.id)
-      groups_snapshot.save!
-    end
-
-    puts "groupsets"
-
-    project_anchor.dhis2_snapshots.where(kind: "organisation_unit_group_sets").each do |groupset_snapshot|
-      puts "fixing groupsets #{groupset_snapshot.id} : #{groupset_snapshot.year}#{groupset_snapshot.month}"
-
-      groupset = groupset_snapshot.content_for_id(groupsets.primary.id)
-      if groupset
-        groupset["organisation_unit_groups"] = GROUP_SET_TO_ADD["organisation_unit_groups"]
-      else
-        groupset_snapshot.content << { "table"=> GROUP_SET_TO_ADD }
+      puts "groups"
+      project_anchor.dhis2_snapshots.where(kind: "organisation_unit_groups").each do |groups_snapshot|
+        puts "fixing groups #{groups_snapshot.id} : #{groups_snapshot.year}#{groups_snapshot.month}"
+        ensure_content(groups_snapshot, groups.primary.id, "organisation_unit_group_set", "id" => groupsets.primary.id)
+        ensure_content(groups_snapshot, groups.secondary.id, "organisation_unit_group_set", "id" => groupsets.primary.id)
+        groups_snapshot.save!
       end
-      groupset_snapshot.save!
+
+      puts "groupsets"
+
+      project_anchor.dhis2_snapshots.where(kind: "organisation_unit_group_sets").each do |groupset_snapshot|
+        puts "fixing groupsets #{groupset_snapshot.id} : #{groupset_snapshot.year}#{groupset_snapshot.month}"
+
+        groupset = groupset_snapshot.content_for_id(groupsets.primary.id)
+        if groupset
+          groupset["organisation_unit_groups"] = GROUP_SET_TO_ADD["organisation_unit_groups"]
+        else
+          groupset_snapshot.content << { "table"=> GROUP_SET_TO_ADD }
+        end
+        groupset_snapshot.save!
+      end
     end
   end
 end

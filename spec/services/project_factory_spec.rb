@@ -23,6 +23,7 @@ describe ProjectFactory do
       Program,
       ProjectAnchor,
       Dhis2Snapshot,
+      Dhis2SnapshotChange,
       Dhis2Log,
       Version,
       PaperTrail::Version,

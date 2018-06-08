@@ -20,6 +20,7 @@ RSpec.describe PaperTrailed do
     Version,
     Dhis2Log,
     Dhis2Snapshot,
+    Dhis2SnapshotChange,
     ProjectAnchor
   ].freeze
 

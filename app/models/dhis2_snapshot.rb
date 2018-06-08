@@ -26,6 +26,8 @@ class Dhis2Snapshot < ApplicationRecord
              organisation_units
              indicators].freeze
 
+  has_many :dhis2_snapshot_changes, dependent: :destroy
+
   def kind_organisation_units?
     kind.to_sym == :organisation_units
   end
@@ -59,6 +61,11 @@ class Dhis2Snapshot < ApplicationRecord
     item ? item["table"] : nil
   end
 
+  def save_mutation!(whodunnit)
+    @whodunnit = whodunnit
+    save!
+  end
+
   def store_changes
     return if changes.empty?
     current = changes["content"].last&.map { |r| r["table"] }
@@ -70,18 +77,27 @@ class Dhis2Snapshot < ApplicationRecord
     all_ids = (added_or_modifieds.keys + removed_or_modifieds.keys).uniq
 
     all_ids.each do |dhis2_id|
+      values_before = {}
+      values_after = {}
       added_or_modified = added_or_modifieds[dhis2_id]
       removed_or_modified = removed_or_modifieds[dhis2_id]
       if added_or_modified && removed_or_modified
         attribute_keys = (added_or_modified.keys + removed_or_modified.keys).uniq
         attribute_keys.each do |k|
           next unless added_or_modified[k] != removed_or_modified[k]
-          puts "SNAPSHOT #{id} #{kind} #{year} #{month} : #{dhis2_id} modified : #{k} current : #{added_or_modified[k]} vs previous : #{removed_or_modified[k]}"
-          if added_or_modified[k].is_a? Array
-            puts "    added   #{added_or_modified[k] - removed_or_modified[k]}"
-            puts "    removed #{removed_or_modified[k] - added_or_modified[k]}"
-          end
+          puts "SNAPSHOT #{id} #{kind} #{year} #{month} : #{dhis2_id} modified : #{k}"
+          values_after[k] = added_or_modified[k]
+          values_before[k] = removed_or_modified[k]
+
         end
+        dhis2_snapshot_changes.create(
+          dhis2_id:       dhis2_id,
+          dhis2_snapshot: self,
+          values_before:  values_before,
+          values_after:   values_after,
+          whodunnit:      @whodunnit
+        )
+
       elsif added_or_modified
         puts "only added_or_modified"
       elsif removed_or_modified

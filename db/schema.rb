@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180529094514) do
+ActiveRecord::Schema.define(version: 20180608042734) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -68,6 +68,17 @@ ActiveRecord::Schema.define(version: 20180529094514) do
     t.datetime "created_at",        null: false
     t.datetime "updated_at",        null: false
     t.index ["project_anchor_id"], name: "index_dhis2_logs_on_project_anchor_id", using: :btree
+  end
+
+  create_table "dhis2_snapshot_changes", force: :cascade do |t|
+    t.string   "dhis2_id",          null: false
+    t.integer  "dhis2_snapshot_id"
+    t.jsonb    "values_before"
+    t.jsonb    "values_after"
+    t.string   "whodunnit"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+    t.index ["dhis2_snapshot_id"], name: "index_dhis2_snapshot_changes_on_dhis2_snapshot_id", using: :btree
   end
 
   create_table "dhis2_snapshots", force: :cascade do |t|
@@ -277,6 +288,7 @@ ActiveRecord::Schema.define(version: 20180529094514) do
   add_foreign_key "activity_states", "states"
   add_foreign_key "decision_tables", "rules"
   add_foreign_key "dhis2_logs", "project_anchors"
+  add_foreign_key "dhis2_snapshot_changes", "dhis2_snapshots"
   add_foreign_key "dhis2_snapshots", "project_anchors"
   add_foreign_key "entity_groups", "projects"
   add_foreign_key "formula_mappings", "activities"

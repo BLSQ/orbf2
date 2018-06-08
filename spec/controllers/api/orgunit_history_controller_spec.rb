@@ -10,6 +10,8 @@ RSpec.describe Api::OrgunitHistoryController, type: :controller do
   let(:token) { "123456789" }
   let(:orgunitid) { "orgunitid" }
 
+  let(:dhis2_user_id) { "ImspTQPwCqd" }
+
   let(:project) do
     project = full_project
     project.project_anchor = project_anchor
@@ -82,22 +84,45 @@ RSpec.describe Api::OrgunitHistoryController, type: :controller do
       get :index, params: {
         periods:           "2018Q1",
         token:             project.project_anchor.token,
-        reference_period:  "201805",
-        organisationUnits: "vRC0stJ5y9Q"
+        referencePeriod:   "201805",
+        organisationUnits: "vRC0stJ5y9Q",
+        dhis2UserId:       dhis2_user_id
       }
       expect(JSON.parse(response.body)["organisationUnits"].first).to eq(expected_period)
     end
   end
 
   describe "patch" do
+    it "reject bad user id" do
+      post :apply, params: {
+        periods:         %w[201802 201803],
+        token:           project.project_anchor.token,
+        referencePeriod: expected_period,
+        dhis2UserId:     "too small"
+      }
+      puts JSON.pretty_generate(JSON.parse(response.body))
+    end
+    it "reject " do
+      futur = Periods.year_month(DateTime.now.to_date)
+
+      post :apply, params: {
+        periods:         [futur.to_dhis2],
+        token:           project.project_anchor.token,
+        referencePeriod: expected_period,
+        dhis2UserId:     dhis2_user_id
+      }
+      puts JSON.pretty_generate(JSON.parse(response.body))
+    end
+
     it "patches existing snapshots" do
       create_snaphots(project, "201801")
       create_snaphots(project, "201802")
       create_snaphots(project, "201803")
-      patch :apply, params: {
-        periods:          ["201802","201803"],
-        token:            project.project_anchor.token,
-        reference_period: expected_period
+      post :apply, params: {
+        periods:         %w[201802 201803],
+        token:           project.project_anchor.token,
+        referencePeriod: expected_period,
+        dhis2UserId:     dhis2_user_id
       }
       puts JSON.pretty_generate(JSON.parse(response.body))
     end
