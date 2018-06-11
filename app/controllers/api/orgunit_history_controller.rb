@@ -11,10 +11,7 @@ module Api
     end
 
     def apply
-      # TODO
-      #  - reject or ignore current month and futur
-      #  - compare reference period with db, tell that the data is no more in the same state
-      #  - check what paper trail says about the changes
+      # TODO:  compare reference period with db, tell that the data is no more in the same state
       project_anchor = current_project_anchor
       update_params = Groups::UpdateParams.new(project_anchor, params)
       Groups::UpdateHistory.new(update_params).call
