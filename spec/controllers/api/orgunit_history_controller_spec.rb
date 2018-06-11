@@ -78,6 +78,10 @@ RSpec.describe Api::OrgunitHistoryController, type: :controller do
     }
   }
 
+  def json_response
+    JSON.parse(response.body)
+  end
+
   describe "When get group history" do
     it "return a list" do
       create_snaphots(project, "201801")
@@ -88,7 +92,7 @@ RSpec.describe Api::OrgunitHistoryController, type: :controller do
         organisationUnits: "vRC0stJ5y9Q",
         dhis2UserId:       dhis2_user_id
       }
-      expect(JSON.parse(response.body)["organisationUnits"].first).to eq(expected_period)
+      expect(json_response["organisationUnits"].first).to eq(expected_period)
     end
   end
 
@@ -100,7 +104,11 @@ RSpec.describe Api::OrgunitHistoryController, type: :controller do
         referencePeriod: expected_period,
         dhis2UserId:     "too small"
       }
-      puts JSON.pretty_generate(JSON.parse(response.body))
+      expect(response).to have_http_status(:bad_request)
+      expect(json_response).to eq(
+        "status"  => "KO",
+        "message" => "invalid dhis2UserId (too small)"
+      )
     end
     it "reject " do
       futur = Periods.year_month(DateTime.now.to_date)
@@ -111,7 +119,11 @@ RSpec.describe Api::OrgunitHistoryController, type: :controller do
         referencePeriod: expected_period,
         dhis2UserId:     dhis2_user_id
       }
-      puts JSON.pretty_generate(JSON.parse(response.body))
+      expect(response).to have_http_status(:bad_request)
+      expect(json_response).to eq(
+        "status"  => "KO",
+        "message" => "periods are in current or futur 201806"
+      )
     end
 
     it "patches existing snapshots" do
@@ -124,7 +136,7 @@ RSpec.describe Api::OrgunitHistoryController, type: :controller do
         referencePeriod: expected_period,
         dhis2UserId:     dhis2_user_id
       }
-      puts JSON.pretty_generate(JSON.parse(response.body))
+      expect(json_response).to eq("status"=> "OK")
     end
   end
 

@@ -94,30 +94,36 @@ module Groups
       group_dhis2_snapshot = snapshots_to_fix.organisation_unit_groups
 
       ou_reference["organisation_unit_groups"].each do |group_added|
-        group_to_fix = group_dhis2_snapshot.content_for_id(group_added["id"])
-        if group_to_fix
-          ou_to_check = { "id" => orgunit_id }
-          unless group_to_fix["organisation_units"].include?(ou_to_check)
-            group_to_fix["organisation_units"] << ou_to_check
-          end
-        else
-          # group doesn't exist at all
-          group_to_add = ref.organisation_unit_groups
-                            .content_for_id(group_added["id"])
-          group_dhis2_snapshot.append_content(group_to_add)
-        end
+        ensure_groups(orgunit_id, group_added, group_dhis2_snapshot, ref.organisation_unit_groups)
+        ensure_groupset(group_added, subcontract_groupset_id, contract_group_set_to_fix, contract_group_set_reference)
+      end
+    end
 
-        to_check = { "id" => group_added["id"] }
-        included_in_to_fix = if subcontract_groupset_id
-                               contract_group_set_to_fix["organisation_unit_groups"].include?(to_check)
-                             end
-        included_in_reference = if contract_group_set_reference
-                                  contract_group_set_reference["organisation_unit_groups"].include?(to_check)
-                                end
+    def ensure_groupset(group_added, subcontract_groupset_id, contract_group_set_to_fix, contract_group_set_reference)
+      to_check = { "id" => group_added["id"] }
+      included_in_to_fix = if subcontract_groupset_id
+                             contract_group_set_to_fix["organisation_unit_groups"].include?(to_check)
+                           end
+      included_in_reference = if contract_group_set_reference
+                                contract_group_set_reference["organisation_unit_groups"].include?(to_check)
+                              end
 
-        if included_in_reference && !included_in_to_fix
-          contract_group_set_to_fix["organisation_unit_groups"] << to_check
+      if included_in_reference && !included_in_to_fix
+        contract_group_set_to_fix["organisation_unit_groups"] << to_check
+      end
+    end
+
+    def ensure_groups(orgunit_id, group_added, group_dhis2_snapshot, ref)
+      group_to_fix = group_dhis2_snapshot.content_for_id(group_added["id"])
+      if group_to_fix
+        ou_to_check = { "id" => orgunit_id }
+        unless group_to_fix["organisation_units"].include?(ou_to_check)
+          group_to_fix["organisation_units"] << ou_to_check
         end
+      else
+        # group doesn't exist at all
+        group_to_add = ref.content_for_id(group_added["id"])
+        group_dhis2_snapshot.append_content(group_to_add)
       end
     end
   end

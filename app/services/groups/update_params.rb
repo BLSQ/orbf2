@@ -28,6 +28,6 @@ class Groups::UpdateParams
   def ensure_not_current_or_futur
     raise ArgumentError.new("at least one period") unless compared_months && compared_months.size >= 1
     now = Periods.year_month(DateTime.now.to_date)
-    raise ArgumentError.new("periods are in current or futur #{compared_months}") if compared_months.any? { |period| period >= now }
+    raise ArgumentError.new("periods are in current or futur #{compared_months.map(&:to_dhis2).join(",")}") if compared_months.any? { |period| period >= now }
   end
 end

@@ -68,8 +68,11 @@ class Groups::ListHistory
 
     if subcontract_groupset_id
       subcontracted_ous = pyramid.org_units_in_same_group(orgunit, subcontract_groupset_id)
-      groupset_group_ids = pyramid.org_unit_group_set(subcontract_groupset_id).organisation_unit_groups.map { |e| e["id"] }
-      groupet_org_unit_group_ids = orgunit.organisation_unit_groups.map { |e| e["id"] }
+      groupset_group_ids = pyramid.org_unit_group_set(subcontract_groupset_id)
+                                  .organisation_unit_groups
+                                  .map { |e| e["id"] }
+      groupet_org_unit_group_ids = orgunit.organisation_unit_groups
+                                          .map { |e| e["id"] }
       contract_group_ids = (groupset_group_ids & groupet_org_unit_group_ids).sort
       contract_groups = pyramid.org_unit_groups(contract_group_ids)
     else
@@ -80,8 +83,10 @@ class Groups::ListHistory
       id:                       orgunit.id,
       name:                     name(orgunit),
       period:                   period,
-      ancestors:                parents.each_with_index.map { |parent, _index| to_orgunit(parent) },
-      organisation_unit_groups: orgunit_groups.compact.sort_by(&:name).map { |g| to_group(g, pyramid) },
+      ancestors:                parents.map { |parent| to_orgunit(parent) },
+      organisation_unit_groups: orgunit_groups.compact
+                                              .sort_by(&:name)
+                                              .map { |g| to_group(g, pyramid) },
       contract_group:           contract_groups.map { |g| to_group(g, pyramid) },
       contract_members:         subcontracted_ous.map { |ou| to_orgunit(ou) }
     }
