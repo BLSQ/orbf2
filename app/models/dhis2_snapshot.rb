@@ -61,6 +61,10 @@ class Dhis2Snapshot < ApplicationRecord
     item ? item["table"] : nil
   end
 
+  def append_content(line)
+    content << { "table"=> line }
+  end
+
   def save_mutation!(whodunnit)
     @whodunnit = whodunnit
     save!
@@ -85,10 +89,8 @@ class Dhis2Snapshot < ApplicationRecord
         attribute_keys = (added_or_modified.keys + removed_or_modified.keys).uniq
         attribute_keys.each do |k|
           next unless added_or_modified[k] != removed_or_modified[k]
-          puts "SNAPSHOT #{id} #{kind} #{year} #{month} : #{dhis2_id} modified : #{k}"
           values_after[k] = added_or_modified[k]
           values_before[k] = removed_or_modified[k]
-
         end
         dhis2_snapshot_changes.create(
           dhis2_id:       dhis2_id,

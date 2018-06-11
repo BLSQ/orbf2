@@ -3,7 +3,6 @@ module Api
     before_action :set_permissive_cors_headers
 
     def options
-      set_permissive_cors_headers
       render json: {}
     end
 

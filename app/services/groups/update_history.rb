@@ -53,14 +53,11 @@ module Groups
     end
 
     def snapshot(kind:, period:)
-      snap = project_anchor.dhis2_snapshots.where(
+      project_anchor.dhis2_snapshots.where(
         kind:  kind,
         year:  period.year,
         month: period.month
       ).first
-
-#      puts "#{kind} #{period} => snapshot#{snap.id}"
-      snap
     end
 
     def orgunit_to_fix_ids
@@ -76,8 +73,7 @@ module Groups
       ou_reference = snapshots_reference.organisation_units.content_for_id(orgunit_id)
       unless ou_to_fix
         ou_to_fix = JSON.parse(JSON.generate(ou_reference))
-        # TODO: test this
-        snapshots_to_fix.organisation_units.content << { "table"=> ou_to_fix }
+        snapshots_to_fix.organisation_units.append_content(ou_to_fix)
       end
       puts "  fixing #{orgunit_id}\n\t#{ou_to_fix['organisation_unit_groups']}\n\t#{ou_reference['organisation_unit_groups']}"
       ou_to_fix["organisation_unit_groups"] = ou_reference["organisation_unit_groups"]
@@ -91,13 +87,13 @@ module Groups
         group_to_fix = group_dhis2_snapshot.content_for_id(group_added["id"])
         if group_to_fix
           ou_to_check = { "id" => orgunit_id }
-          if !group_to_fix["organisation_units"].include?(ou_to_check)
+          unless group_to_fix["organisation_units"].include?(ou_to_check)
             group_to_fix["organisation_units"] << ou_to_check
           end
         else
           # group doesn't exist at all
           group_to_add = snapshots_reference.organisation_unit_groups.content_for_id(group_added["id"])
-          group_dhis2_snapshot.content << { "table"=> group_to_add }
+          group_dhis2_snapshot.append_content(group_to_add)
         end
 
         to_check = { "id" => group_added["id"] }

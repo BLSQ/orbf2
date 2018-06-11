@@ -26,16 +26,15 @@ namespace :fix_groups do
     rec[attribute_key] = content unless rec[attribute_key] == content
   end
 
-  task fix: :environment do
-    project_anchor_id = 6
-    project_anchor = ProjectAnchor.find(project_anchor_id)
+  def groups
+    @groups ||= OpenStruct.new(
+      primary:   OpenStruct.new(id: "TSMwQ2oCDL1"),
+      secondary: OpenStruct.new(id: "g5G55uqglob")
+    )
+  end
 
-    byebug
-    project_anchor.with_lock do
-      groups = OpenStruct.new(
-        primary:   OpenStruct.new(id: "TSMwQ2oCDL1"),
-        secondary: OpenStruct.new(id: "g5G55uqglob")
-      )
+  def groupsets
+    @groupsets ||= begin
       groupsets = OpenStruct.new({})
       groupsets.primary = OpenStruct.new(
         id:     "jha5hRorWlK"
@@ -46,7 +45,14 @@ namespace :fix_groups do
       ).freeze
 
       groupsets.freeze
+    end
+  end
 
+  task fix: :environment do
+    project_anchor_id = 6
+    project_anchor = ProjectAnchor.find(project_anchor_id)
+
+    project_anchor.with_lock do
       puts "groups"
       project_anchor.dhis2_snapshots.where(kind: "organisation_unit_groups").each do |groups_snapshot|
         puts "fixing groups #{groups_snapshot.id} : #{groups_snapshot.year}#{groups_snapshot.month}"
@@ -64,7 +70,7 @@ namespace :fix_groups do
         if groupset
           groupset["organisation_unit_groups"] = GROUP_SET_TO_ADD["organisation_unit_groups"]
         else
-          groupset_snapshot.content << { "table"=> GROUP_SET_TO_ADD }
+          groupset_snapshot.append_content(GROUP_SET_TO_ADD)
         end
         groupset_snapshot.save!
       end
