@@ -75,36 +75,11 @@ class Dhis2Snapshot < ApplicationRecord
     current = changes["content"].last&.map { |r| r["table"] }
     previous = changes["content"].first.map { |r| r["table"] }
 
-    added_or_modifieds = (current - previous).index_by { |e| e["id"] }
-    removed_or_modifieds = (previous - current).index_by { |e| e["id"] }
-
-    all_ids = (added_or_modifieds.keys + removed_or_modifieds.keys).uniq
-
-    all_ids.each do |dhis2_id|
-      values_before = {}
-      values_after = {}
-      added_or_modified = added_or_modifieds[dhis2_id]
-      removed_or_modified = removed_or_modifieds[dhis2_id]
-      if added_or_modified && removed_or_modified
-        attribute_keys = (added_or_modified.keys + removed_or_modified.keys).uniq
-        attribute_keys.each do |k|
-          next unless added_or_modified[k] != removed_or_modified[k]
-          values_after[k] = added_or_modified[k]
-          values_before[k] = removed_or_modified[k]
-        end
-        dhis2_snapshot_changes.create(
-          dhis2_id:       dhis2_id,
-          dhis2_snapshot: self,
-          values_before:  values_before,
-          values_after:   values_after,
-          whodunnit:      @whodunnit
-        )
-
-      elsif added_or_modified
-        puts "only added_or_modified"
-      elsif removed_or_modified
-        puts "only removed_or_modified"
-      end
-    end
+    Groups::TrackChanges.new(
+      dhis2_snapshot: self,
+      current:        current,
+      previous:       previous,
+      whodunnit:      @whodunnit
+    ).call
   end
 end
