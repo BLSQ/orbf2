@@ -46,6 +46,13 @@ RSpec.describe State, type: :model do
     expect(dhis2_name.code).to eq("activity_code - maximum_score")
   end
 
+  it "should name data elements according to naming pattern and change project qualifier" do
+    project.qualifier = "Pbf"
+    expect(dhis2_name.long).to eq("Pbf - Max Score - ACTIVITY_CODE very_very_long_activity_name")
+    expect(dhis2_name.short).to eq("short_activity_name (Max ScoreACTIVITY_CODE)")
+    expect(dhis2_name.code).to eq("activity_code - maximum_score")
+  end
+
   it "should name DHIS2 data elements according to naming pattern and return a Dhis2Name Class" do
     expect(dhis2_name).to eq(
       Dhis2Name.new(

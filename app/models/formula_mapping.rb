@@ -47,7 +47,7 @@ class FormulaMapping < ApplicationRecord
     {
       state_short_name:    formula.code.humanize,
       raw_activity_code:   activity.code,
-      activity_code:       activity.code.humanize,
+      activity_code:       activity.code.upcase,
       activity_name:       activity.name,
       activity_short_name: activity.short_name || activity.name,
       state_code:          formula.code
