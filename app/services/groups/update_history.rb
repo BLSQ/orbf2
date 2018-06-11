@@ -94,12 +94,15 @@ module Groups
       group_dhis2_snapshot = snapshots_to_fix.organisation_unit_groups
 
       ou_reference["organisation_unit_groups"].each do |group_added|
-        ensure_groups(orgunit_id, group_added, group_dhis2_snapshot, ref.organisation_unit_groups)
-        ensure_groupset(group_added, subcontract_groupset_id, contract_group_set_to_fix, contract_group_set_reference)
+        ensure_groups(orgunit_id, group_added,
+                      group_dhis2_snapshot, ref.organisation_unit_groups)
+        ensure_groupset(group_added, subcontract_groupset_id,
+                        contract_group_set_to_fix, contract_group_set_reference)
       end
     end
 
-    def ensure_groupset(group_added, subcontract_groupset_id, contract_group_set_to_fix, contract_group_set_reference)
+    def ensure_groupset(group_added, subcontract_groupset_id,
+                        contract_group_set_to_fix, contract_group_set_reference)
       to_check = { "id" => group_added["id"] }
       included_in_to_fix = if subcontract_groupset_id
                              contract_group_set_to_fix["organisation_unit_groups"].include?(to_check)
