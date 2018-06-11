@@ -9,7 +9,8 @@ module Api
     private
 
     def current_project_anchor
-      @current_project_anchor || ProjectAnchor.find_by!(token: request.headers["X-Token"] || params.fetch(:token))
+      token = request.headers["X-Token"] || params.fetch(:token)
+      @current_project_anchor || ProjectAnchor.find_by!(token: token)
     end
 
     ALL = "*".freeze
