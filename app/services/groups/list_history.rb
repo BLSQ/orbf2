@@ -24,7 +24,7 @@ class Groups::ListHistory
 
   def fetch_selected_orgunits(project, pyramids, selected_regions, rejected_districts = [])
     orgunits = Set.new
-    pyramids.each do |_month, pyramid|
+    pyramids.each_value do |pyramid|
       contracted = pyramid.org_units_in_group(project.entity_group.external_reference)
       orgunits.merge(contracted)
     end
@@ -48,40 +48,48 @@ class Groups::ListHistory
   def orgunits_history(selected_orgunits, pyramids, subcontract_groupset_id)
     selected_orgunits.map do |selected_orgunit|
       pyramids.map do |period, pyramid|
-        orgunit = pyramid.org_unit(selected_orgunit.id)
-        unless orgunit
-          next {
-            id:     selected_orgunit.id,
-            name:   name(selected_orgunit),
-            period: period
-          }
-
-        end
-        orgunit_group_ids = orgunit.organisation_unit_groups.map { |g| g["id"] }.sort
-        orgunit_groups = pyramid.org_unit_groups(orgunit_group_ids.sort)
-        parents = pyramid.org_unit_parents(orgunit.id)[0..-2]
-
-        if subcontract_groupset_id
-          subcontracted_ous = pyramid.org_units_in_same_group(orgunit, subcontract_groupset_id)
-          groupset_group_ids = pyramid.org_unit_group_set(subcontract_groupset_id).organisation_unit_groups.map { |e| e["id"] }
-          groupet_org_unit_group_ids = orgunit.organisation_unit_groups.map { |e| e["id"] }
-          contract_group_ids = (groupset_group_ids & groupet_org_unit_group_ids).sort
-          contract_groups = pyramid.org_unit_groups(contract_group_ids)
-        else
-          contract_groups = []
-          subcontracted_ous = []
-        end
-        {
-          id:                       orgunit.id,
-          name:                     name(orgunit),
-          period:                   period,
-          ancestors:                parents.each_with_index.map { |parent, _index| to_orgunit(parent) },
-          organisation_unit_groups: orgunit_groups.compact.sort_by(&:name).map { |g| to_group(g, pyramid) },
-          contract_group:           contract_groups.map { |g| to_group(g, pyramid) },
-          contract_members:         subcontracted_ous.map { |ou| to_orgunit(ou) }
-        }
+        map_to_history(selected_orgunit, period, subcontract_groupset_id, pyramid)
       end
     end
+  end
+
+  def map_to_history(selected_orgunit, period, subcontract_groupset_id, pyramid)
+    orgunit = pyramid.org_unit(selected_orgunit.id)
+    unless orgunit
+      return {
+        id:     selected_orgunit.id,
+        name:   name(selected_orgunit),
+        period: period
+      }
+    end
+    orgunit_group_ids = orgunit.organisation_unit_groups.map { |g| g["id"] }.sort
+    orgunit_groups = pyramid.org_unit_groups(orgunit_group_ids.sort)
+    parents = pyramid.org_unit_parents(orgunit.id)[0..-2]
+
+    if subcontract_groupset_id
+      subcontracted_ous = pyramid.org_units_in_same_group(orgunit, subcontract_groupset_id)
+      groupset_group_ids = pyramid.org_unit_group_set(subcontract_groupset_id)
+                                  .organisation_unit_groups
+                                  .map { |e| e["id"] }
+      groupet_org_unit_group_ids = orgunit.organisation_unit_groups
+                                          .map { |e| e["id"] }
+      contract_group_ids = (groupset_group_ids & groupet_org_unit_group_ids).sort
+      contract_groups = pyramid.org_unit_groups(contract_group_ids)
+    else
+      contract_groups = []
+      subcontracted_ous = []
+    end
+    {
+      id:                       orgunit.id,
+      name:                     name(orgunit),
+      period:                   period,
+      ancestors:                parents.map { |parent| to_orgunit(parent) },
+      organisation_unit_groups: orgunit_groups.compact
+                                              .sort_by(&:name)
+                                              .map { |g| to_group(g, pyramid) },
+      contract_group:           contract_groups.map { |g| to_group(g, pyramid) },
+      contract_members:         subcontracted_ous.map { |ou| to_orgunit(ou) }
+    }
   end
 
   def to_orgunit(o)
@@ -94,8 +102,12 @@ class Groups::ListHistory
 
   def to_group(g, pyramid)
     result = { id: g.id, name: g.name }
-    group_set = g.organisation_unit_group_set ? pyramid.org_unit_group_set(g.organisation_unit_group_set["id"]) : nil
-    result[:organisation_unit_group_set] = { id: group_set.id, name: name(group_set) } if group_set
+    if g.organisation_unit_group_set
+      group_set = pyramid.org_unit_group_set(g.organisation_unit_group_set["id"])
+      if group_set
+        result[:organisation_unit_group_set] = { id: group_set.id, name: name(group_set) }
+      end
+    end
     result
   end
 end

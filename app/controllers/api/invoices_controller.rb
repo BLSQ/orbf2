@@ -1,5 +1,5 @@
 module Api
-  class InvoicesController < Api::Base
+  class InvoicesController < Api::ApplicationController
     def create
       project_anchor = current_project_anchor
       pe = Periods.from_dhis2_period(params[:pe])

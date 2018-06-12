@@ -15,6 +15,8 @@
 #
 
 class Dhis2Snapshot < ApplicationRecord
+  after_update :store_changes
+
   belongs_to :project_anchor
 
   KINDS = %i[data_elements
@@ -23,6 +25,8 @@ class Dhis2Snapshot < ApplicationRecord
              organisation_unit_groups
              organisation_units
              indicators].freeze
+
+  has_many :dhis2_snapshot_changes, dependent: :destroy
 
   def kind_organisation_units?
     kind.to_sym == :organisation_units
@@ -55,5 +59,27 @@ class Dhis2Snapshot < ApplicationRecord
   def content_for_id(id)
     item = content.detect { |row| row["table"]["id"] == id }
     item ? item["table"] : nil
+  end
+
+  def append_content(line)
+    content << { "table"=> line }
+  end
+
+  def save_mutation!(whodunnit)
+    @whodunnit = whodunnit
+    save!
+  end
+
+  def store_changes
+    return if changes.empty?
+    current = changes["content"].last&.map { |r| r["table"] }
+    previous = changes["content"].first.map { |r| r["table"] }
+
+    Groups::TrackChanges.new(
+      dhis2_snapshot: self,
+      current:        current,
+      previous:       previous,
+      whodunnit:      @whodunnit
+    ).call
   end
 end

@@ -18,7 +18,16 @@ Rails.application.routes.draw do
 
   namespace :api do
     resources :invoices, only: [:create]
-    resources :orgunit_history, only: [:index]
+    resources :orgunit_history, only: [:index] do
+      collection do
+        post :apply
+      end
+    end
+    match "*path",
+          controller:  "application",
+          action:      "options",
+          constraints: { method: "OPTIONS" },
+          via:         [:options]
   end
 
   devise_scope :user do
