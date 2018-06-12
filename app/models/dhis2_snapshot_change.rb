@@ -19,11 +19,28 @@ class Dhis2SnapshotChange < ApplicationRecord
     log "*** #{dhis2_snapshot.snapshoted_at} #{dhis2_snapshot.kind[0..-2]} #{dhis2_id}"
     keys = (values_after.keys + values_before.keys).uniq
     keys.each do |k|
-      next unless values_after[k].is_a? Array
-      log "    added   #{values_after[k] - values_before[k]}"
-      log "    removed #{values_before[k] - values_after[k]}"
-      log " by #{whodunnit}"
+      if values_after[k].is_a? Array
+        log_array(values_before[k], values_after[k])
+      else
+        log_default(values_before[k], values_after[k])
+      end
     end
+  end
+
+  def log_array(before, after)
+    log [
+      "    added   #{(after - before)}",
+      "    removed #{(before - after)}",
+      " by #{whodunnit}"
+    ].join("\n")
+  end
+
+  def log_default(before, after)
+    log [
+      "before #{before}",
+      "after  #{after}",
+      " by #{whodunnit}"
+    ].join("\t")
   end
 
   def log(msg)

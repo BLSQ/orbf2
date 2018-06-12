@@ -16,7 +16,7 @@ describe Groups::TrackChanges do
       job_id:        "123"
     )
   }
-  it "track changes" do
+  it "track changes of simple fields" do
     Groups::TrackChanges.new(
       dhis2_snapshot: dhis2_snapshot,
         current: [
@@ -29,10 +29,30 @@ describe Groups::TrackChanges do
           }
         ], whodunnit: "whhhhh"
     ).call
-
+    inspect_changes
     expect(attributes).to eq([{ "dhis2_id"      => "123",
                                 "values_before" => { "myfield"=>"oldValue" },
                                 "values_after"  => { "myfield"=>"newvalue" },
+                                "whodunnit"     => "whhhhh" }])
+  end
+
+  it "track changes of arrays" do
+    Groups::TrackChanges.new(
+      dhis2_snapshot: dhis2_snapshot,
+        current: [
+          {
+            "id" => "123", "myfield" => %w[oldValue newvalue]
+          }
+        ], previous: [
+          {
+            "id" => "123", "myfield" => ["oldValue"]
+          }
+        ], whodunnit: "whhhhh"
+    ).call
+    inspect_changes
+    expect(attributes).to eq([{ "dhis2_id"      => "123",
+                                "values_before" => { "myfield"=>["oldValue"] },
+                                "values_after"  => { "myfield"=>%w[oldValue newvalue] },
                                 "whodunnit"     => "whhhhh" }])
   end
 
@@ -52,7 +72,7 @@ describe Groups::TrackChanges do
           }
         ], whodunnit: "whhhhh"
     ).call
-
+    inspect_changes
     expect(attributes).to eq(
       [
         { "dhis2_id"      => "456",
@@ -61,10 +81,34 @@ describe Groups::TrackChanges do
             "id"      => "456",
             "myfield" => "newrecord"
           },
-          "whodunnit"     => "whhhhh"
-        }
+          "whodunnit"     => "whhhhh" }
       ]
     )
+  end
+
+  it "track removal" do
+    Groups::TrackChanges.new(
+      dhis2_snapshot: dhis2_snapshot,
+        current: [
+        ], previous: [
+          {
+            "id" => "123", "myfield" => "untouch"
+          }
+        ], whodunnit: "whhhhh"
+    ).call
+    inspect_changes
+    expect(attributes).to eq(
+      [
+        { "dhis2_id"      => "123",
+          "values_before" => { "id" => "123", "myfield" => "untouch" },
+          "values_after"  => {},
+          "whodunnit"     => "whhhhh" }
+      ]
+    )
+  end
+
+  def inspect_changes
+    dhis2_snapshot.dhis2_snapshot_changes.each(&:inspect_modifications)
   end
 
   def attributes

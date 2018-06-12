@@ -19,16 +19,9 @@ module Groups
         if added_or_modified && removed_or_modified
           create_change(added_or_modified, removed_or_modified, dhis2_id)
         elsif added_or_modified
-          dhis2_snapshot.dhis2_snapshot_changes.create(
-            dhis2_id:       dhis2_id,
-            dhis2_snapshot: dhis2_snapshot,
-            values_before:  {},
-            values_after:   added_or_modified,
-            whodunnit:      whodunnit
-          )
-        elsif removed_or_modified
-            byebug
-          puts "only removed_or_modified"
+          create_added(added_or_modified, dhis2_id)
+        elsif
+          create_deleted(removed_or_modified, dhis2_id)
         end
       end
     end
@@ -37,7 +30,27 @@ module Groups
 
     attr_reader :dhis2_snapshot, :current, :previous, :whodunnit
 
-    def create_change(added_or_modified, removed_or_modified,dhis2_id)
+    def create_deleted(removed_or_modified, dhis2_id)
+      dhis2_snapshot.dhis2_snapshot_changes.create(
+        dhis2_id:       dhis2_id,
+        dhis2_snapshot: dhis2_snapshot,
+        values_before:  removed_or_modified,
+        values_after:   {},
+        whodunnit:      whodunnit
+      )
+    end
+
+    def create_added(added_or_modified, dhis2_id)
+      dhis2_snapshot.dhis2_snapshot_changes.create(
+        dhis2_id:       dhis2_id,
+        dhis2_snapshot: dhis2_snapshot,
+        values_before:  {},
+        values_after:   added_or_modified,
+        whodunnit:      whodunnit
+      )
+        end
+
+    def create_change(added_or_modified, removed_or_modified, dhis2_id)
       values_before = {}
       values_after = {}
       attribute_keys = (added_or_modified.keys + removed_or_modified.keys).uniq
