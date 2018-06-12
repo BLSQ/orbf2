@@ -24,7 +24,7 @@ class Groups::ListHistory
 
   def fetch_selected_orgunits(project, pyramids, selected_regions, rejected_districts = [])
     orgunits = Set.new
-    pyramids.each do |_month, pyramid|
+    pyramids.each_value do |pyramid|
       contracted = pyramid.org_units_in_group(project.entity_group.external_reference)
       orgunits.merge(contracted)
     end
