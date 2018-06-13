@@ -24,23 +24,31 @@ class FormulaMapping < ApplicationRecord
   belongs_to :formula, inverse_of: :formula_mappings
   belongs_to :activity
 
+  def project
+    formula.rule.project
+  end
+
   def names
     if activity
-      naming_patterns = activity.project.naming_patterns
+      naming_patterns = project.naming_patterns
       substitutions = substitutions_for(activity)
-      dhis2_name = {
-        long:  format(naming_patterns[:long], substitutions).strip,
-        short: format(naming_patterns[:short], substitutions).strip,
-        code:  format(naming_patterns[:code], substitutions).strip
-      }
     else
-      dhis2_name = {
-        long:  formula.code.humanize.strip,
-        short: formula.code.humanize.strip,
-        code:  formula.code.humanize.strip
-      }
+      naming_patterns = project.naming_patterns_without_activity
+      substitutions = substitutions_for_others
     end
+    dhis2_name = {
+      long:  format(naming_patterns[:long], substitutions).strip,
+      short: format(naming_patterns[:short], substitutions).strip,
+      code:  format(naming_patterns[:code], substitutions).strip
+    }
     Dhis2Name.new(dhis2_name)
+  end
+
+  def substitutions_for_others
+    {
+      state_short_name: formula.code.humanize,
+      state_code:       formula.code
+    }
   end
 
   def substitutions_for(activity)

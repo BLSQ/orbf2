@@ -82,16 +82,26 @@ class Project < ApplicationRecord
   end
 
   def naming_patterns
-    final_qualifier = clean_qualifier || "RBF"
-    {
-      long:  "#{final_qualifier} - %{state_short_name} - %{activity_code} %{activity_name}",
+    @naming_patterns ||= {
+      long:  "#{clean_qualifier} - %{state_short_name} - %{activity_code} %{activity_name}",
       short: "%{activity_short_name} (%{state_short_name}%{activity_code})",
       code:  "%{raw_activity_code} - %{state_code}"
     }
   end
 
+  def naming_patterns_without_activity
+    @naming_patterns_without_activity ||= begin
+      {
+        long:  "#{clean_qualifier} - %{state_short_name}",
+        short: "%{state_short_name}",
+        code:  "%{state_code}"
+      }
+    end
+  end
+
   def clean_qualifier
-    qualifier.presence ? qualifier.strip : nil
+    q = qualifier.presence ? qualifier.strip : nil
+    q || "RBF"
   end
 
   def self.no_includes
