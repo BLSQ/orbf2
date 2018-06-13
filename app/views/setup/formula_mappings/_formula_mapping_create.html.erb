@@ -21,7 +21,8 @@
                 <%= render partial: "setup/shared/dhis2_names", locals: {
                       name: name.long,
                       short_name: name.short,
-                      code: name.code
+                      code: name.code,
+                      action_label: "Confirm"
                     }
                 %>
           </div>
@@ -47,7 +48,8 @@
                 <%= render partial: "setup/shared/dhis2_names", locals: {
                       name: "#{package.name} - #{formula.code.humanize}",
                       short_name: "#{package.name} - #{formula.code.humanize}",
-                      code: "#{package.code} - #{formula.code}"
+                      code: "#{package.code} - #{formula.code}",
+                      action_label: "Confirm"
                     }
                 %>
            </ul>

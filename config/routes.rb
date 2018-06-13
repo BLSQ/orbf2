@@ -37,7 +37,7 @@ Rails.application.routes.draw do
       get "/projects/:project_id", to: "setup#index", as: "project"
       resources :seeds, only: [:index] if Rails.env.development? || Rails.env.dev?
       resources :projects, only: %i[create update] do
-        resources :metadatas, only: [:index]
+        resources :metadatas, only: %i[index update]
         resources :snapshots, only: [:create]
         resources :states, only: %i[new create edit update]
         resources :invoices, only: %i[new create]

@@ -26,7 +26,8 @@ You can create them one by one
             <%= render partial: "setup/shared/dhis2_names", locals: {
                       name: name.long,
                       short_name: name.short,
-                      code: name.code
+                      code: name.code,
+                      action_label: "Confirm"
                     }
                 %>
                 <%end%>

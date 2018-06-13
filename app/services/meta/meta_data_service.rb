@@ -90,23 +90,16 @@ module Meta
     end
 
     def new_meta_payment_mapping(formula_mapping, payment_rule)
+      name = formula_mapping.names
+
       Meta::Metadata.new(
         dhis2_props(formula_mapping.external_reference).merge(
           formula_mapping: formula_mapping,
           payment_rule:    payment_rule,
           orbf_type:       "Payment mapping",
-          orbf_code:       [
-            formula_mapping.activity&.code,
-            formula_mapping.formula.code
-          ].join(" - "),
-          orbf_name:       [
-            formula_mapping.activity&.name,
-            formula_mapping.formula.code.humanize
-          ].join(" - "),
-          orbf_short_name: [
-            formula_mapping.activity&.short_name,
-            formula_mapping.formula.code.humanize
-          ].join(" - ")
+          orbf_code:       name.code,
+          orbf_name:       name.long,
+          orbf_short_name: name.short
         )
       )
     end

@@ -1,3 +1,9 @@
+<%if params[:edit]%>
+  <%= link_to 'Cancel edit', setup_project_metadatas_path(@current_project), class: "btn btn-info pull-right" %>
+<%else%>
+  <%= link_to 'Switch to edit', setup_project_metadatas_path(@current_project, edit: true), class: "btn btn-info pull-right" %>
+<%end%>
+
 <h1>Dhis2 Metadata (<%= @metadatas.map(&:dhis2_id).uniq.size%> unique)</h1>
 <input type="text" id="searchMeta" class="pull-right" placeholder="Search for meta data">
 <table class="table stripped" id="metaTable">

@@ -16,28 +16,49 @@
   <td>
 
     <b>Orbf</b>
+    <%if params[:edit] %>
     <div class="container">
-    <div class="row">
-        <div class="col-md-1">Name:</div>
-        <div class="col-md-10"><%= metadata.orbf_name%></div>
-    </div>
-    <div class="row">
-        <div class="col-md-1">Short:</div>
-        <div class="col-md-10"><%= metadata.orbf_short_name%></div>
-    </div>
-    <div class="row">
-        <div class="col-md-1">Code:</div>
-        <div class="col-md-10"><%= metadata.orbf_code%></div>
-    </div>
+
+      <%= form_tag setup_project_metadata_path(@current_project, metadata.dhis2_id),
+                            method: :put,
+                            remote: true, authenticity_token: true,
+                            'data-update-target' => "update-container-#{metadata.dhis2_id}" do %>
+
+        <div id="update-container-<%= metadata.dhis2_id %>">
+
+        <%= render partial: "setup/shared/dhis2_names", locals: {
+                        name: metadata.orbf_name,
+                        short_name: metadata.orbf_short_name,
+                        code: metadata.orbf_code,
+                        action_label: "Update data element"
+                        }
+                    %>
+        <%end%>
+    </div>       
+    <%else%>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-1">Name:</div>
+            <div class="col-md-10"><%= metadata.orbf_name%></div>
+        </div>
+        <div class="row">
+            <div class="col-md-1">Short:</div>
+            <div class="col-md-10"><%= metadata.orbf_short_name%></div>
+        </div>
+        <div class="row">
+            <div class="col-md-1">Code:</div>
+            <div class="col-md-10"><%= metadata.orbf_code%></div>
+        </div>
     <%if metadata.formula %>
-    <div class="row">
-      <div class="col-md-1">Expression:</div>
-      <div class="col-md-10">
-        <code><%= metadata.formula.expression%></code>
-      </div>
-    </div>
+        <div class="row">
+            <div class="col-md-1">Expression:</div>
+            <div class="col-md-10">
+                <code><%= metadata.formula.expression%></code>
+            </div>
+        </div>
     <%end%>
     </div>
+    <%end%>
 
     <b>Dhis2</b><br>
 
