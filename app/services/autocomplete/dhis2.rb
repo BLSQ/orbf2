@@ -10,13 +10,25 @@ module Autocomplete
     end
   end
   class Dhis2
+
     def initialize(project_anchor)
       @project_anchor = project_anchor
     end
 
     def search(name, kind: "data_elements", limit: 20)
-      query = "select * from (
-      select 
+
+      Dhis2Snapshot.connection.select_all(
+        ActiveRecord::Base.send(
+          :sanitize_sql_array,
+          [SEARCH_QUERY, kind, @project_anchor.id, "%#{name}%", limit]
+        )
+      ).to_hash.map { |e| Result.new(id: e["id"], code: e["code"], display_name: e["display_name"]) }
+    end
+
+    private
+
+    SEARCH_QUERY = "select * from (
+      select
         (element->'table'->>'id')::text as id ,
             (element->'table'->>'display_name')::text as display_name,
            (element->'table'->>'code')::text as code
@@ -33,12 +45,5 @@ module Autocomplete
        where display_name ilike ?
       limit ?"
 
-      Dhis2Snapshot.connection.select_all(
-        ActiveRecord::Base.send(
-          :sanitize_sql_array,
-          [query, kind, @project_anchor.id, "%" + name + "%", limit]
-        )
-      ).to_hash.map { |e| Result.new(id: e["id"], code: e["code"], display_name: e["display_name"]) }
-    end
   end
 end
