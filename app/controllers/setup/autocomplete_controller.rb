@@ -15,7 +15,7 @@ class Setup::AutocompleteController < PrivateController
       expires_in 3.minutes
       render_sol_items([data_compound.data_element(params[:id])], params[:id])
     else
-      results = find_results(params[:term],"data_elements")
+      results = find_results(params[:term], "data_elements")
       render_sol_items(results, params[:term])
     end
   end
@@ -36,7 +36,7 @@ class Setup::AutocompleteController < PrivateController
       pyramid = Pyramid.from(current_project)
       render_sol_items([pyramid.org_unit(params[:id])], params[:id])
     else
-      results =find_results(params[:term], "organisation_units")
+      results = find_results(params[:term], "organisation_units")
       render_sol_items(results, params[:term])
     end
   end
@@ -45,8 +45,8 @@ class Setup::AutocompleteController < PrivateController
 
   def find_results(term, kind)
     Autocomplete::Dhis2.new(current_project.project_anchor)
-                                   .search(term, kind: kind)
-                                   .sort_by(&:display_name)
+                       .search(term, kind: kind)
+                       .sort_by(&:display_name)
   end
 
   def organisation_unit_group_by_term_on_sol

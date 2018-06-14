@@ -10,13 +10,11 @@ module Autocomplete
     end
   end
   class Dhis2
-
     def initialize(project_anchor)
       @project_anchor = project_anchor
     end
 
     def search(name, kind: "data_elements", limit: 20)
-
       Dhis2Snapshot.connection.select_all(
         ActiveRecord::Base.send(
           :sanitize_sql_array,
@@ -43,7 +41,6 @@ module Autocomplete
          as elements
       ) as dataelements
        where display_name ilike ?
-      limit ?"
-
+      limit ?".freeze
   end
 end
