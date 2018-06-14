@@ -23,8 +23,6 @@ module Autocomplete
       ).to_hash.map { |e| Result.new(id: e["id"], code: e["code"], display_name: e["display_name"]) }
     end
 
-    private
-
     SEARCH_QUERY = "select * from (
       select
         (element->'table'->>'id')::text as id ,
