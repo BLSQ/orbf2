@@ -36,19 +36,8 @@ RSpec.describe Setup::AutocompleteController, type: :controller do
     end
 
     it "should return for including name" do
+      stub_dhis2_snapshot
       get :data_elements, params: { project_id: project.id, term: "flaccid" }
-      expect(assigns(:items).map { |i| i[:label] }.uniq).to eq(
-        [
-          "Accute Flaccid Paralysis (Deaths < 5 yrs)",
-          "Acute Flaccid Paralysis (AFP) follow-up",
-          "Acute Flaccid Paralysis (AFP) new",
-          "Acute Flaccid Paralysis (AFP) referrals"
-        ]
-      )
-    end
-    it "should return for starting with if term too short" do
-      get :data_elements, params: { project_id: project.id, term: "ac" }
-
       expect(assigns(:items).map { |i| i[:label] }.uniq).to eq(
         [
           "Accute Flaccid Paralysis (Deaths < 5 yrs)",
@@ -68,6 +57,11 @@ RSpec.describe Setup::AutocompleteController, type: :controller do
       get :data_elements, params: { project_id: project.id, id: "FTRrcoaog83" }
       expect(assigns(:items).map { |i| i[:label] }).to eq ["Accute Flaccid Paralysis (Deaths < 5 yrs)"]
     end
+
+    def stub_dhis2_snapshot
+      stub_dhis2_system_info_success(project.dhis2_url)
+      Dhis2SnapshotWorker.new.perform(project.project_anchor_id, filter: ["data_elements"])
+    end
   end
 
   describe "When authenticated #indicators" do
@@ -81,6 +75,38 @@ RSpec.describe Setup::AutocompleteController, type: :controller do
     it "should autocomplete indicators" do
       stub_all_data_compound(project)
       get :indicators, params: { project_id: project.id, term: "cli" }
+    end
+  end
+
+  describe "When authenticated #organisation_units" do
+    include_context "basic_context"
+    include WebmockDhis2Helpers
+
+    before(:each) do
+      sign_in user
+    end
+
+    it "should return matching orgunits" do
+      stub_dhis2_all_orgunits(project)
+
+      stub_dhis2_snapshot
+      get :organisation_units, params: { project_id: project.id, term: "arab" }
+      expect(assigns(:items).map { |i| i[:label] }.uniq).to eq(
+        ["Afro Arab Clinic", "Arab Clinic"]
+      )
+    end
+
+    def stub_dhis2_snapshot
+      stub_dhis2_system_info_success(project.dhis2_url)
+      Dhis2SnapshotWorker.new.perform(project.project_anchor_id, filter: ["organisation_units"])
+    end
+
+    def stub_dhis2_all_orgunits(project)
+      stub_request(:get, "#{project.dhis2_url}/api/organisationUnits?fields=:all&pageSize=50000")
+        .to_return(
+          status: 200,
+          body:   fixture_content(:dhis2, "all_organisation_units_with_groups.json")
+        )
     end
   end
 
