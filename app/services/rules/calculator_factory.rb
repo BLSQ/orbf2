@@ -33,6 +33,8 @@ module Rules
 
     BETWEEN = ->(lower, score, greater) { lower <= score && score <= greater }
 
+    RANDBETWEEN = ->(a, b) { rand(a..b) }
+
     def new_calculator
       calculator = Dentaku::Calculator.new
       calculator.add_function(:between, :logical, BETWEEN)
@@ -42,6 +44,7 @@ module Rules
       calculator.add_function(:sum, :numeric, SUM)
       calculator.add_function(:safe_div, :numeric, SAFE_DIV)
       calculator.add_function(:access, :numeric, ACCESS)
+      calculator.add_function(:randbetween, :numeric, RANDBETWEEN)
       calculator
     end
   end
