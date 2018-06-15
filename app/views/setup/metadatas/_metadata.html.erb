@@ -34,7 +34,7 @@
                         }
                     %>
         <%end%>
-    </div>       
+    </div>
     <%else%>
     <div class="container">
         <div class="row">
@@ -64,15 +64,15 @@
 
     <div class="container">
     <div class="row">
-        <div class="col-md-1">Name:</div>
+        <div class="col-md-1 <%= metadata.compare(:name)%>">Name:</div>
         <div class="col-md-10"><%= metadata.dhis2_name%></div>
     </div>
     <div class="row">
-        <div class="col-md-1">Short:</div>
+        <div class="col-md-1 <%= metadata.compare(:short_name)%>">Short:</div>
         <div class="col-md-10"><%= metadata.dhis2_short_name%></div>
     </div>
     <div class="row">
-        <div class="col-md-1">Code :</div>
+        <div class="col-md-1 <%= metadata.compare(:code)%>">Code :</div>
         <div class="col-md-10"><%= metadata.dhis2_code%></div>
     </div>
     </div>

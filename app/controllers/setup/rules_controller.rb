@@ -70,7 +70,7 @@ class Setup::RulesController < PrivateController
           .permit(:name,
                   :kind,
                   formulas_attributes:        %i[
-                    id code description expression frequency _destroy
+                    id code short_name description expression frequency _destroy
                   ],
                   decision_tables_attributes: %i[
                     id content

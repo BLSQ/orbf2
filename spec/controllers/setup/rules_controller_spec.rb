@@ -162,14 +162,19 @@ RSpec.describe Setup::RulesController, type: :controller do
             kind:                "zone",
             formulas_attributes: [{
               code:        "zone_formula",
+              short_name:  "short",
               expression:  "sum(%{quantity_total_pma_values})",
               description: "pma for the zone"
             }]
           }
         }
-        expect(assigns(:rule).valid?).to eq(true)
+        rule = assigns(:rule)
+        expect(rule.valid?).to eq(true)
         expect(response).to have_http_status(302)
-        expect(assigns(:rule).formulas.first.code).to eq("zone_formula")
+        zone_formula = rule.formulas.first
+        expect(zone_formula.code).to eq("zone_formula")
+        expect(zone_formula.id).not_to be_nil
+        expect(zone_formula.short_name).to eq("short")
       end
     end
   end

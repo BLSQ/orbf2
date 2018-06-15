@@ -53,11 +53,11 @@ class FormulaMapping < ApplicationRecord
 
   def substitutions_for(activity)
     {
-      state_short_name:    formula.code.humanize,
+      state_short_name:    formula.short_name.presence || formula.code.humanize,
       raw_activity_code:   activity.code,
       activity_code:       activity.code.upcase,
       activity_name:       activity.name,
-      activity_short_name: activity.short_name || activity.name,
+      activity_short_name: activity.short_name.presence || activity.name,
       state_code:          formula.code
     }
   end
