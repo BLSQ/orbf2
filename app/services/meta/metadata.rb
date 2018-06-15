@@ -34,5 +34,18 @@ module Meta
     def formula
       @formula_mapping&.formula
     end
+
+    def compare(what)
+      fields = COMPARE[what]
+      o = send(fields.first)
+      d = send(fields.last)
+      o == d ? "same" : "different"
+    end
+
+    COMPARE = {
+      name:       %i[dhis2_name orbf_name],
+      short_name: %i[dhis2_short_name orbf_short_name],
+      code:       %i[dhis2_code orbf_code]
+    }.freeze
   end
 end
