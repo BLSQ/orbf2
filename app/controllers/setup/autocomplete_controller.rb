@@ -14,9 +14,12 @@ class Setup::AutocompleteController < PrivateController
       data_compound = DataCompound.from(current_project)
       expires_in 3.minutes
       render_sol_items([data_compound.data_element(params[:id])], params[:id])
-    else
+    elsif params[:term]
       results = find_results(params[:term], "data_elements")
       render_sol_items(results, params[:term])
+    else
+      results = find_results(nil, "data_elements", limit: 20000)
+      render_sol_items(results, nil)
     end
   end
 
@@ -43,9 +46,9 @@ class Setup::AutocompleteController < PrivateController
 
   private
 
-  def find_results(term, kind)
+  def find_results(term, kind, limit: 20)
     Autocomplete::Dhis2.new(current_project.project_anchor)
-                       .search(term, kind: kind)
+                       .search(term, kind: kind, limit: limit)
                        .sort_by(&:display_name)
   end
 
