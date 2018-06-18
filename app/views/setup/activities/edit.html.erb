@@ -1,3 +1,6 @@
+<div class="actions pull-right">
+  <%= link_to 'New Activity', new_setup_project_activity_path(@activity.project), class: 'btn btn-info' %>
+</div>
 
 <%= simple_form_for(activity,  url: setup_project_activity_path(activity.project), method: :put) do |f| %>
   <%= render 'form', f: f %>
