@@ -40,17 +40,17 @@ class MapProjectToOrbfProject
       org_unit_group_ext_ids: package.package_entity_groups.map(&:organisation_unit_group_ext_ref).compact,
       groupset_ext_id:        package.ogs_reference,
       dataset_ext_ids:        package.package_states.map(&:ds_external_reference).compact,
-      activities:             map_activities(package.activities),
+      activities:             map_activities(package.activities, package.states),
       rules:                  map_rules(package.rules)
     )
   end
 
-  def map_activities(package_activities)
+  def map_activities(package_activities, package_states)
     package_activities.map do |activity|
       Orbf::RulesEngine::Activity.with(
         name:            activity.name,
         activity_code:   activity.code,
-        activity_states: map_activity_states(activity.activity_states)
+        activity_states: map_activity_states(activity.activity_states, package_states)
       )
     end
   end
@@ -59,8 +59,9 @@ class MapProjectToOrbfProject
     "formula" => "constant"
   }.freeze
 
-  def map_activity_states(activity_states)
-    activity_states.map do |activity_state|
+  def map_activity_states(activity_states, package_states)
+    activity_states.select { |activity_state| package_states.include?(activity_state.state) }
+                   .map do |activity_state|
       Orbf::RulesEngine::ActivityState.with(
         state:   activity_state.state.code,
         name:    activity_state.name,
