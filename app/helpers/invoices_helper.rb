@@ -64,7 +64,9 @@ module InvoicesHelper
   end
 
   def formulas_descriptors(rule)
+
     formulas = {}
+    return formulas unless rule
     rule.formulas.each do |formula|
       next unless formula.formula_mapping
       formulas[formula.code] = {
