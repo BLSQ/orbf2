@@ -87,7 +87,10 @@ class Setup::FormulaMappingsController < PrivateController
       activity_rules = project.packages.flat_map(&:rules).select(&:activity_kind?)
 
       mappings += activity_rules.map do |rule|
-        rule.package.activities.map do |activity|
+        rule.package
+            .activities
+            .select { |a| params[:activity_code] ? a.code == params[:activity_code] : true }
+            .map do |activity|
           rule.formulas.map do |formula|
             mapping = formula.find_or_build_mapping(
               activity: activity,
@@ -103,9 +106,13 @@ class Setup::FormulaMappingsController < PrivateController
       end
     end
 
+
+
     other_rules = []
-    other_rules += project.packages.flat_map(&:rules).select(&:package_kind?) if options[:package]
-    other_rules += project.payment_rules.flat_map(&:rule) if options[:payment]
+    unless params[:activity_code]
+      other_rules += project.packages.flat_map(&:rules).select(&:package_kind?) if options[:package]
+      other_rules += project.payment_rules.flat_map(&:rule) if options[:payment]
+    end
 
     mappings += other_rules.map do |rule|
       rule.formulas.map do |formula|

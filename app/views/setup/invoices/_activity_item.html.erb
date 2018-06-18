@@ -45,5 +45,12 @@
       </div>
      </td>
   <%end%>
-  <td title="<%= activity_item.activity.activity_code %>"><%=activity_item.activity.name %></td>
+  <td  class="popper" data-toggle="popover"  data-placement="left" title="<%= activity_item.activity.activity_code %>"><%=activity_item.activity.name %>
+     code: <%=activity_item.activity.activity_code%>
+    <div class="popper-content hide">
+
+      <li><%= link_to("Formula mappings", new_setup_project_formula_mapping_path(mode: :create, activity_code: activity_item.activity.activity_code)) %></li>
+      <li><%= link_to("Edit activity", edit_setup_project_activity_path(@current_project, @current_project.activities.find {|a| a.code == activity_item.activity.activity_code}) )%></li>
+    </div>
+  </td>
 </tr>
