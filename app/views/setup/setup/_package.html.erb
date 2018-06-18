@@ -8,8 +8,8 @@
         <small><%= package.states.map{ |state| state.name }.join(', ') %></small>
     </td>
     <td>
-      <% package.activity_packages.map{ |ap| ap.activity.name }.sort.each do |activity_name| %>
-        <li><small><%= activity_name %></small></li>
+      <% package.activities.sort {|a,b| NaturalSort.comparator(a.code, b.code)}.each do |activity| %>
+        <li><small><%= activity.name %></small></li>
       <%end%>
     </td>
 </tr>
