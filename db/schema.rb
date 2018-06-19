@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180522124036) do
+ActiveRecord::Schema.define(version: 20180615110925) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -70,6 +70,17 @@ ActiveRecord::Schema.define(version: 20180522124036) do
     t.index ["project_anchor_id"], name: "index_dhis2_logs_on_project_anchor_id", using: :btree
   end
 
+  create_table "dhis2_snapshot_changes", force: :cascade do |t|
+    t.string   "dhis2_id",          null: false
+    t.integer  "dhis2_snapshot_id"
+    t.jsonb    "values_before"
+    t.jsonb    "values_after"
+    t.string   "whodunnit"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+    t.index ["dhis2_snapshot_id"], name: "index_dhis2_snapshot_changes_on_dhis2_snapshot_id", using: :btree
+  end
+
   create_table "dhis2_snapshots", force: :cascade do |t|
     t.string   "kind",              null: false
     t.jsonb    "content",           null: false
@@ -109,6 +120,7 @@ ActiveRecord::Schema.define(version: 20180522124036) do
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
     t.string   "frequency"
+    t.string   "short_name"
     t.index ["rule_id"], name: "index_formulas_on_rule_id", using: :btree
   end
 
@@ -197,6 +209,7 @@ ActiveRecord::Schema.define(version: 20180522124036) do
     t.integer  "engine_version",        default: 1,           null: false
     t.string   "default_coc_reference"
     t.string   "default_aoc_reference"
+    t.string   "qualifier"
     t.index ["project_anchor_id"], name: "index_projects_on_project_anchor_id", using: :btree
   end
 
@@ -219,6 +232,7 @@ ActiveRecord::Schema.define(version: 20180522124036) do
     t.boolean  "configurable", default: false,      null: false
     t.string   "level",        default: "activity", null: false
     t.integer  "project_id",                        null: false
+    t.string   "short_name"
     t.index ["project_id", "name"], name: "index_states_on_project_id_and_name", unique: true, using: :btree
     t.index ["project_id"], name: "index_states_on_project_id", using: :btree
   end
@@ -275,6 +289,7 @@ ActiveRecord::Schema.define(version: 20180522124036) do
   add_foreign_key "activity_states", "states"
   add_foreign_key "decision_tables", "rules"
   add_foreign_key "dhis2_logs", "project_anchors"
+  add_foreign_key "dhis2_snapshot_changes", "dhis2_snapshots"
   add_foreign_key "dhis2_snapshots", "project_anchors"
   add_foreign_key "entity_groups", "projects"
   add_foreign_key "formula_mappings", "activities"
