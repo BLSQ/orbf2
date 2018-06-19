@@ -13,7 +13,9 @@
         %>
         <% if package.multi_entities_rule.present? %>
             <%= render partial: "rule_formulas", locals: { formulas: package.multi_entities_rule.formulas, readonly: readonly }%>
+            <%= render partial: "decision_table", collection: package.multi_entities_rule.decision_tables, as: :decision_table%>
         <% end %>
+
     <% elsif package.ogs_reference.present?%>
       Keep "sum" everything or <br>
       <%= link_to 'Create new rule', new_setup_project_package_rule_path(project, package, kind: 'multi-entities') , class: 'btn btn-default' %>
@@ -37,9 +39,11 @@
             <% end %>
           <%end%>
 
-            <% if package.activity_rule.present? %>
-             <%= render partial: "rule_formulas", locals: { formulas: package.activity_rule.formulas, readonly: readonly }%>
-            <%end%>
+           <% if package.activity_rule.present? %>
+              <%= render partial: "rule_formulas", locals: { formulas: package.activity_rule.formulas, readonly: readonly }%>
+              <%= render partial: "decision_table", collection: package.activity_rule.decision_tables, as: :decision_table %>
+           <%end%>
+
          </div>
     </td>
 
@@ -57,6 +61,7 @@
             <%end%>
             <% if package.package_rule.present? %>
                <%= render partial: "rule_formulas", locals: { formulas: package.package_rule.formulas, readonly: readonly }%>
+               <%= render partial: "decision_table", collection: package.package_rule.decision_tables, as: :decision_table%>
             <% end %>
         </div>
     </td>
