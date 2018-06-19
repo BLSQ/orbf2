@@ -7,6 +7,7 @@ class Setup::ProjectsController < PrivateController
 
     if answer[:status] == :ok
       project.project_anchor.save!
+      ProjectCocAocReferenceWorker.perform_async(project.id)
       flash[:notice] = "Great your dhis2 connection looks valid !"
     else
       flash[:alert] = "Sorry your dhis2 connection looks invalid ! #{answer[:message]}"

@@ -8,9 +8,11 @@ class MapProjectToOrbfProject
 
   def map
     Orbf::RulesEngine::Project.new(
-      packages:      map_packages(project.packages),
-      payment_rules: map_payment_rules,
-      dhis2_params:  project.dhis_configuration
+      packages:                              map_packages(project.packages),
+      payment_rules:                         map_payment_rules,
+      dhis2_params:                          project.dhis_configuration,
+      default_category_combo_ext_id:         project.default_coc_reference,
+      default_attribute_option_combo_ext_id: project.default_aoc_reference
     )
   end
 
