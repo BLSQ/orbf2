@@ -1,6 +1,13 @@
 class Dhis2SnapshotWorker
   include Sidekiq::Worker
 
+  include Sidekiq::Throttled::Worker
+
+  sidekiq_throttle(
+    concurrency: { limit: 1 },
+    threshold:   { limit: 3, period: 2.minutes }
+  )
+
   def perform(project_anchor_id, filter: nil, now: Time.now.utc)
     project_anchor = ProjectAnchor.find(project_anchor_id)
 
