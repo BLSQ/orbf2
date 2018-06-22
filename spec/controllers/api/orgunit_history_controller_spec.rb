@@ -53,20 +53,24 @@ RSpec.describe Api::OrgunitHistoryController, type: :controller do
       ],
       "organisationUnitGroups" => [
         {
-          "id"   => "RXL3lPSK8oG",
-          "name" => "Clinic"
+          "id"                        => "RXL3lPSK8oG",
+          "name"                      => "Clinic",
+          "organisationUnitGroupSets" => [{ "id" => "J5jldMd8OHv", "name" => "Facility Type" }]
         },
         {
-          "id"   => "MAs88nJc9nL",
-          "name" => "Private Clinic"
+          "id"                        => "MAs88nJc9nL",
+          "name"                      => "Private Clinic",
+          "organisationUnitGroupSets" => [{ "id" => "Bpx0589u8y0", "name" => "Facility Ownership" }]
         },
         {
-          "id"   => "oRVt7g429ZO",
-          "name" => "Public facilities"
+          "id"                        => "oRVt7g429ZO",
+          "name"                      => "Public facilities",
+          "organisationUnitGroupSets" => [{ "id" => "Bpx0589u8y0", "name" => "Facility Ownership" }]
         },
         {
-          "id"   => "GGghZsfu7qV",
-          "name" => "Rural"
+          "id"                        => "GGghZsfu7qV",
+          "name"                      => "Rural",
+          "organisationUnitGroupSets" => [{ "id" => "Cbuj0VCyDjL", "name" => "Location Rural/Urban" }]
         }
       ],
       "contractGroup"          => [

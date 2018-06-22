@@ -105,9 +105,17 @@ class Groups::ListHistory
     if g.organisation_unit_group_set
       group_set = pyramid.org_unit_group_set(g.organisation_unit_group_set["id"])
       if group_set
-        result[:organisation_unit_group_set] = { id: group_set.id, name: name(group_set) }
+        result[:organisation_unit_group_sets] = [{ id: group_set.id, name: name(group_set) }]
       end
     end
+
+    if g.group_sets&.any?
+      result[:organisation_unit_group_sets] = g.group_sets.map do |groupset_ref|
+        group_set = pyramid.org_unit_group_set(groupset_ref["id"])
+        { id: group_set.id, name: name(group_set) }
+      end
+    end
+
     result
   end
 end
