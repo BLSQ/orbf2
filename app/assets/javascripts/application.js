@@ -32,6 +32,22 @@ $(document).ready(function() {
     }
   });
 
+  var url = document.location.toString();
+  if (window.location.hash) {
+    var $element = $( window.location.hash);
+    if ($element.length == 1) {
+      $element.addClass("in");
+      var element = $element[0];
+      var offsetSize = $(".navbar").innerHeight() + 50;
+      $("html, body").animate(
+        {
+          scrollTop: $element.offset().top - offsetSize
+        },
+        500
+      );
+    }
+  }
+
   $("a.external").each(function() {
     $(this).append(' <i class="fa fa-external-link external-link"></i> ');
   });
@@ -73,7 +89,7 @@ $(document).ready(function() {
   var filter_table = function(field_selector, table_selector) {
     $(field_selector).keyup(function() {
       filter = new RegExp($(this).val(), "i");
-      $(table_selector+" tbody tr").filter(function() {
+      $(table_selector + " tbody tr").filter(function() {
         $(this).each(function() {
           found = false;
           $(this)
@@ -92,9 +108,8 @@ $(document).ready(function() {
         });
       });
     });
- }
+  };
 
-  filter_table("#searchEquation","#equationsTable")
-  filter_table("#searchMeta","#metaTable")
-
+  filter_table("#searchEquation", "#equationsTable");
+  filter_table("#searchMeta", "#metaTable");
 });

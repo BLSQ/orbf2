@@ -124,7 +124,7 @@ class MapProjectToOrbfProject
   def map_payment_rules
     project.payment_rules.map do |payment_rule|
       Orbf::RulesEngine::PaymentRule.new(
-        code:      Orbf::RulesEngine::Codifier.codify(payment_rule.rule.name),
+        code:      payment_rule.code,
         frequency: payment_rule.frequency,
         packages:  map_packages(payment_rule.packages),
         rule:      map_rule(payment_rule.rule)

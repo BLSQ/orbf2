@@ -231,6 +231,10 @@ class Project < ApplicationRecord
     payment_rule ? [] : ["payment"]
   end
 
+  def payment_rule_for_code(code)
+    payment_rules.detect {|pr| pr.code == code }
+  end
+
   def verify_connection
     return { status: :ko, message: errors.full_messages.join(",") } if invalid?
     infos = dhis2_connection.system_infos.get

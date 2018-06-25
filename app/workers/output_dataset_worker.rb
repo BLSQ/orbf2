@@ -1,31 +1,86 @@
 class OutputDatasetWorker
   include Sidekiq::Worker
 
-  def perform(project_id)
+  ADD_MISSING_DE = "add_missing_de".freeze
+  ADD_MISSING_OU = "add_missing_ou".freeze
+  REMOVE_EXTRA_DE = "remove_extra_de".freeze
+  REMOVE_EXTRA_OU = "remove_extra_ou".freeze
+
+  MODES = [ADD_MISSING_DE, ADD_MISSING_OU, REMOVE_EXTRA_DE, REMOVE_EXTRA_OU].freeze
+
+  MODE_OPTIONS = [
+    ["Add missing data elements", ADD_MISSING_DE],
+    ["Remove extra data elements", REMOVE_EXTRA_DE],
+    ["Add missing orgunits", ADD_MISSING_OU],
+    ["Remove extra org units", REMOVE_EXTRA_OU]
+  ].freeze
+  sidekiq_options retry: 0
+
+  def perform(project_id, payment_rule_code, frequency, options)
+    modes = options.fetch("modes")
     @legacy_project = Project.find(project_id)
 
-    data_compound = legacy_project.project_anchor.nearest_data_compound_for(DateTime.now)
-    legacy_pyramid = legacy_project.project_anchor.nearest_pyramid_for(DateTime.now)
+    Datasets::BuildDatasets.new(legacy_project).call
 
-    @pyramid = Orbf::RulesEngine::PyramidFactory.from_dhis2(
-      org_units:          legacy_pyramid.org_units,
-      org_unit_groups:    legacy_pyramid.org_unit_groups,
-      org_unit_groupsets: legacy_pyramid.organisation_unit_group_sets
-    )
-
-    @project = MapProjectToOrbfProject.new(
-      legacy_project,
-      data_compound.indicators
-    ).map
-
-    Orbf::RulesEngine::Datasets::ComputeDatasets.new(
-      project:      project,
-      pyramid:      pyramid,
-      group_ext_id: legacy_project.entity_group.external_reference
-    ).call
+    @payment_rule = legacy_project.payment_rule_for_code(payment_rule_code)
+    dataset = payment_rule.dataset(frequency)
+    dhis2_dataset = dataset.external_reference.present? ? dhis2_connection.data_sets.find(dataset.external_reference) : nil
+    dataset_name(dataset) unless dhis2_dataset
+    if modes == ["create"]
+      if dhis2_dataset
+        Rails.logger.warn("not creating the dataset seem to already exist : #{dataset.external_reference}")
+        return
+      end
+      create_dataset(dataset)
+    else
+      update(dhis2_dataset, dataset, modes)
+    end
   end
 
   private
 
-  attr_reader :legacy_project, :project, :pyramid
+  attr_reader :legacy_project, :payment_rule
+
+  def dhis2_connection
+    @dhis2_connection ||= payment_rule.project.dhis2_connection
+  end
+
+  def create_dataset(dataset)
+    dataset_hash = Datasets::ToDhis2Datasets.new(dataset).call
+    dhis2_status = dhis2_connection.data_sets.create(dataset_hash)
+    puts dhis2_status.to_json
+    dhis2_dataset = dhis2_connection.data_sets.find_by(name: dataset_hash[:name])
+    dataset.external_reference = dhis2_dataset.id
+    dataset.save!
+    update(dhis2_dataset, dataset, MODES)
+  end
+
+  def update(dhis2_dataset, dataset, modes)
+    dataset_hash = Datasets::ToDhis2Datasets.new(dataset).call
+    diffs = Datasets::CalculateDesyncDatasets.new(legacy_project).diff_actual_theorical(dhis2_dataset, dataset)
+    if modes.include?(ADD_MISSING_OU)
+      add_orgunit_ids(dhis2_dataset, diffs.de_diff.added)
+    end
+    if modes.include?(REMOVE_EXTRA_OU)
+      remove_orgunit_ids(dhis2_dataset, diffs.de_diff.removed)
+    end
+    dhis2_dataset.update
+    byebug
+  end
+
+
+  def add_orgunit_ids(dhis2_dataset, orgunit_ids)
+    orgunits = dhis2_dataset.organisation_units
+    orgunit_ids.each do |id_to_add|
+      next if orgunits.include?("id" => id_to_add)
+      orgunits.push("id" => id_to_add)
+    end
+  end
+
+  def remove_orgunit_ids(dhis2_dataset, orgunit_ids)
+    byebug
+    dhis2_dataset.organisation_units.delete_if {|ou| orgunit_ids.include?(ou["id"])}
+  end
+
+
 end

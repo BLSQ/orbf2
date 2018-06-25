@@ -1,0 +1,57 @@
+<h1>Datasets</h1>
+
+<% @current_project.payment_rules.each do |payment_rule|%>
+
+<div class="datasets">
+ <h2><%= payment_rule.rule.name %></h2>
+ <% payment_rule.datasets.each do |dataset| %>
+    <div class="form dataset">
+        <div class="form-group">
+            <label>Frequency</label>
+            <div >
+                <input class="form-control" type="text" value="<%= dataset.frequency %>" disabled>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Organisation units (<%= dataset.dataset_info.orgunits.compact.size %>) </label>
+            <div >
+                <input class="form-control" type="textarea" value="<%= dataset.dataset_info.orgunits.compact.map(&:name).join(", ")%>" disabled>
+            </div>
+            <%= render partial: "diff", locals: {diff: dataset.diff.ou_diff}%>
+
+        </div>
+        <div class="form-group">
+            <label>Data Elements (<%= dataset.dataset_info.data_elements.size %>) </label>
+            <div >
+                <input class="form-control" type="textarea" value="<%= dataset.dataset_info.data_elements.join(", ")%>" disabled>
+            </div>
+            <%= render partial: "diff", locals: {diff: dataset.diff.de_diff}%>
+
+        </div>
+        <%if dataset.external_reference%>
+          <%= form_for(:dataset, url: setup_project_dataset_path(@current_project,dataset), method: :put) do |f| %>
+            <div class="form-group">
+                <label for="synch_methods">Select one or more synchronisation method</label>
+            <%= f.select(:sync_methods, OutputDatasetWorker::MODE_OPTIONS , {},
+                         class: "form-control", multiple: true ) %>
+                <br>
+                <div class="form-group">
+                    <%= f.submit "Synchronize dataset", class: "btn btn-primary" %>
+                </div>
+            </div>
+          <%end%>
+        <%else %>
+            <div class="form-group">
+                <%= link_to "Create dataset", setup_project_datasets_path(
+                        @current_project,
+                        payment_rule_code: dataset.payment_rule.code,
+                        frequency: dataset.frequency
+                    ), method: :post ,class: "btn btn-primary"%>
+            </div>
+        <%end%>
+
+    </div>
+ <%end%>
+</div>
+
+<%end%>
