@@ -58,9 +58,9 @@ GEM
       tzinfo (~> 1.1)
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
-    annotate (2.7.1)
+    annotate (2.7.4)
       activerecord (>= 3.2, < 6.0)
-      rake (>= 10.4, < 12.0)
+      rake (>= 10.4, < 13.0)
     arel (7.1.4)
     ast (2.4.0)
     autoprefixer-rails (6.5.1.1)
@@ -149,6 +149,8 @@ GEM
       multi_xml (>= 0.5.2)
     i18n (0.9.5)
       concurrent-ruby (~> 1.0)
+    immigrant (0.3.6)
+      activerecord (>= 3.0)
     jbuilder (2.6.0)
       activesupport (>= 3.0.0, < 5.1)
       multi_json (~> 1.2)
@@ -283,7 +285,7 @@ GEM
       thor (>= 0.18.1, < 2.0)
     rainbow (2.2.2)
       rake
-    rake (11.3.0)
+    rake (12.3.1)
     rb-fsevent (0.9.8)
     rb-inotify (0.9.7)
       ffi (>= 0.5.0)
@@ -437,6 +439,7 @@ DEPENDENCIES
   font-awesome-sass (~> 4.7.0)
   hashdiff
   heroku-deflater
+  immigrant
   jbuilder (~> 2.5)
   jquery-rails
   jquery-ui-rails

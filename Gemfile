@@ -63,6 +63,7 @@ group :development do
   gem "flamegraph"
   gem "listen", "~> 3.0.5"
   gem "memory_profiler"
+  gem "immigrant"
   gem "pronto"
   gem "pronto-flay", require: false
   gem "pronto-rubocop", require: false

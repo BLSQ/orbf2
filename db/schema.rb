@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180622093749) do
+ActiveRecord::Schema.define(version: 20180626100342) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -178,6 +178,7 @@ ActiveRecord::Schema.define(version: 20180622093749) do
     t.boolean  "desynchronized"
     t.datetime "created_at",         null: false
     t.datetime "updated_at",         null: false
+    t.index ["payment_rule_id", "frequency"], name: "index_payment_rule_datasets_on_payment_rule_id_and_frequency", unique: true, using: :btree
     t.index ["payment_rule_id"], name: "index_payment_rule_datasets_on_payment_rule_id", using: :btree
   end
 

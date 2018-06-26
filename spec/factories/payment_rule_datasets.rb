@@ -1,3 +1,18 @@
+# == Schema Information
+#
+# Table name: payment_rule_datasets
+#
+#  id                 :integer          not null, primary key
+#  payment_rule_id    :integer
+#  frequency          :string
+#  external_reference :string
+#  last_synched_at    :datetime
+#  last_error         :string
+#  desynchronized     :boolean
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#
+
 # Read about factories at https://github.com/thoughtbot/factory_girl
 
 FactoryGirl.define do
