@@ -6,12 +6,7 @@
  <h2><%= payment_rule.rule.name %></h2>
  <% payment_rule.datasets.each do |dataset| %>
     <div class="form dataset">
-        <div class="form-group">
-            <label>Frequency</label>
-            <div >
-                <input class="form-control" type="text" value="<%= dataset.frequency %>" disabled>
-            </div>
-        </div>
+        <h3><%= dataset.frequency %></h3>
         <div class="form-group">
             <label>Organisation units (<%= dataset.dataset_info.orgunits.compact.size %>) </label>
             <div >
@@ -28,7 +23,7 @@
             <%= render partial: "diff", locals: {diff: dataset.diff.de_diff}%>
 
         </div>
-        <%if dataset.external_reference%>
+        <%if dataset.external_reference && !dataset.diff.status %>
           <%= form_for(:dataset, url: setup_project_dataset_path(@current_project,dataset), method: :put) do |f| %>
             <div class="form-group">
                 <label for="synch_methods">Select one or more synchronisation method</label>
@@ -40,7 +35,7 @@
                 </div>
             </div>
           <%end%>
-        <%else %>
+        <%elsif !dataset.external_reference.present? %>
             <div class="form-group">
                 <%= link_to "Create dataset", setup_project_datasets_path(
                         @current_project,
@@ -49,8 +44,8 @@
                     ), method: :post ,class: "btn btn-primary"%>
             </div>
         <%end%>
-
     </div>
+    <br>
  <%end%>
 </div>
 

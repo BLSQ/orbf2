@@ -1,5 +1,5 @@
             <ul>
                 <li class="<%= diff.status ? "" : "different"%>"><%= diff.status ? "OK" : "Desynchronized"%></li>
-                <li>Extra compared (<%= diff.added.size %>): <%= diff.added%></li>
-                <li>Missing (<%= diff.removed.size %>): <%= diff.removed%></li>
+                <li>Extra compared (<%= diff.added.size %>): <%= diff.added.join(',') %></li>
+                <li>Missing (<%= diff.removed.size %>): <%= diff.removed.join(',') %></li>
             </ul>

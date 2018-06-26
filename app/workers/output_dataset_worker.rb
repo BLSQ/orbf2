@@ -1,6 +1,8 @@
 class OutputDatasetWorker
   include Sidekiq::Worker
 
+  sidekiq_options retry: 0
+
   ADD_MISSING_DE = "add_missing_de".freeze
   ADD_MISSING_OU = "add_missing_ou".freeze
   REMOVE_EXTRA_DE = "remove_extra_de".freeze
@@ -14,7 +16,6 @@ class OutputDatasetWorker
     ["Add missing orgunits", ADD_MISSING_OU],
     ["Remove extra org units", REMOVE_EXTRA_OU]
   ].freeze
-  sidekiq_options retry: 0
 
   def perform(project_id, payment_rule_code, frequency, options)
     modes = options.fetch("modes")
@@ -24,22 +25,28 @@ class OutputDatasetWorker
 
     @payment_rule = legacy_project.payment_rule_for_code(payment_rule_code)
     dataset = payment_rule.dataset(frequency)
-    dhis2_dataset = dataset.external_reference.present? ? dhis2_connection.data_sets.find(dataset.external_reference) : nil
-    dataset_name(dataset) unless dhis2_dataset
-    if modes == ["create"]
+    dhis2_dataset = load_dhis2_dataset(dataset)
+    if modes.include?("create") || dhis2_dataset.nil?
       if dhis2_dataset
         Rails.logger.warn("not creating the dataset seem to already exist : #{dataset.external_reference}")
         return
       end
-      create_dataset(dataset)
-    else
-      update(dhis2_dataset, dataset, modes)
+      dhis2_dataset = create_dataset(dataset)
     end
+
+    dhis2_dataset = update(dhis2_dataset, dataset, modes)
   end
 
   private
 
   attr_reader :legacy_project, :payment_rule
+
+  def load_dhis2_dataset(dataset)
+    return nil if dataset.external_reference.blank?
+    dhis2_connection.data_sets.find(dataset.external_reference)
+  rescue RestClient::NotFound
+    nil
+  end
 
   def dhis2_connection
     @dhis2_connection ||= payment_rule.project.dhis2_connection
@@ -53,21 +60,20 @@ class OutputDatasetWorker
     dataset.external_reference = dhis2_dataset.id
     dataset.save!
     update(dhis2_dataset, dataset, MODES)
+    dhis2_dataset
   end
 
   def update(dhis2_dataset, dataset, modes)
-    dataset_hash = Datasets::ToDhis2Datasets.new(dataset).call
     diffs = Datasets::CalculateDesyncDatasets.new(legacy_project).diff_actual_theorical(dhis2_dataset, dataset)
-    if modes.include?(ADD_MISSING_OU)
-      add_orgunit_ids(dhis2_dataset, diffs.de_diff.added)
-    end
-    if modes.include?(REMOVE_EXTRA_OU)
-      remove_orgunit_ids(dhis2_dataset, diffs.de_diff.removed)
-    end
-    dhis2_dataset.update
-    byebug
-  end
+    add_orgunit_ids(dhis2_dataset, diffs.ou_diff.removed) if modes.include?(ADD_MISSING_OU)
+    remove_orgunit_ids(dhis2_dataset, diffs.ou_diff.added) if modes.include?(REMOVE_EXTRA_OU)
 
+    add_de_ids(dhis2_dataset, diffs.de_diff.removed) if modes.include?(ADD_MISSING_DE)
+    remove_de_ids(dhis2_dataset, diffs.de_diff.added) if modes.include?(REMOVE_EXTRA_DE)
+
+    dhis2_dataset.update
+    dhis2_dataset
+  end
 
   def add_orgunit_ids(dhis2_dataset, orgunit_ids)
     orgunits = dhis2_dataset.organisation_units
@@ -77,10 +83,19 @@ class OutputDatasetWorker
     end
   end
 
-  def remove_orgunit_ids(dhis2_dataset, orgunit_ids)
-    byebug
-    dhis2_dataset.organisation_units.delete_if {|ou| orgunit_ids.include?(ou["id"])}
+  def add_de_ids(dhis2_dataset, de_ids)
+    data_elements = dhis2_dataset.data_set_elements
+    de_ids.each do |id_to_add|
+      next if data_elements.any? { |de| de["data_element"] == { "id" => id_to_add } }
+      data_elements.push("data_element" => { "id" => id_to_add })
+    end
   end
 
+  def remove_orgunit_ids(dhis2_dataset, orgunit_ids)
+    dhis2_dataset.organisation_units.delete_if { |ou| orgunit_ids.include?(ou["id"]) }
+  end
 
+  def remove_de_ids(dhis2_dataset, de_ids)
+    dhis2_dataset.data_set_elements.delete_if { |de| de_ids.include?(de["data_element"]["id"]) }
+  end
 end
