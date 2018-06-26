@@ -25,17 +25,25 @@ class OutputDatasetWorker
 
     @payment_rule = legacy_project.payment_rule_for_code(payment_rule_code)
     dataset = payment_rule.dataset(frequency)
-    dhis2_dataset = load_dhis2_dataset(dataset)
-    if modes.include?("create") || dhis2_dataset.nil?
-      if dhis2_dataset
-        Rails.logger.warn("not creating the dataset seem "\
-          "to already exist : #{dataset.external_reference}")
-        return
+    begin
+      dhis2_dataset = load_dhis2_dataset(dataset)
+      if modes.include?("create") || dhis2_dataset.nil?
+        if dhis2_dataset
+          Rails.logger.warn("not creating the dataset seem "\
+            "to already exist : #{dataset.external_reference}")
+          return
+        end
+        dhis2_dataset = create_dataset(dataset)
       end
-      dhis2_dataset = create_dataset(dataset)
-    end
 
-    update(dhis2_dataset, dataset, modes)
+      update(dhis2_dataset, dataset, modes)
+      dataset.update(last_error: nil)
+    rescue StandardError => e
+      Rails.logger.error([e.class.name, e.message, e.backtrace.join("\n")].join("\n"))
+      dataset.update(last_error: e.class.name + " " + e.message)
+    ensure
+      dataset.update(last_synched_at: DateTime.now)
+    end
   end
 
   private

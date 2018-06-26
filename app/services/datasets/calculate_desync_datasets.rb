@@ -38,8 +38,8 @@ module Datasets
       dataset_info = payment_rule_dataset.dataset_info
 
       payment_rule_dataset.diff = Diffs.new(
-        diff(current_de_ids, dataset_info.data_elements),
-        diff(current_ou_ids, dataset_info.orgunits.map(&:ext_id))
+        diff(current_de_ids, dataset_info ? dataset_info.data_elements : []),
+        diff(current_ou_ids, dataset_info ? dataset_info.orgunits.map(&:ext_id): [])
       )
     end
 

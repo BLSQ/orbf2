@@ -6,19 +6,26 @@
  <h2><%= payment_rule.rule.name %></h2>
  <% payment_rule.datasets.each do |dataset| %>
     <div class="form dataset">
+        <div class="pull-right">
+        Last sync: <%= dataset.last_synched_at %>
+        </div>
         <h3><%= dataset.frequency %></h3>
+        <%if dataset.last_error.present?%>
+            <div class="alert alert-danger">
+            <%= dataset.last_error %>
+            </div>
+        <%end%>
         <div class="form-group">
-            <label>Organisation units (<%= dataset.dataset_info.orgunits.compact.size %>) </label>
+            <label>Organisation units (<%= dataset.dataset_info&.orgunits&.compact&.size %>) </label>
             <div >
-                <input class="form-control" type="textarea" value="<%= dataset.dataset_info.orgunits.compact.map(&:name).join(", ")%>" disabled>
+                <input class="form-control" type="textarea" value="<%= dataset&.dataset_info&.orgunits&.compact&.map(&:name)&.join(", ")%>" disabled>
             </div>
             <%= render partial: "diff", locals: {diff: dataset.diff.ou_diff}%>
-
         </div>
         <div class="form-group">
-            <label>Data Elements (<%= dataset.dataset_info.data_elements.size %>) </label>
+            <label>Data Elements (<%= dataset.dataset_info&.data_elements&.size %>) </label>
             <div >
-                <input class="form-control" type="textarea" value="<%= dataset.dataset_info.data_elements.join(", ")%>" disabled>
+                <input class="form-control" type="textarea" value="<%= dataset.dataset_info&.data_elements&.join(", ")%>" disabled>
             </div>
             <%= render partial: "diff", locals: {diff: dataset.diff.de_diff}%>
 
