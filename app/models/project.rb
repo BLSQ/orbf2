@@ -208,7 +208,8 @@ class Project < ApplicationRecord
           rule:                  %i[
             decision_tables
             formulas
-          ]
+          ],
+          datasets:[]
         }
       } # do |original, kopy|
       #  log "cloning #{original} #{kopy}"

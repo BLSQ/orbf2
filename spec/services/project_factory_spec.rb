@@ -29,8 +29,8 @@ describe ProjectFactory do
       PaperTrail::Version,
       PaperTrail::VersionAssociation
     ].map(&:name).map(&:to_sym)
+    project.payment_rules.first.datasets.create!(frequency:"quarterly", external_reference:"fakedsid")
     count_before = count_all_models
-
     new_draft = project.publish(Date.today.to_date)
     count_after = count_all_models
     count_after.keys.each do |k|
