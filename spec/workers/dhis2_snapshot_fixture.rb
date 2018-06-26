@@ -34,4 +34,22 @@ module Dhis2SnapshotFixture
     stub_request(:get, "http://play.dhis2.org/demo/api/organisationUnitGroupSets?fields=:all&pageSize=50000")
       .to_return(status: 200, body: fixture_content(:dhis2, "organisation_unit_group_sets.json"))
   end
+
+  def stub_snapshots(project, month = "201803")
+    stub_organisation_unit_group_sets(project)
+    stub_organisation_unit_groups(project)
+    stub_organisation_units(project)
+    stub_system_info(project)
+
+    stub_data_elements(project)
+    stub_data_elements_groups(project)
+    stub_indicators(project)
+
+    Dhis2SnapshotWorker.new.perform(
+      project.project_anchor.id,
+      now: Periods.from_dhis2_period(month).end_date
+    )
+    WebMock.reset!
+  end
+
 end

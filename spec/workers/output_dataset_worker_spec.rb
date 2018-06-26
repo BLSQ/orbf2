@@ -29,9 +29,7 @@ RSpec.describe OutputDatasetWorker do
   let(:payment_rule) { project.payment_rules.first }
 
   it "create dataset" do
-
-
-    stub_snapshots
+    stub_snapshots(project)
 
     stub_default_category_success
     stub_create_dataset
@@ -59,20 +57,4 @@ RSpec.describe OutputDatasetWorker do
       .to_return(status: 200, body: "", headers: {})
   end
 
-  def stub_snapshots(month = "201803")
-    stub_organisation_unit_group_sets(project)
-    stub_organisation_unit_groups(project)
-    stub_organisation_units(project)
-    stub_system_info(project)
-
-    stub_data_elements(project)
-    stub_data_elements_groups(project)
-    stub_indicators(project)
-
-    Dhis2SnapshotWorker.new.perform(
-      project.project_anchor.id,
-      now: Periods.from_dhis2_period(month).end_date
-    )
-    WebMock.reset!
-      end
 end

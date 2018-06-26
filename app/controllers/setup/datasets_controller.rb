@@ -15,7 +15,7 @@ class Setup::DatasetsController < PrivateController
       "modes" => params[:dataset][:sync_methods].reject(&:empty?)
     )
     redirect_to setup_project_datasets_path(current_project), flash: {
-      notice: "updating dataset #{current_dataset.payment_rule.name}, #{current_dataset.frequency}. Refresh in a few seconds"
+      notice: "updating dataset #{current_dataset.payment_rule.code}, #{current_dataset.frequency}. Refresh in a few seconds"
     }
   end
 
