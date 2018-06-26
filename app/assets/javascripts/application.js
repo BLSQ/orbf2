@@ -34,8 +34,8 @@ $(document).ready(function() {
 
   var url = document.location.toString();
   if (window.location.hash) {
-    var $element = $( window.location.hash);
-    if ($element.length == 1) {
+    var $element = $(window.location.hash);
+    if ($element.length === 1) {
       $element.addClass("in");
       var element = $element[0];
       var offsetSize = $(".navbar").innerHeight() + 50;

@@ -209,7 +209,7 @@ class Project < ApplicationRecord
             decision_tables
             formulas
           ],
-          datasets:[]
+          datasets:              []
         }
       } # do |original, kopy|
       #  log "cloning #{original} #{kopy}"
@@ -233,7 +233,7 @@ class Project < ApplicationRecord
   end
 
   def payment_rule_for_code(code)
-    payment_rules.detect {|pr| pr.code == code }
+    payment_rules.detect { |pr| pr.code == code }
   end
 
   def verify_connection

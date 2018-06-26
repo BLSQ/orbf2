@@ -5,5 +5,4 @@ class PaymentRuleDataset < ApplicationRecord
 
   belongs_to :payment_rule, inverse_of: :datasets
   attr_accessor :dataset_info, :dhis2_dataset, :diff
-
 end

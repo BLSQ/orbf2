@@ -25,12 +25,12 @@ module Dhis2SnapshotFixture
       .to_return(status: 200, body: fixture_content(:dhis2, "data_element_groups.json"))
   end
 
-  def stub_indicators(project)
+  def stub_indicators(_project)
     stub_request(:get, "http://play.dhis2.org/demo/api/indicators?fields=:all&pageSize=50000")
       .to_return(status: 200, body: fixture_content(:dhis2, "indicators.json"))
   end
 
-  def stub_organisation_unit_group_sets(project)
+  def stub_organisation_unit_group_sets(_project)
     stub_request(:get, "http://play.dhis2.org/demo/api/organisationUnitGroupSets?fields=:all&pageSize=50000")
       .to_return(status: 200, body: fixture_content(:dhis2, "organisation_unit_group_sets.json"))
   end
@@ -51,5 +51,4 @@ module Dhis2SnapshotFixture
     )
     WebMock.reset!
   end
-
 end

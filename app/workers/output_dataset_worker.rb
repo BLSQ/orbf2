@@ -28,13 +28,14 @@ class OutputDatasetWorker
     dhis2_dataset = load_dhis2_dataset(dataset)
     if modes.include?("create") || dhis2_dataset.nil?
       if dhis2_dataset
-        Rails.logger.warn("not creating the dataset seem to already exist : #{dataset.external_reference}")
+        Rails.logger.warn("not creating the dataset seem "\
+          "to already exist : #{dataset.external_reference}")
         return
       end
       dhis2_dataset = create_dataset(dataset)
     end
 
-    dhis2_dataset = update(dhis2_dataset, dataset, modes)
+    update(dhis2_dataset, dataset, modes)
   end
 
   private
@@ -55,7 +56,7 @@ class OutputDatasetWorker
   def create_dataset(dataset)
     dataset_hash = Datasets::ToDhis2Datasets.new(dataset).call
     dhis2_status = dhis2_connection.data_sets.create(dataset_hash)
-    puts dhis2_status.to_json
+    Rails.logger.info dhis2_status.to_json
     dhis2_dataset = dhis2_connection.data_sets.find_by(name: dataset_hash[:name])
     dataset.external_reference = dhis2_dataset.id
     dataset.save!
@@ -64,7 +65,8 @@ class OutputDatasetWorker
   end
 
   def update(dhis2_dataset, dataset, modes)
-    diffs = Datasets::CalculateDesyncDatasets.new(legacy_project).diff_actual_theorical(dhis2_dataset, dataset)
+    diffs = Datasets::CalculateDesyncDatasets.new(legacy_project)
+                                             .diff_actual_theorical(dhis2_dataset, dataset)
     add_orgunit_ids(dhis2_dataset, diffs.ou_diff.removed) if modes.include?(ADD_MISSING_OU)
     remove_orgunit_ids(dhis2_dataset, diffs.ou_diff.added) if modes.include?(REMOVE_EXTRA_OU)
 

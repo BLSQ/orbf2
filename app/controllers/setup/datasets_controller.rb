@@ -6,8 +6,7 @@ class Setup::DatasetsController < PrivateController
 
   def update
     current_dataset = PaymentRuleDataset.find(params[:id])
-    raise "unauthorized" unless current_project.payment_rules.include?(current_dataset.payment_rule)
-
+    ensure_update(current_dataset)
     OutputDatasetWorker.perform_async(
       current_project.id,
       current_dataset.payment_rule.code,
@@ -15,7 +14,8 @@ class Setup::DatasetsController < PrivateController
       "modes" => params[:dataset][:sync_methods].reject(&:empty?)
     )
     redirect_to setup_project_datasets_path(current_project), flash: {
-      notice: "updating dataset #{current_dataset.payment_rule.code}, #{current_dataset.frequency}. Refresh in a few seconds"
+      notice: "updating dataset #{current_dataset.payment_rule.code},"\
+      " #{current_dataset.frequency}. Refresh in a few seconds"
     }
   end
 
@@ -23,10 +23,22 @@ class Setup::DatasetsController < PrivateController
     payment_rule_code = params.fetch(:payment_rule_code)
     frequency = params.fetch(:frequency)
 
-    OutputDatasetWorker.perform_async(current_project.id, payment_rule_code, frequency, "modes" => ["create"])
+    OutputDatasetWorker.perform_async(
+      current_project.id,
+      payment_rule_code,
+      frequency, "modes" => ["create"]
+    )
 
     redirect_to setup_project_datasets_path(current_project), flash: {
       notice: "Creating dataset for #{payment_rule_code}, #{frequency}. Refresh in a few seconds"
     }
+  end
+
+  private
+
+  def ensure_update(current_dataset)
+    belongs_to_current_project = current_project.payment_rules
+                                                .include?(current_dataset.payment_rule)
+    raise "unauthorized" unless belongs_to_current_project
   end
 end
