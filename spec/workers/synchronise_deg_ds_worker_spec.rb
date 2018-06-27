@@ -8,9 +8,9 @@ RSpec.describe SynchroniseDegDsWorker do
   let(:verified_deg) { "{\"dataElementGroups\":[{\"name\":\"ORBF - Verifieds - Quantity PMA\",\"shortName\":\"ORBF-verified-Quantity PMA\",\"code\":\"ORBF-verified-Quantity PMA\",\"dataElements\":[]}]}" }
   let(:tarif_deg) { "{\"dataElementGroups\":[{\"name\":\"ORBF - Tarifs - Quantity PMA\",\"shortName\":\"ORBF-tarif-Quantity PMA\",\"code\":\"ORBF-tarif-Quantity PMA\",\"dataElements\":[{\"id\":\"tarif-ext-1\"},{\"id\":\"tarif-ext-2\"}]}]}" }
 
-  let(:claimed_dataset) { "{\"dataSets\":[{\"name\":\"ORBF - Claimeds - Quantity PMA\",\"shortName\":\"ORBF-claimed-Quantity PMA\",\"code\":\"ORBF-claimed-Quantity PMA\",\"periodType\":\"Monthly\",\"dataElements\":[],\"organisationUnits\":[],\"categoryCombo\":{\"id\":\"p0KPaWEg3cf\",\"name\":\"default\"}}]}" }
-  let(:verified_dataset) { "{\"dataSets\":[{\"name\":\"ORBF - Verifieds - Quantity PMA\",\"shortName\":\"ORBF-verified-Quantity PMA\",\"code\":\"ORBF-verified-Quantity PMA\",\"periodType\":\"Monthly\",\"dataElements\":[],\"organisationUnits\":[],\"categoryCombo\":{\"id\":\"p0KPaWEg3cf\",\"name\":\"default\"}}]}" }
-  let(:tarif_dataset) { "{\"dataSets\":[{\"name\":\"ORBF - Tarifs - Quantity PMA\",\"shortName\":\"ORBF-tarif-Quantity PMA\",\"code\":\"ORBF-tarif-Quantity PMA\",\"periodType\":\"Monthly\",\"dataElements\":[],\"organisationUnits\":[],\"categoryCombo\":{\"id\":\"p0KPaWEg3cf\",\"name\":\"default\"}}]}" }
+  let(:claimed_dataset) { "{\"dataSets\":[{\"name\":\"ORBF - Claimeds - Quantity PMA\",\"shortName\":\"ORBF-claimed-Quantity PMA\",\"code\":\"ORBF-claimed-Quantity PMA\",\"periodType\":\"Monthly\",\"dataElements\":[],\"organisationUnits\":[],\"categoryCombo\":{\"id\":\"p0KPaWEg3cf\",\"name\":\"default\"},\"openFuturePeriods\":13}]}" }
+  let(:verified_dataset) { "{\"dataSets\":[{\"name\":\"ORBF - Verifieds - Quantity PMA\",\"shortName\":\"ORBF-verified-Quantity PMA\",\"code\":\"ORBF-verified-Quantity PMA\",\"periodType\":\"Monthly\",\"dataElements\":[],\"organisationUnits\":[],\"categoryCombo\":{\"id\":\"p0KPaWEg3cf\",\"name\":\"default\"},\"openFuturePeriods\":13}]}" }
+  let(:tarif_dataset) { "{\"dataSets\":[{\"name\":\"ORBF - Tarifs - Quantity PMA\",\"shortName\":\"ORBF-tarif-Quantity PMA\",\"code\":\"ORBF-tarif-Quantity PMA\",\"periodType\":\"Monthly\",\"dataElements\":[],\"organisationUnits\":[],\"categoryCombo\":{\"id\":\"p0KPaWEg3cf\",\"name\":\"default\"},\"openFuturePeriods\":13}]}" }
   let(:all_deg) do
     [
       claimed_deg,

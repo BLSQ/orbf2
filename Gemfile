@@ -14,7 +14,7 @@ gem "coffee-rails", "~> 4.2"
 gem "deep_cloneable"
 gem "dentaku"
 gem "devise", "~> 4.4.0"
-gem "dhis2"
+gem "dhis2", github: "BLSQ/dhis2", branch: "legacy-v2"
 gem "differ"
 gem "easy_diff"
 gem "figaro"
@@ -44,6 +44,7 @@ gem "sidekiq-throttled"
 gem "simple_form"
 gem "turbolinks", "~> 5"
 gem "uglifier", ">= 1.3.0"
+gem "sprockets", "~> 3.7.2"
 
 group :development, :test do
   gem "byebug", platform: :mri
