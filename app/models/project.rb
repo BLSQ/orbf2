@@ -255,7 +255,8 @@ class Project < ApplicationRecord
       url:                 dhis2_url,
       user:                user,
       password:            password,
-      no_ssl_verification: bypass_ssl
+      no_ssl_verification: bypass_ssl,
+      debug:               false
     }
   end
 

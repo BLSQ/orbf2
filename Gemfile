@@ -14,7 +14,7 @@ gem "coffee-rails", "~> 4.2"
 gem "deep_cloneable"
 gem "dentaku"
 gem "devise", "~> 4.4.0"
-gem "dhis2"
+gem "dhis2", github: "BLSQ/dhis2", branch: "legacy-v2"
 gem "differ"
 gem "easy_diff"
 gem "figaro"
@@ -42,6 +42,7 @@ gem "sentry-raven", "2.6.3"
 gem "sidekiq"
 gem "sidekiq-throttled"
 gem "simple_form"
+gem "sprockets", "~> 3.7.2"
 gem "turbolinks", "~> 5"
 gem "uglifier", ">= 1.3.0"
 
@@ -61,9 +62,9 @@ end
 group :development do
   gem "annotate"
   gem "flamegraph"
+  gem "immigrant"
   gem "listen", "~> 3.0.5"
   gem "memory_profiler"
-  gem "immigrant"
   gem "pronto"
   gem "pronto-flay", require: false
   gem "pronto-rubocop", require: false

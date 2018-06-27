@@ -42,7 +42,7 @@ RSpec.describe Analytics::IndicatorCalculator, type: :services do
   describe "#calculate" do
     let(:values) do
       JSON.parse(fixture_content(:dhis2, "datasetvalues.json"))["dataValues"].map do |e|
-        OpenStruct.new(Dhis2::Client.deep_change_case(e, :underscore))
+        OpenStruct.new(Dhis2::Case.deep_change(e, :underscore))
       end
     end
     let(:calculator) { Analytics::IndicatorCalculator.new }
@@ -67,7 +67,7 @@ RSpec.describe Analytics::IndicatorCalculator, type: :services do
             orgUnit:             "CV4IXOSr5ky",
             value:               0.05,
             categoryOptionCombo: nil }
-        ].map { |e| OpenStruct.new(Dhis2::Client.deep_change_case(e, :underscore)) }
+        ].map { |e| OpenStruct.new(Dhis2::Case.deep_change(e, :underscore)) }
       )
     end
   end

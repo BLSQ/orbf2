@@ -38,7 +38,7 @@ RSpec.describe UpdateMetadataWorker do
 
   def stub_update_data_element
     stub_request(:put, "http://play.dhis2.org/demo/api/dataElements/aze123")
-      .with(body: "{\"id\":\"aze123\",\"name\":\"new_long_long_name\",\"shortName\":\"new_short_name\",\"code\":\"new_code\",\"displayName\":\"current long name\",\"client\":{\"base_url\":\"http://admin:district@play.dhis2.org/demo\",\"verify_ssl\":1,\"timeout\":120,\"debug\":null}}")
+      .with(body: "{\"id\":\"aze123\",\"name\":\"new_long_long_name\",\"shortName\":\"new_short_name\",\"code\":\"new_code\",\"displayName\":\"current long name\"}")
       .to_return(status: 200, body: "")
   end
 end
