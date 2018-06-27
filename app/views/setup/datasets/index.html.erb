@@ -8,6 +8,9 @@
     <div class="form dataset">
         <div class="pull-right">
         Last sync: <%= dataset.last_synched_at %>
+        <% if dataset.external_reference.present? %>
+          <%= link_to_dataset(@current_project, dataset.external_reference) %>
+        <%end%>
         </div>
         <h3><%= dataset.frequency %></h3>
         <%if dataset.last_error.present?%>
