@@ -1,3 +1,14 @@
+# == Schema Information
+#
+# Table name: formula_mappings
+#
+#  id                 :integer          not null, primary key
+#  formula_id         :integer          not null
+#  activity_id        :integer
+#  external_reference :string           not null
+#  kind               :string           not null
+#
+
 
 require "rails_helper"
 

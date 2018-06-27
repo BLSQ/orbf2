@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180615110925) do
+ActiveRecord::Schema.define(version: 20180626100342) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -169,6 +169,19 @@ ActiveRecord::Schema.define(version: 20180615110925) do
     t.index ["project_id"], name: "index_packages_on_project_id", using: :btree
   end
 
+  create_table "payment_rule_datasets", force: :cascade do |t|
+    t.integer  "payment_rule_id"
+    t.string   "frequency"
+    t.string   "external_reference"
+    t.datetime "last_synched_at"
+    t.string   "last_error"
+    t.boolean  "desynchronized"
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+    t.index ["payment_rule_id", "frequency"], name: "index_payment_rule_datasets_on_payment_rule_id_and_frequency", unique: true, using: :btree
+    t.index ["payment_rule_id"], name: "index_payment_rule_datasets_on_payment_rule_id", using: :btree
+  end
+
   create_table "payment_rules", force: :cascade do |t|
     t.integer  "project_id",                       null: false
     t.datetime "created_at",                       null: false
@@ -301,6 +314,7 @@ ActiveRecord::Schema.define(version: 20180615110925) do
   add_foreign_key "package_states", "packages"
   add_foreign_key "package_states", "states"
   add_foreign_key "packages", "projects"
+  add_foreign_key "payment_rule_datasets", "payment_rules"
   add_foreign_key "payment_rules", "projects"
   add_foreign_key "project_anchors", "programs"
   add_foreign_key "projects", "project_anchors"

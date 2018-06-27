@@ -4,7 +4,7 @@ namespace :db do
   task fetch: :environment do
     app_name = ENV.fetch("APP_NAME")
     db_name = ENV.fetch("DB_NAME", "orbf2")
-    command = "heroku pg:pull DATABASE_URL #{db_name} --app #{app_name} --exclude-table-data dhis2_logs"
+    command = "heroku pg:pull DATABASE_URL #{db_name} --app #{app_name} --exclude-table-data dhis2_logs dhis2_snapshot_changes"
     puts command
     `#{command}`
     unless ActiveRecord::Base.connection.data_source_exists?("dhis2_logs")
@@ -16,6 +16,16 @@ namespace :db do
         t.datetime "created_at",        null: false
         t.datetime "updated_at",        null: false
         t.index ["project_anchor_id"], name: "index_dhis2_logs_on_project_anchor_id", using: :btree
+      end
+      create_table "dhis2_snapshot_changes", force: :cascade do |t|
+        t.string   "dhis2_id",          null: false
+        t.integer  "dhis2_snapshot_id"
+        t.jsonb    "values_before"
+        t.jsonb    "values_after"
+        t.string   "whodunnit"
+        t.datetime "created_at",        null: false
+        t.datetime "updated_at",        null: false
+        t.index ["dhis2_snapshot_id"], name: "index_dhis2_snapshot_changes_on_dhis2_snapshot_id", using: :btree
       end
     end
   end

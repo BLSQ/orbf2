@@ -17,22 +17,4 @@ class EntityGroup < ApplicationRecord
   validates :name, presence: true
 
   delegate :program_id, to: :project
-
-  def find_sibling_organisation_unit_groups
-    dhis2 = project.dhis2_connection
-    units = dhis2.organisation_units.list(
-      page_size: 50_000,
-      fields:    "id,displayName,organisationUnitGroups"
-    )
-
-    group_ids = units.reject { |unit| unit.organisation_unit_groups.nil? }
-                     .select { |unit| unit.organisation_unit_groups.any? { |g| g["id"] == external_reference } }
-                     .map(&:organisation_unit_groups)
-                     .flatten
-                     .map { |g| g["id"] }
-                     .uniq
-
-    group_ids -= [external_reference]
-    dhis2.organisation_unit_groups.find(group_ids).uniq
-  end
 end

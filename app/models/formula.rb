@@ -10,6 +10,7 @@
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #  frequency   :string
+#  short_name  :string
 #
 
 class Formula < ApplicationRecord
