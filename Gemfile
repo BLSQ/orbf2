@@ -42,9 +42,9 @@ gem "sentry-raven", "2.6.3"
 gem "sidekiq"
 gem "sidekiq-throttled"
 gem "simple_form"
+gem "sprockets", "~> 3.7.2"
 gem "turbolinks", "~> 5"
 gem "uglifier", ">= 1.3.0"
-gem "sprockets", "~> 3.7.2"
 
 group :development, :test do
   gem "byebug", platform: :mri
@@ -62,9 +62,9 @@ end
 group :development do
   gem "annotate"
   gem "flamegraph"
+  gem "immigrant"
   gem "listen", "~> 3.0.5"
   gem "memory_profiler"
-  gem "immigrant"
   gem "pronto"
   gem "pronto-flay", require: false
   gem "pronto-rubocop", require: false
