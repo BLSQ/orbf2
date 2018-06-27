@@ -13,8 +13,8 @@ module Datasets
       {
         name:               name,
         short_name:         name,
-        data_element_ids:   dataset_info.data_elements,
-        data_set_elements:  dataset_info.data_elements.map do |de_id|
+        data_element_ids:   dataset_info.data_elements.sort,
+        data_set_elements:  dataset_info.data_elements.sort.map do |de_id|
                               {
                                 "dataElement": {
                                   "id": de_id
