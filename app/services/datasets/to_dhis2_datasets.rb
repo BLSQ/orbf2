@@ -21,7 +21,7 @@ module Datasets
                                 }
                               }
                             end,
-        organisation_units: dataset_info.orgunits.map { |ou| { id: ou.ext_id } }
+        organisation_units: dataset_info.orgunits.compact.map { |ou| { id: ou.ext_id } }
       }
     end
 
