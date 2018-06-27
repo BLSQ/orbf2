@@ -1,7 +1,8 @@
 
 <tr>
+   <td title="<%= job.executed_at %>">  <%= time_ago_in_words(job.executed_at ) %></td>
    <td><%= job.period %></td>
    <td><%= job.orgunit_id %></td>
    <td><%= job.orgunit_details %></td>
- <td><pre><%= JSON.pretty_generate(job.status)%></pre></td>
+   <td><pre><%= JSON.pretty_generate(job.status)%></pre></td>
 </tr>
