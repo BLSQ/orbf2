@@ -15,9 +15,14 @@
   <%= f.input :year %>
   <%= f.input :quarter %>
 
-  <%= f.input :mock_values, as: :boolean%>
-  <%= f.input :legacy_engine, as: :boolean%>
 
+
+<div class="row">
+   <div class="col-xs-4">
+    <%= f.input :engine_version, collection: @current_project.engine_version_enum %>
+  </div>
+  </div>
+   <%= f.input :mock_values, as: :boolean%>
   <%= f.submit 'Push to dhis2',
                   name: 'push_to_dhis2',
                   data: { confirm: "Are you sure this might override existing data ?"},

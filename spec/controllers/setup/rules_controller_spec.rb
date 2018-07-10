@@ -128,7 +128,7 @@ RSpec.describe Setup::RulesController, type: :controller do
 
     let(:project) do
       project = full_project
-      project.engine_version = 2
+      project.engine_version = 3
       project.save!
       user.program = program
       user.save!

@@ -7,22 +7,27 @@ GIT
       rest-client
 
 GIT
-  remote: https://github.com/BLSQ/orbf-rules_engine.git
-  revision: 0cd1ac4599acecf2f302f6e0fed503f798229575
-  specs:
-    orbf-rules_engine (0.1.0)
-      activesupport
-      colorize
-      dentaku (= 3.1.0)
-      dhis2 (= 2.3.8)
-
-GIT
   remote: https://github.com/uswitch/rest-client-logger.git
   revision: 30347f419b6a3a397560fe3947a90956aec28a50
   specs:
     rest-client-logger (0.1.0)
       railties (>= 3.1)
       rest-client (>= 1.6)
+
+PATH
+  remote: ../hesabu
+  specs:
+    hesabu (0.1.8)
+
+PATH
+  remote: ../orbf-rules_engine
+  specs:
+    orbf-rules_engine (0.1.0)
+      activesupport
+      colorize
+      dentaku (= 3.1.0)
+      dhis2 (= 2.3.8)
+      hesabu
 
 GEM
   remote: https://rubygems.org/
@@ -445,6 +450,7 @@ DEPENDENCIES
   font-awesome-sass (~> 4.7.0)
   hashdiff
   heroku-deflater
+  hesabu!
   immigrant
   jbuilder (~> 2.5)
   jquery-rails

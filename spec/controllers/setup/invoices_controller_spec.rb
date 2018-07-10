@@ -28,10 +28,10 @@ RSpec.describe Setup::InvoicesController, type: :controller do
       post :create, params: {
         project_id:        full_project.id,
         invoicing_request: {
-          entity:        org_unit_id,
-          year:          "2017",
-          quarter:       "1",
-          legacy_engine: "0"
+          entity:         org_unit_id,
+          year:           "2017",
+          quarter:        "1",
+          engine_version: "0"
         },
         push_to_dhis2:     true
       }
@@ -46,10 +46,10 @@ RSpec.describe Setup::InvoicesController, type: :controller do
       post :create, params: {
         project_id:        full_project.id,
         invoicing_request: {
-          entity:        org_unit_id,
-          year:          "2017",
-          quarter:       "1",
-          legacy_engine: "1"
+          entity:         org_unit_id,
+          year:           "2017",
+          quarter:        "1",
+          engine_version: "1"
         },
         simulate_draft:    true
       }
@@ -74,10 +74,10 @@ RSpec.describe Setup::InvoicesController, type: :controller do
       post :create, params: {
         project_id:        full_project.id,
         invoicing_request: {
-          entity:        org_unit_id,
-          year:          "2017",
-          quarter:       "1",
-          legacy_engine: "0"
+          entity:         org_unit_id,
+          year:           "2017",
+          quarter:        "1",
+          engine_version: "2"
         },
         simulate_draft:    true
       }
@@ -94,11 +94,11 @@ RSpec.describe Setup::InvoicesController, type: :controller do
       post :create, params: {
         project_id:        full_project.id,
         invoicing_request: {
-          entity:        org_unit_id,
-          year:          "2017",
-          quarter:       "1",
-          mock_values:   "1",
-          legacy_engine: "1"
+          entity:         org_unit_id,
+          year:           "2017",
+          quarter:        "1",
+          mock_values:    "1",
+          engine_version: "1"
         },
         simulate_draft:    true
       }

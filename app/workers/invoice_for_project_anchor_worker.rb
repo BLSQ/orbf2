@@ -26,6 +26,7 @@ class InvoiceForProjectAnchorWorker
     end
 
     project = project_anchor.projects.for_date(request.end_date_as_date) || project_anchor.latest_draft
+    request.engine_version = project.engine_version
 
     if project.new_engine? && contracted_entities.size == 1
       options = Invoicing::InvoicingOptions.new(
@@ -33,7 +34,7 @@ class InvoiceForProjectAnchorWorker
         force_project_id:       nil,
         allow_fresh_dhis2_data: false
       )
-      request.entity=contracted_entities.first
+      request.entity = contracted_entities.first
       invoice_entity = Invoicing::InvoiceEntity.new(project_anchor, request, options)
       invoice_entity.call
 

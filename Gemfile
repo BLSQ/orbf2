@@ -20,6 +20,7 @@ gem "easy_diff"
 gem "figaro"
 gem "font-awesome-sass", "~> 4.7.0"
 gem "hashdiff"
+
 gem "jbuilder", "~> 2.5"
 gem "jquery-rails"
 gem "jquery-ui-rails"
@@ -28,8 +29,10 @@ gem "lograge"
 gem "naturalsort"
 if ENV["ORBF_DEV_MODE"]
   gem "orbf-rules_engine", path: "../orbf-rules_engine"
+  gem "hesabu", path: "../hesabu"
 else
   gem "orbf-rules_engine", github: "BLSQ/orbf-rules_engine"
+  gem "hesabu"
 end
 gem "paper_trail"
 gem "pg", "~> 0.18"

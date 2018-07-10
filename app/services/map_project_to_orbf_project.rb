@@ -1,9 +1,10 @@
 require "orbf/rules_engine"
 
 class MapProjectToOrbfProject
-  def initialize(project, dhis2_indicators)
+  def initialize(project, dhis2_indicators, engine_version = nil)
     @project = project
     @dhis2_indicators_by_id = dhis2_indicators.index_by(&:id)
+    @engine_version = engine_version || project.engine_version
   end
 
   def map
@@ -11,6 +12,7 @@ class MapProjectToOrbfProject
       packages:                              map_packages(project.packages),
       payment_rules:                         map_payment_rules,
       dhis2_params:                          project.dhis_configuration,
+      engine_version:                        @engine_version,
       default_category_combo_ext_id:         project.default_coc_reference,
       default_attribute_option_combo_ext_id: project.default_aoc_reference
     )
