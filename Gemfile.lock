@@ -7,20 +7,8 @@ GIT
       rest-client
 
 GIT
-  remote: https://github.com/uswitch/rest-client-logger.git
-  revision: 30347f419b6a3a397560fe3947a90956aec28a50
-  specs:
-    rest-client-logger (0.1.0)
-      railties (>= 3.1)
-      rest-client (>= 1.6)
-
-PATH
-  remote: ../hesabu
-  specs:
-    hesabu (0.1.8)
-
-PATH
-  remote: ../orbf-rules_engine
+  remote: https://github.com/BLSQ/orbf-rules_engine.git
+  revision: 71cc2b8a6de6c22ac5116689ccf397557115c7d3
   specs:
     orbf-rules_engine (0.1.0)
       activesupport
@@ -28,6 +16,14 @@ PATH
       dentaku (= 3.1.0)
       dhis2 (= 2.3.8)
       hesabu
+
+GIT
+  remote: https://github.com/uswitch/rest-client-logger.git
+  revision: 30347f419b6a3a397560fe3947a90956aec28a50
+  specs:
+    rest-client-logger (0.1.0)
+      railties (>= 3.1)
+      rest-client (>= 1.6)
 
 GEM
   remote: https://rubygems.org/
@@ -154,6 +150,7 @@ GEM
     hashdiff (0.3.0)
     heroku-deflater (0.6.3)
       rack (>= 1.4.5)
+    hesabu (0.1.8)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
     httparty (0.16.2)
@@ -450,7 +447,7 @@ DEPENDENCIES
   font-awesome-sass (~> 4.7.0)
   hashdiff
   heroku-deflater
-  hesabu!
+  hesabu
   immigrant
   jbuilder (~> 2.5)
   jquery-rails
