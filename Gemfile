@@ -28,11 +28,11 @@ gem "json", "2.1.0"
 gem "lograge"
 gem "naturalsort"
 if ENV["ORBF_DEV_MODE"]
-  gem "orbf-rules_engine", path: "../orbf-rules_engine"
   gem "hesabu", path: "../hesabu"
+  gem "orbf-rules_engine", path: "../orbf-rules_engine"
 else
-  gem "orbf-rules_engine", github: "BLSQ/orbf-rules_engine"
   gem "hesabu"
+  gem "orbf-rules_engine", github: "BLSQ/orbf-rules_engine"
 end
 gem "paper_trail"
 gem "pg", "~> 0.18"
