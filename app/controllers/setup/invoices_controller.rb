@@ -6,10 +6,10 @@ class Setup::InvoicesController < PrivateController
   def new
     project = current_project(project_scope: :fully_loaded) if params["calculate"]
     @invoicing_request = InvoicingRequest.new(
-      project:       current_project,
-      year:          params[:year] || Date.today.to_date.year,
-      quarter:       params[:quarter] || (Date.today.to_date.month / 4) + 1,
-      entity:        params[:entity],
+      project:        current_project,
+      year:           params[:year] || Date.today.to_date.year,
+      quarter:        params[:quarter] || (Date.today.to_date.month / 4) + 1,
+      entity:         params[:entity],
       engine_version: current_project.engine_version
     )
     if params["calculate"]
