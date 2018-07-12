@@ -6,11 +6,11 @@ class Setup::InvoicesController < PrivateController
   def new
     project = current_project(project_scope: :fully_loaded) if params["calculate"]
     @invoicing_request = InvoicingRequest.new(
-      project:       current_project,
-      year:          params[:year] || Date.today.to_date.year,
-      quarter:       params[:quarter] || (Date.today.to_date.month / 4) + 1,
-      entity:        params[:entity],
-      legacy_engine: current_project.new_engine? ? false : true
+      project:        current_project,
+      year:           params[:year] || Date.today.to_date.year,
+      quarter:        params[:quarter] || (Date.today.to_date.month / 4) + 1,
+      entity:         params[:entity],
+      engine_version: current_project.engine_version
     )
     if params["calculate"]
       render_invoice(project, invoicing_request)
@@ -148,7 +148,7 @@ class Setup::InvoicesController < PrivateController
                   :year,
                   :quarter,
                   :mock_values,
-                  :legacy_engine)
+                  :engine_version)
   end
 
   def add_contract_warning_if_non_contracted(invoicing_request, project)

@@ -200,7 +200,7 @@ class ProjectFactory
         formulas_attributes: [
           {
             code:        :quality_bonus_percentage_value,
-            expression:  "IF(quality_technical_score_value > 50, (0.35 * quality_technical_score_value) + (0.30 * 10.0), 0.0) /*todo replace with survey score*/",
+            expression:  "IF(quality_technical_score_value > 50, (0.35 * quality_technical_score_value) + (0.30 * 10.0), 0.0)",
             description: "Quality bonus percentage"
           },
           {

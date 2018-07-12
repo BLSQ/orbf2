@@ -2,7 +2,7 @@ class Setup::ProjectsController < PrivateController
   def create
     project_anchor = current_program.project_anchor || current_program.build_project_anchor
     raise "can't create a new one, need to update existing one" unless current_program.project_anchor.projects.empty?
-    project = current_program.project_anchor.projects.build(project_params.merge(engine_version: 2))
+    project = current_program.project_anchor.projects.build(project_params.merge(engine_version: 3))
     answer = project.verify_connection
 
     if answer[:status] == :ok

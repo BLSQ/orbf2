@@ -66,7 +66,7 @@ module Invoicing
     end
 
     def orbf_project
-      @orbf_project ||= MapProjectToOrbfProject.new(project, data_compound.indicators).map
+      @orbf_project ||= MapProjectToOrbfProject.new(project, data_compound.indicators, invoicing_request.engine_version).map
     end
 
     def legacy_pyramid

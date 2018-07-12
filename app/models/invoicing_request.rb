@@ -1,6 +1,6 @@
 class InvoicingRequest
   include ActiveModel::Model
-  attr_accessor :entity, :year, :quarter, :project, :invoices, :mock_values, :legacy_engine
+  attr_accessor :entity, :year, :quarter, :project, :invoices, :mock_values, :engine_version
 
   def start_date_as_date
     year_quarter.start_date
@@ -22,8 +22,12 @@ class InvoicingRequest
     year_quarter.months.map(&:end_date)
   end
 
+  def engine_version
+    Integer(@engine_version)
+  end
+
   def legacy_engine?
-    legacy_engine == "1" || legacy_engine == "true"
+    engine_version == 1
   end
 
   def mock_values?

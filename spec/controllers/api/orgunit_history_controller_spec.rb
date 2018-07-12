@@ -126,7 +126,7 @@ RSpec.describe Api::OrgunitHistoryController, type: :controller do
       expect(response).to have_http_status(:bad_request)
       expect(json_response).to eq(
         "status"  => "KO",
-        "message" => "periods are in current or futur 201806"
+        "message" => "periods are in current or futur 201807"
       )
     end
 

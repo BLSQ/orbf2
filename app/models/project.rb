@@ -64,7 +64,7 @@ class Project < ApplicationRecord
   end
 
   def engine_version_enum
-    { "legacy" => 1, "new" => 2 }
+    { "1.0 - legacy" => 1, "2.0 - dentaku" => 2, "3.0 - golang" => 3 }
   end
 
   def cycle_yearly?
@@ -174,7 +174,7 @@ class Project < ApplicationRecord
   end
 
   def new_engine?
-    engine_version == 2
+    engine_version >= 2
   end
 
   def draft?

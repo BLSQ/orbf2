@@ -379,6 +379,78 @@ RSpec.describe InvoiceForProjectAnchorWorker do
     end
   end
 
+  describe "new engine" do
+    let(:org_unit_ids) do
+      %w[AhnK8hb3JWm BLVKubgVxkF Bift1B4gjru Bq5nb7UAEGd C9uduqDZr9d DSBXsRQSXUW DmaLM8WYmWv ENHOJz3UH5L Ea3j0kUvyWg EmTN0L4EAVi GvFqTavdpGE HPg74Rr7UWp IXJg79fclDm ImspTQPwCqd JLKGG67z7oj JNJIPX9DfaW KIUCimTXf8Q KKkLOTpMXGV KuR0y0h0mOM LV2b3vaLRl1 LaxJ6CD2DHq Ls2ESQONh9S M2qEv692lS6 M721NHGtdZV O6uvpzGd5pu OuwX8H2CcRO PD1fqyvJssC PLoeN9CaL7z PMa2VCrupOd PQZJPIpTepd Qw7c6Ckb0XC QywkxFudXrC RUCp6OaTSAD T2Cn45nBY0u TEQlaapDQoK TQkG0sX9nca U6Kr7Gtpidn Uo4cyJwAhTW VCtF1DbspR5 VGAFxBXz16y Vnc2qIRLbyw Vth0fbpFcsO W5fN3G6y1VI XEyIRFd9pct XJ6DqDkMlPv at6UHUQatSo bM4Ky73uMao bPHn9IgjKLC bVZTNrnfn9G cDw53Ej8rju cM2BKSrj9F9 cZtKKa9eJZ3 cgqkFdShPzg ctfiYW0ePJ8 eIQbndfxQMb fXT1scbEObM fdc6uOvgoji gmen7SXL9CU jCnyQOKQBFX jUb8gELQApl jmIPBj66vD6 kBP1UvZpsNj kJq2mPyFEHo kLNQT4KQ9hT kMTHqMgenme lc3eMKXaEfw mTNOoGXuC39 nCh5dBoJVNw nV3OkyzF4US nq7F0t1Pz6t qhqAxPSTUXp qtr8GGlm4gg roQ2l7TX0eZ tHUYjt9cU6h u6ZGNI8yUmt uNEhNuBUr0i vRC0stJ5y9Q vn9KJsLyP5f vv1QJFONsT6 wNYYRm2c9EK wicmjKI3xiP yP2nhllbQPh]
+    end
+    let(:dataset_ext_ids) { ["ds-0", "ds-1", "ds-2"] }
+    let(:periods) { %w[2015 201501 201502 201503 2015Q1] }
+
+    it "should perform for sub contracted entities pattern with new engine" do
+      with_latest_engine(project)
+
+      with_multi_entity_rule(project)
+      with_activities_and_formula_mappings(project)
+
+      expect(project.packages.first.activity_rule.available_variables).to include(
+        "org_units_count",
+        "org_units_sum_if_count"
+      )
+
+      refs = project.activities
+                    .flat_map(&:activity_states)
+                    .map(&:external_reference)
+                    .uniq
+                    .reject(&:empty?).sort
+      values = refs.each_with_index.flat_map do |data_element, index|
+        [{
+          dataElement:          data_element,
+          value:                index,
+          period:               "2015",
+          orgUnit:              ORG_UNIT_ID,
+          categoryOptionCombo:  "HllvX50cXC0",
+          attributeOptionCombo: "HllvX50cXC0"
+        }, (1..12).map do |month|
+          {
+            dataElement:          data_element,
+            value:                index,
+            period:               "2015#{month}",
+            orgUnit:              ORG_UNIT_ID,
+            categoryOptionCombo:  "HllvX50cXC0",
+            attributeOptionCombo: "HllvX50cXC0"
+          }
+        end, (1..12).map do |month|
+          {
+            dataElement:          data_element,
+            value:                index,
+            period:               "2015#{month}",
+            orgUnit:              "PMa2VCrupO",
+            categoryOptionCombo:  "HllvX50cXC0",
+            attributeOptionCombo: "HllvX50cXC0"
+          }
+        end]
+      end
+
+      stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?" +
+        dataset_ext_ids.each_with_index.map { |de, i| "#{i == 0 ? '' : '&'}dataSet=#{de}" }.join +
+        periods.map { |pe| "&period=#{pe}" }.join +
+        org_unit_ids.map { |id| "&orgUnit=#{id}" }.join +
+        "&children=false")
+        .to_return(status: 200, body: JSON.pretty_generate("dataValues": values.flatten))
+
+      export_request = stub_export_values("invoice_multi_entities_new_engine_v3.json")
+
+      worker.perform(project.project_anchor.id, 2015, 1, [ORG_UNIT_ID])
+
+      expect(export_request).to have_been_made.once
+    end
+  end
+
+  def with_latest_engine(project)
+    project.update!(engine_version: 3)
+    project
+  end
+
   def with_new_engine(project)
     project.update!(engine_version: 2)
     project
@@ -397,7 +469,11 @@ RSpec.describe InvoiceForProjectAnchorWorker do
   def stub_export_values(expected_fixture)
     Rails.logger.info "Stubbing dataValueSets with #{expected_fixture}"
     stub_request(:post, "http://play.dhis2.org/demo/api/dataValueSets")
-      .with { |request| sorted_datavalues(JSON.parse(fixture_content(:scorpio, expected_fixture))) == sorted_datavalues(JSON.parse(request.body)) }
+      .with { |request|
+      fixture_values = sorted_datavalues(JSON.parse(fixture_content(:scorpio, expected_fixture)))
+      values = sorted_datavalues(JSON.parse(request.body))
+      fixture_values == values
+    }
       .to_return(status: 200, body: "")
   end
 

@@ -8,13 +8,14 @@ GIT
 
 GIT
   remote: https://github.com/BLSQ/orbf-rules_engine.git
-  revision: 0cd1ac4599acecf2f302f6e0fed503f798229575
+  revision: 25971a7d560132b995d76fa8cf44a847c1ca3992
   specs:
     orbf-rules_engine (0.1.0)
       activesupport
       colorize
       dentaku (= 3.1.0)
       dhis2 (= 2.3.8)
+      hesabu
 
 GIT
   remote: https://github.com/uswitch/rest-client-logger.git
@@ -149,6 +150,7 @@ GEM
     hashdiff (0.3.0)
     heroku-deflater (0.6.3)
       rack (>= 1.4.5)
+    hesabu (0.1.9)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
     httparty (0.16.2)
@@ -445,6 +447,7 @@ DEPENDENCIES
   font-awesome-sass (~> 4.7.0)
   hashdiff
   heroku-deflater
+  hesabu
   immigrant
   jbuilder (~> 2.5)
   jquery-rails

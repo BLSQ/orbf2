@@ -34,7 +34,7 @@ RSpec.describe Setup::ProjectsController, type: :controller do
       user.reload
       project = user.program.project_anchor.project
       expect(project.name).to eq("project_name")
-      expect(project.engine_version).to eq(2)
+      expect(project.engine_version).to eq(3)
     end
   end
 end
