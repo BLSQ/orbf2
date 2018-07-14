@@ -75,6 +75,10 @@ class Project < ApplicationRecord
     states.find { |state| state.code == code.to_s }
   end
 
+  def package(code)
+    packages.find { |package| package.code == code }
+  end
+
   def periods(year_quarter)
     packages.map { |package| year_quarter.months.map { |year_month| package.periods(year_month) } }.flatten.uniq
   end

@@ -10,7 +10,7 @@ class Setup::ProjectRulesController < PrivateController
     ).map
 
     @packages = if params[:package]
-                  [@orbf_project.packages[params[:package].to_i - 1]]
+                  @orbf_project.packages.select{|p| p.code == params[:package] }
                 else
                   @orbf_project.packages
                 end
