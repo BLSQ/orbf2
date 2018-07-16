@@ -4,15 +4,15 @@
       <%= link_to "Home", root_path, class: "navbar-brand" %>
     </div>
     <% if @current_project %>
-    <div class="navbar-header">
-      <%= link_to "Changes", setup_project_changes_path(@current_project), class: "navbar-brand" %>
-    </div>
-    <div class="navbar-header">
-      <%= link_to "Jobs", setup_project_jobs_path(@current_project), class: "navbar-brand" %>
-    </div>
-    <div class="navbar-header">
-      <%= link_to "Meta datas", setup_project_metadatas_path(@current_project), class: "navbar-brand" %>
-    </div>
+      <div class="navbar-header">
+        <%= link_to "Changes", setup_project_changes_path(@current_project), class: "navbar-brand" %>
+      </div>
+      <div class="navbar-header">
+        <%= link_to "Jobs", setup_project_jobs_path(@current_project), class: "navbar-brand" %>
+      </div>
+      <div class="navbar-header">
+        <%= link_to "Meta data", setup_project_metadatas_path(@current_project), class: "navbar-brand" %>
+      </div>
     <% end%>
 
     <div class="collapse navbar-collapse">
