@@ -1,6 +1,6 @@
 class InvoicingRequest
   include ActiveModel::Model
-  attr_accessor :entity, :year, :quarter, :project, :invoices, :mock_values, :engine_version
+  attr_accessor :entity, :year, :quarter, :project, :invoices, :mock_values, :engine_version, :with_details
 
   def start_date_as_date
     year_quarter.start_date
@@ -32,5 +32,9 @@ class InvoicingRequest
 
   def mock_values?
     mock_values == "1"
+  end
+
+  def with_details?
+    with_details == "1"
   end
 end

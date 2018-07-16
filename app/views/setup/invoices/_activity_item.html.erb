@@ -41,15 +41,6 @@
                    <pre><%= variable.formula.code %> = <%= activity_item.substitued[variable.formula.code] %></pre></li>
                    <pre><%= variable.formula.code %> = <%= activity_item.solution[variable.formula.code] %></pre></li>
            <%end%>
-            <div>
-            <h3>Step by step row explanations</h3>
-              <div >
-                <pre><%= JSON.pretty_generate(activity_item.problem) %></pre>
-                <pre><%= JSON.pretty_generate(activity_item.substitued) %></pre>
-                <pre><%= JSON.pretty_generate(activity_item.solution) %></pre>
-              </div>
-            </div>
-          </div>
       </div>
      </td>
   <%end%>

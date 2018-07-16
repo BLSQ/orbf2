@@ -10,6 +10,7 @@ class Setup::InvoicesController < PrivateController
       year:           params[:year] || Date.today.to_date.year,
       quarter:        params[:quarter] || (Date.today.to_date.month / 4) + 1,
       entity:         params[:entity],
+      with_details:   params[:with_details] || false,
       engine_version: current_project.engine_version
     )
     if params["calculate"]
@@ -148,7 +149,8 @@ class Setup::InvoicesController < PrivateController
                   :year,
                   :quarter,
                   :mock_values,
-                  :engine_version)
+                  :engine_version,
+                  :with_details)
   end
 
   def add_contract_warning_if_non_contracted(invoicing_request, project)

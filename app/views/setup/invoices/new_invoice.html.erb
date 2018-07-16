@@ -23,7 +23,7 @@
 <br>
 <br>
 
-<%if  @invoice_entity.success? %>
+<%if @invoicing_request.with_details? && @invoice_entity.success? %>
   <h3> Dhis2 output values (<%= @dhis2_export_values.size %>)</h3>
   <button class="btn btn-default" data-toggle="collapse" data-target="#dhis2-output-values">Show values</button>
     <div id="dhis2-output-values" class="collapse">
