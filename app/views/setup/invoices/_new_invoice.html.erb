@@ -35,7 +35,7 @@
 
 <% if invoice.total_items.any? %>
 <%= render partial: "total_item",
-           collection: invoice.total_items.sort_by {|total_item| total_item.formula.code },
+           collection: invoice.total_items.sort_by {|total_item| total_item.formula.code }.uniq,
            as: :total_item,
            locals: { invoice: invoice }  %>
 <% end %>
