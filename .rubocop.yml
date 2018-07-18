@@ -41,7 +41,7 @@ ClassLength:
 Documentation:
   Enabled: false
 Style/FrozenStringLiteralComment:
-  Enabled: false
+  Enabled: true
 # I don't think there's a good way to enforce this sometime commit_sha1 is ok sometimes user_1 is ok
 Naming/VariableNumber:
   Enabled: false

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Setup::AutocompleteController < PrivateController
   def organisation_unit_group
     if params.key?(:term)
@@ -11,14 +13,14 @@ class Setup::AutocompleteController < PrivateController
 
   def data_elements
     if params[:id]
-      data_compound = DataCompound.from(current_project)
       expires_in 3.minutes
-      render_sol_items([data_compound.data_element(params[:id])], params[:id])
+      results = find_results(params[:id], "data_elements")
+      render_sol_items(results, params[:id])
     elsif params[:term]
-      results = find_results(params[:term], "data_elements")
+      results = search_results(params[:term], "data_elements")
       render_sol_items(results, params[:term])
     else
-      results = find_results(nil, "data_elements", limit: 20000)
+      results = search_results(nil, "data_elements", limit: 20_000)
       render_sol_items(results, nil)
     end
   end
@@ -36,20 +38,25 @@ class Setup::AutocompleteController < PrivateController
 
   def organisation_units
     if params[:id]
-      pyramid = Pyramid.from(current_project)
-      render_sol_items([pyramid.org_unit(params[:id])], params[:id])
+      results = find_results(params[:id], "organisation_units")
+      render_sol_items(results, nil)
     else
-      results = find_results(params[:term], "organisation_units")
+      results = search_results(params[:term], "organisation_units")
       render_sol_items(results, params[:term])
     end
   end
 
   private
 
-  def find_results(term, kind, limit: 20)
+  def search_results(term, kind, limit: 20)
     Autocomplete::Dhis2.new(current_project.project_anchor)
                        .search(term, kind: kind, limit: limit)
                        .sort_by(&:display_name)
+  end
+
+  def find_results(id, kind)
+    Autocomplete::Dhis2.new(current_project.project_anchor)
+                       .find(id, kind: kind)
   end
 
   def organisation_unit_group_by_term_on_sol

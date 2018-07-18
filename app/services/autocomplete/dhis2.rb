@@ -1,4 +1,4 @@
-
+# frozen_string_literal: true
 
 module Autocomplete
   class Result
@@ -9,6 +9,7 @@ module Autocomplete
       @display_name = display_name
     end
   end
+
   class Dhis2
     def initialize(project_anchor)
       @project_anchor = project_anchor
@@ -22,6 +23,32 @@ module Autocomplete
         )
       ).to_hash.map { |e| Result.new(id: e["id"], code: e["code"], display_name: e["display_name"]) }
     end
+
+    def find(id, kind: "data_elements")
+      Dhis2Snapshot.connection.select_all(
+        ActiveRecord::Base.send(
+          :sanitize_sql_array,
+          [FIND_QUERY, kind, @project_anchor.id, id]
+        )
+      ).to_hash.map { |e| Result.new(id: e["id"], code: e["code"], display_name: e["display_name"]) }
+    end
+
+    FIND_QUERY = "select * from (
+      select
+        (element->'table'->>'id')::text as id ,
+            (element->'table'->>'display_name')::text as display_name,
+           (element->'table'->>'code')::text as code
+        from (
+             select jsonb_array_elements(content) as element
+             from dhis2_snapshots
+             where
+             id=(
+                SELECT max(id) FROM dhis2_snapshots
+                WHERE kind= ? AND project_anchor_id = ?)
+             )
+         as elements
+      ) as dataelements
+       where id = ?"
 
     SEARCH_QUERY = "select * from (
       select
@@ -39,6 +66,6 @@ module Autocomplete
          as elements
       ) as dataelements
        where display_name ilike ?
-      limit ?".freeze
+      limit ?"
   end
 end
