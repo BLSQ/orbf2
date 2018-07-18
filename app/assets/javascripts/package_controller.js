@@ -1,4 +1,16 @@
 $(document).ready(function() {
+
+    $('.sol-simple').each(function(i) {
+        var $sol_selector = $(this);
+        $sol_selector.searchableOptionList({
+            showSelectAll: true,
+            selectionDestination: $sol_selector.data('selection'),
+            texts: {
+                quickDelete: '<i class="fa fa-trash text-danger" aria-hidden="true"></i>',
+                searchplaceholder: $sol_selector.data('placeholder')
+              }
+        });
+    });
     $('.sol-powered').each(function(i) {
         var $sol_selector = $(this);
         $sol_selector.searchableOptionList({

@@ -1,5 +1,6 @@
 
 <% if invoice.activity_results %>
+
   <% invoice.activity_results.flatten.group_by(&:package).map do |package, results| %>
   <a name="<%= (package.name+"-"+invoice.date.strftime('%Y-%m')).underscore%>"></a>
   <h2><%= package.name %> at <%=invoice.date.strftime('%Y-%m')%>  </h2>

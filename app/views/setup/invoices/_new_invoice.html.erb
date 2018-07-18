@@ -1,3 +1,9 @@
+
+<div data-period="<%=invoice.period%>"
+     data-orgunitid="<%=invoice.orgunit_ext_id%>"
+     data-orgunit-name="<%= @pyramid.org_unit(invoice.orgunit_ext_id).name %>">
+
+
 <a name="<%= (invoice.package&.code || invoice.payment_rule&.code)+"-"+invoice.period%>"></a>
 <h2><%= (invoice.package&.code || invoice.payment_rule&.code).humanize %>
  -
@@ -30,3 +36,6 @@
            as: :total_item,
            locals: { invoice: invoice }  %>
 <% end %>
+
+
+</div>

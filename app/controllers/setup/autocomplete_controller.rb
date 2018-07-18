@@ -15,7 +15,7 @@ class Setup::AutocompleteController < PrivateController
     if params[:id]
       expires_in 3.minutes
       results = find_results(params[:id], "data_elements")
-      render_sol_items(results, params[:id])
+      render_sol_items(results, nil)
     elsif params[:term]
       results = search_results(params[:term], "data_elements")
       render_sol_items(results, params[:term])
