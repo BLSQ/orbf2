@@ -39,7 +39,7 @@ class Setup::AutocompleteController < PrivateController
   def organisation_units
     if params[:id]
       results = find_results(params[:id], "organisation_units")
-      render_sol_items(results, nil)
+      render_sol_items(results, params[:id])
     else
       results = search_results(params[:term], "organisation_units")
       render_sol_items(results, params[:term])
