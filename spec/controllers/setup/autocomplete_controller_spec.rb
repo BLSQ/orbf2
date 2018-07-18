@@ -54,6 +54,7 @@ RSpec.describe Setup::AutocompleteController, type: :controller do
     end
 
     it "should return for a single element if existing id" do
+      stub_dhis2_snapshot
       get :data_elements, params: { project_id: project.id, id: "FTRrcoaog83" }
       expect(assigns(:items).map { |i| i[:label] }).to eq ["Accute Flaccid Paralysis (Deaths < 5 yrs)"]
     end
