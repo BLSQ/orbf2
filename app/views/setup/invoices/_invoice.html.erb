@@ -1,4 +1,5 @@
 
+<div class="invoice-container">
 <% if invoice.activity_results %>
 
   <% invoice.activity_results.flatten.group_by(&:package).map do |package, results| %>
@@ -168,3 +169,4 @@
   <%end%>
 
 <%end%>
+</div>

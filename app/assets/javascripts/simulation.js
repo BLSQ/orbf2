@@ -1,4 +1,8 @@
 $(document).ready(function() {
+  if ($("select#periods").length == 0) {
+    return;
+  }
+
   const updateDisplayedInvoices = function() {
     const periods = $("select#periods").val();
     const orgunits = $("select#orgunits").val();
@@ -6,9 +10,10 @@ $(document).ready(function() {
 
     $(".invoice-container").each(function() {
       $invoice = $(this);
+      const period = $invoice.data("period").toString();
       const visible =
         periods &&
-        periods.includes($invoice.data("period")) &&
+        periods.includes(period) &&
         orgunits &&
         orgunits.includes($invoice.data("orgunit")) &&
         codes &&
