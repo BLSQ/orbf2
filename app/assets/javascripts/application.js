@@ -65,15 +65,18 @@ $(document).ready(function() {
   $(".popper").popover({
     container: "body",
     html: true,
+    delay: {
+      show: 0,
+      hide: 0
+    },
     content: function() {
       return $(this)
         .find(".popper-content")
         .html();
     }
   });
-  // one popover at a time
-  $("body").on("click", function(e) {
-    $('[data-toggle="popover"]').each(function() {
+  $(document).on("click", function(e) {
+    $('.invoice-container:visible [data-toggle="popover"]').each(function() {
       //the 'is' for buttons that trigger popups
       //the 'has' for icons within a button that triggers a popup
       if (
@@ -81,7 +84,13 @@ $(document).ready(function() {
         $(this).has(e.target).length === 0 &&
         $(".popover").has(e.target).length === 0
       ) {
-        $(this).popover("hide");
+        (
+          (
+            $(this)
+              .popover("hide")
+              .data("bs.popover") || {}
+          ).inState || {}
+        ).click = false; // fix for BS 3.3.6
       }
     });
   });
