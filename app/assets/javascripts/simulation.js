@@ -1,5 +1,5 @@
 $(document).ready(function() {
-  if ($("select#periods").length == 0) {
+  if ($("select#periods").length === 0) {
     return;
   }
 
