@@ -16,6 +16,42 @@
   <pre><%= as_pretty_json_string(project_descriptor(@current_project))%></pre>
 </div>
 
+<% periods = invoicing_request.invoices.map(&:period).uniq.sort%>
+<% orgunits = invoicing_request.invoices.map(&:orgunit_ext_id).uniq.map {|id|  @pyramid.org_unit(id) }.map {|ou| [ou.name, ou.ext_id]}.to_h%>
+<% codes = invoicing_request.invoices.map {|invoice| invoice.package&.code || invoice.payment_rule&.code}.uniq.sort.map {|code| [code.humanize, code]}%>
+<br>
+<br>
+<div class="row">
+   <div class="col-md-2">
+      <label>Periods</label>
+     
+      <%= select_tag :periods, options_for_select(periods, periods),
+                      {multiple: true, class: "form-control sol-simple",
+                      "data-placeholder" => "Pick periods",
+                         "data-selection" => "selected-periods"}%>
+      <div id="selected-periods" ></div>                         
+   </div>
+   <div class="col-md-5">
+     <label>Orgunits</label>
+     <%= select_tag :orgunits, options_for_select(orgunits, invoicing_request.entity),
+                      {multiple: true, class: "form-control sol-simple",
+                      "data-placeholder" => "Pick orgunits",
+                         "data-selection" => "selected-orgunits"}%>
+     <div id="selected-orgunits" ></div>
+   </div>
+   <div class="col-md-4">
+   <label>Package or Payment rule</label>
+  <%= select_tag :codes, options_for_select(codes, codes.map(&:last)),
+                      {multiple: true, class: "form-control sol-simple",
+                             "data-placeholder" => "Pick packages or payment rules",
+                             "data-selection" => "selected-codes"
+                             }%>
+   <div id="selected-codes" ></div>
+
+   </div>
+
+</div>
+
 <h1> Invoice details </h1>
 <%= render partial: "new_invoice", collection: invoicing_request.invoices, :as => :invoice  %>
 
