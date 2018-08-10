@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180626100342) do
+ActiveRecord::Schema.define(version: 20180810100805) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -124,6 +124,21 @@ ActiveRecord::Schema.define(version: 20180626100342) do
     t.index ["rule_id"], name: "index_formulas_on_rule_id", using: :btree
   end
 
+  create_table "invoicing_jobs", force: :cascade do |t|
+    t.integer  "project_anchor_id", null: false
+    t.string   "orgunit_ref",       null: false
+    t.string   "dhis2_period",      null: false
+    t.string   "user_ref"
+    t.datetime "processed_at"
+    t.datetime "errored_at"
+    t.string   "last_error"
+    t.integer  "duration_ms"
+    t.string   "status"
+    t.string   "sidekiq_job_ref"
+    t.index ["project_anchor_id", "orgunit_ref", "dhis2_period"], name: "index_invoicing_jobs_on_anchor_ou_period", unique: true, using: :btree
+    t.index ["project_anchor_id"], name: "index_invoicing_jobs_on_project_anchor_id", using: :btree
+  end
+
   create_table "package_entity_groups", force: :cascade do |t|
     t.string   "name"
     t.integer  "package_id"
@@ -220,9 +235,9 @@ ActiveRecord::Schema.define(version: 20180626100342) do
     t.integer  "original_id"
     t.string   "cycle",                 default: "quarterly", null: false
     t.integer  "engine_version",        default: 1,           null: false
-    t.string   "qualifier"
     t.string   "default_coc_reference"
     t.string   "default_aoc_reference"
+    t.string   "qualifier"
     t.index ["project_anchor_id"], name: "index_projects_on_project_anchor_id", using: :btree
   end
 
@@ -308,6 +323,7 @@ ActiveRecord::Schema.define(version: 20180626100342) do
   add_foreign_key "formula_mappings", "activities"
   add_foreign_key "formula_mappings", "formulas"
   add_foreign_key "formulas", "rules"
+  add_foreign_key "invoicing_jobs", "project_anchors"
   add_foreign_key "package_entity_groups", "packages"
   add_foreign_key "package_payment_rules", "packages"
   add_foreign_key "package_payment_rules", "payment_rules"
