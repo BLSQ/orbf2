@@ -19,7 +19,7 @@ class Setup::PackagesController < PrivateController
       package.package_entity_groups.create(entity_groups)
       package.save!
       package.package_states.each(&:save!)
-
+      SynchroniseDegDsWorker.perform_async(current_project.project_anchor.id)
       flash[:success] = "Package updated"
       redirect_to(root_path)
     else
@@ -56,7 +56,7 @@ class Setup::PackagesController < PrivateController
     if package.save
 
       package.package_entity_groups.create(entity_groups)
-
+      SynchroniseDegDsWorker.perform_async(current_project.project_anchor.id)
       flash[:success] = "Package of Activities created success"
       redirect_to(root_path)
     else
