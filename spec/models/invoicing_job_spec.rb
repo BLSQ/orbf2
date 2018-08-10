@@ -8,7 +8,7 @@ RSpec.describe InvoicingJob, type: :model do
 
 
   it "handle nicely when no invoicing job" do
-    InvoicingJob.execute(project_anchor, "2016", "4", "orgunit_ref") do
+    InvoicingJob.execute(project_anchor, "2016Q4", "orgunit_ref") do
       sleep 0.5
     end
     expect(InvoicingJob.all.size).to eq(0)
@@ -19,7 +19,7 @@ RSpec.describe InvoicingJob, type: :model do
 
     it "track duration on success and resets error infos" do
       slept = false
-      InvoicingJob.execute(project_anchor, "2016", "4", "orgunit_ref") do
+      InvoicingJob.execute(project_anchor, "2016Q4", "orgunit_ref") do
         sleep 0.5
         slept = true
       end
@@ -37,7 +37,7 @@ RSpec.describe InvoicingJob, type: :model do
       invoicing_job
       slept = false
       expect {
-        InvoicingJob.execute(project_anchor, "2016", "4", "orgunit_ref") do
+        InvoicingJob.execute(project_anchor, "2016Q4", "orgunit_ref") do
           sleep 0.5
           slept = true
           raise "Failed miserably"

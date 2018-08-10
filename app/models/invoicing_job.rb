@@ -37,9 +37,9 @@ class InvoicingJob < ApplicationRecord
     save!
   end
 
-  def self.execute(project_anchor, year, quarter, ou)
+  def self.execute(project_anchor, period, orgunit_ref)
     start_time = time
-    invoicing_job = find_invoicing_job(project_anchor, year, quarter, ou)
+    invoicing_job = find_invoicing_job(project_anchor, period, orgunit_ref)
     yield
     invoicing_job&.mark_as_processed(start_time, time)
   rescue StandardError => err
@@ -53,9 +53,9 @@ class InvoicingJob < ApplicationRecord
 
   private
 
-  def self.find_invoicing_job(project_anchor, year, quarter, orgunit_ref)
+  def self.find_invoicing_job(project_anchor, period, orgunit_ref)
     project_anchor.invoicing_jobs.find_by(
-      dhis2_period: year + "Q" + quarter,
+      dhis2_period: period,
       orgunit_ref:  orgunit_ref
     )
   end

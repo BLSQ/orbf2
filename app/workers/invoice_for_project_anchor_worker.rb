@@ -17,7 +17,7 @@ class InvoiceForProjectAnchorWorker
 
     options = default_options.merge(options)
     project_anchor = ProjectAnchor.find(project_anchor_id)
-    InvoicingJob.execute(project_anchor_id, year, quarter, selected_org_unit_ids.first) do
+    InvoicingJob.execute(project_anchor, "#{year}Q#{quarter}", selected_org_unit_ids&.first) do
       request = InvoicingRequest.new(year: year, quarter: quarter)
       contracted_entities = organisation_units(project_anchor, request)
       contracted_entities &= selected_org_unit_ids if selected_org_unit_ids
