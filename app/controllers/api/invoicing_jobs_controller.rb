@@ -7,16 +7,19 @@ module Api
 
     def index
       project_anchor = current_project_anchor
-      period = Periods.from_dhis2_period(params.fetch(:pe))
 
-      render json: project_anchor.invoicing_jobs.where(dhis2_period: period.to_quarter.to_dhis2).last(100)
+      render json: find_jobs(project_anchor)
     end
 
     private
 
-    def bad_request(e)
-      Rails.logger.warn([e.message, e.backtrace.join("\n")].join("\n"))
-      render status: :bad_request, json: { status: "KO", message: e.message }
+    def find_jobs(project_anchor)
+      period = Periods.from_dhis2_period(params.fetch(:period))
+      jobs = project_anchor.invoicing_jobs
+                           .where(dhis2_period: period.to_quarter.to_dhis2)
+      jobs = jobs.where(orgunit_ref: params[:orgunit_refs].split(",")) if params[:orgunit_refs]
+      jobs = jobs.where(status: params[:status].split(",")) if params[:status]
+      jobs.last(1000)
     end
   end
 end

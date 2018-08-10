@@ -19,12 +19,5 @@ module Api
       Groups::UpdateHistory.new(update_params).call
       render json: { status: "OK" }
     end
-
-    private
-
-    def bad_request(e)
-      Rails.logger.warn([e.message, e.backtrace.join("\n")].join("\n"))
-      render status: :bad_request, json: { status: "KO", message: e.message }
-    end
   end
 end
