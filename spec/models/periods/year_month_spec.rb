@@ -49,4 +49,17 @@ describe Periods::YearMonth do
     expect(year_month.to_year.months).to include(year_month)
     expect(year_month.to_year).to eq(Periods.from_dhis2_period("2016"))
   end
+
+  it "works with extra 0 in month" do
+    per = Periods::YearMonth.new("2012","08")
+    expect(per.year).to eq(2012)
+    expect(per.month).to eq(8)
+  end
+
+  it "works with 2 number month" do
+    per = Periods::YearMonth.new("2012","12")
+    expect(per.year).to eq(2012)
+    expect(per.month).to eq(12)
+  end
+
 end

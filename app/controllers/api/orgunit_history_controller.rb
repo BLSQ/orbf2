@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   class OrgunitHistoryController < Api::ApplicationController
     rescue_from ActionController::ParameterMissing, with: :bad_request
@@ -21,6 +23,7 @@ module Api
     private
 
     def bad_request(e)
+      Rails.logger.warn([e.message, e.backtrace.join("\n")].join("\n"))
       render status: :bad_request, json: { status: "KO", message: e.message }
     end
   end

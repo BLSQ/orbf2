@@ -5,6 +5,7 @@ module Periods
 
     def initialize(year, month)
       @year = Integer(year)
+      month = month[1..-1] if month && month.is_a?(String) && month.start_with?("0")
       @month = Integer(month)
       raise "no a valid month number for '#{month}'" if @month < 1 || @month > 12
     end
