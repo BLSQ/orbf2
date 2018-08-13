@@ -8,7 +8,11 @@ module Api
     def index
       project_anchor = current_project_anchor
 
-      render json: find_jobs(project_anchor)
+      render json: InvoicingJobSerializer.new(find_jobs(project_anchor), {}).serialized_json
+    end
+
+    def create
+      index
     end
 
     private
@@ -17,7 +21,7 @@ module Api
       period = Periods.from_dhis2_period(params.fetch(:period))
       jobs = project_anchor.invoicing_jobs
                            .where(dhis2_period: period.to_quarter.to_dhis2)
-      jobs = jobs.where(orgunit_ref: params[:orgunit_refs].split(",")) if params[:orgunit_refs]
+      jobs = jobs.where(orgunit_ref: params[:orgUnitIds].split(",")) if params[:orgUnitIds]
       jobs = jobs.where(status: params[:status].split(",")) if params[:status]
       jobs.last(1000)
     end

@@ -17,7 +17,7 @@ gem "devise", "~> 4.4.0"
 gem "dhis2", github: "BLSQ/dhis2", branch: "legacy-v2"
 gem "differ"
 gem "easy_diff"
-gem 'fast_jsonapi'
+gem "fast_jsonapi"
 gem "figaro"
 gem "font-awesome-sass", "~> 4.7.0"
 gem "hashdiff"
@@ -78,7 +78,7 @@ group :development do
   gem "spring"
   gem "spring-watcher-listen", "~> 2.0.0"
   gem "stackprof"
-  #gem "web-console"
+  gem "web-console"
 end
 
 group :test do

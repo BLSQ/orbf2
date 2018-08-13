@@ -2,7 +2,11 @@
 
 class InvoicingJobSerializer
   include FastJsonapi::ObjectSerializer
-  attributes :orgunit_ref, :dhis2_period, :user_ref,
-             :processed_at, :errored_at, :duration_ms,
-             :status, :sidekiq_job_ref
+  set_key_transform :camel_lower
+  attribute :org_unit,&:orgunit_ref
+  attribute :dhis2_period
+  attribute :user, &:user_ref
+  attributes :processed_at, :errored_at, :duration_ms, :status, :last_error
+  attribute :sidekiq_job_ref
+
 end

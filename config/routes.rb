@@ -18,7 +18,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     resources :invoices, only: [:create]
-    resources :invoicing_jobs, only: [:index]
+    resources :invoicing_jobs, only: [:index, :create]
     resources :orgunit_history, only: [:index] do
       collection do
         post :apply
