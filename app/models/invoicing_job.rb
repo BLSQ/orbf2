@@ -19,6 +19,32 @@
 class InvoicingJob < ApplicationRecord
   belongs_to :project_anchor, inverse_of: :invoicing_jobs
 
+  class << self
+    def execute(project_anchor, period, orgunit_ref)
+      start_time = time
+      invoicing_job = find_invoicing_job(project_anchor, period, orgunit_ref)
+      yield
+      invoicing_job&.mark_as_processed(start_time, time)
+    rescue StandardError => err
+      invoicing_job&.mark_as_error(start_time, time, err)
+      raise err
+    end
+
+    private
+
+    def time
+      Process.clock_gettime(Process::CLOCK_MONOTONIC)
+    end
+
+    def find_invoicing_job(project_anchor, period, orgunit_ref)
+      project_anchor.invoicing_jobs.find_by(
+        dhis2_period: period,
+        orgunit_ref:  orgunit_ref
+      )
+    end
+  end
+
+
   def mark_as_processed(start_time, end_time)
     fill_duration(start_time, end_time)
     self.processed_at = Time.now
@@ -37,28 +63,9 @@ class InvoicingJob < ApplicationRecord
     save!
   end
 
-  def self.execute(project_anchor, period, orgunit_ref)
-    start_time = time
-    invoicing_job = find_invoicing_job(project_anchor, period, orgunit_ref)
-    yield
-    invoicing_job&.mark_as_processed(start_time, time)
-  rescue StandardError => err
-    invoicing_job&.mark_as_error(start_time, time, err)
-    raise err
-  end
 
-  def self.time
-    Process.clock_gettime(Process::CLOCK_MONOTONIC)
-  end
 
   private
-
-  def self.find_invoicing_job(project_anchor, period, orgunit_ref)
-    project_anchor.invoicing_jobs.find_by(
-      dhis2_period: period,
-      orgunit_ref:  orgunit_ref
-    )
-  end
 
   def fill_duration(start_time, end_time)
     self.duration_ms = (end_time - start_time) * 1000
