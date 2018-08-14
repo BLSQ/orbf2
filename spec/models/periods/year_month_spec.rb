@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 
 describe Periods::YearMonth do
@@ -9,18 +11,18 @@ describe Periods::YearMonth do
     expect(year_month.to_dhis2).to eq "201603"
   end
 
-  describe 'fails fast' do
+  describe "fails fast" do
     it "when year is nil" do
-      expect {Periods::YearMonth.new(nil,1)}.to raise_error(TypeError, "can't convert nil into Integer")
+      expect { Periods::YearMonth.new(nil, 1) }.to raise_error(TypeError, "can't convert nil into Integer")
     end
     it "when month is nil" do
-      expect {Periods::YearMonth.new(2016, nil)}.to raise_error(TypeError, "can't convert nil into Integer")
+      expect { Periods::YearMonth.new(2016, nil) }.to raise_error(TypeError, "can't convert nil into Integer")
     end
     it "when year is a alpha" do
-      expect {Periods::YearMonth.new("year", 1)}.to raise_error('invalid value for Integer(): "year"')
+      expect { Periods::YearMonth.new("year", 1) }.to raise_error('invalid value for Integer(): "year"')
     end
     it "when month is a alpha" do
-      expect {Periods::YearMonth.new("2016", "month")}.to raise_error('invalid value for Integer(): "month"')
+      expect { Periods::YearMonth.new("2016", "month") }.to raise_error('invalid value for Integer(): "month"')
     end
   end
   it "can use it as uniqueness" do
@@ -51,15 +53,14 @@ describe Periods::YearMonth do
   end
 
   it "works with extra 0 in month" do
-    per = Periods::YearMonth.new("2012","08")
+    per = Periods::YearMonth.new("2012", "08")
     expect(per.year).to eq(2012)
     expect(per.month).to eq(8)
   end
 
   it "works with 2 number month" do
-    per = Periods::YearMonth.new("2012","12")
+    per = Periods::YearMonth.new("2012", "12")
     expect(per.year).to eq(2012)
     expect(per.month).to eq(12)
   end
-
 end

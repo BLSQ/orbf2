@@ -17,7 +17,6 @@
 #  sidekiq_job_ref   :string
 #
 
-
 class InvoicingJobSerializer
   include FastJsonapi::ObjectSerializer
   set_key_transform :camel_lower

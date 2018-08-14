@@ -17,13 +17,11 @@
 #  sidekiq_job_ref   :string
 #
 
-
 require "rails_helper"
 
 RSpec.describe InvoicingJob, type: :model do
   let(:program) { create :program }
   let(:project_anchor) { create :project_anchor, program: program }
-
 
   it "handle nicely when no invoicing job" do
     InvoicingJob.execute(project_anchor, "2016Q4", "orgunit_ref") do
