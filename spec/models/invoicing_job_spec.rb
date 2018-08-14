@@ -33,7 +33,7 @@ RSpec.describe InvoicingJob, type: :model do
   end
 
   describe "when invoicing job exist" do
-    let!(:invoicing_job) { project_anchor.invoicing_jobs.create!(dhis2_period: "2016Q4", orgunit_ref: "orgunit_ref") }
+    let!(:invoicing_job) { project_anchor.invoicing_jobs.create!(dhis2_period: "2016Q4", orgunit_ref: "orgunit_ref", status: "enqueued") }
 
     it "track duration on success and resets error infos" do
       slept = false
@@ -51,7 +51,7 @@ RSpec.describe InvoicingJob, type: :model do
       expect(invoicing_job.last_error).to be_nil
     end
 
-    it "track duration on error and resets processed info" do
+    it "track duration on error and resets processed info even " do
       invoicing_job
       slept = false
       expect {
@@ -68,6 +68,29 @@ RSpec.describe InvoicingJob, type: :model do
       expect(invoicing_job.errored_at).not_to be_nil
       expect(invoicing_job.last_error).to eq("RuntimeError: Failed miserably")
       expect(invoicing_job.duration_ms).to be >= 400
+    end
+
+    it "track duration on local return in blockand resets processed info" do
+      invoicing_job
+      slept = false
+      action
+
+      invoicing_job.reload
+
+      expect(invoicing_job.status).to eq("processed")
+      expect(invoicing_job.duration_ms).to be >= 400
+
+      expect(invoicing_job.processed_at).not_to be_nil
+      expect(invoicing_job.errored_at).to be_nil
+      expect(invoicing_job.last_error).to be_nil
+    end
+
+    def action
+      InvoicingJob.execute(project_anchor, "2016Q4", "orgunit_ref") do
+        sleep 0.5
+        slept = true
+        return "456747"
+      end
     end
   end
 end
