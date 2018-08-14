@@ -25,6 +25,7 @@ describe ProjectFactory do
       Dhis2Snapshot,
       Dhis2SnapshotChange,
       Dhis2Log,
+      InvoicingJob,
       Version,
       PaperTrail::Version,
       PaperTrail::VersionAssociation

@@ -8,6 +8,11 @@ module Api
 
     private
 
+    def bad_request(e)
+      Rails.logger.warn([e.message, e.backtrace.join("\n")].join("\n"))
+      render status: :bad_request, json: { status: "KO", message: e.message }
+    end
+
     def current_project_anchor
       token = request.headers["X-Token"] || params.fetch(:token)
       @current_project_anchor || ProjectAnchor.find_by!(token: token)

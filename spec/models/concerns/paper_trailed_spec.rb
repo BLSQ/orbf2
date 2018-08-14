@@ -21,7 +21,8 @@ RSpec.describe PaperTrailed do
     Dhis2Log,
     Dhis2Snapshot,
     Dhis2SnapshotChange,
-    ProjectAnchor
+    ProjectAnchor,
+    InvoicingJob
   ].freeze
 
   ActiveRecord::Base.descendants
