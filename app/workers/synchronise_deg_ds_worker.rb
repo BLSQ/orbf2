@@ -1,5 +1,15 @@
+# frozen_string_literal: true
+
 class SynchroniseDegDsWorker
   include Sidekiq::Worker
+  include Sidekiq::Throttled::Worker
+
+  sidekiq_options retry: 1
+
+  sidekiq_throttle(
+    concurrency: { limit: 1 },
+    key_suffix:  ->(project_anchor_id, _time) { project_anchor_id }
+  )
 
   def perform(project_anchor_id, now = Time.now.utc)
     project_anchor = ProjectAnchor.find(project_anchor_id)
