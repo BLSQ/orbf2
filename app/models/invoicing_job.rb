@@ -14,6 +14,8 @@
 #  duration_ms       :integer
 #  status            :string
 #  sidekiq_job_ref   :string
+#  created_at        :datetime         not null
+#  updated_at        :datetime         not null
 #
 
 class InvoicingJob < ApplicationRecord

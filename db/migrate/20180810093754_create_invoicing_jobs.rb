@@ -13,6 +13,7 @@ class CreateInvoicingJobs < ActiveRecord::Migration[5.0]
       t.integer :duration_ms
       t.string :status
       t.string :sidekiq_job_ref
+      t.timestamps
     end
   end
 end

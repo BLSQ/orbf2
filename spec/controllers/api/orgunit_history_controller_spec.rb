@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 require_relative "../../workers/dhis2_snapshot_fixture"
 
@@ -126,7 +128,7 @@ RSpec.describe Api::OrgunitHistoryController, type: :controller do
       expect(response).to have_http_status(:bad_request)
       expect(json_response).to eq(
         "status"  => "KO",
-        "message" => "periods are in current or futur "+futur.to_dhis2
+        "message" => "periods are in current or futur " + futur.to_dhis2
       )
     end
 

@@ -135,6 +135,8 @@ ActiveRecord::Schema.define(version: 20180810100805) do
     t.integer  "duration_ms"
     t.string   "status"
     t.string   "sidekiq_job_ref"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
     t.index ["project_anchor_id", "orgunit_ref", "dhis2_period"], name: "index_invoicing_jobs_on_anchor_ou_period", unique: true, using: :btree
     t.index ["project_anchor_id"], name: "index_invoicing_jobs_on_project_anchor_id", using: :btree
   end
@@ -235,9 +237,9 @@ ActiveRecord::Schema.define(version: 20180810100805) do
     t.integer  "original_id"
     t.string   "cycle",                 default: "quarterly", null: false
     t.integer  "engine_version",        default: 1,           null: false
-    t.string   "qualifier"
     t.string   "default_coc_reference"
     t.string   "default_aoc_reference"
+    t.string   "qualifier"
     t.index ["project_anchor_id"], name: "index_projects_on_project_anchor_id", using: :btree
   end
 
