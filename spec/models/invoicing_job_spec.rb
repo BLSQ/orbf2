@@ -1,5 +1,23 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: invoicing_jobs
+#
+#  id                :integer          not null, primary key
+#  project_anchor_id :integer          not null
+#  orgunit_ref       :string           not null
+#  dhis2_period      :string           not null
+#  user_ref          :string
+#  processed_at      :datetime
+#  errored_at        :datetime
+#  last_error        :string
+#  duration_ms       :integer
+#  status            :string
+#  sidekiq_job_ref   :string
+#
+
+
 require "rails_helper"
 
 RSpec.describe InvoicingJob, type: :model do

@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: invoicing_jobs
@@ -8,12 +7,13 @@
 #  project_anchor_id :integer          not null
 #  orgunit_ref       :string           not null
 #  dhis2_period      :string           not null
-#  user_ref          :string           not null
+#  user_ref          :string
 #  processed_at      :datetime
 #  errored_at        :datetime
+#  last_error        :string
 #  duration_ms       :integer
-#  status            :string           not null
-#  sidekiq_job_ref   :string           not null
+#  status            :string
+#  sidekiq_job_ref   :string
 #
 
 class InvoicingJob < ApplicationRecord
@@ -44,7 +44,6 @@ class InvoicingJob < ApplicationRecord
     end
   end
 
-
   def mark_as_processed(start_time, end_time)
     fill_duration(start_time, end_time)
     self.processed_at = Time.now
@@ -62,8 +61,6 @@ class InvoicingJob < ApplicationRecord
     self.last_error = "#{err.class.name}: #{err.message}"
     save!
   end
-
-
 
   private
 
