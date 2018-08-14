@@ -8,7 +8,7 @@ class SynchroniseDegDsWorker
 
   sidekiq_throttle(
     concurrency: { limit: 1 },
-    key_suffix:  ->(project_anchor_id, _time) { project_anchor_id }
+    key_suffix:  ->(project_anchor_id, _time= Time.now.utc) { project_anchor_id }
   )
 
   def perform(project_anchor_id, now = Time.now.utc)
