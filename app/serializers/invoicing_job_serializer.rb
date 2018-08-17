@@ -29,6 +29,6 @@ class InvoicingJobSerializer
   attribute :sidekiq_job_ref
 
   attribute :is_alive do |job|
-    (job.status != "processed" && job.status != "errored") || job.created_at < 1.day.ago
+    job.alive?
   end
 end
