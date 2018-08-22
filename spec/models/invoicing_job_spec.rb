@@ -25,6 +25,33 @@ RSpec.describe InvoicingJob, type: :model do
   let(:program) { create :program }
   let(:project_anchor) { create :project_anchor, program: program }
 
+  describe "alive?" do
+    it "is not alive if processed" do
+      job = project_anchor.invoicing_jobs.build(dhis2_period: "2016Q4", orgunit_ref: "orgunit_ref", status: "processed")
+      expect(job.alive?).to eq false
+    end
+
+    it "is not alive if processed and timedout" do
+      job = project_anchor.invoicing_jobs.build(dhis2_period: "2016Q4", orgunit_ref: "orgunit_ref", status: "processed", created_at: 5.days.ago)
+      expect(job.alive?).to eq false
+    end
+
+    it "is not alive if errored" do
+      job = project_anchor.invoicing_jobs.build(dhis2_period: "2016Q4", orgunit_ref: "orgunit_ref", status: "errored")
+      expect(job.alive?).to eq false
+    end
+
+    it "is not alive not processed or errored but timedout" do
+      job = project_anchor.invoicing_jobs.build(dhis2_period: "2016Q4", orgunit_ref: "orgunit_ref", status: "enqueued", created_at: 5.days.ago)
+      expect(job.alive?).to eq false
+    end
+
+    it "is alive if enqueued" do
+      job = project_anchor.invoicing_jobs.create!(dhis2_period: "2016Q4", orgunit_ref: "orgunit_ref", status: "enqueued")
+      expect(job.alive?).to eq true
+    end
+  end
+
   it "handle nicely when no invoicing job" do
     InvoicingJob.execute(project_anchor, "2016Q4", "orgunit_ref") do
       sleep 0.5

@@ -52,6 +52,12 @@ class InvoicingJob < ApplicationRecord
     end
   end
 
+  def alive?
+    return false if status == "processed" || status == "errored"
+    return false if created_at < 1.day.ago
+    true
+  end
+
   def mark_as_processed(start_time, end_time)
     fill_duration(start_time, end_time)
     self.processed_at = Time.now
