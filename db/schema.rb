@@ -237,9 +237,9 @@ ActiveRecord::Schema.define(version: 20180810100805) do
     t.integer  "original_id"
     t.string   "cycle",                 default: "quarterly", null: false
     t.integer  "engine_version",        default: 1,           null: false
+    t.string   "qualifier"
     t.string   "default_coc_reference"
     t.string   "default_aoc_reference"
-    t.string   "qualifier"
     t.index ["project_anchor_id"], name: "index_projects_on_project_anchor_id", using: :btree
   end
 

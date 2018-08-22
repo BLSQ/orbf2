@@ -54,7 +54,7 @@ class InvoicingJob < ApplicationRecord
 
   def alive?
     return false if status == "processed" || status == "errored"
-    return false if created_at < 1.day.ago
+    return false if updated_at < 1.day.ago
     true
   end
 

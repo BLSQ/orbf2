@@ -28,7 +28,5 @@ class InvoicingJobSerializer
   attributes :created_at, :processed_at, :errored_at, :duration_ms, :status, :last_error
   attribute :sidekiq_job_ref
 
-  attribute :is_alive do |job|
-    job.alive?
-  end
+  attribute :is_alive, &:alive?
 end

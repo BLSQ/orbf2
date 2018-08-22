@@ -32,7 +32,7 @@ RSpec.describe InvoicingJob, type: :model do
     end
 
     it "is not alive if processed and timedout" do
-      job = project_anchor.invoicing_jobs.build(dhis2_period: "2016Q4", orgunit_ref: "orgunit_ref", status: "processed", created_at: 5.days.ago)
+      job = project_anchor.invoicing_jobs.build(dhis2_period: "2016Q4", orgunit_ref: "orgunit_ref", status: "processed", updated_at: 5.days.ago)
       expect(job.alive?).to eq false
     end
 
@@ -42,7 +42,7 @@ RSpec.describe InvoicingJob, type: :model do
     end
 
     it "is not alive not processed or errored but timedout" do
-      job = project_anchor.invoicing_jobs.build(dhis2_period: "2016Q4", orgunit_ref: "orgunit_ref", status: "enqueued", created_at: 5.days.ago)
+      job = project_anchor.invoicing_jobs.build(dhis2_period: "2016Q4", orgunit_ref: "orgunit_ref", status: "enqueued", updated_at: 5.days.ago)
       expect(job.alive?).to eq false
     end
 
