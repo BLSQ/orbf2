@@ -1,9 +1,16 @@
+# frozen_string_literal: true
+
 module InvoicesHelper
   def invoice_output_input_class(total_item)
     total_item.formula.dhis2_mapping ? "formula-output" : nil
   end
 
   def invoice_output_input_act_class(activity_item, code)
+    begin
+      activity_item.input?(code)
+    rescue StandardError
+      return ""
+    end
     if activity_item.input?(code)
       "formula-input"
     elsif activity_item.output?(code)
@@ -64,7 +71,6 @@ module InvoicesHelper
   end
 
   def formulas_descriptors(rule)
-
     formulas = {}
     return formulas unless rule
     rule.formulas.each do |formula|

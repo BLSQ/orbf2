@@ -13,6 +13,7 @@
           <div class="popper-content hide">
 
           <% variable = activity_item.variable(header)%>
+          <%if variable%>
           <%if variable.formula %>
           <% activity_lookup = indexed_project.lookup_package_rule(activity_item, header) %>
             <h3><%= link_to(variable.state, edit_setup_project_package_rule_path(activity_lookup.project, activity_lookup.package, activity_lookup.rule, anchor: "formula_#{variable.state}"), target: "_blank") %></h3>
@@ -41,6 +42,7 @@
                    <pre><%= variable.formula.code %> = <%= activity_item.substitued[variable.formula.code] %></pre></li>
                    <pre><%= variable.formula.code %> = <%= activity_item.solution[variable.formula.code] %></pre></li>
            <%end%>
+            <%end%>
       </div>
      </td>
   <%end%>
