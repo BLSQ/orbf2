@@ -1,4 +1,6 @@
 
+# frozen_string_literal: true
+
 class Setup::FormulaMappingsController < PrivateController
   attr_reader :formula_mappings
   helper_method :formula_mappings
@@ -66,9 +68,9 @@ class Setup::FormulaMappingsController < PrivateController
   def to_options
     mode_options = {
       missing_only: { missing_only: true },
-      activity_only: { package: false, payment: false },
-      package_only: { activity: false, payment: false },
-      payment_only: { package: false, activity: false },
+      activity_only: { package: false, payment: false, zone: false },
+      package_only: { activity: false, payment: false, zone: false },
+      payment_only: { package: false, activity: false, zone: false },
       all: {},
       create: { missing_only: true },
       nil => { missing_only: true }
@@ -77,7 +79,7 @@ class Setup::FormulaMappingsController < PrivateController
   end
 
   def build_formula_mappings(options = {})
-    default_options = { activity: true, package: true, payment: true, missing_only: false }
+    default_options = { activity: true, package: true, payment: true, zone: true, missing_only: false }
     options = default_options.merge(options)
     mappings = []
     project = current_project(project_scope: :fully_loaded)
@@ -106,11 +108,10 @@ class Setup::FormulaMappingsController < PrivateController
       end
     end
 
-
-
     other_rules = []
     unless params[:activity_code]
       other_rules += project.packages.flat_map(&:rules).select(&:package_kind?) if options[:package]
+      other_rules += project.packages.flat_map(&:rules).select(&:zone_kind?) if options[:zone]
       other_rules += project.payment_rules.flat_map(&:rule) if options[:payment]
     end
 
