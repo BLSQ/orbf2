@@ -31,12 +31,17 @@ module InvoicesHelper
   end
 
   def package_descriptor(package)
-    {
-      name:       package.name,
-      frequency:  package.frequency,
-      formulas:   formulas_descriptors(package.package_rule),
-      activities: activity_descriptors(package)
+    package_descriptor = {
+      name:                   package.name,
+      frequency:              package.frequency,
+      formulas:               formulas_descriptors(package.package_rule),
+      activities:             activity_descriptors(package),
+      data_set_ids:           package.package_states.map(&:ds_external_reference).compact,
+      data_element_group_ids: package.package_states.map(&:deg_external_reference).compact
     }
+    package_descriptor[:zone_formulas] = formulas_descriptors(package.zone_rule) if package.zone_rule
+
+    package_descriptor
   end
 
   def activity_descriptors(package)
@@ -62,10 +67,16 @@ module InvoicesHelper
 
   def payment_descriptor(payment_rule)
     {
-      name:     payment_rule.rule.name,
-      formulas: formulas_descriptors(payment_rule.rule),
-      packages: payment_rule.packages.each_with_object({}) do |package, hash|
+      name:             payment_rule.rule.name,
+      formulas:         formulas_descriptors(payment_rule.rule),
+      packages:         payment_rule.packages.each_with_object({}) do |package, hash|
         hash[package.code] = package_descriptor(package)
+      end,
+      output_data_sets: payment_rule.datasets.map do |ds|
+        {
+          frequency: ds.frequency,
+          id:        ds.external_reference
+        }
       end
     }
   end
