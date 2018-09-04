@@ -8,7 +8,7 @@ class SynchroniseDegDsWorker
 
   sidekiq_throttle(
     concurrency: { limit: 1 },
-    key_suffix:  ->(project_anchor_id, _time= Time.now.utc) { project_anchor_id }
+    key_suffix:  ->(project_anchor_id, _time = Time.now.utc) { project_anchor_id }
   )
 
   def perform(project_anchor_id, now = Time.now.utc)
@@ -37,13 +37,13 @@ class SynchroniseDegDsWorker
       Rails.logger.info "created #{created_deg}"
       if created_deg
         package_state.deg_external_reference = created_deg.id
-       package_state.save!
+        package_state.save!
       end
 
       created_ds = create_dataset(package, state, data_element_ids)
       package_state.ds_external_reference = created_ds.id
       package_state.save!
-      #Rails.logger.info "updated package_state ds and deg external_reference to #{created_deg.id}  #{created_ds.id} #{package_state.inspect}"
+
       package
     end
   end
@@ -67,13 +67,13 @@ class SynchroniseDegDsWorker
       created_deg = dhis2.data_element_groups.find(deg_id)
       created_deg.update_attributes(deg.first) # rubocop:disable Rails/ActiveRecordAliases
     else
-      puts "CREATING DEG with #{deg.to_json}"
       status = dhis2.data_element_groups.create(deg)
     end
     created_deg = dhis2.data_element_groups.find_by(name: deg_name)
     raise "data element group not created #{deg_name} : #{deg} : #{status.inspect}" unless created_deg
     created_deg
   rescue RestClient::Exception => e
+    Rails.logger.warn("failed create_data_element_group " + e.message)
   end
 
   def create_dataset(package, state, data_element_ids)
@@ -98,23 +98,22 @@ class SynchroniseDegDsWorker
     status = nil
     created_ds = nil
     ds_id = package.package_states.find { |ps| ps.state == state }.ds_external_reference
-    puts "LOOKING for #{ds_id}"
     if ds_id
-      created_ds = dhis2.data_sets.find(ds_id) rescue nil
+      created_ds = begin
+                     dhis2.data_sets.find(ds_id)
+                   rescue StandardError
+                     nil
+                   end
     end
     if created_ds.nil?
       payload = ds
-      puts "CREATING DS with #{payload.to_json}"
       status = dhis2.data_sets.create(payload)
     end
 
-
-    puts "created_ds #{created_ds}"
     created_ds = dhis2.data_sets.find_by(name: created_ds&.name || ds_name)
 
     target_ds = OpenStruct.new(ds.first)
-    puts "created_ds #{created_ds}"
-    puts "target_ds  #{target_ds}"
+
     created_ds.name = target_ds.name
     created_ds.short_name = target_ds.short_name
     created_ds.code = target_ds.code
