@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 class Dhis2SnapshotWorker
   include Sidekiq::Worker
   include Sidekiq::Throttled::Worker
-
+  PAGE_SIZE = 5000
   sidekiq_options retry: 5
 
   sidekiq_throttle(
@@ -23,10 +25,25 @@ class Dhis2SnapshotWorker
   def snapshot(project, kind, now)
     month = now.month
     year = now.year
-
-    dhis2 = project.dhis2_connection
-    data = dhis2.send(kind).list(fields: ":all", page_size: 50_000)
-    dhis2_version = dhis2.system_infos.get["version"]
+    data = []
+    begin
+      dhis2 = project.dhis2_connection
+      paged_data = dhis2.send(kind).list(fields: ":all", page_size: PAGE_SIZE)
+      data.push(*paged_data)
+      page_count = paged_data.pager.page_count
+      puts "Processed page 1 of #{page_count} (Size: #{paged_data.size})"
+      if page_count > 1
+        (2..page_count).each do |page|
+          paged_data = dhis2.send(kind).list(fields: ":all", page_size: PAGE_SIZE, page: page)
+          data.push(*paged_data)
+          puts "Processed page #{page} of #{page_count} (Size: #{paged_data.size})"
+        end
+      end
+      dhis2_version = dhis2.system_infos.get["version"]
+    rescue RestClient::Exception => e
+      Rails.logger.info "#{kind} #{e.message}"
+      raise "#{kind} #{e.message}"
+    end
 
     new_snapshot = false
     snapshot = nil
