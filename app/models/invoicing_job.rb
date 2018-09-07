@@ -69,12 +69,15 @@ class InvoicingJob < ApplicationRecord
   end
 
   def mark_as_error(start_time, end_time, err)
-    fill_duration(start_time, end_time)
-    self.processed_at = nil
-    self.errored_at = Time.now
-    self.status = "errored"
-    self.last_error = "#{err&.class&.name}: #{err&.message}"
-    save!
+    transaction(requires_new: true) do
+      fill_duration(start_time, end_time)
+      self.processed_at = nil
+      self.errored_at = Time.now
+      self.status = "errored"
+      self.last_error = "#{err&.class&.name}: #{err&.message}"
+      save!
+    end
+    puts "marked as error new transaction : #{self}"
   end
 
   private
