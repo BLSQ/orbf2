@@ -30,6 +30,7 @@ class InvoicingJob < ApplicationRecord
         puts "FOUND #{invoicing_job.inspect} vs #{period} #{orgunit_ref}"
         yield
       ensure
+        puts "mark_as_processed #{invoicing_job.inspect}"
         invoicing_job&.mark_as_processed(start_time, time)
       end
     rescue StandardError => err
@@ -72,7 +73,7 @@ class InvoicingJob < ApplicationRecord
     self.processed_at = nil
     self.errored_at = Time.now
     self.status = "errored"
-    self.last_error = "#{err.class.name}: #{err.message}"
+    self.last_error = "#{err&.class&.name}: #{err&.message}"
     save!
   end
 
