@@ -31,11 +31,11 @@ class InvoicingJob < ApplicationRecord
         yield
       ensure
         puts "mark_as_processed #{invoicing_job.inspect}"
-        invoicing_job&.mark_as_processed(start_time, time)
+        find_invoicing_job(project_anchor, period, orgunit_ref)&.mark_as_processed(start_time, time)
       end
     rescue StandardError => err
       puts "ERROR #{invoicing_job.inspect} #{err.message}"
-      invoicing_job&.mark_as_error(start_time, time, err)
+      find_invoicing_job(project_anchor, period, orgunit_ref)&.mark_as_error(start_time, time, err)
       raise err
     end
 
@@ -68,7 +68,8 @@ class InvoicingJob < ApplicationRecord
       self.last_error = nil
       save!
     end
-    puts "mark_as_processed requires_new #{self}"
+    self.reload
+    puts "mark_as_processed requires_new #{self.inspect}"
   end
 
   def mark_as_error(start_time, end_time, err)
