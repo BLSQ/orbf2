@@ -1,4 +1,3 @@
-
 # frozen_string_literal: true
 
 class DiscardInvoicingJobWorker
@@ -21,11 +20,9 @@ class DiscardInvoicingJobWorker
   end
 
   def jids
-    jids = Set.new
-    jids.merge(Sidekiq::ScheduledSet.new.select.map(&:jid))
-    jids.merge(Sidekiq::RetrySet.new.select.map(&:jid))
-    jids.merge(Sidekiq::Queue.new("default").map(&:jid))
-    jids.merge(Sidekiq::Workers.new.each { |_process, _thread, _msg| map(&:jid) })
-    jids
+    Set.new.merge(Sidekiq::ScheduledSet.new.select.map(&:jid))
+       .merge(Sidekiq::RetrySet.new.select.map(&:jid))
+       .merge(Sidekiq::Queue.new("default").map(&:jid))
+       .merge(Sidekiq::Workers.new.map { |_process, _thread, msg| msg["payload"]["jid"] })
   end
 end
