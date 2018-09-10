@@ -27,16 +27,11 @@ class Dhis2SnapshotCompactor
         row["table"].delete(key_to_delete)
       end
     end
-    compact_pyramid(snapshot) if snapshot.kind == "organisation_units"
     if clean_count == 0
       Rails.logger.info "nothing to clean for id:#{snapshot.id} #{snapshot.kind} - #{snapshot.project_anchor.program.code} - #{snapshot.snapshoted_at}"
       return false
     end
     Rails.logger.info "cleaned #{clean_count}"
     true
-  end
-
-  def compact_pyramid(snapshot)
-    # TODO
   end
 end

@@ -1,4 +1,6 @@
 
+# frozen_string_literal: true
+
 module WebmockDhis2Helpers
   def stub_all_data_compound(project)
     stub_request(:get, "#{project.dhis2_url}/api/dataElements?fields=:all&pageSize=#{Dhis2SnapshotWorker::PAGE_SIZE}")

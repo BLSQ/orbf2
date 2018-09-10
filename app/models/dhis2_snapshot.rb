@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: dhis2_snapshots
@@ -72,10 +74,8 @@ class Dhis2Snapshot < ApplicationRecord
     save!
   end
 
-
   def store_changes
-    return if @disable_tracking
-    return if changes.empty?
+    return if changes.empty? || @disable_tracking
     current = changes["content"].last&.map { |r| r["table"] }
     previous = changes["content"].first.map { |r| r["table"] }
 
