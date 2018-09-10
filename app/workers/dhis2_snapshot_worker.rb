@@ -25,26 +25,8 @@ class Dhis2SnapshotWorker
   def snapshot(project, kind, now)
     month = now.month
     year = now.year
-    data = []
-    begin
-      dhis2 = project.dhis2_connection
-      paged_data = dhis2.send(kind).list(fields: ":all", page_size: PAGE_SIZE)
-      data.push(*paged_data)
-      page_count = paged_data.pager.page_count
-      puts "Processed page 1 of #{page_count} (Size: #{paged_data.size})"
-      if page_count > 1
-        (2..page_count).each do |page|
-          paged_data = dhis2.send(kind).list(fields: ":all", page_size: PAGE_SIZE, page: page)
-          data.push(*paged_data)
-          puts "Processed page #{page} of #{page_count} (Size: #{paged_data.size})"
-        end
-      end
-      dhis2_version = dhis2.system_infos.get["version"]
-    rescue RestClient::Exception => e
-      Rails.logger.info "#{kind} #{e.message}"
-      raise "#{kind} #{e.message}"
-    end
-
+    data = fetch_data(project, kind)
+    dhis2_version = project.dhis2_connection.system_infos.get["version"]
     new_snapshot = false
     snapshot = nil
     project.project_anchor.with_lock do
@@ -55,13 +37,40 @@ class Dhis2SnapshotWorker
       ) do
         new_snapshot = true
       end
+      start = Time.new
       snapshot.content = JSON.parse(data.to_json)
       snapshot.job_id = jid || "railsc"
       snapshot.dhis2_version = dhis2_version
       Dhis2SnapshotCompactor.new.compact(snapshot)
+      puts "#{Time.new } \tCompacted #{kind} total time : #{Time.new - start})"
+      snapshot.disable_tracking = true
       snapshot.save!
+      puts "#{Time.new } \tProcessed #{kind} : #{Time.new - start})"
       Rails.logger.info "Dhis2SnapshotWorker #{kind} : for project anchor #{new_snapshot ? 'created' : 'updated'} #{year} #{month} : #{project.project_anchor.id} #{project.name} #{data.size} done!"
     end
     snapshot
+  end
+
+  def fetch_data(project, kind)
+    data = []
+    begin
+      start = Time.new
+      dhis2 = project.dhis2_connection
+      paged_data = dhis2.send(kind).list(fields: ":all", page_size: PAGE_SIZE)
+      data.push(*paged_data)
+      page_count = paged_data.pager.page_count
+      puts "#{Time.new } \t Processed page 1 of #{page_count} (Size: #{paged_data.size}, total time : #{Time.new - start})"
+      if page_count > 1
+        (2..page_count).each do |page|
+          paged_data = dhis2.send(kind).list(fields: ":all", page_size: PAGE_SIZE, page: page)
+          data.push(*paged_data)
+          puts "#{Time.new } \t Processed page #{page} of #{page_count} (Size: #{paged_data.size}, total time : #{Time.new - start})"
+        end
+      end
+    rescue RestClient::Exception => e
+      Rails.logger.info "#{kind} #{e.message}"
+      raise "#{kind} #{e.message}"
+    end
+    data
   end
 end

@@ -1,13 +1,13 @@
 
 module WebmockDhis2Helpers
   def stub_all_data_compound(project)
-    stub_request(:get, "#{project.dhis2_url}/api/dataElements?fields=:all&pageSize=50000")
+    stub_request(:get, "#{project.dhis2_url}/api/dataElements?fields=:all&pageSize=#{Dhis2SnapshotWorker::PAGE_SIZE}")
       .to_return(status: 200, body: fixture_content(:dhis2, "all_data_elements.json"))
 
-    stub_request(:get, "#{project.dhis2_url}/api/dataElementGroups?fields=:all&pageSize=50000")
+    stub_request(:get, "#{project.dhis2_url}/api/dataElementGroups?fields=:all&pageSize=#{Dhis2SnapshotWorker::PAGE_SIZE}")
       .to_return(status: 200, body: fixture_content(:dhis2, "data_element_groups.json"))
 
-    stub_request(:get, "#{project.dhis2_url}/api/indicators?fields=:all&pageSize=50000")
+    stub_request(:get, "#{project.dhis2_url}/api/indicators?fields=:all&pageSize=#{Dhis2SnapshotWorker::PAGE_SIZE}")
       .to_return(status: 200, body: fixture_content(:dhis2, "indicators.json"))
   end
 
@@ -28,12 +28,12 @@ module WebmockDhis2Helpers
   end
 
   def stub_dhis2_all_org_unit_group_sets(project)
-    stub_request(:get, "#{project.dhis2_url}/api/organisationUnitGroupSets?fields=id,displayName&pageSize=20000")
+    stub_request(:get, "#{project.dhis2_url}/api/organisationUnitGroupSets?fields=id,displayName&pageSize=#{Dhis2SnapshotWorker::PAGE_SIZE}")
       .to_return(status: 200, body: fixture_content(:dhis2, "organisation_unit_group_sets.json"))
   end
 
   def stub_dhis2_all_orgunits_groups(project)
-    stub_request(:get, "#{project.dhis2_url}/api/organisationUnitGroups?fields=id,displayName&pageSize=20000")
+    stub_request(:get, "#{project.dhis2_url}/api/organisationUnitGroups?fields=id,displayName&pageSize=#{Dhis2SnapshotWorker::PAGE_SIZE}")
       .to_return(
         status: 200,
         body:   fixture_content(:dhis2, "organisationUnitGroups.json")
@@ -41,7 +41,7 @@ module WebmockDhis2Helpers
   end
 
   def stub_dhis2_all_orgunits(project)
-    stub_request(:get, "#{project.dhis2_url}/api/organisationUnits?fields=id,displayName,path,organisationUnitGroups&pageSize=50000")
+    stub_request(:get, "#{project.dhis2_url}/api/organisationUnits?fields=id,displayName,path,organisationUnitGroups&pageSize=#{Dhis2SnapshotWorker::PAGE_SIZE}")
       .to_return(
         status: 200,
         body:   fixture_content(:dhis2, "all_organisation_units_with_groups.json")

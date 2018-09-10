@@ -1,7 +1,10 @@
 <div class="nav navbar navbar-default navbar-fixed-top">
   <div class="container">
     <div class="navbar-header">
-      <%= link_to "Home", root_path, class: "navbar-brand" %>
+      <%= link_to root_path, class: "navbar-brand" do %>
+        <i class="fa fa-home" aria-hidden="true"></i>
+        <%= (@current_project&.name&.humanize || "Home") %>
+      <%end%>
     </div>
     <% if @current_project %>
       <div class="navbar-header">
