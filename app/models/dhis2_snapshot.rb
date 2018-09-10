@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: dhis2_snapshots
@@ -27,6 +29,8 @@ class Dhis2Snapshot < ApplicationRecord
              indicators].freeze
 
   has_many :dhis2_snapshot_changes, dependent: :destroy
+
+  attr_accessor :disable_tracking
 
   def kind_organisation_units?
     kind.to_sym == :organisation_units
@@ -71,7 +75,7 @@ class Dhis2Snapshot < ApplicationRecord
   end
 
   def store_changes
-    return if changes.empty?
+    return if changes.empty? || @disable_tracking
     current = changes["content"].last&.map { |r| r["table"] }
     previous = changes["content"].first.map { |r| r["table"] }
 

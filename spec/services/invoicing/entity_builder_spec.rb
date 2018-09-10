@@ -33,11 +33,11 @@ RSpec.describe Invoicing::EntityBuilder do
   end
 
   def mock_pyramid
-    stub_request(:get, "#{project.dhis2_url}/api/organisationUnits?fields=id,displayName,path,organisationUnitGroups&pageSize=50000")
+    stub_request(:get, "#{project.dhis2_url}/api/organisationUnits?fields=id,displayName,path,organisationUnitGroups&pageSize=5000")
       .to_return(status: 200, body: fixture_content(:dhis2, "all_organisation_units_with_groups.json"))
-    stub_request(:get, "#{project.dhis2_url}/api/organisationUnitGroups?fields=id,displayName&pageSize=20000")
+    stub_request(:get, "#{project.dhis2_url}/api/organisationUnitGroups?fields=id,displayName&pageSize=5000")
       .to_return(status: 200, body: fixture_content(:dhis2, "organisationUnitGroups.json"))
-    stub_request(:get, "http://play.dhis2.org/demo/api/organisationUnitGroupSets?fields=id,displayName&pageSize=20000")
+    stub_request(:get, "http://play.dhis2.org/demo/api/organisationUnitGroupSets?fields=id,displayName&pageSize=5000")
       .to_return(status: 200, body: fixture_content(:dhis2, "organisation_unit_group_sets.json"))
     Pyramid.from(project)
   end

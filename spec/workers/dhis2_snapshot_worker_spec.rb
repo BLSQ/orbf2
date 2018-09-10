@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 require_relative "./dhis2_snapshot_fixture"
 
@@ -36,7 +38,18 @@ RSpec.describe Dhis2SnapshotWorker do
 
     expect(Dhis2Snapshot.all.count).to eq 0
 
-    Dhis2SnapshotWorker.new.perform(project_anchor.id)
+    previous_snapshot = project_anchor.dhis2_snapshots.find_or_initialize_by(
+      kind:          "organisation_units",
+      month:         Time.new.month,
+      year:          Time.new.year,
+      dhis2_version: "2.24",
+      job_id:        "rspec",
+      content:       []
+    )
+
+    previous_snapshot.save!
+
+    Dhis2SnapshotWorker.new.perform(project_anchor.id, disable_tracking: false)
     expect(Dhis2Snapshot.all.count).to eq Dhis2Snapshot::KINDS.size
 
     Dhis2SnapshotWorker.new.perform(project_anchor.id)

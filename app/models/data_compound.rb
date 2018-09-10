@@ -19,9 +19,9 @@ class DataCompound
     data_compound = project.project_anchor.data_compound_for(Time.now.utc)
     return data_compound if data_compound
     dhis2 = project.dhis2_connection
-    data_elements = dhis2.data_elements.list(fields: ":all", page_size: 50_000)
-    data_element_groups = dhis2.data_element_groups.list(fields: ":all", page_size: 50_000)
-    indicators = dhis2.indicators.list(fields: ":all", page_size: 50_000)
+    data_elements = dhis2.data_elements.list(fields: ":all", page_size: Dhis2SnapshotWorker::PAGE_SIZE)
+    data_element_groups = dhis2.data_element_groups.list(fields: ":all", page_size: Dhis2SnapshotWorker::PAGE_SIZE)
+    indicators = dhis2.indicators.list(fields: ":all", page_size: Dhis2SnapshotWorker::PAGE_SIZE)
     DataCompound.new(data_elements, data_element_groups, indicators)
   end
 

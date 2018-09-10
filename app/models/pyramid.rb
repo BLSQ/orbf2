@@ -1,4 +1,6 @@
 
+# frozen_string_literal: true
+
 class Pyramid
   def initialize(org_units, org_unit_groups, org_unit_group_sets)
     @org_unit_groups_by_id = org_unit_groups.index_by(&:id)
@@ -23,11 +25,18 @@ class Pyramid
     return pyramid if pyramid
     dhis2 = project.dhis2_connection
     org_unit_groups = dhis2.organisation_unit_groups
-                           .list(fields: "id,displayName", page_size: 20_000)
+                           .list(
+                             fields:    "id,displayName",
+                             page_size: Dhis2SnapshotWorker::PAGE_SIZE
+                           )
     org_units = dhis2.organisation_units
-                     .list(fields: "id,displayName,path,organisationUnitGroups", page_size: 50_000)
+                     .list(fields:    "id,displayName,path,organisationUnitGroups",
+                           page_size: Dhis2SnapshotWorker::PAGE_SIZE)
     org_unit_group_sets = dhis2.organisation_unit_group_sets
-                               .list(fields: "id,displayName", page_size: 20_000)
+                               .list(
+                                 fields:    "id,displayName",
+                                 page_size: Dhis2SnapshotWorker::PAGE_SIZE
+                               )
 
     Pyramid.new(org_units, org_unit_groups, org_unit_group_sets)
   end

@@ -1,5 +1,7 @@
 
 
+# frozen_string_literal: true
+
 class Dhis2SnapshotCompactor
   CLEANUP_INFOS = {
     "organisation_units" => %w[client coordinates access attribute_values users data_sets user_group_accesses],

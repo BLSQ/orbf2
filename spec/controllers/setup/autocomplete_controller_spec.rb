@@ -103,7 +103,7 @@ RSpec.describe Setup::AutocompleteController, type: :controller do
     end
 
     def stub_dhis2_all_orgunits(project)
-      stub_request(:get, "#{project.dhis2_url}/api/organisationUnits?fields=:all&pageSize=50000")
+      stub_request(:get, "#{project.dhis2_url}/api/organisationUnits?fields=:all&pageSize=5000")
         .to_return(
           status: 200,
           body:   fixture_content(:dhis2, "all_organisation_units_with_groups.json")
