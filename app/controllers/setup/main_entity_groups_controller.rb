@@ -33,6 +33,6 @@ class Setup::MainEntityGroupsController < PrivateController
   end
 
   def entity_group_params
-    params.require(:entity_group).permit(:name, :external_reference)
+    params.require(:entity_group).permit(:name, :external_reference, :limit_snaphot_to_active_regions)
   end
 end

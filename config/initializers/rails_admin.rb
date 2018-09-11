@@ -34,6 +34,11 @@ RailsAdmin.config do |config|
       only EDITABLE_MODELS
     end
   end
+  config.model "User" do
+    object_label_method do
+      :label
+    end
+  end
 
   config.model "Dhis2Log" do
     list do

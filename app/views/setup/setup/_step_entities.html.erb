@@ -15,10 +15,19 @@
                                 url:organisation_unit_group_setup_project_autocomplete_index_path(project, term:'')
                               } %>
 
+
+
+
+
         </div>
     </div>
     <div class="col-md-6" id="main_target_group_selection"></div>
 </div>
+<%= f.input :limit_snaphot_to_active_regions,
+            hint: "To limit memory usage and speed up invoicing, "\
+            "take only the level_2 and their children if at least one of the children belongs to target group. "\
+            "Eg : 40.000 organisation units but only 2 regions actually"\
+            " in the target groups and so only need 3000 of them." %>
 <%= f.button :submit, class: "btn btn-success" %>
 <% end %>
 <% end %>

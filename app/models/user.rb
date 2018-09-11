@@ -34,4 +34,8 @@ class User < ApplicationRecord
   def env_dev?
     Rails.env.dev?
   end
+
+  def label
+    "User##{id} - #{email}"
+  end
 end
