@@ -69,12 +69,14 @@ class Dhis2SnapshotWorker
   ].join(",")
 
   def fetch_data(project, kind)
-    fetcher = if kind == :organisation_units && project&.entity_group&.limit_snaphot_to_active_regions
-                Fetchers::OrganisationUnitsSnapshotFetcher.new(fields: ORGANISATION_UNITS_FIELDS)
-              else
-                Fetchers::GenericSnapshotFetcher.new
-              end
+    fetcher(project, kind).fetch_data(project, kind)
+  end
 
-    fetcher.fetch_data(project, kind)
+  def fetcher(project, kind)
+    if kind == :organisation_units && project&.entity_group&.limit_snaphot_to_active_regions
+      Fetchers::OrganisationUnitsSnapshotFetcher.new(fields: ORGANISATION_UNITS_FIELDS)
+    else
+      Fetchers::GenericSnapshotFetcher.new
+    end
   end
 end
