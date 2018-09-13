@@ -3,8 +3,9 @@
 class Dhis2SnapshotWorker
   include Sidekiq::Worker
   include Sidekiq::Throttled::Worker
-  PAGE_SIZE = 5000
   sidekiq_options retry: 5
+
+  PAGE_SIZE = 5000
 
   sidekiq_throttle(
     concurrency: { limit: 1 },
@@ -49,34 +50,33 @@ class Dhis2SnapshotWorker
     snapshot.job_id = jid || "railsc"
     snapshot.dhis2_version = dhis2_version
     Dhis2SnapshotCompactor.new.compact(snapshot)
-    puts "#{Time.new} \tCompacted #{kind} total time : #{Time.new - start})"
+    log_progress("Compacted", kind, start)
     snapshot.disable_tracking = @disable_tracking
     snapshot.save!
-    puts "#{Time.new} \tProcessed #{kind} : #{Time.new - start})"
+    log_progress("Processed", kind, start)
     Rails.logger.info "Dhis2SnapshotWorker #{kind} : for project anchor #{new_snapshot ? 'created' : 'updated'} #{year} #{month} : #{project.project_anchor.id} #{project.name} #{data.size} done!"
     snapshot
   end
 
+  def log_progress(message, kind, start)
+    puts "#{Time.new} \t#{message} #{kind} total time : #{Time.new - start})"
+  end
+
+  ORGANISATION_UNITS_FIELDS = [
+    ":all",
+    "!coordinates", "!ancestors", "!access", "!attributeValues", "!users",
+    "!dataSets", "!userGroupAccesses", "!dimensionItemType", "!externalAccess"
+  ].join(",")
+
   def fetch_data(project, kind)
-    data = []
-    begin
-      start = Time.new
-      dhis2 = project.dhis2_connection
-      paged_data = dhis2.send(kind).list(fields: ":all", page_size: PAGE_SIZE)
-      data.push(*paged_data)
-      page_count = paged_data.pager.page_count
-      puts "#{Time.new} \t Processed page 1 of #{page_count} (Size: #{paged_data.size}, total time : #{Time.new - start})"
-      if page_count > 1
-        (2..page_count).each do |page|
-          paged_data = dhis2.send(kind).list(fields: ":all", page_size: PAGE_SIZE, page: page)
-          data.push(*paged_data)
-          puts "#{Time.new} \t Processed page #{page} of #{page_count} (Size: #{paged_data.size}, total time : #{Time.new - start})"
-        end
-      end
-    rescue RestClient::Exception => e
-      Rails.logger.info "#{kind} #{e.message}"
-      raise "#{kind} #{e.message}"
+    fetcher(project, kind).fetch_data(project, kind)
+  end
+
+  def fetcher(project, kind)
+    if kind == :organisation_units && project&.entity_group&.limit_snaphot_to_active_regions
+      Fetchers::OrganisationUnitsSnapshotFetcher.new(fields: ORGANISATION_UNITS_FIELDS)
+    else
+      Fetchers::GenericSnapshotFetcher.new
     end
-    data
   end
 end

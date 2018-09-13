@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Setup::MainEntityGroupsController < PrivateController
   def create
     unless current_project
@@ -26,13 +28,17 @@ class Setup::MainEntityGroupsController < PrivateController
     end
 
     if current_project.entity_group
-      current_project.entity_group.update_attributes(eg_params)
+      current_project.entity_group.update(eg_params)
     else
       current_project.build_entity_group(eg_params)
     end
   end
 
   def entity_group_params
-    params.require(:entity_group).permit(:name, :external_reference)
+    params.require(:entity_group).permit(
+      :name,
+      :external_reference,
+      :limit_snaphot_to_active_regions
+    )
   end
 end
