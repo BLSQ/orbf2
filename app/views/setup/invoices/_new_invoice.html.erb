@@ -19,7 +19,11 @@
   <thead>
     <tr>
       <% invoice.headers.each do |header| %>
-         <th title="<%= header %>"><%=header.humanize %> </th>
+         <th title="<%= header %>" class="popper" data-toggle="popover" data-placement="bottom" ><%=header.humanize %>
+           <div class="popper-content hide">
+              <li><%= link_to("Formula mappings", new_setup_project_formula_mapping_path(mode: :create, formula_code: header)) %></li>
+           </div>
+         </th>
       <%end%>
       <th>Activity</th>
     </tr>

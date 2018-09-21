@@ -127,6 +127,9 @@ class Setup::FormulaMappingsController < PrivateController
         mapping
       end
     end
+    if params[:formula_code]
+      mappings = mappings.flatten.compact.select { |mapping| mapping.formula.code == params[:formula_code] }
+    end
 
     FormulaMappings.new(mappings: mappings.flatten.compact, project: project, mode: params[:mode])
   end
