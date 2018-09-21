@@ -1,16 +1,19 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: formulas
 #
-#  id          :integer          not null, primary key
-#  code        :string           not null
-#  description :string           not null
-#  expression  :text             not null
-#  rule_id     :integer
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  frequency   :string
-#  short_name  :string
+#  id                      :integer          not null, primary key
+#  code                    :string           not null
+#  description             :string           not null
+#  expression              :text             not null
+#  rule_id                 :integer
+#  created_at              :datetime         not null
+#  updated_at              :datetime         not null
+#  frequency               :string
+#  short_name              :string
+#  exportable_formula_code :string
 #
 
 require "rails_helper"
@@ -21,8 +24,14 @@ RSpec.describe Formula, type: :model do
   end
 
   def new_formula(args)
-    rule = Rule.new(kind:"activity", package: Package.new)
-    Formula.new(args.merge(code: args[:code] || "sample_expression", description: "description", rule: rule))
+    rule = Rule.new(kind: "activity", package: Package.new)
+    Formula.new(
+      args.merge(
+        code:        args[:code] || "sample_expression",
+        description: "description",
+        rule:        rule
+      )
+    )
   end
 
   describe "Code validation" do
@@ -35,14 +44,14 @@ RSpec.describe Formula, type: :model do
     it "should reject upperCase" do
       formula = new_formula(code: "upperCase", expression: "45", description: "description")
       formula.valid?
-      expect(formula.errors.full_messages).to eq(["Code : should only contains lowercase letters and _ like 'quality_score' or 'total_amount' vs upperCase"])
+      expect(formula.errors.full_messages).to eq(["Code : should only contains lowercase letters and _ (no space, no upper letter) like 'quality_score' or 'total_amount' (NOT upperCase)"])
     end
   end
 
   describe "frequency validation" do
     it "should allow empty frequency" do
       formula = new_formula(frequency: "", expression: "variable - 456")
-      formula.frequency=""
+      formula.frequency = ""
       expect(formula.valid?).to be true
       expect(formula.frequency).to be nil
     end
@@ -78,6 +87,16 @@ RSpec.describe Formula, type: :model do
 
       formula.valid?
       expect(formula.errors[:expression]).to eq(["malformed format string - %["])
+    end
+  end
+
+  describe "exportable_formula_code validation" do
+    it "reject reference to non existing formula" do
+      formula = new_formula(expression: "1", exportable_formula_code: "unknown")
+      formula.rule.formulas.build(code: "sample_exportable")
+
+      formula.valid?
+      expect(formula.errors[:exportable_formula_code]).to eq(["the exportable formula code reference an incorrect code (unknown) should be one of : sample_exportable"])
     end
   end
 end

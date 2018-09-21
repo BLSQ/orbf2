@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Setup::RulesController < PrivateController
   helper_method :rule
   attr_reader :rule
@@ -41,12 +43,10 @@ class Setup::RulesController < PrivateController
 
   def update
     @rule = current_package.rules.find(params[:id])
-    @rule.update_attributes(rule_params)
+    @rule.update(rule_params)
     Rails.logger.info @rule.valid?
     Rails.logger.info @rule.errors.full_messages
-    if @rule.save
-      flash[:notice] = "Rule updated !"
-    end
+    flash[:notice] = "Rule updated !" if @rule.save
 
     render action: "edit"
   end
@@ -69,11 +69,7 @@ class Setup::RulesController < PrivateController
     params.require(:rule)
           .permit(:name,
                   :kind,
-                  formulas_attributes:        %i[
-                    id code short_name description expression frequency _destroy
-                  ],
-                  decision_tables_attributes: %i[
-                    id content
-                  ])
+                  formulas_attributes:        Formula::WHITELISTED_FIELDS,
+                  decision_tables_attributes: %i[id content])
   end
 end
