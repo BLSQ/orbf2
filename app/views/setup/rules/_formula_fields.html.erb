@@ -29,7 +29,7 @@
      <% if f.object.rule.project.new_engine? %>
       <div class="col-md-1"></div>
       <div class="col-md-5">
-          <%= f.input :exportable_formula_code, label:"Export this formula to dhis2 if the formula evaluates to true", collection: f.object.available_exportable_formula_codes, as: :select, include_blank: "-- always export to dhis2." %>
+          <%= f.input :exportable_formula_code, label:"Export to dhis if the formula is true or different than 0", collection: f.object.available_exportable_formula_codes, as: :select, include_blank: "-- always export to dhis2." %>
       </div>
      <%end%>
     </div>

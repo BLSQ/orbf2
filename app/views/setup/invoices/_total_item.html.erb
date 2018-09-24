@@ -4,7 +4,12 @@
         <b><%=total_item.formula.code.humanize %></b> :
       </div>
       <div class="col-md-3 popper <%= invoice_output_input_class(total_item) %>" data-toggle="popover"  data-placement="bottom">
-        <%= total_item.value %>
+
+          <%if total_item.not_exported?%>
+            <del><%= total_item.value %></del>
+          <%else%>
+            <%= total_item.value %>
+          <%end%>
           <div class="popper-content hide">
             <% formula_lookup = indexed_project.lookup_rule(total_item) %>
             <h3>
