@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/BLSQ/orbf-rules_engine.git
-  revision: eb0d116002f41144a6169822daf1ac3ed8824e44
+  revision: ff169fd152c69c662501555aba65b19c6c62a764
   specs:
     orbf-rules_engine (0.1.0)
       activesupport
@@ -152,7 +152,7 @@ GEM
     hashdiff (0.3.0)
     heroku-deflater (0.6.3)
       rack (>= 1.4.5)
-    hesabu (0.1.12)
+    hesabu (0.1.13)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
     httparty (0.16.2)

@@ -83,6 +83,10 @@ class Rule < ApplicationRecord
     facts
   end
 
+  def formula_codes
+    formulas.map(&:code)
+  end
+
   def formulas_are_coherent
     @solver ||= Rules::Solver.new
     @solver.validate_formulas(self) if name

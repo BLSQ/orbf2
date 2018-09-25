@@ -66,7 +66,7 @@ class Setup::ProjectRulesController < PrivateController
             rule_attributes: [
               :id,
               :name,
-              formulas_attributes: %i[id code short_name description expression frequency _destroy]
+              formulas_attributes: Formula::WHITELISTED_FIELDS
             ]
           )
   end

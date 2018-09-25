@@ -106,6 +106,7 @@ class MapProjectToOrbfProject
   def map_formula_mappings(formula)
     formula_mappings = {}
     formula_mappings[:frequency] = formula.frequency if formula.frequency
+    formula_mappings[:exportable_formula_code] = formula.exportable_formula_code if formula.exportable_formula_code
     if formula.rule.activity_kind? && formula.formula_mappings.any?
       formula_mappings[:activity_mappings] = formula.formula_mappings
                                                     .each_with_object({}) do |mapping, hash|
