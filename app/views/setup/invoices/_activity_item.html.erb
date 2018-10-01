@@ -30,7 +30,14 @@
                     <li><%= link_to_data_element(@current_project,variable.dhis2_data_element) %></li>
                     <li><%= @data_compound.data_element(variable.dhis2_data_element)&.name%>
                   <%elsif activity_state%>
-                    <li>Mapping : <%= activity_state.ext_id%> - <%= activity_state.kind%> - <%= @data_compound.data_element(activity_state.ext_id)&.name%>
+                    <li>Mapping : <%= activity_state.ext_id%> - <%= activity_state.kind%> - <%= (@data_compound.data_element(activity_state.ext_id) || @data_compound.indicator(activity_state.ext_id))&.name%>
+                    <%if activity_state.data_element?%>
+                      <li><%= link_to_data_element(@current_project,activity_state.ext_id) %></li>
+                    <%end%>
+                    <%if activity_state.indicator?%>
+                      <li> numerator <code><%= @data_compound.indicator(activity_state.ext_id)&.numerator %></code></li>
+                      <li><%= link_to_indicator(@current_project,activity_state.ext_id) %></li>
+                    <%end%>
                   <%end%>
                   <% if variable&.formula&.frequency && (variable.formula.frequency!=variable.formula.rule.package.frequency) %>
                     <li><code><%= variable.formula.frequency %></code></li>
