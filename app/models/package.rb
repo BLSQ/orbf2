@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: packages
@@ -12,6 +14,7 @@
 #  stable_id                  :uuid             not null
 #  kind                       :string           default("single")
 #  ogs_reference              :string
+#  groupsets_ext_refs         :string           default([]), is an Array
 #
 
 class Package < ApplicationRecord

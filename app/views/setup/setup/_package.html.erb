@@ -1,15 +1,34 @@
 <tr>
-    <td><%= link_to package.name , edit_setup_project_package_path(project,package)%></td>
-    <td><small><%= package.frequency=%></small></td>
-    <td>
-        <small><%= package.package_entity_groups.map{ |entitygroup|  entitygroup.name }.join(', ') %></small>
-    </td>
-    <td>
-        <small><%= package.states.map{ |state| state.name }.join(', ') %></small>
-    </td>
-    <td>
-      <% package.activities.sort {|a,b| NaturalSort.comparator(a.code, b.code)}.each do |activity| %>
-        <li><small><%= activity.name %></small></li>
+  <td>
+    <%= link_to package.name , edit_setup_project_package_path(project,package)%>
+    <br>
+    <br>
+    <small><b>Frequency:</b>
+    <%= package.frequency=%></small>
+    <br>
+    <small><b>States:</b>
+    <%= package.states.map{ |state| state.name }.join(', ') %></small>
+  </td>
+  <td width="20%">
+    <ul>
+      <% package.package_entity_groups.each do |entitygroup| %>
+        <li>
+          <small><%= entitygroup.name %></small>
+        </li>
       <%end%>
-    </td>
+    </ul>
+
+    <small>Linked to
+      <%= "#{package.groupsets_ext_refs.size} group set".pluralize(package.groupsets_ext_refs.size) %></small>
+  </td>
+
+  <td width="50%">
+    <ul>
+      <% package.activities.sort {|a,b| NaturalSort.comparator(a.code, b.code)}.each do |activity| %>
+        <li>
+          <small><%= activity.name %></small>
+        </li>
+      <%end%>
+    </ul>
+  </td>
 </tr>

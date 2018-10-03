@@ -13,6 +13,19 @@
   </div>
     <div class="col-md-6" id="org_units_groups_selection"></div>
 </div>
+<div class="row">
+    <div class="col-md-6">
+      <div class="form-group">
+        <label class="control-label">Org. Units Group Sets</label>
+        <select id="org_units_group_sets_selector" data-selected="<%=package.groupsets_ext_refs.join(',')%>"
+                data-placeholder="Lookup the organisation units group sets here..." data-selection = "org_units_group_sets_selection"
+                data-url = "<%= organisation_unit_group_sets_setup_project_autocomplete_index_path(package.project, siblings:true) %>"
+                class="form-control sol-powered" name="package[groupsets_ext_refs][]" multiple="multiple">
+        </select>
+    </div>
+  </div>
+    <div class="col-md-6" id="org_units_group_sets_selection"></div>
+</div>
 
 <%= f.input :kind, collection: Package::KINDS %>
 
