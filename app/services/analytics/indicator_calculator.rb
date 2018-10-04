@@ -16,10 +16,11 @@ module Analytics
       raise UnsupportedExpressionException.new(indicator_expression, unsupported) if unsupported.any?
       expressions = indicator_expression.split("+")
 
-      expressions.map do |expression|
+      expressions.each_with_object([]) do |expression, arr|
+        next unless expression.include?('#{')
         data_element_category =  expression.sub('#{', "").sub("}", "")
         data_element, category = data_element_category.split(".").map(&:strip)
-        { expression: expression.strip, data_element: data_element, category_combo: category }
+        arr << { expression: expression.strip, data_element: data_element, category_combo: category }
       end
     end
 

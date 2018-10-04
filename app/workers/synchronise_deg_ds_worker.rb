@@ -135,16 +135,19 @@ class SynchroniseDegDsWorker
     end
     created_ds.update
     raise "dataset not created #{ds_name} : #{ds} : #{status.inspect}" unless created_ds
-
     # due to v2.20 compat, looks data_elements is not always taken into accounts
-    data_element_ids.map do |data_element_id|
-      begin
-        Rails.logger.info "adding element #{data_element_id} to #{created_ds.id} #{created_ds.name}"
-        created_ds.add_relation(:dataElements, data_element_id)
-      rescue StandardError => e
-        Rails.logger.info "failed to associate data_element_id with dataset #{e.message}"
+    if created_ds.data_elements
+      existing = created_ds.data_elements.map { |de| de["id"] }
+      data_element_ids.map do |data_element_id|
+        next if existing.include?(data_element_id)
+        begin
+          Rails.logger.info "adding element #{data_element_id} to #{created_ds.id} #{created_ds.name}"
+          created_ds.add_relation(:dataElements, data_element_id)
+        rescue StandardError => e
+          Rails.logger.info "failed to associate data_element_id with dataset #{e.message}"
+        end
       end
-    end
+  end
     created_ds
   rescue RestClient::Exception => e
     raise "Failed to create dataset #{ds} #{e.message} with #{package.project.dhis2_url} #{e.response.body}"

@@ -26,6 +26,10 @@ RSpec.describe Analytics::IndicatorCalculator, type: :services do
       end.to raise_error(Analytics::IndicatorCalculator::UnsupportedExpressionException)
     end
 
+    it "reject non supported operands " do
+        expect(parse('0')).to eq []
+    end
+
     it "reject non supported grouping " do
       expect do
         parse('(#{dhjgLt7EYmu.se1qWfbtkmx})+#{xtVtnuWBBLB}')
