@@ -32,6 +32,7 @@ class SynchroniseDegDsWorker
       data_element_ids += indicators_data_element_references(@indicators, activity_states)
       data_element_ids = data_element_ids.uniq
       next if data_element_ids.empty?
+
       Rails.logger.info "dataelements : #{data_element_ids}"
       created_deg = create_data_element_group(package, state, data_element_ids)
       Rails.logger.info "created #{created_deg}"
@@ -49,32 +50,39 @@ class SynchroniseDegDsWorker
   end
 
   def create_data_element_group(package, state, data_element_ids)
-    deg_code = "ORBF-#{state.code}-#{package.name}"[0..49]
-    deg_name = "ORBF - #{state.name.pluralize.humanize} - #{package.name}"
-    deg = [
-      { name:          deg_name,
-        short_name:    deg_code,
-        code:          deg_code,
-        display_name:  deg_name,
-        data_elements: data_element_ids.map do |data_element_id|
-          { id: data_element_id }
-        end }
-    ]
-    dhis2 = package.project.dhis2_connection
-    status = nil
-    deg_id = package.package_states.find { |ps| ps.state == state }.deg_external_reference
-    if deg_id
-      created_deg = dhis2.data_element_groups.find(deg_id)
-      created_deg.update_attributes(deg.first) # rubocop:disable Rails/ActiveRecordAliases
-    else
-      status = dhis2.data_element_groups.create(deg)
+    created_deg = nil
+    begin
+      deg_code = "ORBF-#{state.code}-#{package.name}"[0..49]
+      deg_name = "ORBF - #{state.name.pluralize.humanize} - #{package.name}"
+      deg = [
+        { name:          deg_name,
+          short_name:    deg_code,
+          code:          deg_code,
+          display_name:  deg_name,
+          data_elements: data_element_ids.map do |data_element_id|
+            { id: data_element_id }
+          end }
+      ]
+      dhis2 = package.project.dhis2_connection
+      status = nil
+      deg_id = package.package_states.find { |ps| ps.state == state }.deg_external_reference
+      puts "**************************************** #{deg_id}"
+      if deg_id
+        created_deg = dhis2.data_element_groups.find(deg_id)
+        created_deg.update_attributes(deg.first) # rubocop:disable Rails/ActiveRecordAliases
+      else
+        status = dhis2.data_element_groups.create(deg)
+      end
+      created_deg = dhis2.data_element_groups.find_by(name: deg_name)
+      raise "data element group not created #{deg_name} : #{deg} : #{status.inspect}" unless created_deg
+
+      created_deg
+    rescue RestClient::Exception => e
+      puts deg.to_json
+      Rails.logger.warn("failed create_data_element_group " + e.message + "\n" + e&.response&.body + "\n" + +e&.response&.request&.payload.inspect)
+
+      return created_deg
     end
-    created_deg = dhis2.data_element_groups.find_by(name: deg_name)
-    raise "data element group not created #{deg_name} : #{deg} : #{status.inspect}" unless created_deg
-    created_deg
-  rescue RestClient::Exception => e
-    Rails.logger.warn("failed create_data_element_group " + e.message)
-    return nil
   end
 
   def create_dataset(package, state, data_element_ids)
@@ -127,6 +135,7 @@ class SynchroniseDegDsWorker
     end
     created_ds.update
     raise "dataset not created #{ds_name} : #{ds} : #{status.inspect}" unless created_ds
+
     # due to v2.20 compat, looks data_elements is not always taken into accounts
     data_element_ids.map do |data_element_id|
       begin
