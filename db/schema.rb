@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180920120601) do
+ActiveRecord::Schema.define(version: 20181003075801) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -185,6 +185,7 @@ ActiveRecord::Schema.define(version: 20180920120601) do
     t.uuid     "stable_id",                  default: -> { "uuid_generate_v4()" }, null: false
     t.string   "kind",                       default: "single"
     t.string   "ogs_reference"
+    t.string   "groupsets_ext_refs",         default: [],                                       array: true
     t.index ["project_id"], name: "index_packages_on_project_id", using: :btree
   end
 

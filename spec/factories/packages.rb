@@ -12,6 +12,7 @@
 #  stable_id                  :uuid             not null
 #  kind                       :string           default("single")
 #  ogs_reference              :string
+#  groupsets_ext_refs         :string           default([]), is an Array
 #
 
 FactoryGirl.define do

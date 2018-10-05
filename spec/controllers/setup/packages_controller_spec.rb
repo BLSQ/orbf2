@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 
 RSpec.describe Setup::PackagesController, type: :controller do
@@ -52,16 +54,40 @@ RSpec.describe Setup::PackagesController, type: :controller do
       stub_request(:get, "#{project.dhis2_url}/api/organisationUnitGroups?fields=:all&filter=id:in:%5Bentityid1%5D&pageSize=1")
         .to_return(status: 200, body: fixture_content(:dhis2, "organisationUnitGroups-byid.json"))
 
+      stub_request(:get, "#{project.dhis2_url}/api/organisationUnitGroupSets?fields=:all&filter=id:in:%groupsets_ext_ref1,groupsets_ext_ref2%5D&pageSize=1")
+        .to_return(status: 200, body: fixture_content(:dhis2, "organisationUnitGroups-byid.json"))
+
       post :create, params: {
         "project_id"    => project.id,
         "data_elements" => { project.state(:tarif).id.to_s => { external_reference: "FTRrcoaog83" } },
         "package"       => {
-          "name"          => "azeaze",
-          "state_ids"     => state_ids,
-          "frequency"     => "monthly",
-          "entity_groups" => ["entityid1"]
+          "name"               => "azeaze",
+          "state_ids"          => state_ids,
+          "frequency"          => "monthly",
+          "entity_groups"      => ["entityid1"],
+          "groupsets_ext_refs" => %w[groupsets_ext_ref1 groupsets_ext_ref2]
         }
       }
+
+      package = assigns(:package)
+
+      groups_set_refs = ["sample_groupset_ext", "other_groupset_ext"]
+
+      post :update, params: {
+        "project_id"    => project.id,
+        "id" => package.id,
+        "data_elements" => { project.state(:tarif).id.to_s => { external_reference: "FTRrcoaog83" } },
+        "package"       => {
+          "name"               => "new name",
+          "state_ids"          => state_ids.slice(0, 2),
+          "frequency"          => "monthly",
+          "entity_groups"      => ["entityid1"],
+          "groupsets_ext_refs" => groups_set_refs
+        }
+      }
+
+      package.reload
+      expect(package.groupsets_ext_refs).to eq(groups_set_refs)
     end
   end
 end

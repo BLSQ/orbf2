@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Setup::PackagesController < PrivateController
   helper_method :package
   attr_reader :package
@@ -9,7 +11,8 @@ class Setup::PackagesController < PrivateController
 
   def update
     @package = current_project.packages.find(params[:id])
-    package.update_attributes(params_package)
+
+    package.update(params_package)
 
     update_package_constants
 
@@ -51,7 +54,6 @@ class Setup::PackagesController < PrivateController
     end
 
     entity_groups = package.create_package_entity_groups(params[:package][:entity_groups])
-
     package.data_element_group_ext_ref = "todo"
     if package.save
 
@@ -75,6 +77,9 @@ class Setup::PackagesController < PrivateController
   end
 
   def params_package
-    params.require(:package).permit(:name, :frequency, :kind, :ogs_reference, state_ids: [], activity_ids: [])
+    params.require(:package).permit(
+      :name, :frequency, :kind, :ogs_reference,
+      state_ids: [], activity_ids: [], groupsets_ext_refs: []
+    )
   end
 end
