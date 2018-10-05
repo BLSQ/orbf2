@@ -7,6 +7,8 @@
     <%= summary %> <br>
   <%end%>
   <br>
+  <button class="pull-right btn btn-default" onclick="copyToClipboard('#invoice-url')">Copy to clipboard this invoice url <i class="fa fa-copy"></i></button>
+   <span id="invoice-url" class="hidden"><%= new_setup_project_invoice_url(entity: invoicing_request.entity, year: invoicing_request.year, quarter: invoicing_request.quarter) %></span>
   <br>
   <br>
 <%end%>
@@ -32,7 +34,7 @@
       <div id="selected-periods" ></div>
    </div>
    <div class="col-md-5">
-     <label>Orgunits</label>
+     <label>Orgunits (<%= orgunits.size %>)</label>
      <%= select_tag :orgunits, options_for_select(orgunits, invoicing_request.entity),
                       {multiple: true, class: "form-control sol-simple",
                       "data-placeholder" => "Pick orgunits",
@@ -40,7 +42,7 @@
      <div id="selected-orgunits" ></div>
    </div>
    <div class="col-md-4">
-   <label>Package or Payment rule</label>
+   <label>Package or Payment rule (<%= codes.size %>)</label>
   <%= select_tag :codes, options_for_select(codes, codes.map(&:last)),
                       {multiple: true, class: "form-control sol-simple",
                              "data-placeholder" => "Pick packages or payment rules",
