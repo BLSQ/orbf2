@@ -42,7 +42,8 @@ class MapProjectToOrbfProject
       code:                      package.code,
       kind:                      PACKAGE_KINDS[package.kind] || package.kind,
       frequency:                 package.frequency,
-      org_unit_group_ext_ids:    package.package_entity_groups.map(&:organisation_unit_group_ext_ref).compact,
+      org_unit_group_ext_ids:    package.package_entity_groups
+                                        .map(&:organisation_unit_group_ext_ref).compact,
       groupset_ext_id:           package.ogs_reference,
       matching_groupset_ext_ids: package.groupsets_ext_refs,
       dataset_ext_ids:           package.package_states.map(&:ds_external_reference).compact,

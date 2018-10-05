@@ -68,6 +68,26 @@ RSpec.describe Setup::PackagesController, type: :controller do
           "groupsets_ext_refs" => %w[groupsets_ext_ref1 groupsets_ext_ref2]
         }
       }
+
+      package = assigns(:package)
+
+      groups_set_refs = ["sample_groupset_ext", "other_groupset_ext"]
+
+      post :update, params: {
+        "project_id"    => project.id,
+        "id" => package.id,
+        "data_elements" => { project.state(:tarif).id.to_s => { external_reference: "FTRrcoaog83" } },
+        "package"       => {
+          "name"               => "new name",
+          "state_ids"          => state_ids.slice(0, 2),
+          "frequency"          => "monthly",
+          "entity_groups"      => ["entityid1"],
+          "groupsets_ext_refs" => groups_set_refs
+        }
+      }
+
+      package.reload
+      expect(package.groupsets_ext_refs).to eq(groups_set_refs)
     end
   end
 end
