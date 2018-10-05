@@ -1,4 +1,4 @@
-<h1>Diagnose</h1>
+<h1>Diagnose (<%= contracted_entities.size%>)</h1>
 
 <table class="table">
   <thead>
@@ -6,48 +6,37 @@
       <th>Contracted org unit</th>
       <th>Matching packages</th>
       <% project.packages.each do |package| %>
-      <th><%= package.name %></th>
+      <th><%= package.code.humanize %></th>
       <%end%>
     </tr>
   </thead>
 <tbody>
-<% contracted_entities.each do |org_unit| %>
-<% matching_packages = project.packages.select { |package| package.apply_for_org_unit(org_unit) } %>
+
+<% contracted_entities.each do |contract_entity| %>
+<% org_unit = contract_entity.org_unit %>
+
 <tr>
-  <td title="<%=pyramid.org_unit_parents(org_unit.id).map(&:name).join(" > ") %>"><a name="<%=org_unit.id%>"><%= org_unit.name %></td>
+  <td title="<%=org_unit.name %> - <%=org_unit.path%> - <%=contract_entity.full_name%>"><a name="<%=org_unit.ext_id%>"><%= org_unit.name %></td>
   <td>
-    <% if matching_packages.size < minimum_packages%>
-    <span class='icon-danger'>
-      <b><%= matching_packages.size %></b>
-    </span>
-    <%else%>
-      <%= matching_packages.size %>
-    <%end%>
+      <%= contract_entity.matching_packages.size %>
   </td>
 
-  <% project.packages.each do |package| %>
+  <% contract_entity.packages.each do |package| %>
   <td>
-    <%= package.apply_for_org_unit(org_unit) ? ("<i class='glyphicon glyphicon-ok' title=\""+package.name+"\"></i>").html_safe : ("<i class='glyphicon glyphicon-minus' title=\""+package.name+"\"></i>").html_safe%>
-
+    <%= if package.match
+       ("<i class='glyphicon glyphicon-ok' title=\""+package.code+"\"></i>").html_safe
+       else
+        ("<i class='glyphicon glyphicon-minus' title=\""+package.code+"\"></i>").html_safe
+      end
+     %>
+     <% if package.org_units.to_a.size > 1%>
+      <%= package.org_units.to_a.size%>
       <br>
-      <% orgs = (package.linked_org_units(org_unit, pyramid) - [org_unit]) %>
-      <% package_groups = package.package_entity_groups.map(&:organisation_unit_group_ext_ref) %>
-      <% used_group = orgs.flat_map(&:organisation_unit_groups).map{|g|g["id"]}.select {|group| package_groups.include?(group) }%>
-      <% if used_group.size >1 && package.apply_for_org_unit(org_unit)  %>
-        <span class="label label-danger">WARN</span> probable miss configuration multiple primary ? : <%= used_group.size %><br>
+      <% package.org_units.to_a.first(100).each do |ou|%>
+       <li title="<%= ou.ext_id %>"><%= ou.name %> </li>
       <%end%>
-      <% if orgs.size > 10  %>
-        <span class="label label-danger">WARN</span> probable miss configuration too much linked entities %> <br>
-      <%end%>
-      <%if orgs.size > 0 %>
-        <%if orgs.size > 1 %>
-          Linked <%= orgs.size %> entities<br>
-        <%end%>
-        <% orgs.first(10).each do |linked_org| %>
-          <a href="#<%=linked_org.id%>"><%= linked_org.name %></a><br>
-        <%end%>
-      <%end%>
-  </td>
+    <%end%>
+</td>
   <% end%>
 </tr>
 <%end%>
