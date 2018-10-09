@@ -1,0 +1,54 @@
+
+<a name="<%=pack.code %>"></a>
+<br>
+<h2><a href="?package=<%=pack.code %>"><%= pack.name.humanize%></a></h2>
+<h3>Package signalitic</h3>
+<ul>
+<li>Frequency : <b><%=pack.frequency%></b>
+<li>Kind : <b><%=pack.kind%></b>
+<li>Target groups : <b><%=pack.package_entity_groups.map(&:name).join(", ")%></b>
+<li>Inputs : <b><%= pack.states.map(&:name).join(", ")%></b>
+</ul>
+
+<h3>Activities</h3>
+<table class="table">
+<thead>
+  <tr>
+    <th>Code</th>
+    <th>Name</th>
+  </tr>
+</thead>
+<tbody>
+<%pack.activities.sort_by(&:code).each do |activity|%>
+<tr>
+  <td><%= activity.code.upcase%></td>
+  <td><%= activity.name%></td>
+</tr>
+</tbody>
+<%end%>
+</table>
+<h3>Formulas</h3>
+
+<div class="mermaid" style="width: 100%">
+graph TD
+<%= Orbf::RulesEngine::GraphvizProjectPrinter.new.print_packages([package]).first%>
+</div>
+
+<div class="formulas">
+<% if pack.activity_rule%>
+    <h4>Activity rule (red)</h4>
+    <p>Allow to express output per activity and for single orgunit </p>
+    <%= render partial: 'rule', locals: {rule: pack.activity_rule}%>
+<%end%>
+<% if pack.package_rule%>
+    <h4>Package rule (green)</h4>
+    <p>Allow to express sum/constraints on all activities for single orgunit </p>
+ <%= render partial: 'rule', locals: {rule: pack.package_rule}%>
+<%end%>
+
+<% if pack.zone_rule%>
+    <h4>Zone rule (darker)</h4>
+    <p>Allow to express sum/constraints accross multiple orgunit </p>
+ <%= render partial: 'rule', locals: {rule: pack.zone_rule}%>
+<%end%>
+<div>

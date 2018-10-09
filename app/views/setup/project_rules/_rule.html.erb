@@ -1,17 +1,17 @@
 <table class="table" style="width: 100%">
    <thead>
      <tr>
-       <th>Code</th>
+       <th>Code / Description</th>
        <th>Expression</th>
-       <th>Description</th>
      </tr>
    </thead>
    <tbody>
     <%rule.formulas.each do|formula|%>
       <tr>
-        <td width="30%"><%= formula.code%></td> 
-        <td width="40%"><pre style="white-space: pre-wrap;word-wrap: break-word;"><%= formula.expression%></pre></td>
-        <td width="30%"><%=formula.description%></td>
+        <td ><%= formula.code%>
+            <br>&nbsp;&nbsp;<i><%=formula.short_name%></i>
+            <br>&nbsp;&nbsp;<i><%=formula.description%></i></td>
+        <td ><pre style="white-space: pre-wrap;word-wrap: break-word;"><%= formula.expression%></pre></td>
       </tr>
     <%end%>
    <tbody>

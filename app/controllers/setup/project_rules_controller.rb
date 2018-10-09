@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Setup::ProjectRulesController < PrivateController
   helper_method :project_rule
   attr_reader :project_rule
@@ -9,11 +11,6 @@ class Setup::ProjectRulesController < PrivateController
       data_compound.indicators
     ).map
 
-    @packages = if params[:package]
-                  @orbf_project.packages.select{|p| p.code == params[:package] }
-                else
-                  @orbf_project.packages
-                end
   end
 
   def new

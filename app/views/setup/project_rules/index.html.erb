@@ -1,56 +1,26 @@
 
-<% @packages.each_with_index do |package, index|%>
-<% pack = @current_project.package(package.code)%>
+Payment rules :
+<% payment_rules = @orbf_project.payment_rules.select { |p| params[:package].nil? || p.packages.map(&:code).include?(params[:package]) } %>
 
-<h1><a href="?package=<%=pack.code %>"><%= pack.name.humanize%></a></h1>
-<h2>Signalitic</h2>
-<ul>
-<li>Frequency : <b><%=pack.frequency%></b>
-<li>Kind : <b><%=pack.kind%></b>
-<li>Target groups : <b><%=pack.package_entity_groups.map(&:name).join(", ")%></b>
-<li>Inputs : <b><%= pack.states.map(&:name).join(", ")%></b>
-</ul>
+<% payment_rules.each do |payment_rule| %>
+    <li><a href="#<%= payment_rule.code%>"><%= payment_rule.code.humanize%></a></li>
+<%end %>
 
-<h2>Activities</h2>
-<table class="table">
-<thead>
-  <tr>
-    <th>Code</th>
-    <th>Name</th>
-  </tr>
-</thead>
-<tbody>
-<%pack.activities.sort_by(&:code).each do |activity|%>
-<tr>
-  <td><%= activity.code.upcase%></td>
-  <td><%= activity.name%></td>
-</tr>
-</tbody>
-<%end%>
-</table>
-<h2>Formulas</h2>
-
-<div class="mermaid" style="width: 100%">
-graph TD
-<%= Orbf::RulesEngine::GraphvizProjectPrinter.new.print_packages([package]).first%>
-</div>
-
-<div class="formulas">
-<% if pack.activity_rule%>
-<h3>Activity rule (red)</h3>
-    <p>Allow to express output per activity and for single orgunit </p>
-    <%= render partial: 'rule', locals: {rule: pack.activity_rule}%>
-<%end%>
-<% if pack.package_rule%>
-    <h3>Package rule (green)</h3>
-    <p>Allow to express sum/constraints on all activities for single orgunit </p>
- <%= render partial: 'rule', locals: {rule: pack.package_rule}%>
-<%end%>
-
-<% if pack.zone_rule%>
-    <h3>Zone rule (darker)</h3>
-    <p>Allow to express sum/constraints accross multiple orgunit </p>
- <%= render partial: 'rule', locals: {rule: pack.zone_rule}%>
-<%end%>
-<div>
+<% payment_rules.each do |payment_rule| %>
+  <a name="<%= payment_rule.code %>"></a>
+  <% pay = @current_project.payment_rules.detect {|p| p.code == payment_rule.code}%>
+  <% if params[:package].nil? %>
+    <h1><b><%= pay.rule.name %></b></h1>
+    <h2>Payment rule signaltic</h2>
+    <p>The payment rules is combining the output of the following packages : </p>
+    <%pay.packages.each do |package|%>
+    <li><a href="#<%= package.code %>"><%= package.name %></a></li>
+    <%end%>
+    <h2>Payment rule</h2>
+    <%= render partial: 'rule', locals: {rule: pay.rule}%>
+  <%end%>
+    <% payment_rule.packages.select { |p|  params[:package].nil? || p.code == params[:package] }.each_with_index do |package, index|%>
+      <% pack = @current_project.package(package.code)%>
+      <%= render partial: 'package', locals: {pack: pack, package: package}%>
+    <% end %>
 <% end %>
