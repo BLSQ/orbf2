@@ -42,6 +42,10 @@
                   <% if variable&.formula&.frequency && (variable.formula.frequency!=variable.formula.rule.package.frequency) %>
                     <li><code><%= variable.formula.frequency %></code></li>
                   <% end %>
+                  <% if variable.formula %>
+                    <li><%= link_to("Formula mappings", new_setup_project_formula_mapping_path(mode: :create, formula_code: variable.formula.code, activity_code: variable.activity_code )) %></li>
+                  <% end %>
+
               </ul>
               <%if variable.formula %>
                   <h3>Step by step explanations</h3>

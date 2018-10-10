@@ -9,7 +9,7 @@
 <%= link_to 'Trigger a data element dhis2 snapshot', setup_project_snapshots_path(formula_mappings.project), class: 'btn btn-default pull-right', method: :post %>
 </div>
 <br>
-<%if @problems && @problems.any? %>
+<%if params[:mode] != "create" && @problems && @problems.any? %>
 <div>
 <p>The following data elements has been mapped as input in activity state and ouput as formula mappings
 This might cause infinite loop or data loss.</p>
@@ -27,6 +27,8 @@ This might cause infinite loop or data loss.</p>
   <div class="formula-mappings">
     <%= simple_form_for(formula_mappings,  url: setup_project_formula_mappings_path(formula_mappings.project, formula_mappings), method: :post) do |f| %>
     <input type="hidden" name="mode" value="<%=params[:mode] || "missing_only"%>"/>
+    <input type="hidden" name="formula_code" value="<%=params[:formula_code] %>"/>
+    <input type="hidden" name="activity_code" value="<%=params[:activity_code] %>"/>
     <div>
         <table class="table table-striped table-condensed">
             <thead>

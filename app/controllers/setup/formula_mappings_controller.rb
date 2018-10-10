@@ -91,7 +91,7 @@ class Setup::FormulaMappingsController < PrivateController
       mappings += activity_rules.map do |rule|
         rule.package
             .activities
-            .select { |a| params[:activity_code] ? a.code == params[:activity_code] : true }
+            .select { |a| params[:activity_code].presence ? a.code == params[:activity_code] : true }
             .map do |activity|
           rule.formulas.map do |formula|
             mapping = formula.find_or_build_mapping(
@@ -109,7 +109,7 @@ class Setup::FormulaMappingsController < PrivateController
     end
 
     other_rules = []
-    unless params[:activity_code]
+    unless params[:activity_code].presence
       other_rules += project.packages.flat_map(&:rules).select(&:package_kind?) if options[:package]
       other_rules += project.packages.flat_map(&:rules).select(&:zone_kind?) if options[:zone]
       other_rules += project.payment_rules.flat_map(&:rule) if options[:payment]
@@ -127,7 +127,7 @@ class Setup::FormulaMappingsController < PrivateController
         mapping
       end
     end
-    if params[:formula_code]
+    if params[:formula_code].presence
       mappings = mappings.flatten.compact.select { |mapping| mapping.formula.code == params[:formula_code] }
     end
 

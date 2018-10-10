@@ -77,6 +77,10 @@ class Rule < ApplicationRecord
     super
   end
 
+  def code
+    @code = Orbf::RulesEngine::Codifier.codify(name)
+  end
+
   def to_facts
     facts = {}
     formulas.each { |formula| facts[formula.code] = formula.expression }

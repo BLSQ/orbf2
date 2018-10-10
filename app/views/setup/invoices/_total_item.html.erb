@@ -27,6 +27,7 @@
               <li><%= link_to_data_element(@current_project, total_item.formula.dhis2_mapping) %></li>
               <li><%= @data_compound.data_element(total_item.formula.dhis2_mapping)&.name%> </li>
             <%end%>
+            <li><%= link_to("Formula mappings", new_setup_project_formula_mapping_path(mode: :create, formula_code: total_item.formula.code)) %></li>
             </ul>
             <h3>Step by step explanations</h3>
             <% total_item.explanations.each do |explanation|%>

@@ -25,6 +25,16 @@
       <td><%= time_ago_in_words(version.created_at) %> </td>
 			<td>
         <small>
+      <% if version.event == "destroy" %>
+         <% version.object.each do |attribute_name, attribute_value|%>
+           <%= attribute_name %> <br>
+            <ul>
+              <del><%= attribute_value %></del>
+            </ul>
+         <%end%>
+      <%end%>
+      </small>
+        <small>
         <% version.diffs.each do |attribute_name, change| %>
            <%= attribute_name %> <br>
            <ul>
