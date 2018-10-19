@@ -91,3 +91,12 @@ input:invalid {
     padding-left: 50px
   }
 }
+
+@media print {
+  a[href]:after {
+     visibility: hidden;
+  }
+  .container {
+    width:100%;
+  }
+}
