@@ -15,14 +15,37 @@
 <thead>
   <tr>
     <th>Code</th>
-    <th>Name</th>
+    <% pack.states.each do |state|%>
+    <th><%=state.name %></th>
+    <%end%>
   </tr>
 </thead>
 <tbody>
-<%pack.activities.sort_by(&:code).each do |activity|%>
+<%pack.activities.sort {|a,b| NaturalSort.comparator(a.code, b.code)}.each do |activity|%>
 <tr>
-  <td><%= activity.code.upcase%></td>
-  <td><%= activity.name%></td>
+  <td width="35%">
+  <%= activity.name%> <br>
+  <i><%= activity.code%></i>
+  </td>
+    <% pack.states.each do |state|%>
+      <td>
+        <% activity_state = activity.activity_state(state) %>
+      <%if activity_state&.kind == "data_element"%>
+        <%= link_to_data_element(@current_project, activity_state.external_reference) %>
+      <%end%>
+      <%if activity_state&.kind == "indicator"%>
+        <%= link_to_data_element(@current_project, activity_state.external_reference) %>
+      <%end%>
+      <%if activity_state&.kind == "formula"%>
+       <%= activity_state.formula%>
+      <%end%>
+
+      <%if activity_state%>
+         <br>
+         <small><%= activity_state.kind%></small>
+      <%end%>
+     </td>
+    <%end%>
 </tr>
 </tbody>
 <%end%>
@@ -39,6 +62,7 @@ graph TD
     <h4>Activity rule (red)</h4>
     <p>Allow to express output per activity and for single orgunit </p>
     <%= render partial: 'rule', locals: {rule: pack.activity_rule}%>
+    <h5>Formula mapping</h5>
 <%end%>
 <% if pack.package_rule%>
     <h4>Package rule (green)</h4>
@@ -52,3 +76,36 @@ graph TD
  <%= render partial: 'rule', locals: {rule: pack.zone_rule}%>
 <%end%>
 <div>
+
+<% if pack.activity_rule%>
+<div>
+ <h4>Activity rule formula mappings</h4>
+<table class="table">
+  <thead>
+   <tr>
+   <th>Activity code</th>
+    <%pack.activity_rule.formulas.each do |formula|%>
+      <th><%=formula.code%></th>
+    <%end%>
+   </tr>
+  </thead>
+  <tbody>
+  <% pack.activities.sort {|a,b| NaturalSort.comparator(a.code, b.code)}.each do |activity|%>
+  <tr>
+    <td title="<%= activity.name%>">
+      <%=activity.code%>
+    </td>
+    <%pack.activity_rule.formulas.each do |formula|%>
+    <td>
+      <% external_reference = formula.formula_mappings.detect {|f| f.activity.code == activity.code}&.external_reference %>
+      <%if external_reference%>
+       <%= link_to_data_element(@current_project, external_reference) %>
+      <%end%>
+    </td>
+    <%end%>
+  </tr>
+  <%end%>
+  </tbody>
+</table>
+</div>
+<%end%>

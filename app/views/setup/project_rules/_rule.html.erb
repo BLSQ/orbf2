@@ -11,7 +11,12 @@
         <td ><%= formula.code%>
             <br>&nbsp;&nbsp;<i><%=formula.short_name%></i>
             <br>&nbsp;&nbsp;<i><%=formula.description%></i></td>
-        <td ><pre style="white-space: pre-wrap;word-wrap: break-word;"><%= formula.expression%></pre></td>
+        <td ><pre style="white-space: pre-wrap;word-wrap: break-word;"><%= formula.expression%></pre>
+
+        <%if formula.formula_mappings.size == 1%>
+          <small>Mapped to data element <%= link_to_indicator(@current_project, formula.formula_mappings.first.external_reference) %></small>
+        <%end%>
+        </td>
       </tr>
     <%end%>
    <tbody>
