@@ -1,0 +1,34 @@
+<h1>Group set possible codes</h1>
+<table class="table">
+  <tbody>
+<% @possible_values_groupset_code.each do |group_set_code, possible_values|%>
+    <tr>
+        <td><%= group_set_code %> </td>
+        <td>
+          <%possible_values.each do |group_code| %>
+            <li><%= group_code%>
+          <%end%>
+        </td>
+    </tr>
+<%end%>
+  </body>
+</table>
+
+
+
+<% @decision_tables.each do |decision_table|%>
+<h2><%=  decision_table.package.code.humanize %></h2>
+
+IN :
+
+   <br>
+    <% (decision_table.used_values.keys & @possible_values_groupset_code.keys).each do |group_set_code|%>
+     <%= group_set_code%> : unused :  <%= @possible_values_groupset_code[group_set_code] - decision_table.used_values[group_set_code]%> <br>
+    <%end%>
+    <br>
+   missing activity_codes :
+    <%= decision_table.package.all_activities_codes.to_a - decision_table.used_values["activity_code"] %>
+   <br>
+
+   <br>
+<%end%>

@@ -11,17 +11,34 @@ class Setup::DiagnoseController < PrivateController
     @contracted_entities = legacy_pyramid.org_units_in_all_groups([legacy_project.entity_group.external_reference])
                                          .map do |legacy_org_unit|
       org_unit = pyramid.org_unit(legacy_org_unit.id)
+      facts = {}
       matching_packages = project.packages
                                  .each_with_object({}) do |package, hash|
         hash[package] = Orbf::RulesEngine::OrgunitsResolver.new(package, pyramid, org_unit).call
+        decision_table = package.rules.flat_map(&:decision_tables).compact
+        org_unit_facts = Orbf::RulesEngine::OrgunitFacts.new(org_unit, pyramid).to_facts
+
+        facts = package.all_activities_codes
+                       .each_with_object([]) do |activity_code, array|
+          decision_table.each do |decision_table|
+            input_facts = org_unit_facts
+                          .merge("activity_code" => activity_code)
+            output_facts = decision_table.find(input_facts)
+            next unless output_facts && output_facts["unit_amount"]
+            puts " #{package.code} #{org_unit.name}"
+            puts "#{(decision_table.headers(:in) - input_facts.keys)} : #{output_facts}"
+            array.push(output_facts)
+          end
+        end
       end
 
       OpenStruct.new(
         org_unit:          org_unit,
-        full_name:     org_unit.parent_ext_ids.map do |ext_id|
+        full_name:         org_unit.parent_ext_ids.map do |ext_id|
           pyramid.org_unit(ext_id).name
         end.join(" > "),
         matching_packages: matching_packages,
+        facts:             facts,
         packages:          project.packages.map do |package|
           OpenStruct.new(
             code:      package.code,
@@ -31,6 +48,28 @@ class Setup::DiagnoseController < PrivateController
         end
       )
     end
+  end
+
+  def show
+    @possible_values_groupset_code = pyramid.org_unit_groupsets.each_with_object({}).each do |groupset, map|
+      map["groupset_code_"+groupset.code] = groupset.group_ext_ids.map { |gid| pyramid.groups(gid).first.code }.sort
+    end
+
+    decision_tables = []
+    project.packages.each do |package|
+      package.rules.each do |rule|
+        rule.decision_tables.each do |decision_table|
+          lines = decision_table.rules.map { |line| line.instance_variable_get(:@row) }
+
+          used_values = decision_table.headers(:in).each_with_object({}) do |in_header, vals|
+            vals[in_header] = lines.map { |l| l["in:" + in_header] }.uniq
+          end
+
+          decision_tables.push(OpenStruct.new(package: package, rule: rule, decision_table: decision_table, used_values: used_values || {}))
+        end
+      end
+    end
+    @decision_tables = decision_tables
   end
 
   private
