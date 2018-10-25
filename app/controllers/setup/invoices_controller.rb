@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Setup::InvoicesController < PrivateController
   attr_reader :invoicing_request, :indexed_project
   helper_method :invoicing_request

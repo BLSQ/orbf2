@@ -3,9 +3,11 @@
 <% if @org_unit_summaries %>
   <br>
   <br>
+
   <% @org_unit_summaries.each do |summary|%>
     <%= summary %> <br>
   <%end%>
+  See in current situation in dhis2 : <%= link_to_debug_orgunit(@current_project, invoicing_request.entity)%>
   <br>
   <button class="pull-right btn btn-default" onclick="copyToClipboard('#invoice-url')">Copy to clipboard this invoice url <i class="fa fa-copy"></i></button>
    <span id="invoice-url" class="hidden"><%= new_setup_project_invoice_url(entity: invoicing_request.entity, year: invoicing_request.year, quarter: invoicing_request.quarter) %></span>
@@ -53,6 +55,22 @@
    </div>
 
 </div>
+
+
+<% if invoicing_request.invoices.empty? %>
+  <br>
+  <div class="alert alert-info alert-dismissible">
+      No invoice ?
+
+      Probably the groups of the entity doesn't match one of :
+      <% invoicing_request.project.packages.flat_map(&:package_entity_groups).map{|g| {id: g.organisation_unit_group_ext_ref, name: g.name}}.uniq.each do |group| %>
+        <li><%= link_to_org_unit_group(@current_project, group[:id],  group[:name] )%></li>
+      <% end %>
+
+      or you should invoice the primary orgunit of a contract group, or the groups at this period don't match.
+
+  </div>
+<% end %>
 
 <h1> Invoice details </h1>
 <%= render partial: "new_invoice", collection: invoicing_request.invoices, :as => :invoice  %>
