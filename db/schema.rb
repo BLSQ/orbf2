@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181003075801) do
+ActiveRecord::Schema.define(version: 20181105094419) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -147,8 +147,9 @@ ActiveRecord::Schema.define(version: 20181003075801) do
     t.string   "name"
     t.integer  "package_id"
     t.string   "organisation_unit_group_ext_ref"
-    t.datetime "created_at",                      null: false
-    t.datetime "updated_at",                      null: false
+    t.datetime "created_at",                                       null: false
+    t.datetime "updated_at",                                       null: false
+    t.string   "kind",                            default: "main", null: false
     t.index ["package_id"], name: "index_package_entity_groups_on_package_id", using: :btree
   end
 
