@@ -28,8 +28,7 @@ class Setup::RulesController < PrivateController
     end
 
     @rule = current_package.rules.build(
-      rule_params.merge(kind:    kind,
-                        package: current_package)
+      rule_params.merge(package: current_package)
     )
     Rails.logger.info @rule.valid?
     Rails.logger.info @rule.errors.full_messages
