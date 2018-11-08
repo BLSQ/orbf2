@@ -177,12 +177,14 @@ class Package < ApplicationRecord
 
   def create_package_entity_groups(main_entity_groups_ids, target_entity_groups_ids)
     dhis2 = project.dhis2_connection
-    organisation_unit_groups = dhis2.organisation_unit_groups.find((main_entity_groups_ids || []) + (target_entity_groups_ids || []))
+    all_group_ids = (main_entity_groups_ids || []) + (target_entity_groups_ids || [])
+    organisation_unit_groups = dhis2.organisation_unit_groups.find(all_group_ids)
 
     organisation_unit_groups.map do |organisation_unit_group|
+      belong_to_main = main_entity_groups_ids.include?(organisation_unit_group.id)
       {
         name:                            organisation_unit_group.display_name,
-        kind:                            main_entity_groups_ids.include?(organisation_unit_group.id) ? "main" : "target",
+        kind:                            belong_to_main ? "main" : "target",
         organisation_unit_group_ext_ref: organisation_unit_group.id
       }
     end
