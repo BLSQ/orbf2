@@ -33,7 +33,7 @@ class Package < ApplicationRecord
   has_many :activities, through: :activity_packages, source: :activity
 
   validates :name, presence: true, length: { maximum: 50 }
-  # validates :states, presence: true
+
   validates :frequency, presence: true, inclusion: {
     in:      FREQUENCIES,
     message: "%{value} is not a valid see #{FREQUENCIES.join(',')}"
@@ -177,12 +177,12 @@ class Package < ApplicationRecord
 
   def create_package_entity_groups(main_entity_groups_ids, target_entity_groups_ids)
     dhis2 = project.dhis2_connection
-    organisation_unit_groups = dhis2.organisation_unit_groups.find((main_entity_groups_ids || [])+(target_entity_groups_ids || []))
+    organisation_unit_groups = dhis2.organisation_unit_groups.find((main_entity_groups_ids || []) + (target_entity_groups_ids || []))
 
     organisation_unit_groups.map do |organisation_unit_group|
       {
         name:                            organisation_unit_group.display_name,
-        kind: main_entity_groups_ids.include?(organisation_unit_group.id) ? 'main' : 'target',
+        kind:                            main_entity_groups_ids.include?(organisation_unit_group.id) ? "main" : "target",
         organisation_unit_group_ext_ref: organisation_unit_group.id
       }
     end

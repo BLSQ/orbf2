@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 require_relative "./dhis2_snapshot_fixture"
 
@@ -5,7 +7,7 @@ RSpec.describe InvoiceForProjectAnchorWorker do
   include Dhis2SnapshotFixture
   include_context "basic_context"
 
-  ORG_UNIT_ID = "vRC0stJ5y9Q".freeze
+  ORG_UNIT_ID = "vRC0stJ5y9Q"
 
   let(:program) { create :program }
 
@@ -317,7 +319,7 @@ RSpec.describe InvoiceForProjectAnchorWorker do
       %w[AhnK8hb3JWm BLVKubgVxkF Bift1B4gjru Bq5nb7UAEGd C9uduqDZr9d DSBXsRQSXUW DmaLM8WYmWv ENHOJz3UH5L Ea3j0kUvyWg EmTN0L4EAVi GvFqTavdpGE HPg74Rr7UWp IXJg79fclDm ImspTQPwCqd JLKGG67z7oj JNJIPX9DfaW KIUCimTXf8Q KKkLOTpMXGV KuR0y0h0mOM LV2b3vaLRl1 LaxJ6CD2DHq Ls2ESQONh9S M2qEv692lS6 M721NHGtdZV O6uvpzGd5pu OuwX8H2CcRO PD1fqyvJssC PLoeN9CaL7z PMa2VCrupOd PQZJPIpTepd Qw7c6Ckb0XC QywkxFudXrC RUCp6OaTSAD T2Cn45nBY0u TEQlaapDQoK TQkG0sX9nca U6Kr7Gtpidn Uo4cyJwAhTW VCtF1DbspR5 VGAFxBXz16y Vnc2qIRLbyw Vth0fbpFcsO W5fN3G6y1VI XEyIRFd9pct XJ6DqDkMlPv at6UHUQatSo bM4Ky73uMao bPHn9IgjKLC bVZTNrnfn9G cDw53Ej8rju cM2BKSrj9F9 cZtKKa9eJZ3 cgqkFdShPzg ctfiYW0ePJ8 eIQbndfxQMb fXT1scbEObM fdc6uOvgoji gmen7SXL9CU jCnyQOKQBFX jUb8gELQApl jmIPBj66vD6 kBP1UvZpsNj kJq2mPyFEHo kLNQT4KQ9hT kMTHqMgenme lc3eMKXaEfw mTNOoGXuC39 nCh5dBoJVNw nV3OkyzF4US nq7F0t1Pz6t qhqAxPSTUXp qtr8GGlm4gg roQ2l7TX0eZ tHUYjt9cU6h u6ZGNI8yUmt uNEhNuBUr0i vRC0stJ5y9Q vn9KJsLyP5f vv1QJFONsT6 wNYYRm2c9EK wicmjKI3xiP yP2nhllbQPh]
     end
     let(:dataset_ext_ids) { ["ds-0", "ds-1", "ds-2"] }
-    let(:periods) { %w[2015 201501 201502 201503 2015Q1] }
+    let(:periods) { %w[2014July 2015 201501 201502 201503 2015Q1] }
 
     it "should perform for sub contracted entities pattern with new engine" do
       with_new_engine(project)
@@ -364,12 +366,15 @@ RSpec.describe InvoiceForProjectAnchorWorker do
         end]
       end
 
-      stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?" +
-        dataset_ext_ids.each_with_index.map { |de, i| "#{i == 0 ? '' : '&'}dataSet=#{de}" }.join +
-        periods.map { |pe| "&period=#{pe}" }.join +
-        org_unit_ids.map { |id| "&orgUnit=#{id}" }.join +
-        "&children=false")
-        .to_return(status: 200, body: JSON.pretty_generate("dataValues": values.flatten))
+      org_unit_ids.each_slice(50).each do |org_unit_ids_slice|
+        orgunit_values = values.flatten.select { |v| org_unit_ids_slice.include?(v[:orgUnit]) }
+        stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?" +
+          dataset_ext_ids.each_with_index.map { |de, i| "#{i == 0 ? '' : '&'}dataSet=#{de}" }.join +
+          periods.map { |pe| "&period=#{pe}" }.join +
+          org_unit_ids_slice.map { |id| "&orgUnit=#{id}" }.join +
+          "&children=false")
+          .to_return(status: 200, body: JSON.pretty_generate("dataValues": orgunit_values))
+      end
 
       export_request = stub_export_values("invoice_multi_entities_new_engine.json")
 
@@ -384,7 +389,7 @@ RSpec.describe InvoiceForProjectAnchorWorker do
       %w[AhnK8hb3JWm BLVKubgVxkF Bift1B4gjru Bq5nb7UAEGd C9uduqDZr9d DSBXsRQSXUW DmaLM8WYmWv ENHOJz3UH5L Ea3j0kUvyWg EmTN0L4EAVi GvFqTavdpGE HPg74Rr7UWp IXJg79fclDm ImspTQPwCqd JLKGG67z7oj JNJIPX9DfaW KIUCimTXf8Q KKkLOTpMXGV KuR0y0h0mOM LV2b3vaLRl1 LaxJ6CD2DHq Ls2ESQONh9S M2qEv692lS6 M721NHGtdZV O6uvpzGd5pu OuwX8H2CcRO PD1fqyvJssC PLoeN9CaL7z PMa2VCrupOd PQZJPIpTepd Qw7c6Ckb0XC QywkxFudXrC RUCp6OaTSAD T2Cn45nBY0u TEQlaapDQoK TQkG0sX9nca U6Kr7Gtpidn Uo4cyJwAhTW VCtF1DbspR5 VGAFxBXz16y Vnc2qIRLbyw Vth0fbpFcsO W5fN3G6y1VI XEyIRFd9pct XJ6DqDkMlPv at6UHUQatSo bM4Ky73uMao bPHn9IgjKLC bVZTNrnfn9G cDw53Ej8rju cM2BKSrj9F9 cZtKKa9eJZ3 cgqkFdShPzg ctfiYW0ePJ8 eIQbndfxQMb fXT1scbEObM fdc6uOvgoji gmen7SXL9CU jCnyQOKQBFX jUb8gELQApl jmIPBj66vD6 kBP1UvZpsNj kJq2mPyFEHo kLNQT4KQ9hT kMTHqMgenme lc3eMKXaEfw mTNOoGXuC39 nCh5dBoJVNw nV3OkyzF4US nq7F0t1Pz6t qhqAxPSTUXp qtr8GGlm4gg roQ2l7TX0eZ tHUYjt9cU6h u6ZGNI8yUmt uNEhNuBUr0i vRC0stJ5y9Q vn9KJsLyP5f vv1QJFONsT6 wNYYRm2c9EK wicmjKI3xiP yP2nhllbQPh]
     end
     let(:dataset_ext_ids) { ["ds-0", "ds-1", "ds-2"] }
-    let(:periods) { %w[2015 201501 201502 201503 2015Q1] }
+    let(:periods) { %w[2014July 2015 201501 201502 201503 2015Q1] }
 
     it "should perform for sub contracted entities pattern with new engine" do
       with_latest_engine(project)
@@ -431,12 +436,15 @@ RSpec.describe InvoiceForProjectAnchorWorker do
         end]
       end
 
-      stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?" +
-        dataset_ext_ids.each_with_index.map { |de, i| "#{i == 0 ? '' : '&'}dataSet=#{de}" }.join +
-        periods.map { |pe| "&period=#{pe}" }.join +
-        org_unit_ids.map { |id| "&orgUnit=#{id}" }.join +
-        "&children=false")
-        .to_return(status: 200, body: JSON.pretty_generate("dataValues": values.flatten))
+      org_unit_ids.each_slice(50).each do |org_unit_ids_slice|
+        orgunit_values = values.flatten.select { |v| org_unit_ids_slice.include?(v[:orgUnit]) }
+        stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?" +
+          dataset_ext_ids.each_with_index.map { |de, i| "#{i == 0 ? '' : '&'}dataSet=#{de}" }.join +
+          periods.map { |pe| "&period=#{pe}" }.join +
+          org_unit_ids_slice.map { |id| "&orgUnit=#{id}" }.join +
+          "&children=false")
+          .to_return(status: 200, body: JSON.pretty_generate("dataValues": orgunit_values))
+      end
 
       export_request = stub_export_values("invoice_multi_entities_new_engine_v3.json")
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: package_entity_groups
@@ -17,8 +19,8 @@ class PackageEntityGroup < ApplicationRecord
 
   belongs_to :package
 
-  MAIN = 'main'
-  TARGET = 'target'
+  MAIN = "main"
+  TARGET = "target"
   KINDS = [MAIN, TARGET].freeze
 
   validates :kind, presence: true, inclusion: {
