@@ -27,6 +27,7 @@ gem "jquery-rails"
 gem "jquery-ui-rails"
 gem "json", "2.1.0"
 gem "lograge"
+gem "loofah", ">= 2.2.3"
 gem "naturalsort"
 if ENV["ORBF_DEV_MODE"]
   gem "hesabu", path: "../hesabu"
