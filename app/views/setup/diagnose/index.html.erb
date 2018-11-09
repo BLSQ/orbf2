@@ -30,9 +30,14 @@
       end
      %>
      <% if package.org_units.to_a.size > 1%>
-      <%= package.org_units.to_a.size%>
+      <button class="btn btn-default popper" data-toggle="popover" data-placement="bottom">
+        <%= package.org_units.to_a.size%>
+        <div class="popper-content hide">
+          <%= package.org_units.to_a.map(&:name).join(', ') %>
+        </div>
+      </button>
       <br>
-      <% package.org_units.to_a.first(100).each do |ou|%>
+      <% package.org_units.to_a.first(5).each do |ou|%>
        <li title="<%= ou.ext_id %>"><%= ou.name %> </li>
       <%end%>
     <%end%>
@@ -42,4 +47,3 @@
 <%end%>
 </tbody>
 </table>
-

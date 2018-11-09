@@ -33,7 +33,7 @@ class Package < ApplicationRecord
   has_many :activities, through: :activity_packages, source: :activity
 
   validates :name, presence: true, length: { maximum: 50 }
-  # validates :states, presence: true
+
   validates :frequency, presence: true, inclusion: {
     in:      FREQUENCIES,
     message: "%{value} is not a valid see #{FREQUENCIES.join(',')}"
@@ -41,7 +41,7 @@ class Package < ApplicationRecord
 
   validates :kind, presence: true, inclusion: {
     in:      KINDS,
-    message: "%{value} is not a valid see #{FREQUENCIES.join(',')}"
+    message: "%{value} is not a valid see #{KINDS.join(',')}"
   }
 
   accepts_nested_attributes_for :states
@@ -137,6 +137,14 @@ class Package < ApplicationRecord
     kind.start_with?("multi-")
   end
 
+  def main_entity_groups
+    package_entity_groups.select(&:main?)
+  end
+
+  def target_entity_groups
+    package_entity_groups.select(&:target?)
+  end
+
   def missing_activity_states
     missing_activity_states = {}
     activities.each do |activity|
@@ -167,13 +175,16 @@ class Package < ApplicationRecord
     raise "Failed to create data element group #{deg} #{e.message} with #{project.dhis2_url}"
   end
 
-  def create_package_entity_groups(entity_group_ids)
+  def create_package_entity_groups(main_entity_groups_ids, target_entity_groups_ids)
     dhis2 = project.dhis2_connection
-    organisation_unit_groups = dhis2.organisation_unit_groups.find(entity_group_ids)
+    all_group_ids = (main_entity_groups_ids || []) + (target_entity_groups_ids || [])
+    organisation_unit_groups = dhis2.organisation_unit_groups.find(all_group_ids)
 
     organisation_unit_groups.map do |organisation_unit_group|
+      belong_to_main = main_entity_groups_ids.include?(organisation_unit_group.id)
       {
         name:                            organisation_unit_group.display_name,
+        kind:                            belong_to_main ? "main" : "target",
         organisation_unit_group_ext_ref: organisation_unit_group.id
       }
     end

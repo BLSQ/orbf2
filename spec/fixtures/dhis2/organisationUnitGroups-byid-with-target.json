@@ -6,6 +6,12 @@
       "id": "entityid1",
       "displayName": "Clinic",
       "orgunitscount": 51
+    },
+    {
+      "name": "Target Clinic",
+      "id": "sub_entityid1",
+      "displayName": "Clinic",
+      "orgunitscount": 50
     }
   ]
 }

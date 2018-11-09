@@ -61,7 +61,16 @@ RSpec.describe Setup::RulesController, type: :controller do
           "package_id" => package.id,
           "project_id" => project.id,
           rule: {
-            name: "sample rule"
+            name:                "sample rule",
+            kind:                "activity",
+            formulas_attributes: [
+              {
+                code:        "zone_formula",
+                short_name:  "short",
+                expression:  "4 +5",
+                description: "pma for the zone"
+              }
+            ]
           }
         }
         expect(flash[:notice]).to eq("Rule created !")
@@ -74,7 +83,7 @@ RSpec.describe Setup::RulesController, type: :controller do
         post :create, params: {
           "project_id" => project.id,
           "package_id" => package.id,
-          rule: { name: nil, kind: nil }
+          rule: { name: nil, kind: "activity" }
         }
         expect(assigns(:rule).valid?).to eq(false)
         expect(response).to have_http_status(200)

@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/BLSQ/orbf-rules_engine.git
-  revision: 6d0f739365143c7e0bd0ae42d12d3fe7f82da9d9
+  revision: 6e6346b35d1b83c46915bafe9185520803c27b9a
   specs:
     orbf-rules_engine (0.1.0)
       activesupport
@@ -93,11 +93,11 @@ GEM
       execjs
     coffee-script-source (1.11.1)
     colorize (0.8.1)
-    concurrent-ruby (1.0.5)
+    concurrent-ruby (1.1.3)
     connection_pool (2.2.1)
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
-    crass (1.0.3)
+    crass (1.0.4)
     database_cleaner (1.5.3)
     debug_inspector (0.0.2)
     deep_cloneable (2.2.2)
@@ -190,7 +190,7 @@ GEM
       actionpack (>= 4, < 5.2)
       activesupport (>= 4, < 5.2)
       railties (>= 4, < 5.2)
-    loofah (2.2.2)
+    loofah (2.2.3)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
     mail (2.6.6)
@@ -209,7 +209,7 @@ GEM
     nested_form (0.3.2)
     netrc (0.11.0)
     nio4r (2.1.0)
-    nokogiri (1.8.2)
+    nokogiri (1.8.5)
       mini_portile2 (~> 2.3.0)
     octokit (4.8.0)
       sawyer (~> 0.8.0, >= 0.5.3)
@@ -458,6 +458,7 @@ DEPENDENCIES
   json (= 2.1.0)
   listen (~> 3.0.5)
   lograge
+  loofah (>= 2.2.3)
   memory_profiler
   naturalsort
   orbf-rules_engine!

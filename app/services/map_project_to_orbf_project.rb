@@ -39,16 +39,19 @@ class MapProjectToOrbfProject
     from_cache = @cache_package[package]
     return from_cache if from_cache
     @cache_package[package] = Orbf::RulesEngine::Package.new(
-      code:                      package.code,
-      kind:                      PACKAGE_KINDS[package.kind] || package.kind,
-      frequency:                 package.frequency,
-      org_unit_group_ext_ids:    package.package_entity_groups
+      code:                          package.code,
+      kind:                          PACKAGE_KINDS[package.kind] || package.kind,
+      frequency:                     package.frequency,
+      main_org_unit_group_ext_ids:   package.main_entity_groups
                                         .map(&:organisation_unit_group_ext_ref).compact,
-      groupset_ext_id:           package.ogs_reference,
-      matching_groupset_ext_ids: package.groupsets_ext_refs,
-      dataset_ext_ids:           package.package_states.map(&:ds_external_reference).compact,
-      activities:                map_activities(package.activities, package.states),
-      rules:                     map_rules(package.rules)
+
+      target_org_unit_group_ext_ids: package.target_entity_groups
+                                      .map(&:organisation_unit_group_ext_ref).compact,
+      groupset_ext_id:               package.ogs_reference,
+      matching_groupset_ext_ids:     package.groupsets_ext_refs,
+      dataset_ext_ids:               package.package_states.map(&:ds_external_reference).compact,
+      activities:                    map_activities(package.activities, package.states),
+      rules:                         map_rules(package.rules)
     )
   end
 

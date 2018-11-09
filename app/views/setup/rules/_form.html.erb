@@ -2,6 +2,7 @@
 <h1><%= rule_name(rule) %></h1>
 <%end%>
 <%= f.input :name %>
+<%= f.hidden_field :kind %>
 
 <a class="btn pull-right" data-toggle="collapse" data-target="#cheat_sheet">
   <%= icon("question-circle fa-5x") %>
@@ -40,4 +41,3 @@
 <%= render "setup/rules/decision_tables", rule: rule, f: f%>
 
 <%= render "setup/rules/graph", rule: rule %>
-

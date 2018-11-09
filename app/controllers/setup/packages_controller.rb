@@ -16,8 +16,11 @@ class Setup::PackagesController < PrivateController
 
     update_package_constants
 
-    if package.valid? && params[:package][:entity_groups]
-      entity_groups = package.create_package_entity_groups(params[:package][:entity_groups])
+    if package.valid? && params[:package][:main_entity_groups]
+      entity_groups = package.create_package_entity_groups(
+        params[:package][:main_entity_groups],
+        params[:package][:target_entity_groups]
+      )
       package.package_entity_groups = []
       package.package_entity_groups.create(entity_groups)
       package.save!
@@ -28,7 +31,7 @@ class Setup::PackagesController < PrivateController
     else
       Rails.logger.info "!!!!!!!! package invalid : #{package.errors.full_messages.join(',')}"
       flash[:failure] = "Package doesn't look valid..."
-      flash[:failure] += "Please select at least one organisation group" unless params[:package][:entity_groups]
+      flash[:failure] += "Please select at least one organisation group" unless params[:package][:main_entity_groups]
       render :edit
 
     end
@@ -53,7 +56,10 @@ class Setup::PackagesController < PrivateController
       return
     end
 
-    entity_groups = package.create_package_entity_groups(params[:package][:entity_groups])
+    entity_groups = package.create_package_entity_groups(
+      params[:package][:main_entity_groups],
+      params[:package][:target_entity_groups]
+    )
     package.data_element_group_ext_ref = "todo"
     if package.save
 

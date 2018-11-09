@@ -4,14 +4,14 @@
     <div class="col-md-6">
       <div class="form-group">
         <label class="control-label">Org. Units Groups</label>
-        <select id="org_units_groups_selector" data-selected="<%=package.package_entity_groups.map(&:organisation_unit_group_ext_ref).join(',')%>"
-                data-placeholder="Lookup the organisation units groups here..." data-selection = "org_units_groups_selection"
+        <select id="org_units_groups_selector" data-selected="<%=package.main_entity_groups.map(&:organisation_unit_group_ext_ref).join(',')%>"
+                data-placeholder="Lookup the organisation units groups here..." data-selection = "main_entity_groups_selection"
                 data-url = "<%= organisation_unit_group_setup_project_autocomplete_index_path(package.project, siblings:true) %>"
-                class="form-control sol-powered" name="package[entity_groups][]" multiple="multiple">
+                class="form-control sol-powered" name="package[main_entity_groups][]" multiple="multiple">
         </select>
     </div>
   </div>
-    <div class="col-md-6" id="org_units_groups_selection"></div>
+    <div class="col-md-6" id="main_entity_groups_selection"></div>
 </div>
 <div class="row">
     <div class="col-md-6">
@@ -32,7 +32,7 @@
 <div class="row">
     <div class="col-md-6">
       <div class="form-group">
-        <label class="control-label">Multiple entity ?</label>
+        <label class="control-label">Multiple entity by contract group belonging to groupset?</label>
         <select id="org_units_groups_selector"
                 data-selected="<%=package.ogs_reference%>"
                 data-placeholder="Lookup the organisation units groups set here..."
@@ -44,6 +44,20 @@
     </div>
   </div>
     <div class="col-md-6" id="org_units_group_set_selection"></div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+<div class="form-group">
+  <label class="control-label">Zone entities by group</label>
+  <select id="org_units_groups_selector" data-selected="<%=package.target_entity_groups.map(&:organisation_unit_group_ext_ref).join(',')%>"
+          data-placeholder="Lookup the organisation units groups here..." data-selection = "target_entity_groups_selection"
+          data-url = "<%= organisation_unit_group_setup_project_autocomplete_index_path(package.project, siblings:true) %>"
+          class="form-control sol-powered" name="package[target_entity_groups][]" multiple="multiple">
+  </select>
+  </div>
+</div>
+  <div class="col-md-6" id="target_entity_groups_selection"></div>
 </div>
 
 
