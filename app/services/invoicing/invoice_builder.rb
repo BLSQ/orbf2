@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Invoicing
   class InvoiceBuilder
     attr_reader :solver, :project_finder, :tarification_service
@@ -22,9 +24,7 @@ module Invoicing
       package_results = calculate_package_results(activity_results)
 
       payment_result = nil
-      if package_results.any?
-        payment_result = calculate_payments(project, entity, package_results)
-      end
+      payment_result = calculate_payments(project, entity, package_results) if package_results.any?
       invoice = Invoicing::Invoice.new(date, entity, project, activity_results, package_results, payment_result)
       invoice.dump_invoice
       invoice
@@ -47,8 +47,8 @@ module Invoicing
           )
           quarter_details_results[year_month.end_date] = activity_monthly_results
           quarterly_package_results[year_month.end_date] = calculate_package_results(activity_monthly_results)
-        rescue => e
-          Rails.logger.info "WARN : generate_monthly_entity_invoice : #{e.class } : #{e.message} : \n#{e.backtrace.join("\n").to_s}"
+        rescue StandardError => e
+          Rails.logger.info "WARN : generate_monthly_entity_invoice : #{e.class} : #{e.message} : \n#{e.backtrace.join("\n")}"
         end
       end
 
@@ -91,7 +91,7 @@ module Invoicing
         package_results = calculate_package_results(activity_results)
         raise InvoicingError, "should have at least one package_results" if package_results.empty?
         return Invoicing::Invoice.new(date, entity, project, activity_results, package_results, nil)
-      rescue => e
+      rescue StandardError => e
         Invoicing::Invoice.new(date, entity, project, activity_results, package_results, nil).dump_invoice
         raise e
       end
@@ -104,10 +104,9 @@ module Invoicing
         monthly_rules = project.payment_rules.select(&:monthly?).select { |p| p.apply_for?(entity) }
 
         monthly_rules.map do |payment_rule|
-
-          all_package_results = monthly_invoices.empty? ? [] : monthly_invoices.flat_map(&:package_results).select { |pr|
+          all_package_results = monthly_invoices.empty? ? [] : monthly_invoices.flat_map(&:package_results).select do |pr|
             pr.frequency.nil?
-          }
+          end
 
           package_results = all_package_results.select do |pr|
             payment_rule.packages.map(&:name).include?(pr.package.name)
@@ -123,7 +122,6 @@ module Invoicing
             Rails.logger.info "results for #{package_result.package.name}"
             package_facts_and_rules = package_facts_and_rules.merge(package_result.solution)
           end
-
 
           payment_rule.packages.each do |package|
             package.package_rule.formulas.each do |formula|
@@ -216,8 +214,9 @@ module Invoicing
                         .merge(activity_tarification_facts)
                         .merge(values.to_facts)
                         .merge(
-                          quarter_of_year: year_month.to_quarter.quarter,
-                          month_of_year:   year_month.month
+                          quarter_of_year:  year_month.to_quarter.quarter,
+                          month_of_year:    year_month.month,
+                          month_of_quarter: year_month.month_of_quarter
                         )
                         .merge("activity_name" => "'#{activity.name.tr("'", ' ')}'")
 
@@ -233,11 +232,11 @@ module Invoicing
 
     def calculate_package_results(activity_results)
       activity_results.group_by(&:package).map do |package, results|
-        variables = results.first.solution.each_with_object({}) do |(k,_), hash|
+        variables = results.first.solution.each_with_object({}) do |(k, _), hash|
           hash["#{k}_values".to_sym] = solution_to_array(results, k).join(" , ")
         end
 
-        facts_and_rules = package.package_rule.formulas.each_with_object({ remoteness_bonus: 0 }) do |formula, hash|
+        facts_and_rules = package.package_rule.formulas.each_with_object(remoteness_bonus: 0) do |formula, hash|
           hash[formula.code] = string_template(formula, variables)
         end
         solution_package = solver.solve!("sum activities for #{package.name}", facts_and_rules)
@@ -261,9 +260,9 @@ module Invoicing
     def solution_to_array(results, k)
       results.map do |r|
         begin
-          BigDecimal.new(r.solution[k])
+          BigDecimal(r.solution[k])
           format("%.10f", r.solution[k])
-        rescue
+        rescue StandardError
           nil
         end
       end
@@ -276,7 +275,7 @@ module Invoicing
     end
 
     def string_template(formula, variables)
-      return formula.expression % variables
+      formula.expression % variables
     rescue KeyError => e
       Rails.logger.info "problem with expression #{e.message} : #{formula.code} : #{formula.expression} #{JSON.pretty_generate(variables)}"
       raise e

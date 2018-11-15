@@ -57,7 +57,12 @@
 </div>
 
 
-<% if invoicing_request.invoices.empty? %>
+<% if invoicing_request.invoices.empty? && @exception %>
+  <div class="alert alert-danger">
+    <%=@exception.class.name%><br>
+    <%=@exception.message%>
+  </div>
+<%else%>
   <br>
   <div class="alert alert-info alert-dismissible">
       No invoice ?

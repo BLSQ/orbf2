@@ -42,6 +42,10 @@ module Periods
       @year_value ||= Year.new(@year.to_s)
     end
 
+    def month_of_quarter
+      3
+    end
+
     def start_date
       @start_date ||= Date.parse("#{year}-#{(QUARTER_TO_END_MONTH[quarter.to_i] - 2)}-01")
     end

@@ -63,4 +63,15 @@ describe Periods::YearMonth do
     expect(per.year).to eq(2012)
     expect(per.month).to eq(12)
   end
+
+  describe "month_of_quarter" do
+    it "works" do
+      expect(Periods::Year.new(2012).months.map(&:month_of_quarter)).to eq(
+        [1, 2, 3,
+         1, 2, 3,
+         1, 2, 3,
+         1, 2, 3]
+      )
+    end
+  end
 end
