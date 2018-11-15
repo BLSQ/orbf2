@@ -151,6 +151,7 @@ RSpec.describe Rule, kind: :model do
       claimed_level_4
       claimed_level_5
       difference_percentage
+      month_of_quarter
       month_of_year
       quantity
       quarter_of_year
@@ -369,6 +370,7 @@ RSpec.describe Rule, kind: :model do
         claimed_level_5
         claimed_zone_main_orgunit
         fosa_attributed_points
+        month_of_quarter
         month_of_year
         quarter_of_year
       ]

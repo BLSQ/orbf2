@@ -16,7 +16,9 @@ module RuleTypes
 
     def to_fake_facts(states)
       facts = states.map { |state| [state.code.to_sym, "10"] }.to_h
-      facts[:quarter_of_year] = 3
+      facts[:month_of_year] = 6
+      facts[:quarter_of_year] = 2
+      facts[:month_of_quarter] = 3
       org_unit_facts = decision_tables.flat_map(&:out_headers)
                                       .map { |header| [header.to_sym, "10"] }
                                       .to_h

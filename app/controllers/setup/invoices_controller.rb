@@ -76,6 +76,7 @@ class Setup::InvoicesController < PrivateController
 
     render "new_invoice"
   rescue StandardError => e
+    @exception = e
     puts "An error occured during simulation #{e.class.name} #{e.message}" + e.backtrace.join("\n")
     flash[:failure] = "An error occured during simulation #{e.class.name} #{e.message[0..100]}"
     render "new_invoice"
@@ -132,9 +133,11 @@ class Setup::InvoicesController < PrivateController
 
       invoicing_request.invoices = invoicing_request.invoices.sort_by(&:date)
     rescue Rules::SolvingError => e
+      @exception = e
       log(e)
       flash[:alert] = "Failed to simulate invoice : #{e.class.name} #{e.message[0..100]} : <br>#{e.facts_and_rules.map { |k, v| [k, v].join(' : ') }.join(' <br>')}".html_safe
     rescue StandardError => e
+      @exception = e
       log(e)
       flash[:alert] = "Failed to simulate invoice : #{e.class.name} #{e.message[0..100]}"
     end

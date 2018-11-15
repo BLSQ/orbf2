@@ -30,6 +30,10 @@ module Periods
       YearMonth.new(year - years, month)
     end
 
+    def month_of_quarter
+      to_quarter.months.index(self) + 1
+    end
+
     def start_date
       @start_date ||= Date.parse("#{year}-#{@month}-01")
     end

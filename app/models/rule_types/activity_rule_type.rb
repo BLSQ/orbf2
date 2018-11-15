@@ -20,6 +20,7 @@ module RuleTypes
       var_names.push(*available_variables_for_values.map { |code| "%{#{code}}" })
       var_names.push("quarter_of_year")
       var_names.push("month_of_year")
+      var_names.push("month_of_quarter")
 
       if project.new_engine? && package.package_rule
         var_names.push(*package.package_rule.formulas.map(&:code))

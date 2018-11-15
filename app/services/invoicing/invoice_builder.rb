@@ -217,7 +217,8 @@ module Invoicing
                         .merge(values.to_facts)
                         .merge(
                           quarter_of_year: year_month.to_quarter.quarter,
-                          month_of_year:   year_month.month
+                          month_of_year:   year_month.month,
+                          month_of_quarter: year_month.month_of_quarter
                         )
                         .merge("activity_name" => "'#{activity.name.tr("'", ' ')}'")
 
