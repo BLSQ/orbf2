@@ -132,14 +132,17 @@ RSpec.describe Rule, kind: :model do
     EXPECTED_VARIABLES = %w[
       %{amount_current_quarter_values}
       %{claimed_current_cycle_values}
+      %{claimed_current_quarter_quarterly_values}
       %{claimed_previous_year_same_quarter_values}
       %{claimed_previous_year_values}
       %{difference_percentage_current_quarter_values}
       %{quantity_current_quarter_values}
       %{tarif_current_cycle_values}
+      %{tarif_current_quarter_quarterly_values}
       %{tarif_previous_year_same_quarter_values}
       %{tarif_previous_year_values}
       %{verified_current_cycle_values}
+      %{verified_current_quarter_quarterly_values}
       %{verified_previous_year_same_quarter_values}
       %{verified_previous_year_values}
       amount
@@ -358,6 +361,7 @@ RSpec.describe Rule, kind: :model do
       expected = %w[
         %{attributed_points_current_quarter_values}
         %{claimed_current_cycle_values}
+        %{claimed_current_quarter_quarterly_values}
         %{claimed_previous_year_same_quarter_values}
         %{claimed_previous_year_values}
         attributed_points

@@ -47,6 +47,7 @@ module RuleTypes
 
       if project&.new_engine?
         var_names.push(*rule.formulas.map { |formula| "#{formula.code}_current_quarter_values" })
+        var_names.push(*activity_level_states.map { |formula| "#{formula.code}_current_quarter_quarterly_values" })
       end
 
       if package.multi_entities_rule
