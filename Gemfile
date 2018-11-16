@@ -39,6 +39,7 @@ end
 gem "paper_trail"
 gem "pg", "~> 0.18"
 gem "puma", "~> 3.0"
+gem "rack", ">= 2.0.6"
 gem "rails", "~> 5.0.0", ">= 5.0.4"
 gem "rails-jquery-autocomplete"
 gem "rails_admin", "~> 1.3.0"
