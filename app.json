@@ -4,7 +4,7 @@
   "logo": "https://bluesquarehub.files.wordpress.com/2017/01/logo-openrbf.png?w=151&h=147",
   "keywords": ["ruby", "orbf", "openrbf"],
   "scripts": {
-    "postdeploy": "bundle exec rake db:seed"
+    "postdeploy": "bundle exec rake db:schema:load db:seed"
   },
   "env": {
     "ADMIN_PASSWORD": {
