@@ -2,14 +2,13 @@
 #
 # Table name: states
 #
-#  id           :integer          not null, primary key
-#  name         :string           not null
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
-#  configurable :boolean          default(FALSE), not null
-#  level        :string           default("activity"), not null
-#  project_id   :integer          not null
-#  short_name   :string
+#  id         :integer          not null, primary key
+#  name       :string           not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  level      :string           default("activity"), not null
+#  project_id :integer          not null
+#  short_name :string
 #
 
 class State < ApplicationRecord

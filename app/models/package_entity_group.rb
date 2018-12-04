@@ -10,6 +10,7 @@
 #  organisation_unit_group_ext_ref :string
 #  created_at                      :datetime         not null
 #  updated_at                      :datetime         not null
+#  kind                            :string           default("main"), not null
 #
 
 class PackageEntityGroup < ApplicationRecord
