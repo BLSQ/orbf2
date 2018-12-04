@@ -29,7 +29,8 @@ RSpec.describe IncentiveConfig, type: :model do
       expect(incentives.errors.full_messages).to eq []
     end
 
-    it "should reject states belong to project configurable states" do
+    # TODO: Remove when incentives go away
+    skip "should reject states belong to project configurable states" do
       incentives.state = project.states.find_by(name: %w[Budget])
       incentives.valid?
       expect(incentives.errors.full_messages).to eq ["State Budget is not associated to selected package. Quantity PMA has Tarif states"]

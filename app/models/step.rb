@@ -9,7 +9,6 @@ class Step
     step_activities = activities(project, step_states)
     step_packages = packages(project, step_activities, step_connection)
     step_rules = rules(project, step_packages)
-    step_incentives = incentives(project, step_packages, step_rules)
     step_invoicing = invoicing(project, step_packages, step_rules)
     step_publish = publish(project, step_packages)
 
@@ -19,7 +18,6 @@ class Step
      step_activities,
      step_packages,
      step_rules,
-     step_incentives,
      step_invoicing,
      step_publish].compact
   end
@@ -74,15 +72,6 @@ class Step
              status: step_rules_todo ? :todo : :done,
              kind:   :invoicing,
              model:  project)
-  end
-
-  def self.incentives(project, step_package, step_rules)
-    return nil if project.states.configurables(true).none? && project.states.any?
-    step_rules_todo = rules_todo(project, step_package)
-    Step.new(name:   "Incentive Configuration",
-             status: step_rules_todo ? :todo : :done,
-             kind:   :incentives,
-             model:  step_rules.todo? ? IncentiveConfig.new : IncentiveConfig.new)
   end
 
   def self.publish(project, step_package)

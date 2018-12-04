@@ -29,14 +29,6 @@ class State < ApplicationRecord
     message: "Short name should be unique per project"
   }
 
-  def self.configurables(conf = "")
-    if conf == ""
-      where("configurable= ? OR configurable= ?", true, false)
-    else
-      where configurable: conf
-    end
-  end
-
   def code
     @code ||= Codifier.codify(name)
   end
