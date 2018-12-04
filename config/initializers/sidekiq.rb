@@ -1,9 +1,14 @@
 require "sidekiq/throttled"
 Sidekiq::Throttled.setup!
 
-if ENV["REDISCLOUD_URL"]
+# The app could be provisioned with Redis cloud or with Heroku Redis,
+# they use a different env variable, so check them both, and use the
+# one that's there.
+redis_url = ENV["REDISCLOUD_URL"] || ENV["REDIS_URL"]
+
+if redis_url
   Sidekiq.configure_server do |config|
-    config.redis = { url: ENV["REDISCLOUD_URL"] }
+    config.redis = { url: redis_url }
     poolsize = ( ENV["SIDEKIQ_DB_POOL_SIZE"] || ENV["SIDEKIQ_CONCURRENCY"] || "10").to_i
     ActiveRecord::Base.configurations[Rails.env]["pool"] = poolsize
     ActiveRecord::Base.establish_connection
@@ -11,6 +16,6 @@ if ENV["REDISCLOUD_URL"]
   end
 
   Sidekiq.configure_client do |config|
-    config.redis = { url: ENV["REDISCLOUD_URL"] }
+    config.redis = { url: redis_url }
   end
 end
