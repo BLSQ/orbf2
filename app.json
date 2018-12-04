@@ -8,13 +8,14 @@
   },
   "env": {
     "ADMIN_PASSWORD": {
+      "description": "Password to log in to Rails Admin",
       "value": "sunday everyone promptly"
     },
     "SIDEKIQ_CONCURRENCY": {
       "value": 2
     },
     "LOG_LEVEL": {
-      "required": true
+      "value": "INFO"
     }
   },
   "formation": {
