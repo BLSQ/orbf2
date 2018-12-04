@@ -16,6 +16,10 @@
     },
     "LOG_LEVEL": {
       "value": "INFO"
+    },
+    "MALLOC_ARENA_MAX": {
+      "description": "Reduce memory needed",
+      "value": 2
     }
   },
   "formation": {
