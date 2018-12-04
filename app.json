@@ -15,7 +15,7 @@
     },
     "LOG_LEVEL": {
       "required": true
-    },
+    }
   },
   "formation": {
     "worker": {
