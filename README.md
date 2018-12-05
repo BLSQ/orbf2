@@ -41,46 +41,15 @@ Every change is tracked and you publish your project draft to be used at a given
 
 ## Dependencies and config
 
-First setup your local database configuration. We advise to use Postgresql as we make use of the built-in UUID format.
+Run `script/setup`, this should install all dependencies and create the local databases.
 
-```shell
-cp config/database-template.yml config/database.yml
-```
+Run `script/test` to check if everything was successfull.
 
-edit if necessary
-
-```shell
-cp config/application.template.yml config/application.yml
-```
-
-you can setup the admin password there
-
-## Setup the db and seed program and project
-
-```shell
-rake db:create
-rake db:migrate
-rake db:seed
-```
-
-## Seed a user and program
-
-Using the console or the seed file, create a program (a simple name) and a user connected to it:
-
-```ruby
-program = Program.create(code: "Sierra Leone")
-program.users.create(
-    password:"password",
-    password_confirmation:"password",
-    email: "admin@orbf.org"
-)
-```
-
-(this is done inside the seed file if you are in development mode)
+A default user and program will be create by the `db/seeds.rb` file.
 
 ## Seed a project
 
-We have an example project that can be created using DHIS2 public instance (https://play.dhis2.org/demo/) to showcase a RBF project configuration:
+We have an example project that can be created using the public DHIS2 demo instance (https://play.dhis2.org/demo/) to showcase a RBF project configuration:
 
 http://127.0.0.1:3000/setup/seeds
 
@@ -88,7 +57,7 @@ This will generate a "typical" RBF project with quality, quantity & payment rule
 
 ## Admin interface
 
-You can access any element in the application using the admin interface at 
+You can access any element in the application using the admin interface at
 
 http://127.0.0.1:3000/admin
 
