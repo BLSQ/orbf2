@@ -8,8 +8,11 @@
   },
   "env": {
     "ADMIN_PASSWORD": {
-      "description": "Password to log in to Rails Admin",
-      "value": "sunday everyone promptly"
+      "description": "Password to log in to Rails Admin"
+    },
+    "DEFAULT_USER_EMAIL": {
+    },
+    "DEFAULT_USER_PASSWORD": {
     },
     "SIDEKIQ_CONCURRENCY": {
       "value": "2"
