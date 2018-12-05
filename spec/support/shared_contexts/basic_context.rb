@@ -19,6 +19,12 @@ shared_context "basic_context" do
     project_factory.update_links(project)
 
     project.dump_validations
+
+    # We need to force a load of the code of an activity, so it will
+    # get saved to the DB, since a package will now use them sorted by
+    # code (to avoid non-deterministic iteration)
+    project.activities.each {|a| a.code }
+
     project.save!
     project
   end

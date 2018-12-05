@@ -1,4 +1,4 @@
-
+# frozen_string_literal: true
 
 class ProjectFactory
   def build(project_props = { dhis2_url: "http://play.dhis2.org/demo", user: "admin", password: "district", bypass_ssl: false })
@@ -270,15 +270,15 @@ class ProjectFactory
     admin_group = {    name: "Administrative", organisation_unit_group_ext_ref: "w0gFTTmsUcF" }
 
     [
-      { name: "Claimed",           configurable: false,  level: "activity" },
-      { name: "Verified",          configurable: false,  level: "activity" },
-      { name: "Validated",         configurable: false,  level: "activity" },
-      { name: "Max. Score",        configurable: true,   level: "activity" },
-      { name: "Tarif",             configurable: true,   level: "activity" },
-      { name: "Budget",            configurable: true,   level: "package"  },
-      { name: "Remoteness Bonus",  configurable: false,  level: "package" },
-      { name: "Applicable Points", configurable: false, level: "activity" },
-      { name: "Waiver",            configurable: false, level: "activity" }
+      { name: "Claimed",           level: "activity" },
+      { name: "Verified",          level: "activity" },
+      { name: "Validated",         level: "activity" },
+      { name: "Max. Score",        level: "activity" },
+      { name: "Tarif",             level: "activity" },
+      { name: "Budget",            level: "package"  },
+      { name: "Remoteness Bonus",  level: "package"  },
+      { name: "Applicable Points", level: "activity" },
+      { name: "Waiver",            level: "activity" }
     ].each do |state|
       project.states.build(state)
     end

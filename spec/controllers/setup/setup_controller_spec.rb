@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 
 RSpec.describe Setup::SetupController, type: :controller do
@@ -17,7 +19,17 @@ RSpec.describe Setup::SetupController, type: :controller do
     it "should display steps when Dhis2 not set" do
       get :index
       expect(response).to have_http_status(:success)
-      expect(setup.steps.size).to eq 9
+      expected_steps = [
+        "Dhis2 connection & Signalitic",
+        "Entities",
+        "States",
+        "Activities",
+        "Package of Activities",
+        "Rules",
+        "Invoicing",
+        "Publish project"
+      ]
+      expect(setup.steps.size).to eq expected_steps.count
       expect(setup.steps.all?(&:todo?)).to eq true
     end
 
@@ -31,7 +43,7 @@ RSpec.describe Setup::SetupController, type: :controller do
       user.save!
       user.reload
       ["Price"].each do |state_name|
-        project.states.create(name: state_name, configurable: true)
+        project.states.create(name: state_name)
       end
       project
     end
@@ -47,7 +59,17 @@ RSpec.describe Setup::SetupController, type: :controller do
     it "should display main entity group when Dhis2 is complete" do
       get :index, params: { project_id: project.id }
       expect(response).to have_http_status(:success)
-      expect(setup.steps.map(&:todo?)).to eq [false, true, true, true, true, true, true, true, true]
+      expected_step_todos = {
+        "Dhis2 connection & Signalitic" => false,
+        "Entities"                      => true,
+        "States"                        => true,
+        "Activities"                    => true,
+        "Package of Activities"         => true,
+        "Rules"                         => true,
+        "Invoicing"                     => true,
+        "Publish project"               => true
+      }
+      expect(setup.steps.map(&:todo?)).to eq expected_step_todos.values
     end
 
     it "should display packages group when main entity group" do
@@ -55,7 +77,17 @@ RSpec.describe Setup::SetupController, type: :controller do
 
       get :index, params: { project_id: project.id }
       expect(response).to have_http_status(:success)
-      expect(setup.steps.map(&:todo?)).to eq [false, false, false, true, true, true, true, true, true]
+      expected_step_todos = {
+        "Dhis2 connection & Signalitic" => false,
+        "Entities"                      => false,
+        "States"                        => false,
+        "Activities"                    => true,
+        "Package of Activities"         => true,
+        "Rules"                         => true,
+        "Invoicing"                     => true,
+        "Publish project"               => true
+      }
+      expect(setup.steps.map(&:todo?)).to eq expected_step_todos.values
     end
 
     it "should display rules group packages exist" do
@@ -72,7 +104,17 @@ RSpec.describe Setup::SetupController, type: :controller do
 
       get :index, params: { project_id: project.id }
       expect(response).to have_http_status(:success)
-      expect(setup.steps.map(&:todo?)).to eq [false, false, false, true, true, true, true, true, true]
+      expected_step_todos = {
+        "Dhis2 connection & Signalitic" => false,
+        "Entities"                      => false,
+        "States"                        => false,
+        "Activities"                    => true,
+        "Package of Activities"         => true,
+        "Rules"                         => true,
+        "Invoicing"                     => true,
+        "Publish project"               => true
+      }
+      expect(setup.steps.map(&:todo?)).to eq expected_step_todos.values
     end
   end
 end

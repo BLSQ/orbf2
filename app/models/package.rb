@@ -30,7 +30,7 @@ class Package < ApplicationRecord
   has_many :rules, dependent: :destroy
   has_many :activity_packages, dependent: :destroy
 
-  has_many :activities, through: :activity_packages, source: :activity
+  has_many :activities, -> { order(code: :asc) }, through: :activity_packages, source: :activity
 
   validates :name, presence: true, length: { maximum: 50 }
 
