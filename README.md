@@ -76,6 +76,10 @@ We recommand Heroku to host the application, but any hosting should work as long
     git push heroku master
     heroku run rake db:create db:migrate db:seed
 
+Or you can use this button to get up and running immediately:
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+
 ## Restoring a testing or production Environment
 
 get a fresh copy using Heroku
