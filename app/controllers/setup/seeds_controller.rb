@@ -5,7 +5,7 @@ class Setup::SeedsController < PrivateController
     project_factory = ProjectFactory.new
     suffix = Time.now.to_s[0..15] + " - "
     project = project_factory.build(
-      dhis2_url:      params[:local] ? "http://127.0.0.1:8085/" : "https://play.dhis2.org/demo",
+      dhis2_url:      dhis2_url,
       user:           "admin",
       password:       "district",
       bypass_ssl:     false,
@@ -22,5 +22,19 @@ class Setup::SeedsController < PrivateController
     Dhis2SnapshotWorker.new.perform(project_anchor.id)
     flash[:notice] = " created package and rules for #{suffix} : #{project.packages.map(&:name).join(', ')}"
     redirect_to root_path
+  end
+
+  def dhis2_url
+    if params[:local]
+      "http://127.0.0.1:8085/"
+    else
+      resolve_play_demo_url
+    end
+  end
+
+  def resolve_play_demo_url
+    # demo will always redirect to latest stable demo
+    res = Net::HTTP.get_response(URI("https://play.dhis2.org/demo"))
+    res["location"]
   end
 end
