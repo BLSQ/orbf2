@@ -1,0 +1,44 @@
+{
+  "name": "OpenRBF 2.0",
+  "description": "A rule engine on top of dhis2 developed by Bluesquare, to let power users describe their Results-Based Financing scheme.",
+  "logo": "https://bluesquarehub.files.wordpress.com/2017/01/logo-openrbf.png?w=151&h=147",
+  "keywords": ["ruby", "orbf", "openrbf"],
+  "scripts": {
+    "postdeploy": "bundle exec rake db:schema:load db:seed"
+  },
+  "env": {
+    "ADMIN_PASSWORD": {
+      "description": "Password to log in to Rails Admin",
+      "value": "sunday everyone promptly"
+    },
+    "SIDEKIQ_CONCURRENCY": {
+      "value": 2
+    },
+    "LOG_LEVEL": {
+      "value": "INFO"
+    },
+    "MALLOC_ARENA_MAX": {
+      "description": "Reduce memory needed",
+      "value": 2
+    }
+  },
+  "formation": {
+    "worker": {
+      "quantity": 1,
+      "size": "free"
+    },
+    "web": {
+      "quantity": 1,
+      "size": "free"
+    }
+  },
+  "addons": [
+    "heroku-postgresql",
+    "heroku-redis"
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/ruby"
+    }
+  ]
+}
