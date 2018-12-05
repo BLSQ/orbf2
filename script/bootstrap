@@ -68,5 +68,4 @@ https://github.com/BLSQ/go-hesabu/releases
 
 And install it at $(bundle exec ruby -e 'require "hesabu"; puts Hesabu::HESABUCLI')
 HESABU
-    exit 1
 }
