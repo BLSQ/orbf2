@@ -339,6 +339,12 @@ class ProjectFactory
     default_quality_states = states_in(project,  ["Claimed", "Verified", "Max. Score"])
     default_performance_states = states_in(project, ["Claimed", "Max. Score", "Budget"])
 
+    # States have been created, now we can update them with actual
+    # identifiers from DHIS, these are taken from:
+    #
+    # https://play.dhis2.org/2.29/api/dataElements?filter=domainType:eq:AGGREGATE
+    #
+    # We don't really care what the elements are, we just need to map them.
     update_package_with_dhis2(
       project.packages[0], suffix, default_quantity_states,
       [clinic_group],
