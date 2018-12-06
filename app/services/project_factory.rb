@@ -273,6 +273,10 @@ class ProjectFactory
     hospital_group = { name: "Hospital",       organisation_unit_group_ext_ref: "tDZVQ1WtwpA" }
     clinic_group = {   name: "Clinic",         organisation_unit_group_ext_ref: "RXL3lPSK8oG" }
     admin_group = {    name: "Administrative", organisation_unit_group_ext_ref: "w0gFTTmsUcF" }
+    project.build_entity_group(
+      name: clinic_group[:name],
+      external_reference: clinic_group[:organisation_unit_group_ext_ref]
+    )
 
     [
       { name: "Claimed",           level: "activity" },
