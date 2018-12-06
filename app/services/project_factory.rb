@@ -1,3 +1,4 @@
+# coding: utf-8
 # frozen_string_literal: true
 
 class ProjectFactory
@@ -260,6 +261,10 @@ class ProjectFactory
   end
 
   def update_links(project, suffix = "")
+    if (suffix || "") =~ /^[0-9]/
+      # Packages should not start with a number
+      suffix = "P#{suffix}"
+    end
     project.build_entity_group(
       name:               "contracted entities",
       external_reference: "external_reference"
