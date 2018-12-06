@@ -294,12 +294,16 @@ class ProjectFactory
 
     claimed_state = project.states.find { |s| s.name == "Claimed" }
     tarif_state = project.states.find { |s| s.name == "Tarif" }
+    verified_state = project.states.find { |s| s.name == "Verified" }
+    max_state = project.states.find { |s| s.name == "Max. Score" }
 
     activity_1 = project.activities.build(
       project: project,
       name: "Vaccination", activity_states_attributes: [
         { name: "Vaccination claimed", state: claimed_state, external_reference: "cl-ext-1" },
-        { name: "tarif for Vaccination ", state: tarif_state, external_reference: "tarif-ext-1" }
+        { name: "tarif for Vaccination ", state: tarif_state, external_reference: "tarif-ext-1" },
+        { name: "Verified", state: verified_state, external_reference: 'verified-ext-1'},
+        { name: "Max. Score", state: max_state, external_reference: 'max-score-ext-1'}
       ]
     )
 
@@ -316,7 +320,9 @@ class ProjectFactory
           name:               "tarif for Clients sous traitement ARV suivi pendant les 6 premiers mois",
           state:              tarif_state,
           external_reference: "tarif-ext-2"
-        }
+        },
+        { name: "Verified", state: verified_state, external_reference: 'verified-ext-1'},
+        { name: "Max. Score", state: max_state, external_reference: 'max-score-ext-1'}
       ]
     )
 
