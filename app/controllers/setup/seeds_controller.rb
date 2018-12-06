@@ -3,7 +3,7 @@ class Setup::SeedsController < PrivateController
     current_user.program.create_project_anchor unless current_user.program.project_anchor
     project_anchor = current_user.program.project_anchor
     project_factory = ProjectFactory.new
-    suffix = Time.now.to_s[0..15] + " - "
+    suffix = project_factory.normalized_suffix
     project = project_factory.build(
       dhis2_url:      dhis2_url,
       user:           "admin",
@@ -12,7 +12,7 @@ class Setup::SeedsController < PrivateController
       project_anchor: project_anchor
     )
     project_factory.update_links(project, suffix)
-
+    project_factory.additional_seed_actions(project, suffix)
     project_anchor.projects.destroy_all
     project_anchor.projects.push project
 
