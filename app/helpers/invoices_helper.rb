@@ -32,16 +32,36 @@ module InvoicesHelper
 
   def package_descriptor(package)
     package_descriptor = {
-      name:                   package.name,
-      frequency:              package.frequency,
-      formulas:               formulas_descriptors(package.package_rule),
-      activities:             activity_descriptors(package),
-      data_set_ids:           package.package_states.map(&:ds_external_reference).compact,
-      data_element_group_ids: package.package_states.map(&:deg_external_reference).compact
+      name:                      package.name,
+      code:                      package.code,
+      frequency:                 package.frequency,
+      kind:                      package.kind,
+      activities:                activity_descriptors(package),
+      data_set_ids:              package.package_states.map(&:ds_external_reference).compact,
+      data_element_group_ids:    package.package_states.map(&:deg_external_reference).compact,
+      main_org_unit_group_ids:   package.main_entity_groups.map(&:organisation_unit_group_ext_ref).compact,
+      target_org_unit_group_ids: package.target_entity_groups.map(&:organisation_unit_group_ext_ref).compact,
+      groupset_ext_id:           package.ogs_reference,
+      matching_groupset_ids:     package.groupsets_ext_refs
     }
+
+    package_descriptor[:activity_formulas] = activity_rule_descriptors(package)     if package.activity_rule
+    package_descriptor[:formulas] = formulas_descriptors(package.package_rule)
     package_descriptor[:zone_formulas] = formulas_descriptors(package.zone_rule) if package.zone_rule
 
     package_descriptor
+  end
+
+  def activity_rule_descriptors(package)
+    package.activity_rule.formulas.each_with_object({}) do |formula, hash|
+      hash[formula.code] = {
+        short_name:              formula.short_name || formula.description,
+        description:             formula.description,
+        expression:              formula.expression,
+        frequency:               formula.frequency || package.frequency,
+        exportable_formula_code: formula.exportable_formula_code
+      }
+    end
   end
 
   def activity_descriptors(package)
@@ -87,9 +107,12 @@ module InvoicesHelper
     rule.formulas.each do |formula|
       next unless formula.formula_mapping
       formulas[formula.code] = {
-        de_id:      formula.formula_mapping&.external_reference,
-        expression: formula.expression,
-        frequency:  formula.frequency || rule.package&.frequency || rule.payment_rule&.frequency
+        de_id:                   formula.formula_mapping&.external_reference,
+        short_name:              formula.short_name || formula.description,
+        description:             formula.description,
+        expression:              formula.expression,
+        frequency:               formula.frequency || rule.package&.frequency || rule.payment_rule&.frequency,
+        exportable_formula_code: formula.exportable_formula_code
       }
     end
     formulas
