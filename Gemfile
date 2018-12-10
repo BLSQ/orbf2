@@ -27,7 +27,7 @@ gem "jquery-rails", "~> 4.3.3"
 gem "jquery-ui-rails", "~> 5.0.5"
 
 gem "json", "2.1.0"
-gem "lograge"
+gem "lograge", "~> 0.10.0"
 gem "loofah", ">= 2.2.3"
 gem "naturalsort"
 if ENV["ORBF_DEV_MODE"]
