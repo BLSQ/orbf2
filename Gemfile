@@ -50,7 +50,7 @@ gem "rails-jquery-autocomplete"
 gem "rails_admin", "~> 1.3.0"
 
 gem "sassc-rails", "~> 2.0.0"
-gem "sentry-raven", "2.6.3"
+gem "sentry-raven", "~> 2.7.4"
 
 gem 'sidekiq', '< 6'
 gem "sidekiq-throttled", "~> 0.9.0"
