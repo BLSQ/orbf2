@@ -23,8 +23,9 @@ gem "font-awesome-sass", "~> 4.7.0"
 gem "hashdiff"
 
 gem "jbuilder", "~> 2.5"
-gem "jquery-rails"
-gem "jquery-ui-rails"
+gem "jquery-rails", "~> 4.3.3"
+gem "jquery-ui-rails", "~> 5.0.5"
+
 gem "json", "2.1.0"
 gem "lograge"
 gem "loofah", ">= 2.2.3"
@@ -45,7 +46,9 @@ gem "puma", "~> 3.0"
 gem "rack", ">= 2.0.6"
 gem "rails", "~> 5.1", "< 5.2"
 gem "rails-jquery-autocomplete"
+
 gem "rails_admin", "~> 1.3.0"
+
 gem "sassc-rails", "~> 2.0.0"
 gem "sentry-raven", "2.6.3"
 gem "sidekiq"

@@ -469,8 +469,8 @@ DEPENDENCIES
   hesabu
   immigrant
   jbuilder (~> 2.5)
-  jquery-rails
-  jquery-ui-rails
+  jquery-rails (~> 4.3.3)
+  jquery-ui-rails (~> 5.0.5)
   json (= 2.1.0)
   listen (~> 3.0.5)
   lograge
