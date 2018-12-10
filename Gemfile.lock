@@ -84,8 +84,6 @@ GEM
     builder (3.2.3)
     byebug (10.0.2)
     cocoon (1.2.12)
-    codeclimate-test-reporter (1.0.9)
-      simplecov (<= 0.13)
     coffee-rails (4.2.2)
       coffee-script (>= 2.2.0)
       railties (>= 4.0.0)
@@ -452,7 +450,6 @@ DEPENDENCIES
   bootstrap-sass (~> 3.3.6)
   byebug
   cocoon
-  codeclimate-test-reporter (~> 1.0.0)
   coffee-rails (~> 4.2)
   database_cleaner
   deep_cloneable
