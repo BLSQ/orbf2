@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: activities
@@ -21,6 +23,7 @@ RSpec.describe Activity, type: :model do
   let(:activity) do
     Activity.new(name:                       "activity_name",
                  code:                       "activity_code",
+                 project:                    project,
                  activity_states_attributes: [
                    {
                      name:               "activity_state_name",
@@ -42,7 +45,7 @@ RSpec.describe Activity, type: :model do
   it "should only contains lowercase letters and _ chars" do
     activity.code = "Activit4_Code"
     activity.valid?
-    expect(activity.valid?).to be false
     expect(activity.errors.full_messages).to eq(["Code : should only contains lowercase letters and _ like 'assisted_deliveries' or 'vaccination_under_one_year' vs #{activity.code}"])
+    expect(activity.valid?).to be false
   end
 end

@@ -19,7 +19,7 @@
 class Version < PaperTrail::Version
   belongs_to :program
   belongs_to :project
-  belongs_to :author, foreign_key: "whodunnit", class_name: "User"
+  belongs_to :author, foreign_key: "whodunnit", class_name: "User", optional: true
 
   def diffs
     @diffs ||= build_diffs.compact.to_h

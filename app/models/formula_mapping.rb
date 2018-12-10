@@ -22,7 +22,7 @@ class FormulaMapping < ApplicationRecord
 
   validates :external_reference, presence: true
   belongs_to :formula, inverse_of: :formula_mappings
-  belongs_to :activity
+  belongs_to :activity, optional: true
 
   def project
     formula.rule.project
