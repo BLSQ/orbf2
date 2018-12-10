@@ -36,7 +36,8 @@ else
   gem "hesabu"
   gem "orbf-rules_engine", github: "BLSQ/orbf-rules_engine"
 end
-gem "paper_trail"
+
+gem "paper_trail", "~> 10.1.0"
 gem "paper_trail-association_tracking", "~> 1.0.0"
 
 gem "pg", "~> 0.18"

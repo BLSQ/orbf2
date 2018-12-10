@@ -478,7 +478,7 @@ DEPENDENCIES
   memory_profiler
   naturalsort
   orbf-rules_engine!
-  paper_trail
+  paper_trail (~> 10.1.0)
   paper_trail-association_tracking (~> 1.0.0)
   pg (~> 0.18)
   pronto
