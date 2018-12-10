@@ -22,7 +22,11 @@ module InvoicesHelper
     {
       payment_rules: project.payment_rules.each_with_object({}) do |payment_rule, hash|
         hash[codify(payment_rule.rule.name)] = payment_descriptor(payment_rule)
-      end
+      end,
+      entity_group:  {
+        id:   project.entity_group.external_reference,
+        name: project.entity_group.name
+      }
     }
   end
 
