@@ -501,8 +501,8 @@ DEPENDENCIES
   sassc-rails (~> 2.0.0)
   sentry-raven (= 2.6.3)
   shoulda-matchers
-  sidekiq
-  sidekiq-throttled
+  sidekiq (< 6)
+  sidekiq-throttled (~> 0.9.0)
   simple_form
   simplecov
   spring

@@ -51,8 +51,10 @@ gem "rails_admin", "~> 1.3.0"
 
 gem "sassc-rails", "~> 2.0.0"
 gem "sentry-raven", "2.6.3"
-gem "sidekiq"
-gem "sidekiq-throttled"
+
+gem 'sidekiq', '< 6'
+gem "sidekiq-throttled", "~> 0.9.0"
+
 gem "simple_form"
 gem "sprockets", "~> 3.7.2"
 gem "turbolinks", "~> 5"
