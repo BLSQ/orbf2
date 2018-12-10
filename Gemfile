@@ -37,10 +37,12 @@ else
   gem "orbf-rules_engine", github: "BLSQ/orbf-rules_engine"
 end
 gem "paper_trail"
+gem "paper_trail-association_tracking", "~> 1.0.0"
+
 gem "pg", "~> 0.18"
 gem "puma", "~> 3.0"
 gem "rack", ">= 2.0.6"
-gem "rails", "~> 5.0.0"
+gem "rails", "~> 5.1", "< 5.2"
 gem "rails-jquery-autocomplete"
 gem "rails_admin", "~> 1.3.0"
 gem "sass-rails", "~> 5.0"
@@ -55,7 +57,7 @@ gem "uglifier", ">= 1.3.0"
 group :development, :test do
   gem "byebug", platform: :mri
   gem "database_cleaner"
-  gem "factory_girl_rails", " 4.0"
+  gem "factory_girl_rails", "~> 4.9.0"
   gem "faker"
   gem "immigrant"
   gem "rails-controller-testing"
