@@ -7,6 +7,7 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
+gem "bootsnap", "~> 1.3.2"
 gem "bootstrap-datepicker-rails"
 gem "bootstrap-sass", "~> 3.3.6"
 gem "cocoon"
@@ -44,7 +45,7 @@ gem "paper_trail-association_tracking", "~> 1.0.0"
 gem "pg", "~> 0.18"
 gem "puma", "~> 3.0"
 gem "rack", ">= 2.0.6"
-gem "rails", "~> 5.1", "< 5.2"
+gem "rails", "~> 5.2", "< 5.3"
 gem "rails-jquery-autocomplete"
 
 gem "rails_admin", "~> 1.3.0"
