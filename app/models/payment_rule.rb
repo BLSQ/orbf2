@@ -19,7 +19,7 @@ class PaymentRule < ApplicationRecord
   has_one :rule, dependent: :destroy, inverse_of: :payment_rule
   has_many :package_payment_rules, dependent: :destroy
   has_many :packages, through: :package_payment_rules, source: :package
-  has_many :datasets, dependent: :destroy, class_name: PaymentRuleDataset
+  has_many :datasets, dependent: :destroy, class_name: "PaymentRuleDataset"
 
   accepts_nested_attributes_for :rule, allow_destroy: true
 
