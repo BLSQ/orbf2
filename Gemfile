@@ -57,7 +57,7 @@ gem "uglifier", ">= 1.3.0"
 group :development, :test do
   gem "byebug", platform: :mri
   gem "database_cleaner"
-  gem "factory_girl_rails", "~> 4.9.0"
+  gem "factory_bot_rails", "~> 4.11.1"
   gem "faker"
   gem "immigrant"
   gem "rails-controller-testing"

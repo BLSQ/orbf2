@@ -15,7 +15,7 @@
 #  groupsets_ext_refs         :string           default([]), is an Array
 #
 
-FactoryGirl.define do
+FactoryBot.define do
   factory :package do
   end
 end
