@@ -71,8 +71,8 @@ module InvoicesHelper
   def activity_descriptors(package)
     activity_descriptors = []
     package.activities.each do |activity|
-      activity_descriptor = { "name" => activity.name }
-      activity_descriptor["code"] = activity.code if activity.code.present?
+      activity_descriptor = { name: activity.name }
+      activity_descriptor[:code] = activity.code if activity.code.present?
       activity_descriptors.push(activity_descriptor)
 
       package.states.each do |state|
@@ -118,7 +118,9 @@ module InvoicesHelper
         short_name:              formula.short_name || formula.description,
         description:             formula.description,
         expression:              formula.expression,
-        frequency:               formula.frequency || rule.package&.frequency || rule.payment_rule&.frequency,
+        frequency:               formula.frequency ||
+                                 rule.package&.frequency ||
+                                 rule.payment_rule&.frequency,
         exportable_formula_code: formula.exportable_formula_code
       }
     end
