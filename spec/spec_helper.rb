@@ -20,6 +20,7 @@ require "simplecov"
 SimpleCov.start "rails" do
   coverage_dir  "./coverage"
   add_filter    "/spec/"
+  add_filter    "/vendor/ruby"
 
   add_group "Libraries", "lib/tasks/"
 end

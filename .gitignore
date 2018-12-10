@@ -24,3 +24,7 @@ public/coverage
 dump.rdb
 .byebug_history
 coverage
+
+# I, pj, still vendor my ruby gems in the directory of the
+# application, this stops me from committing them here.
+vendor/ruby
