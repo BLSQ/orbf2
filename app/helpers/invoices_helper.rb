@@ -21,17 +21,13 @@ module InvoicesHelper
   def project_descriptor(project)
     {
       payment_rules: project.payment_rules.each_with_object({}) do |payment_rule, hash|
-        hash[codify(payment_rule.rule.name)] = payment_descriptor(payment_rule)
+        hash[payment_rule.code] = payment_descriptor(payment_rule)
       end,
       entity_group:  {
         id:   project.entity_group.external_reference,
         name: project.entity_group.name
       }
     }
-  end
-
-  def codify(code)
-    Orbf::RulesEngine::Codifier.codify(code)
   end
 
   def package_descriptor(package)
@@ -73,8 +69,7 @@ module InvoicesHelper
   end
 
   def activity_descriptors(package)
-    activity_descriptors = []
-    package.activities.each do |activity|
+    package.activities.each_with_object([]) do |activity, activity_descriptors|
       activity_descriptor = { name: activity.name }
       activity_descriptor[:code] = activity.code if activity.code.present?
       activity_descriptors.push(activity_descriptor)
@@ -90,7 +85,6 @@ module InvoicesHelper
         end
       end
     end
-    activity_descriptors
   end
 
   def payment_descriptor(payment_rule)
