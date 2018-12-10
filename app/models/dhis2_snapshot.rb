@@ -76,6 +76,7 @@ class Dhis2Snapshot < ApplicationRecord
 
   def store_changes
     return if saved_changes.empty? || @disable_tracking
+
     current = saved_changes["content"].last&.map { |r| r["table"] }
     previous = saved_changes["content"].first.map { |r| r["table"] }
 
