@@ -58,7 +58,7 @@ RSpec.describe Setup::StatesController, type: :controller do
 
       expect do
         State.update(
-          id:         state.id,
+          state.id,
           name:       "New very very long state name",
           short_name: "new short state name"
         )
