@@ -1,0 +1,21 @@
+#! /bin/sh
+#
+# Stop on error and output every command before executing it
+set -ex
+
+echo "[cibuild] started at..."
+date "+%H:%M:%S"
+
+export RAILS_ENV="test"
+export RACK_ENV="test"
+
+hostname
+
+bundle install
+bundle exec rake db:test:prepare
+
+echo "[cibuild] Running tests ..."
+date "+%H:%M:%S"
+
+# run tests.
+script/test

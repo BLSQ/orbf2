@@ -1,3 +1,4 @@
+# coding: utf-8
 # frozen_string_literal: true
 
 class ProjectFactory
@@ -268,6 +269,10 @@ class ProjectFactory
     hospital_group = { name: "Hospital",       organisation_unit_group_ext_ref: "tDZVQ1WtwpA" }
     clinic_group = {   name: "Clinic",         organisation_unit_group_ext_ref: "RXL3lPSK8oG" }
     admin_group = {    name: "Administrative", organisation_unit_group_ext_ref: "w0gFTTmsUcF" }
+    project.build_entity_group(
+      name: clinic_group[:name],
+      external_reference: clinic_group[:organisation_unit_group_ext_ref]
+    )
 
     [
       { name: "Claimed",           level: "activity" },
@@ -320,10 +325,65 @@ class ProjectFactory
       content: fixture_content(:scorpio, "decision_table.csv")
     )
 
+    refresh_packages!(project, suffix)
+  end
+
+  # These only get run by the seed controller. Adding them to the normal build operation would break some specs, since these two are not really related, keeping these separate.
+  def additional_seed_actions(project, suffix = "")
+    verified_state = project.states.find { |s| s.name == "Verified" }
+    max_state = project.states.find { |s| s.name == "Max. Score" }
+
+    activity_1 = project.activities.detect{|a| a.name == "Vaccination"}
+    activity_1.activity_states.build(
+      { name: "Verified", state: verified_state, external_reference: 'M62VHgYT2n0'}
+    )
+    activity_1.activity_states.build(
+      { name: "Max. Score", state: max_state, external_reference: 'FQ2o8UBlcrS'}
+    )
+
+    activity_2 = project.activities.last
+    activity_2.activity_states.build(
+      { name: "Verified", state: verified_state, external_reference: 'CecywZWejT3'}
+    )
+    activity_2.activity_states.build(
+      { name: "Max. Score", state: max_state, external_reference: 'bVkFujnp3F2'}
+    )
+  end
+
+  def normalized_suffix
+    suffix = Time.now.to_s[0..15] + " - "
+    if (suffix || "") =~ /^[0-9]/
+      # Packages should not start with a number
+      suffix = "P#{suffix}"
+    end
+    suffix
+  end
+
+  private
+
+  def states_in(project, state_names)
+    project.states.select { |s| state_names.include?(s.name) }
+  end
+
+  def fixture_content(type, name)
+    File.read(File.join("spec", "fixtures", type.to_s, name))
+  end
+
+  def refresh_packages!(project, suffix)
     default_quantity_states = states_in(project, %w[Claimed Verified Tarif])
     default_quality_states = states_in(project,  ["Claimed", "Verified", "Max. Score"])
     default_performance_states = states_in(project, ["Claimed", "Max. Score", "Budget"])
 
+    hospital_group = { name: "Hospital",       organisation_unit_group_ext_ref: "tDZVQ1WtwpA" }
+    clinic_group = {   name: "Clinic",         organisation_unit_group_ext_ref: "RXL3lPSK8oG" }
+    admin_group = {    name: "Administrative", organisation_unit_group_ext_ref: "w0gFTTmsUcF" }
+
+    # States have been created, now we can update them with actual
+    # identifiers from DHIS, these are taken from:
+    #
+    # https://play.dhis2.org/2.29/api/dataElements?filter=domainType:eq:AGGREGATE
+    #
+    # We don't really care what the elements are, we just need to map them.
     update_package_with_dhis2(
       project.packages[0], suffix, default_quantity_states,
       [clinic_group],
@@ -347,16 +407,6 @@ class ProjectFactory
       [admin_group],
       activity_refs
     )
-  end
-
-  private
-
-  def states_in(project, state_names)
-    project.states.select { |s| state_names.include?(s.name) }
-  end
-
-  def fixture_content(type, name)
-    File.read(File.join("spec", "fixtures", type.to_s, name))
   end
 
   def update_package_with_dhis2(package, suffix, states, groups, activity_ids)

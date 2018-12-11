@@ -8,8 +8,13 @@
   },
   "env": {
     "ADMIN_PASSWORD": {
-      "description": "Password to log in to Rails Admin",
-      "value": "sunday everyone promptly"
+      "description": "Password to log in to Rails Admin"
+    },
+    "DEFAULT_USER_EMAIL": {
+      "description": "Email for the created user to log in with"
+    },
+    "DEFAULT_USER_PASSWORD": {
+      "description": "Password for the created user to log in with"
     },
     "SIDEKIQ_CONCURRENCY": {
       "value": "2"
@@ -18,8 +23,11 @@
       "value": "INFO"
     },
     "MALLOC_ARENA_MAX": {
-      "description": "Reduce memory needed",
+      "description": "https://devcenter.heroku.com/articles/tuning-glibc-memory-behavior",
       "value": "2"
+    },
+    "ORBF_STAGING": {
+      "description": "Designates it as a QA environment"
     }
   },
   "formation": {

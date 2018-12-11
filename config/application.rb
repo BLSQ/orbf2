@@ -32,5 +32,8 @@ module Scorpio
         exception_object: event.payload[:exception_object] # the exception instance
       }
     end
+
+    # These are defined in `/lib/*.rb
+    require "scorpio"
   end
 end
