@@ -59,39 +59,12 @@ module Descriptor
       end
     end
 
-    def activity_formulas_descriptors(package)
-      return {} unless package.activity_rule
-
-      package.activity_rule.formulas.each_with_object({}) do |formula, hash|
-        hash[formula.code] = {
-          short_name:              formula.short_name || formula.description,
-          description:             formula.description,
-          expression:              formula.expression,
-          frequency:               formula.frequency || package.frequency,
-          exportable_formula_code: formula.exportable_formula_code
-        }
-      end
+    def formulas_descriptors(rule)
+      RuleDescription.new(rule).formulas_descriptors
     end
 
-    def formulas_descriptors(rule)
-      formulas = {}
-      return formulas unless rule
-
-      rule.formulas.each do |formula|
-        next unless formula.formula_mapping
-
-        formulas[formula.code] = {
-          de_id:                   formula.formula_mapping&.external_reference,
-          short_name:              formula.short_name || formula.description,
-          description:             formula.description,
-          expression:              formula.expression,
-          frequency:               formula.frequency ||
-                                   rule.package&.frequency ||
-                                   rule.payment_rule&.frequency,
-          exportable_formula_code: formula.exportable_formula_code
-        }
-      end
-      formulas
+    def activity_formulas_descriptors(package)
+      RuleDescription.new(package.activity_rule).activity_formulas_descriptors
     end
   end
 end
