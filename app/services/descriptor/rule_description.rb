@@ -20,10 +20,7 @@ module Descriptor
 
       rule.formulas.each do |formula|
         next unless formula.formula_mapping
-
-        formulas[formula.code] = formula_descriptor(formula).tap do |descriptor|
-          descriptor[:de_id] = formula.formula_mapping&.external_reference
-        end
+        formulas[formula.code] = formula_descriptor_with_de(formula)
       end
       formulas
     end
@@ -31,6 +28,12 @@ module Descriptor
     private
 
     attr_reader :rule
+
+    def formula_descriptor_with_de(formula)
+      formula_descriptor(formula).tap do |descriptor|
+        descriptor[:de_id] = formula.formula_mapping&.external_reference
+      end
+    end
 
     def formula_descriptor(formula)
       {
