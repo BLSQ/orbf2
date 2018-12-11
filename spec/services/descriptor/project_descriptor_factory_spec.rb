@@ -1,17 +1,17 @@
 # frozen_string_literal: true
 
 require "rails_helper"
-describe ProjectDescriptorFactory do
+describe Descriptor::ProjectDescriptorFactory do
   include_context "basic_context"
 
   let(:expected_descriptor) { JSON.parse(fixture_content(:scorpio, "project_descriptor.json")) }
 
-  it "should instantiate a valid project" do
+  it "should serialize to hash usage for invoice coding" do
     project = full_project
 
     project.payment_rules.first.datasets.create!(frequency: "quarterly", external_reference: "aze123")
 
-    descriptor = ProjectDescriptorFactory.new.project_descriptor(project)
+    descriptor = described_class.new.project_descriptor(project)
     actual_descriptor = as_json(descriptor)
     puts JSON.generate(descriptor) if actual_descriptor != expected_descriptor
 

@@ -19,7 +19,7 @@ module InvoicesHelper
   end
 
   def project_descriptor(project)
-    ProjectDescriptorFactory.new.project_descriptor(project)
+    Descriptor::ProjectDescriptorFactory.new.project_descriptor(project)
   end
 
   def as_pretty_json_string(object)
