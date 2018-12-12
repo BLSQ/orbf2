@@ -78,7 +78,7 @@ group :development, :test do
 end
 
 group :development do
-  gem "annotate"
+  gem "annotate", "~> 2.7.4"
   gem "flamegraph"
   gem "listen", "~> 3.0.5"
   gem "memory_profiler"

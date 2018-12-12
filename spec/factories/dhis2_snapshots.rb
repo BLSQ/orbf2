@@ -3,15 +3,23 @@
 # Table name: dhis2_snapshots
 #
 #  id                :integer          not null, primary key
-#  kind              :string           not null
 #  content           :jsonb            not null
-#  project_anchor_id :integer
 #  dhis2_version     :string           not null
-#  year              :integer          not null
+#  kind              :string           not null
 #  month             :integer          not null
-#  job_id            :string           not null
+#  year              :integer          not null
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
+#  job_id            :string           not null
+#  project_anchor_id :integer
+#
+# Indexes
+#
+#  index_dhis2_snapshots_on_project_anchor_id  (project_anchor_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (project_anchor_id => project_anchors.id)
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

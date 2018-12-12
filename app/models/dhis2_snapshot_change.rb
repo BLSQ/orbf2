@@ -3,13 +3,21 @@
 # Table name: dhis2_snapshot_changes
 #
 #  id                :integer          not null, primary key
-#  dhis2_id          :string           not null
-#  dhis2_snapshot_id :integer
-#  values_before     :jsonb
 #  values_after      :jsonb
+#  values_before     :jsonb
 #  whodunnit         :string
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
+#  dhis2_id          :string           not null
+#  dhis2_snapshot_id :integer
+#
+# Indexes
+#
+#  index_dhis2_snapshot_changes_on_dhis2_snapshot_id  (dhis2_snapshot_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (dhis2_snapshot_id => dhis2_snapshots.id)
 #
 
 class Dhis2SnapshotChange < ApplicationRecord

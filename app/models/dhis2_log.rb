@@ -5,9 +5,17 @@
 #  id                :integer          not null, primary key
 #  sent              :jsonb
 #  status            :jsonb
-#  project_anchor_id :integer
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
+#  project_anchor_id :integer
+#
+# Indexes
+#
+#  index_dhis2_logs_on_project_anchor_id  (project_anchor_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (project_anchor_id => project_anchors.id)
 #
 
 class Dhis2Log < ApplicationRecord

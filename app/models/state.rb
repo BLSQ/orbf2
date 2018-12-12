@@ -3,12 +3,21 @@
 # Table name: states
 #
 #  id         :integer          not null, primary key
+#  level      :string           default("activity"), not null
 #  name       :string           not null
+#  short_name :string
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
-#  level      :string           default("activity"), not null
 #  project_id :integer          not null
-#  short_name :string
+#
+# Indexes
+#
+#  index_states_on_project_id           (project_id)
+#  index_states_on_project_id_and_name  (project_id,name) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (project_id => projects.id)
 #
 
 class State < ApplicationRecord

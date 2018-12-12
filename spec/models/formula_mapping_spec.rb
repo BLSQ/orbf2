@@ -3,12 +3,21 @@
 # Table name: formula_mappings
 #
 #  id                 :integer          not null, primary key
-#  formula_id         :integer          not null
-#  activity_id        :integer
 #  external_reference :string           not null
 #  kind               :string           not null
+#  activity_id        :integer
+#  formula_id         :integer          not null
 #
-
+# Indexes
+#
+#  index_formula_mappings_on_activity_id  (activity_id)
+#  index_formula_mappings_on_formula_id   (formula_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (activity_id => activities.id)
+#  fk_rails_...  (formula_id => formulas.id)
+#
 
 require "rails_helper"
 

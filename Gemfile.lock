@@ -456,7 +456,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  annotate
+  annotate (~> 2.7.4)
   bootsnap (~> 1.3.2)
   bootstrap-datepicker-rails
   bootstrap-sass (~> 3.3.6)

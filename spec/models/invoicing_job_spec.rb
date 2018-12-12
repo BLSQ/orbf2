@@ -1,22 +1,30 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: invoicing_jobs
 #
 #  id                :integer          not null, primary key
-#  project_anchor_id :integer          not null
-#  orgunit_ref       :string           not null
 #  dhis2_period      :string           not null
-#  user_ref          :string
-#  processed_at      :datetime
+#  duration_ms       :integer
 #  errored_at        :datetime
 #  last_error        :string
-#  duration_ms       :integer
-#  status            :string
+#  orgunit_ref       :string           not null
+#  processed_at      :datetime
 #  sidekiq_job_ref   :string
+#  status            :string
+#  user_ref          :string
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
+#  project_anchor_id :integer          not null
+#
+# Indexes
+#
+#  index_invoicing_jobs_on_anchor_ou_period   (project_anchor_id,orgunit_ref,dhis2_period) UNIQUE
+#  index_invoicing_jobs_on_project_anchor_id  (project_anchor_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (project_anchor_id => project_anchors.id)
 #
 
 require "rails_helper"
