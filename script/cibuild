@@ -8,6 +8,7 @@ date "+%H:%M:%S"
 
 export RAILS_ENV="test"
 export RACK_ENV="test"
+export CI="CIJOE"
 
 hostname
 

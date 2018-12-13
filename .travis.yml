@@ -4,6 +4,10 @@ env:
     - RAILS_ENV=test
 addons:
   postgresql: "9.6"
+  chrome: stable
+  apt:
+    packages:
+      - chromium-chromedriver
 services:
   - redis-server
 sudo: false
@@ -15,6 +19,7 @@ before_script:
   - chmod +x ./cc-test-reporter
   - cp config/database-travis.yml config/database.yml
   - psql -c 'create database orbf2_test;' -U postgres
+  - ln --symbolic /usr/lib/chromium-browser/chromedriver "${HOME}/bin/chromedriver"
 script:
   - script/cibuild
   - if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi
