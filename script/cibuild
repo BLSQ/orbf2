@@ -20,4 +20,7 @@ date "+%H:%M:%S"
 
 # run tests.
 script/test
+
+echo "[cibuild] Running system tests ..."
+date "+%H:%M:%S"
 bundle exec rails spec:system
