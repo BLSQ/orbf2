@@ -348,6 +348,11 @@ class ProjectFactory
     activity_2.activity_states.build(
       { name: "Max. Score", state: max_state, external_reference: 'bVkFujnp3F2'}
     )
+
+    # Legacy-engine needs this engine, otherwise it won't propagate
+    # all the values to DHIS when running a simulation
+    decision_table = project.packages[0].activity_rule.decision_tables.first
+    decision_table.content << "*,*,*,*,12"
   end
 
   def normalized_suffix
