@@ -86,6 +86,9 @@ group :development, :test do
   gem "rspec-rails", "~> 3.0"
   gem "ruby-prof"
   gem "shoulda-matchers", require: false
+
+  gem "capybara", "~> 3.12.0"
+  gem "selenium-webdriver", "~> 3.141.0"
 end
 
 group :development do

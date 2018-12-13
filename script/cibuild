@@ -19,3 +19,4 @@ date "+%H:%M:%S"
 
 # run tests.
 script/test
+bundle exec rails spec:system
