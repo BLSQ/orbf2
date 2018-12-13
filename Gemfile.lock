@@ -118,7 +118,6 @@ GEM
     docile (1.1.5)
     domain_name (0.5.20180417)
       unf (>= 0.0.5, < 1.0.0)
-    easy_diff (1.0.0)
     erubi (1.7.1)
     erubis (2.7.0)
     execjs (2.7.0)
@@ -469,7 +468,6 @@ DEPENDENCIES
   devise (~> 4.5.0)
   dhis2!
   differ
-  easy_diff
   factory_bot_rails (~> 4.11.1)
   faker
   fast_jsonapi

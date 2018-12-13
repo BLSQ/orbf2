@@ -59,7 +59,6 @@ gem "json", "2.1.0"
 
 gem "deep_cloneable"
 gem "differ"
-gem "easy_diff" # No longer in use?
 gem "hashdiff"
 gem "loofah", ">= 2.2.3"
 gem "naturalsort"
