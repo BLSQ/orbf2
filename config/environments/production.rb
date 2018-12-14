@@ -41,7 +41,7 @@ Rails.application.configure do
 
   if ENV["ENABLE_ACTIVE_STORAGE"]
     # Store uploaded files on the local file system (see config/storage.yml for options)
-    config.active_storage.service = :local
+    config.active_storage.service = :not_setup_yet
   end
 
   # Mount Action Cable outside main process or domain
