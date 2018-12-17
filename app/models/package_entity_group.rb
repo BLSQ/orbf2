@@ -1,16 +1,23 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: package_entity_groups
 #
 #  id                              :integer          not null, primary key
+#  kind                            :string           default("main"), not null
 #  name                            :string
-#  package_id                      :integer
 #  organisation_unit_group_ext_ref :string
 #  created_at                      :datetime         not null
 #  updated_at                      :datetime         not null
-#  kind                            :string           default("main"), not null
+#  package_id                      :integer
+#
+# Indexes
+#
+#  index_package_entity_groups_on_package_id  (package_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (package_id => packages.id)
 #
 
 class PackageEntityGroup < ApplicationRecord

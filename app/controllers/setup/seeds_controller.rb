@@ -1,3 +1,7 @@
+# frozen_string_literal: true
+
+require "dhis_demo_resolver"
+
 class Setup::SeedsController < PrivateController
   def index
     current_user.program.create_project_anchor unless current_user.program.project_anchor
@@ -33,8 +37,6 @@ class Setup::SeedsController < PrivateController
   end
 
   def resolve_play_demo_url
-    # demo will always redirect to latest stable demo
-    res = Net::HTTP.get_response(URI("https://play.dhis2.org/demo"))
-    res["location"]
+    DhisDemoResolver.new.call
   end
 end

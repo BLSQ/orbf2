@@ -4,7 +4,7 @@ shared_context "basic_context" do
     create :program, code: "siera"
   end
   let!(:user) do
-    FactoryGirl.create(:user, program: program)
+    FactoryBot.create(:user, program: program)
   end
 
   let(:full_project) do

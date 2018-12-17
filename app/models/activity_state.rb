@@ -4,14 +4,25 @@
 #
 #  id                 :integer          not null, primary key
 #  external_reference :string
+#  formula            :string
+#  kind               :string           default("data_element"), not null
 #  name               :string           not null
-#  state_id           :integer          not null
-#  activity_id        :integer          not null
-#  stable_id          :uuid             not null
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
-#  kind               :string           default("data_element"), not null
-#  formula            :string
+#  activity_id        :integer          not null
+#  stable_id          :uuid             not null
+#  state_id           :integer          not null
+#
+# Indexes
+#
+#  index_activity_states_on_activity_id                         (activity_id)
+#  index_activity_states_on_external_reference_and_activity_id  (external_reference,activity_id) UNIQUE
+#  index_activity_states_on_state_id                            (state_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (activity_id => activities.id)
+#  fk_rails_...  (state_id => states.id)
 #
 
 class ActivityState < ApplicationRecord

@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: formulas
@@ -7,13 +6,21 @@
 #  id                      :integer          not null, primary key
 #  code                    :string           not null
 #  description             :string           not null
+#  exportable_formula_code :string
 #  expression              :text             not null
-#  rule_id                 :integer
-#  created_at              :datetime         not null
-#  updated_at              :datetime         not null
 #  frequency               :string
 #  short_name              :string
-#  exportable_formula_code :string
+#  created_at              :datetime         not null
+#  updated_at              :datetime         not null
+#  rule_id                 :integer
+#
+# Indexes
+#
+#  index_formulas_on_rule_id  (rule_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (rule_id => rules.id)
 #
 
 class Formula < ApplicationRecord

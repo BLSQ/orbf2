@@ -3,8 +3,16 @@
 # Table name: decision_tables
 #
 #  id      :integer          not null, primary key
-#  rule_id :integer
 #  content :text
+#  rule_id :integer
+#
+# Indexes
+#
+#  index_decision_tables_on_rule_id  (rule_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (rule_id => rules.id)
 #
 
 class DecisionTable < ApplicationRecord

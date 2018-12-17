@@ -1,17 +1,26 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: rules
 #
 #  id              :integer          not null, primary key
-#  name            :string           not null
 #  kind            :string           not null
-#  package_id      :integer
+#  name            :string           not null
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
+#  package_id      :integer
 #  payment_rule_id :integer
 #  stable_id       :uuid             not null
+#
+# Indexes
+#
+#  index_rules_on_package_id       (package_id)
+#  index_rules_on_payment_rule_id  (payment_rule_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (package_id => packages.id)
+#  fk_rails_...  (payment_rule_id => payment_rules.id)
 #
 
 class Rule < ApplicationRecord

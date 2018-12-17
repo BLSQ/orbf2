@@ -1,12 +1,22 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: payment_rules
 #
 #  id         :integer          not null, primary key
-#  project_id :integer          not null
+#  frequency  :string           default("quarterly"), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
-#  frequency  :string           default("quarterly"), not null
+#  project_id :integer          not null
+#
+# Indexes
+#
+#  index_payment_rules_on_project_id  (project_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (project_id => projects.id)
 #
 
 class PaymentRule < ApplicationRecord
@@ -19,7 +29,9 @@ class PaymentRule < ApplicationRecord
   has_one :rule, dependent: :destroy, inverse_of: :payment_rule
   has_many :package_payment_rules, dependent: :destroy
   has_many :packages, through: :package_payment_rules, source: :package
-  has_many :datasets, dependent: :destroy, class_name: PaymentRuleDataset
+  has_many :datasets, dependent:  :destroy,
+                      class_name: "PaymentRuleDataset",
+                      inverse_of: "payment_rule"
 
   accepts_nested_attributes_for :rule, allow_destroy: true
 

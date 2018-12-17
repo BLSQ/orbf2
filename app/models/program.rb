@@ -7,6 +7,10 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
+# Indexes
+#
+#  index_programs_on_code  (code) UNIQUE
+#
 
 class Program < ApplicationRecord
   has_one :project_anchor, inverse_of: :program, dependent: :destroy

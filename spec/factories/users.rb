@@ -3,27 +3,37 @@
 # Table name: users
 #
 #  id                     :integer          not null, primary key
+#  current_sign_in_at     :datetime
+#  current_sign_in_ip     :inet
 #  email                  :string           default(""), not null
 #  encrypted_password     :string           default(""), not null
-#  reset_password_token   :string
-#  reset_password_sent_at :datetime
-#  remember_created_at    :datetime
-#  sign_in_count          :integer          default(0), not null
-#  current_sign_in_at     :datetime
 #  last_sign_in_at        :datetime
-#  current_sign_in_ip     :inet
 #  last_sign_in_ip        :inet
+#  remember_created_at    :datetime
+#  reset_password_sent_at :datetime
+#  reset_password_token   :string
+#  sign_in_count          :integer          default(0), not null
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
 #  program_id             :integer
 #
+# Indexes
+#
+#  index_users_on_email                 (email) UNIQUE
+#  index_users_on_program_id            (program_id)
+#  index_users_on_reset_password_token  (reset_password_token) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (program_id => programs.id)
+#
 
 # Read about factories at https://github.com/thoughtbot/factory_girl
 
-FactoryGirl.define do
+FactoryBot.define do
   factory :user do
-    email Faker::Internet.email
-    password               "password"
-    password_confirmation  "password"
+    email { Faker::Internet.email }
+    password               { "password" }
+    password_confirmation  { "password" }
   end
 end
