@@ -99,19 +99,27 @@ class OutputDatasetWorker
 
   def add_de_ids(dhis2_dataset, de_ids)
     if dhis2_dataset.data_set_elements
-      data_elements = dhis2_dataset.data_set_elements
-      de_ids.each do |id_to_add|
-        next if data_elements.any? { |de| de["data_element"] == { "id" => id_to_add } }
-
-        data_elements.push("data_element" => { "id" => id_to_add })
-      end
+      add_de_ids_newer(dhis2_dataset, de_ids)
     else
-      data_elements = dhis2_dataset.data_elements
-      de_ids.each do |id_to_add|
-        next if data_elements.any? { |de| de["id"] == id_to_add  }
+      add_de_ids_legacy(dhis2_dataset, de_ids)
+    end
+  end
 
-        data_elements.push("id" => id_to_add)
-      end
+  def add_de_ids_newer(dhis2_dataset, de_ids)
+    data_elements = dhis2_dataset.data_set_elements
+    de_ids.each do |id_to_add|
+      next if data_elements.any? { |de| de["data_element"] == { "id" => id_to_add } }
+
+      data_elements.push("data_element" => { "id" => id_to_add })
+    end
+  end
+
+  def add_de_ids_legacy(dhis2_dataset, de_ids)
+    data_elements = dhis2_dataset.data_elements
+    de_ids.each do |id_to_add|
+      next if data_elements.any? { |de| de["id"] == id_to_add  }
+
+      data_elements.push("id" => id_to_add)
     end
   end
 
