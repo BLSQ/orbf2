@@ -1,12 +1,14 @@
+# frozen_string_literal: true
+
 class OutputDatasetWorker
   include Sidekiq::Worker
 
   sidekiq_options retry: 0
 
-  ADD_MISSING_DE = "add_missing_de".freeze
-  ADD_MISSING_OU = "add_missing_ou".freeze
-  REMOVE_EXTRA_DE = "remove_extra_de".freeze
-  REMOVE_EXTRA_OU = "remove_extra_ou".freeze
+  ADD_MISSING_DE = "add_missing_de"
+  ADD_MISSING_OU = "add_missing_ou"
+  REMOVE_EXTRA_DE = "remove_extra_de"
+  REMOVE_EXTRA_OU = "remove_extra_ou"
 
   MODES = [ADD_MISSING_DE, ADD_MISSING_OU, REMOVE_EXTRA_DE, REMOVE_EXTRA_OU].freeze
 
@@ -52,6 +54,7 @@ class OutputDatasetWorker
 
   def load_dhis2_dataset(dataset)
     return nil if dataset.external_reference.blank?
+
     dhis2_connection.data_sets.find(dataset.external_reference)
   rescue RestClient::NotFound
     nil
@@ -89,15 +92,26 @@ class OutputDatasetWorker
     orgunits = dhis2_dataset.organisation_units
     orgunit_ids.each do |id_to_add|
       next if orgunits.include?("id" => id_to_add)
+
       orgunits.push("id" => id_to_add)
     end
   end
 
   def add_de_ids(dhis2_dataset, de_ids)
-    data_elements = dhis2_dataset.data_set_elements
-    de_ids.each do |id_to_add|
-      next if data_elements.any? { |de| de["data_element"] == { "id" => id_to_add } }
-      data_elements.push("data_element" => { "id" => id_to_add })
+    if dhis2_dataset.data_set_elements
+      data_elements = dhis2_dataset.data_set_elements
+      de_ids.each do |id_to_add|
+        next if data_elements.any? { |de| de["data_element"] == { "id" => id_to_add } }
+
+        data_elements.push("data_element" => { "id" => id_to_add })
+      end
+    else
+      data_elements = dhis2_dataset.data_elements
+      de_ids.each do |id_to_add|
+        next if data_elements.any? { |de| de["id"] == id_to_add  }
+
+        data_elements.push("id" => id_to_add)
+      end
     end
   end
 
@@ -106,6 +120,10 @@ class OutputDatasetWorker
   end
 
   def remove_de_ids(dhis2_dataset, de_ids)
-    dhis2_dataset.data_set_elements.delete_if { |de| de_ids.include?(de["data_element"]["id"]) }
+    if dhis2_dataset.data_set_elements
+      dhis2_dataset.data_set_elements.delete_if { |de| de_ids.include?(de["data_element"]["id"]) }
+    else
+      dhis2_dataset.data_elements..delete_if { |de| de_ids.include?(de["id"]) }
+    end
   end
 end

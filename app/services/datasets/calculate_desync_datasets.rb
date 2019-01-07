@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Datasets
   class CalculateDesyncDatasets
     Diff = Struct.new(:status, :added, :removed)
@@ -24,6 +26,7 @@ module Datasets
 
     def load_dhis2_dataset(ref)
       return nil unless ref
+
       legacy_project.dhis2_connection
                     .data_sets
                     .find(ref)
@@ -33,14 +36,21 @@ module Datasets
 
     def diff_actual_theorical(dhis2_dataset, payment_rule_dataset)
       current_ou_ids = dhis2_dataset ? dhis2_dataset.organisation_units.map { |o| o["id"] } : []
-      current_de_ids = dhis2_dataset ? dhis2_dataset.data_set_elements.map { |o| o["data_element"]["id"] } : []
-
+      current_de_ids = dhis2_dataset ? data_element_ids(dhis2_dataset) : []
       dataset_info = payment_rule_dataset.dataset_info
 
       payment_rule_dataset.diff = Diffs.new(
         diff(current_de_ids, dataset_info ? dataset_info.data_elements : []),
-        diff(current_ou_ids, dataset_info ? dataset_info.orgunits.compact.map(&:ext_id).sort: [])
+        diff(current_ou_ids, dataset_info ? dataset_info.orgunits.compact.map(&:ext_id).sort : [])
       )
+    end
+
+    def data_element_ids(dhis2_dataset)
+      if dhis2_dataset.data_set_elements
+        dhis2_dataset.data_set_elements.map { |o| o["data_element"]["id"] }
+      else
+        dhis2_dataset.data_elements.map { |de| de["id"] }
+      end
     end
 
     def diff(current_values, new_values)
