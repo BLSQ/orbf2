@@ -37,7 +37,7 @@ RSpec.describe Api::InvoicingJobsController, type: :controller do
                         { "orgUnit"       => "orgunitid",
                           "dhis2Period"   => "2016Q1",
                           "user"          => nil,
-                          "createdAt"     => invoicing_jobs[0].created_at.to_s,
+                          "createdAt"     => invoicing_jobs[0].created_at.iso8601(3),
                           "processedAt"   => nil,
                           "erroredAt"     => nil,
                           "durationMs"    => nil,

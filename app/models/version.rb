@@ -3,23 +3,35 @@
 # Table name: versions
 #
 #  id             :integer          not null, primary key
-#  item_type      :string           not null
-#  item_id        :integer          not null
 #  event          :string           not null
-#  whodunnit      :string
-#  old_object     :text
-#  created_at     :datetime
-#  transaction_id :integer
+#  item_type      :string           not null
 #  object         :jsonb
+#  object_changes :jsonb
+#  old_object     :text
+#  whodunnit      :string
+#  created_at     :datetime
+#  item_id        :integer          not null
 #  program_id     :integer
 #  project_id     :integer
-#  object_changes :jsonb
+#  transaction_id :integer
+#
+# Indexes
+#
+#  index_versions_on_item_type_and_item_id  (item_type,item_id)
+#  index_versions_on_program_id             (program_id)
+#  index_versions_on_project_id             (project_id)
+#  index_versions_on_transaction_id         (transaction_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (program_id => programs.id)
+#  fk_rails_...  (project_id => projects.id)
 #
 
 class Version < PaperTrail::Version
   belongs_to :program
   belongs_to :project
-  belongs_to :author, foreign_key: "whodunnit", class_name: "User"
+  belongs_to :author, foreign_key: "whodunnit", class_name: "User", optional: true
 
   def diffs
     @diffs ||= build_diffs.compact.to_h

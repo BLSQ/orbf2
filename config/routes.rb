@@ -36,7 +36,9 @@ Rails.application.routes.draw do
     namespace :setup do
       get "/projects/", to: "setup#index", as: "project_anchor"
       get "/projects/:project_id", to: "setup#index", as: "project"
-      resources :seeds, only: [:index] if Rails.env.development? || Rails.env.dev?
+      if Scorpio.is_dev?
+        resources :seeds, only: [:index]
+      end
       resources :projects, only: %i[create update] do
         resources :metadatas, only: %i[index update]
         resources :snapshots, only: [:create]
