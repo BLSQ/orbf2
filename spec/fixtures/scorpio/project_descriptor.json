@@ -104,28 +104,28 @@
           },
           "formulas": {
             "attributed_points": {
-              "de_id": "ext-attributed_points",
               "short_name": "Quality score",
               "description": "Quality score",
               "expression": "SUM(%{attributed_points_values})",
               "frequency": "quarterly",
-              "exportable_formula_code": null
+              "exportable_formula_code": null,
+              "de_id": "ext-attributed_points"
             },
             "max_points": {
-              "de_id": "ext-max_points",
               "short_name": "Quality score",
               "description": "Quality score",
               "expression": "SUM(%{max_points_values})",
               "frequency": "quarterly",
-              "exportable_formula_code": null
+              "exportable_formula_code": null,
+              "de_id": "ext-max_points"
             },
             "quality_technical_score_value": {
-              "de_id": "ext-quality_technical_score_value",
               "short_name": "Quality score",
               "description": "Quality score",
               "expression": "SAFE_DIV(SUM(%{attributed_points_values}),SUM(%{max_points_values})) * 100.0",
               "frequency": "quarterly",
-              "exportable_formula_code": null
+              "exportable_formula_code": null,
+              "de_id": "ext-quality_technical_score_value"
             }
           },
           "zone_formulas": {}
@@ -237,28 +237,28 @@
           },
           "formulas": {
             "attributed_points": {
-              "de_id": "ext-attributed_points",
               "short_name": "Quality score",
               "description": "Quality score",
               "expression": "SUM(%{attributed_points_values})",
               "frequency": "quarterly",
-              "exportable_formula_code": null
+              "exportable_formula_code": null,
+              "de_id": "ext-attributed_points"
             },
             "max_points": {
-              "de_id": "ext-max_points",
               "short_name": "Quality score",
               "description": "Quality score",
               "expression": "SUM(%{max_points_values})",
               "frequency": "quarterly",
-              "exportable_formula_code": null
+              "exportable_formula_code": null,
+              "de_id": "ext-max_points"
             },
             "quality_technical_score_value": {
-              "de_id": "ext-quality_technical_score_value",
               "short_name": "Quality score",
               "description": "Quality score",
               "expression": "SAFE_DIV(SUM(%{attributed_points_values}),SUM(%{max_points_values})) * 100.0",
               "frequency": "quarterly",
-              "exportable_formula_code": null
+              "exportable_formula_code": null,
+              "de_id": "ext-quality_technical_score_value"
             }
           },
           "zone_formulas": {}
@@ -267,5 +267,5 @@
       "output_data_sets": []
     }
   },
-  "entity_group": { "id": "external_reference", "name": "contracted entities" }
+  "entity_group": { "id": "RXL3lPSK8oG", "name": "Clinic" }
 }
