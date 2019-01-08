@@ -66,14 +66,6 @@
    </tbody>
   </table>
 
-<button class="pull-right btn btn-default" data-toggle="collapse" data-target="#activity-descriptors-<%= package.id %>">Show activity descriptors</button>
-  <div id="activity-descriptors-<%= package.id %>" class="collapse">
-
-<pre><%= as_pretty_json_string(package_descriptor(package))%></pre>
-
-
-
-  </div>
     <% if invoice.package_results %>
 
     <div class="container">
