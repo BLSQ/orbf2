@@ -1,8 +1,11 @@
+# frozen_string_literal: true
+
 class Setup::ActivitiesController < PrivateController
   helper_method :states, :activity
   attr_reader :activity, :states
 
   def new
+    @states = activity_level_states
     @activity = current_project.activities.build
   end
 
@@ -56,10 +59,10 @@ class Setup::ActivitiesController < PrivateController
   end
 
   def handle_action(template)
-    if params[:commit]&.starts_with?("Add data elements")
+    if params["state-mapping-action"] == "data_element"
       data_compound = DataCompound.from(current_project)
       existing_element_ids = @activity.activity_states.map(&:external_reference)
-      selectable_element_ids = params[:data_elements] - existing_element_ids
+      selectable_element_ids = (params[:data_elements] || []) - existing_element_ids
       data_elements = selectable_element_ids.map { |element_id| data_compound.data_element(element_id) }
 
       data_elements.each do |element|
@@ -71,7 +74,30 @@ class Setup::ActivitiesController < PrivateController
       end
       flash[:notice] = "Assign states to desired data elements "
       render template
-    elsif params[:commit]&.starts_with?("Add indicators")
+    elsif params["state-mapping-action"] == "data_element_coc" && params["data_element_cocs"]
+      data_compound = DataCompound.from(current_project)
+      existing_element_ids = @activity.activity_states.select { |as| as.kind_data_element_coc? }.map(&:external_reference)
+      data_elements_with_coc = current_project.dhis2_connection.data_elements.list(
+        filter: "id:in:[" + params["data_element_cocs"].join(",") + "]",
+        fields: "id,name,categoryCombo[id,name,categoryOptionCombos[id,name]]"
+      )
+      data_elements_with_coc = data_elements_with_coc.each_with_object({}) do |de, de_cocs|
+        de.category_combo["category_option_combos"].each do |coc|
+          de_cocs[de.id + "." + coc["id"]] = de.name + " - " + coc["name"]
+        end
+      end
+      data_elements_with_coc.each do |element_id, element_name|
+        next if existing_element_ids.include?(element_id)
+
+        @activity.activity_states.build(
+          external_reference: element_id,
+          name:               element_name,
+          kind:               "data_element_coc"
+        )
+      end
+      flash[:notice] = "Assign states to desired data elements "
+      render template
+    elsif params["state-mapping-action"]&.starts_with?("indicators")
       data_compound = DataCompound.from(current_project)
       existing_element_ids = @activity.activity_states.map(&:external_reference)
       selectable_element_ids = params[:indicators] - existing_element_ids

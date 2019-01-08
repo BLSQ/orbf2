@@ -26,7 +26,7 @@ RSpec.describe Setup::ActivitiesController, type: :controller do
       expect(activity).not_to be_nil
     end
 
-    it "should return form for creation of a new activity" do
+    it "should return form for edition of a new activity" do
       get :edit, params: { project_id: project.id, id: project.activities.first.id }
       activity = assigns(:activity)
       states = assigns(:states)

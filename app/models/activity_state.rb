@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: activity_states
@@ -38,6 +40,11 @@ class ActivityState < ApplicationRecord
   validates :name, presence: true
 
   validates :state_id, uniqueness: { scope: [:activity_id] }
+  KINDS = %w[data_element formula indicator data_element_coc].freeze
+  validates :kind, inclusion: {
+    in:      KINDS,
+    message: "%{value} is not a valid see #{KINDS.join(',')}"
+  }
 
   def external_reference=(external_reference)
     external_reference = nil if external_reference.blank?
@@ -54,6 +61,10 @@ class ActivityState < ApplicationRecord
 
   def kind_indicator?
     kind == "indicator"
+  end
+
+  def kind_data_element_coc?
+    kind == "data_element_coc"
   end
 
   def to_unified_h
