@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 module Datasets
   class ToDhis2Datasets
@@ -10,13 +11,19 @@ module Datasets
     def call
       name = dataset_name
       dataset_info = dataset.dataset_info
+      data_elements = dataset_info.data_elements.sort
       {
         name:                  name,
         short_name:            name,
         period_type:           dataset_info.frequency.humanize,
         open_future_periods:   3,
-        data_element_ids:      dataset_info.data_elements.sort,
-        data_set_elements:     dataset_info.data_elements.sort.map do |de_id|
+        data_elements:         data_elements.map do |de_id|
+          {
+            "id": de_id
+          }
+        end,
+        data_element_ids:      data_elements.sort,
+        data_set_elements:     data_elements.map do |de_id|
                                  {
                                    "dataElement": {
                                      "id": de_id
