@@ -131,7 +131,7 @@ class OutputDatasetWorker
     if dhis2_dataset.data_set_elements
       dhis2_dataset.data_set_elements.delete_if { |de| de_ids.include?(de["data_element"]["id"]) }
     else
-      dhis2_dataset.data_elements..delete_if { |de| de_ids.include?(de["id"]) }
+      dhis2_dataset.data_elements.delete_if { |de| de_ids.include?(de["id"]) }
     end
   end
 end
