@@ -1,6 +1,6 @@
 ## Self proof reading checklist
 
-- [ ] Did I run Pronto and fixed all warnings
+- [ ] Did I run Pronto and fixed all warnings (pronto run -c origin/dev)
 - [ ] Make sure all naming and code will remain understandable in 6 month by someone new to the project or by you.
 - [ ] Did I test the right thing?
 - [ ] Did I test corner cases, non happy path (defensive testing)?
