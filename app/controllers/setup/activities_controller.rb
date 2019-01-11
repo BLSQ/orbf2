@@ -59,13 +59,7 @@ class Setup::ActivitiesController < PrivateController
   end
 
   def handle_action(template)
-    state_mapping = [
-      ["data_element", params[:data_elements]],
-      ["data_element_coc", params[:data_element_cocs]],
-      ["indicator", params[:indicators]]
-    ].detect do |state_mapping_action, elements|
-      params["state-mapping-action"] == state_mapping_action && elements
-    end
+    state_mapping = detect_state_mapping
     if state_mapping
       Activities::AddToActivityStates.new(
         project:  current_project,
@@ -83,6 +77,16 @@ class Setup::ActivitiesController < PrivateController
     end
 
     render template
+  end
+
+  def detect_state_mapping
+    [
+      ["data_element", params[:data_elements]],
+      ["data_element_coc", params[:data_element_cocs]],
+      ["indicator", params[:indicators]]
+    ].detect do |state_mapping_action, elements|
+      params["state-mapping-action"] == state_mapping_action && elements
+    end
   end
 
   def params_activity
