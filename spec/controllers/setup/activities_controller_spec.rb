@@ -174,7 +174,7 @@ RSpec.describe Setup::ActivitiesController, type: :controller do
             name: "indicator name from dhis2"
           }]
         }.to_json)
-    end
+      end
     end
 
     describe "#create" do
@@ -280,6 +280,7 @@ RSpec.describe Setup::ActivitiesController, type: :controller do
                }.from(activity: 2, activity_states: 4)
           .to(activity: 3, activity_states: 5)
       end
+
       def create_activity_with_code_and_data_element
         post :create, params: {
           project_id: project.id,
