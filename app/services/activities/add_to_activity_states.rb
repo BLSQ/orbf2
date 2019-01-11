@@ -2,7 +2,8 @@
 
 module Activities
   class AddToActivityStates
-    attr_reader :project, :activity, :elements, :kind, :existing_element_ids, :selectable_element_ids
+    attr_reader :project, :activity, :elements, :kind,
+                :existing_element_ids, :selectable_element_ids
 
     def initialize(project:, activity:, elements:, kind:)
       @project = project
@@ -48,11 +49,7 @@ module Activities
     end
 
     def elements_to_build_data_element_cocs
-      data_elements_with_coc = project.dhis2_connection.data_elements.list(
-        filter: "id:in:[" + elements.join(",") + "]",
-        fields: "id,name,categoryCombo[id,name,categoryOptionCombos[id,name]]"
-      )
-      data_elements_with_coc.each_with_object([]) do |de, results|
+      data_elements_with_coc(elements).each_with_object([]) do |de, results|
         de.category_combo["category_option_combos"].each do |coc|
           composite_id = de.id + "." + coc["id"]
           next if existing_element_ids.include?(composite_id)
@@ -63,6 +60,13 @@ module Activities
           )
         end
       end
+    end
+
+    def data_elements_with_coc(elements)
+      project.dhis2_connection.data_elements.list(
+        filter: "id:in:[" + elements.join(",") + "]",
+        fields: "id,name,categoryCombo[id,name,categoryOptionCombos[id,name]]"
+      )
     end
   end
 end

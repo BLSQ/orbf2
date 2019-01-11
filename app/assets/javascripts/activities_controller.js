@@ -7,7 +7,7 @@ $(function() {
       .find(".state-mapping-form");
     $inputs.each(function() {
       var $input = $(this);
-      if (action  == $input.data("action")) {
+      if (action  === $input.data("action")) {
         $input.show();
       } else {
         $input.hide();
