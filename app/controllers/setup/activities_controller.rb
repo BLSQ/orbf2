@@ -59,36 +59,27 @@ class Setup::ActivitiesController < PrivateController
   end
 
   def handle_action(template)
-    if params["state-mapping-action"] == "data_element" && params[:data_elements]
+    state_mapping = [
+      ["data_element", params[:data_elements]],
+      ["data_element_coc", params[:data_element_cocs]],
+      ["indicator", params[:indicators]]
+    ].detect do |state_mapping_action, elements|
+      params["state-mapping-action"] == state_mapping_action && elements
+    end
+    if state_mapping
       Activities::AddToActivityStates.new(
         project:  current_project,
         activity: activity,
-        elements: params[:data_elements],
-        kind:     "data_element"
-      ).call
-      flash[:notice] = "Assign states to desired data elements "
-    elsif params["state-mapping-action"] == "data_element_coc" && params[:data_element_cocs]
-      Activities::AddToActivityStates.new(
-        project:  current_project,
-        activity: activity,
-        elements: params[:data_element_cocs],
-        kind:     "data_element_coc"
-      ).call
-    elsif params["state-mapping-action"] == "indicator" && params[:indicators]
-      Activities::AddToActivityStates.new(
-        project:  current_project,
-        activity: activity,
-        elements: params[:indicators],
-        kind:     "indicator"
+        kind:     state_mapping[0],
+        elements: state_mapping[1]
       ).call
     elsif @activity.invalid?
       flash[:failure] = "Some validation errors occured"
       Rails.logger.info "invalid activity #{@activity.errors.full_messages}"
     else
-      id = @activity.id
       @activity.save!
       SynchroniseDegDsWorker.perform_async(current_project.project_anchor.id)
-      flash[:success] = "Activity #{activity.name} #{id ? 'created' : 'updated'} !"
+      flash[:success] = "Activity #{activity.name} saved !"
     end
 
     render template

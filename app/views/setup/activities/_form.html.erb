@@ -37,7 +37,7 @@ If they don't exist yet in dhis2, you can create them via this <%= link_to "page
     <div class="col-md-6 " >
         <div class="form-group">
           <label class="control-label">Data Elements</label>
-          <select id="data_elementcocs_selector" data-selected="<%=params[:data_element_coc].join(',') if params[:data_element_coc] %>"
+          <select id="data_elementcocs_selector" data-selected=""
                 data-placeholder="Lookup the data elements here..."
                 data-selection = "data_elementcocs_selection"
                 data-url = "<%= data_elements_setup_project_autocomplete_index_path(@activity.project) %>"
@@ -61,7 +61,14 @@ If they don't exist yet in dhis2, you can create them via this <%= link_to "page
     <div class="col-md-6 " >
         <div class="form-group">
           <label class="control-label">Data Elements</label>
-          <select id="data_elements_selector" data-selected="<%=params[:data_elements].join(',') if params[:data_elements] %>" data-placeholder="Lookup the data elements here..." data-selection = "data_elements_selection" data-url = "<%= data_elements_setup_project_autocomplete_index_path(@activity.project) %>" class="form-control sol-powered" name="data_elements[]" multiple="multiple">
+          <select id="data_elements_selector"
+                  data-selected=""
+                  data-placeholder="Lookup the data elements here..."
+                  data-selection = "data_elements_selection"
+                  data-url = "<%= data_elements_setup_project_autocomplete_index_path(@activity.project) %>"
+                  class="form-control sol-powered"
+                  name="data_elements[]"
+                  multiple="multiple">
           </select>
         </div>
     </div>
@@ -82,7 +89,12 @@ If they don't exist yet in dhis2, you can create them via this <%= link_to "page
     <div class="col-md-6">
       <div class="form-group">
         <label class="control-label">Indicators</label>
-        <select id="indicators_selector" data-selected="<%=params[:indicators].join(',') if params[:indicators] %>" data-placeholder="Lookup the indicators here..." data-selection = "indicators_selection" data-url = "<%= indicators_setup_project_autocomplete_index_path(@activity.project) %>" class="form-control sol-powered" name="indicators[]" multiple="multiple">
+        <select id="indicators_selector"
+                data-selected=""
+                data-placeholder="Lookup the indicators here..."
+                data-selection = "indicators_selection"
+                data-url = "<%= indicators_setup_project_autocomplete_index_path(@activity.project) %>"
+                class="form-control sol-powered" name="indicators[]" multiple="multiple">
         </select>
     </div>
 

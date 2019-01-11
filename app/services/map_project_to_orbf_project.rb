@@ -80,9 +80,8 @@ class MapProjectToOrbfProject
         # fake date_element_coc as indicator
         kind = "indicator"
         formula = '#{' + activity_state.external_reference + "}"
-        ext_id = "inlined-"+ext_id
+        ext_id = "inlined-" + ext_id
       end
-      #byebug if activity_state.kind_indicator?
       Orbf::RulesEngine::ActivityState.with(
         state:   activity_state.state.code,
         name:    activity_state.name,
