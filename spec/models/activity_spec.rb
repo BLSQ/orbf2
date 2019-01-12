@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: activities
@@ -42,6 +43,7 @@ RSpec.describe Activity, type: :model do
                    }
                  ])
   end
+
   it "should be valid by default" do
     expect(activity.valid?).to be true
   end
@@ -56,5 +58,28 @@ RSpec.describe Activity, type: :model do
     activity.valid?
     expect(activity.errors.full_messages).to eq(["Code : should only contains lowercase letters and _ like 'assisted_deliveries' or 'vaccination_under_one_year' vs #{activity.code}"])
     expect(activity.valid?).to be false
+  end
+
+  it "should allow getting data_element_id" do
+    expect(activity.activity_states.first.data_element_id).to eq("external_reference")
+  end
+
+  describe "with activity states de_coc" do
+    let(:activity_de_coc) do
+      Activity.new(name:                       "activity_name",
+                   code:                       "activity_code",
+                   project:                    project,
+                   activity_states_attributes: [
+                     {
+                       name:               "activity_state_name",
+                       external_reference: "external_reference.coc_id",
+                       kind:               "data_element_coc",
+                       state_id:           project.states.first.id
+                     }
+                   ])
+    end
+    it "should allow getting data_element_id" do
+      expect(activity_de_coc.activity_states.first.data_element_id).to eq("external_reference")
+    end
   end
 end

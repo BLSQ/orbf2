@@ -27,13 +27,7 @@ class SynchroniseDegDsWorker
     package.package_states.each do |package_state|
       state = package_state.state
       Rails.logger.info "\t ---------------- #{state.name}"
-      activity_states = package.activities.flat_map { |activity| activity.activity_state(state) }.reject(&:nil?)
-      byebug
-      data_element_ids = activity_states.select(&:kind_data_element?).map(&:external_reference)
-      data_element_ids += activity_states.select(&:kind_data_element_coc?)
-                                         .map { |activity_state| activity_state.external_reference.split(".")[0] }
-      data_element_ids += indicators_data_element_references(@indicators, activity_states)
-      data_element_ids = data_element_ids.reject(&:nil?).reject(&:empty?).uniq
+      data_element_ids = data_element_ids_used_for(package, state)
       next if data_element_ids.empty?
 
       Rails.logger.info "dataelements : #{data_element_ids}"
@@ -50,6 +44,15 @@ class SynchroniseDegDsWorker
 
       package
     end
+  end
+
+  def data_element_ids_used_for(package, state)
+    activity_states = package.activities
+                             .flat_map { |activity| activity.activity_state(state) }
+                             .reject(&:nil?)
+    data_element_ids = activity_states.select(&:data_element_related?).map(&:data_element_id)
+    data_element_ids += indicators_data_element_references(@indicators, activity_states)
+    data_element_ids.reject(&:nil?).reject(&:empty?).uniq
   end
 
   def create_data_element_group(package, state, data_element_ids)
@@ -82,7 +85,8 @@ class SynchroniseDegDsWorker
       created_deg
     rescue RestClient::Exception => e
       puts deg.to_json
-      Rails.logger.warn("failed create_data_element_group " + e.message + "\n" + e&.response&.body + "\n" + +e&.response&.request&.payload.inspect)
+      Rails.logger.warn("failed create_data_element_group " + e.message + "\n" +
+                         e&.response&.body + "\n" + +e&.response&.request&.payload.inspect)
 
       return created_deg
     end

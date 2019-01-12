@@ -67,6 +67,14 @@ class ActivityState < ApplicationRecord
     kind == "data_element_coc"
   end
 
+  def data_element_related?
+    kind_data_element? || kind_data_element_coc?
+  end
+
+  def data_element_id
+    external_reference.split(".")[0]
+  end
+
   def to_unified_h
     {
       stable_id:          stable_id,
