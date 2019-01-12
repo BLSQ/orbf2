@@ -74,7 +74,8 @@ class MapProjectToOrbfProject
     activity_states.select { |activity_state| package_states.include?(activity_state.state) }
                    .map do |activity_state|
       kind = ACTIVITY_STATE_KIND[activity_state.kind] || activity_state.kind
-      formula = activity_state.formula || dhis2_indicators_by_id[activity_state.external_reference]&.numerator
+      formula = activity_state.formula ||
+                dhis2_indicators_by_id[activity_state.external_reference]&.numerator
       ext_id = activity_state.external_reference
       if activity_state.kind_data_element_coc?
         # fake date_element_coc as indicator
