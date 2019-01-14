@@ -61,12 +61,7 @@ class Setup::ActivitiesController < PrivateController
   def handle_action(template)
     state_mapping = detect_state_mapping
     if state_mapping
-      Activities::AddToActivityStates.new(
-        project:  current_project,
-        activity: activity,
-        kind:     state_mapping[0],
-        elements: state_mapping[1]
-      ).call
+      build_activity_states_with(state_mapping)
     elsif @activity.invalid?
       flash[:failure] = "Some validation errors occured"
       Rails.logger.info "invalid activity #{@activity.errors.full_messages}"
@@ -79,11 +74,27 @@ class Setup::ActivitiesController < PrivateController
     render template
   end
 
+  def build_activity_states_with(state_mapping)
+    activity_states_to_add = Activities::ActivityStateAttributes.new(
+      project:  current_project,
+      activity: activity,
+      kind:     state_mapping[0],
+      elements: state_mapping[1]
+    ).call
+    activity_states_to_add.each do |element|
+      @activity.activity_states.build(
+        external_reference: element.id,
+        name:               element.name,
+        kind:               element.kind
+      )
+    end
+  end
+
   def detect_state_mapping
     [
-      ["data_element", params[:data_elements]],
-      ["data_element_coc", params[:data_element_cocs]],
-      ["indicator", params[:indicators]]
+      [ActivityState::KIND_DATA_ELEMENT, params[:data_elements]],
+      [ActivityState::KIND_DATA_ELEMENT_COC, params[:data_element_cocs]],
+      [ActivityState::KIND_INDICATOR, params[:indicators]]
     ].detect do |state_mapping_action, elements|
       params["state-mapping-action"] == state_mapping_action && elements
     end

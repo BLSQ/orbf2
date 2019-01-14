@@ -2,14 +2,19 @@
 
 module Activities
   class DataElementInfo
-    attr_reader :id, :name
+    attr_reader :id, :name, :kind
     def initialize(infos)
-      @id = infos.fetch(:id)
-      @name = infos.fetch(:name)
+      @id = infos.fetch(:id).freeze
+      @name = infos.fetch(:name).freeze
+      @kind = infos.fetch(:kind).freeze
+    end
+
+    def self.from(kind:, element:)
+      new(kind: kind, name: element.name, id: element.id)
     end
   end
 
-  class AddToActivityStates
+  class ActivityStateAttributes
     attr_reader :project, :activity, :elements, :kind,
                 :existing_element_ids, :selectable_element_ids
 
@@ -25,21 +30,15 @@ module Activities
     end
 
     def call
-      elements_to_build.each do |element|
-        @activity.activity_states.build(
-          external_reference: element.id,
-          name:               element.name,
-          kind:               kind
-        )
-      end
+      elements_to_build
     end
 
     def elements_to_build
-      if kind == "data_element_coc"
+      if kind == ActivityState::KIND_DATA_ELEMENT_COC
         elements_to_build_data_element_cocs
-      elsif kind == "indicator"
+      elsif kind == ActivityState::KIND_INDICATOR
         elements_to_build_indicators
-      elsif kind == "data_element"
+      elsif kind == ActivityState::KIND_DATA_ELEMENT
         elements_to_build_data_elements
       else
         raise "unsupported kind : #{kind}"
@@ -48,12 +47,24 @@ module Activities
 
     def elements_to_build_indicators
       data_compound = DataCompound.from(project)
-      selectable_element_ids.map { |element_id| data_compound.indicator(element_id) }
+      as_data_element_infos(
+        selectable_element_ids.map { |element_id| new_data_element_info(data_compound.indicator(element_id)) }
+      )
     end
 
     def elements_to_build_data_elements
       data_compound = DataCompound.from(project)
-      selectable_element_ids.map { |element_id| data_compound.data_element(element_id) }
+      as_data_element_infos(
+        selectable_element_ids.map { |element_id| data_compound.data_element(element_id) }
+      )
+    end
+
+    def as_data_element_infos(elements_to_build)
+      elements_to_build.map { |element| new_data_element_info(element) }
+    end
+
+    def new_data_element_info(element)
+      DataElementInfo.from(kind: kind, element: element)
     end
 
     def elements_to_build_data_element_cocs
@@ -64,7 +75,8 @@ module Activities
 
           results << DataElementInfo.new(
             id:   composite_id,
-            name: de.name + " - " + coc["name"]
+            name: de.name + " - " + coc["name"],
+            kind: kind
           )
         end
       end

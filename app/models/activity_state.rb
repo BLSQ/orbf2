@@ -40,7 +40,19 @@ class ActivityState < ApplicationRecord
   validates :name, presence: true
 
   validates :state_id, uniqueness: { scope: [:activity_id] }
-  KINDS = %w[data_element formula indicator data_element_coc].freeze
+
+  KIND_DATA_ELEMENT = "data_element"
+  KIND_INDICATOR = "indicator"
+  KIND_DATA_ELEMENT_COC = "data_element_coc"
+  KIND_FORMULA = "formula"
+
+  KINDS = [
+    KIND_DATA_ELEMENT,
+    KIND_FORMULA,
+    KIND_INDICATOR,
+    KIND_DATA_ELEMENT_COC
+  ].freeze
+
   validates :kind, inclusion: {
     in:      KINDS,
     message: "%{value} is not a valid see #{KINDS.join(',')}"
@@ -52,19 +64,19 @@ class ActivityState < ApplicationRecord
   end
 
   def kind_data_element?
-    kind == "data_element"
+    kind == KIND_DATA_ELEMENT
   end
 
   def kind_formula?
-    kind == "formula"
+    kind == KIND_FORMULA
   end
 
   def kind_indicator?
-    kind == "indicator"
+    kind == KIND_INDICATOR
   end
 
   def kind_data_element_coc?
-    kind == "data_element_coc"
+    kind == KIND_DATA_ELEMENT_COC
   end
 
   def data_element_related?
