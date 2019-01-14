@@ -158,6 +158,10 @@ class Package < ApplicationRecord
     rules.find(&:activity_kind?)
   end
 
+  def zone_activity_rule
+    rules.find(&:zone_activity_kind?)
+  end
+
   def zone_rule
     rules.find(&:zone_kind?)
   end

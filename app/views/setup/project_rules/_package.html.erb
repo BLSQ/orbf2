@@ -58,54 +58,31 @@ graph TD
 </div>
 
 <div class="formulas">
-<% if pack.activity_rule%>
+  <% if pack.activity_rule%>
     <h4>Activity rule (red)</h4>
     <p>Allow to express output per activity and for single orgunit </p>
     <%= render partial: 'rule', locals: {rule: pack.activity_rule}%>
     <h5>Formula mapping</h5>
-<%end%>
-<% if pack.package_rule%>
+    <%= render partial: 'activity_rule', locals: {rule: pack.activity_rule}%>
+  <%end%>
+
+  <% if pack.zone_activity_rule%>
+    <h4>Zone Activity rule (dark red)</h4>
+    <p>Allow to express output per activity and for multiple orgunits</p>
+    <%= render partial: 'rule', locals: {rule: pack.zone_activity_rule}%>
+    <h5>Formula mapping</h5>
+    <%= render partial: 'activity_rule', locals: {rule: pack.zone_activity_rule}%>
+  <%end%>
+
+  <% if pack.package_rule%>
     <h4>Package rule (green)</h4>
     <p>Allow to express sum/constraints on all activities for single orgunit </p>
- <%= render partial: 'rule', locals: {rule: pack.package_rule}%>
-<%end%>
+    <%= render partial: 'rule', locals: {rule: pack.package_rule}%>
+  <%end%>
 
-<% if pack.zone_rule%>
+  <% if pack.zone_rule%>
     <h4>Zone rule (darker)</h4>
     <p>Allow to express sum/constraints accross multiple orgunit </p>
- <%= render partial: 'rule', locals: {rule: pack.zone_rule}%>
-<%end%>
-<div>
-
-<% if pack.activity_rule%>
-<div>
- <h4>Activity rule formula mappings</h4>
-<table class="table">
-  <thead>
-   <tr>
-   <th>Activity code</th>
-    <%pack.activity_rule.formulas.each do |formula|%>
-      <th><%=formula.code%></th>
-    <%end%>
-   </tr>
-  </thead>
-  <tbody>
-  <% pack.activities.sort {|a,b| NaturalSort.comparator(a.code, b.code)}.each do |activity|%>
-  <tr>
-    <td title="<%= activity.name%>">
-      <%=activity.code%>
-    </td>
-    <%pack.activity_rule.formulas.each do |formula|%>
-    <td>
-      <% external_reference = formula.formula_mappings.detect {|f| f.activity.code == activity.code}&.external_reference %>
-      <%if external_reference%>
-       <%= link_to_data_element(@current_project, external_reference) %>
-      <%end%>
-    </td>
-    <%end%>
-  </tr>
+    <%= render partial: 'rule', locals: {rule: pack.zone_rule}%>
   <%end%>
-  </tbody>
-</table>
 </div>
-<%end%>

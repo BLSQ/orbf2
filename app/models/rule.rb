@@ -82,6 +82,14 @@ class Rule < ApplicationRecord
     kind == RULE_TYPE_ZONE
   end
 
+  def zone_activity_kind?
+    kind == RULE_TYPE_ZONE_ACTIVITY
+  end
+
+  def zone_related_kind?
+    zone_kind? || zone_activity_kind?
+  end
+
   def rule_type
     @rule_type ||= RuleTypes.from_rule(self)
   end
