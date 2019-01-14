@@ -154,6 +154,35 @@ RSpec.describe Setup::RulesController, type: :controller do
       package
     }
 
+    describe "zone rules for non-zone packages" do
+      before do
+        package.update!(kind: "single")
+      end
+
+      %w[zone zone_activity].each do |kind|
+        it "can't visit the new page not-allowed: #{kind}" do
+          get :new, params: {
+            "project_id" => project.id,
+                "package_id" => package.id,
+                kind: kind
+          }
+          expect(response.request.flash["alert"]).to_not be_empty
+          expect(response).to redirect_to(root_path)
+        end
+
+        it "can't create a not allowed: #{kind} rule" do
+          post :create, params: {
+            "project_id" => project.id,
+                 "package_id" => package.id,
+                 kind: kind,
+                 rule: { name: "Does not matter" }
+          }
+          expect(response.request.flash["alert"]).to_not be_empty
+          expect(response).to redirect_to(root_path)
+        end
+      end
+    end
+
     describe "#create zone rule" do
       it "display form to create a " do
         get :new, params: {
