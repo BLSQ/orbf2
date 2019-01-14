@@ -25,7 +25,11 @@ class Setup::InvoicesController < PrivateController
     project = current_project(project_scope: :fully_loaded)
 
     @invoicing_request = InvoicingRequest.new(invoice_params.merge(project: project))
-    render_invoice(project, invoicing_request)
+    if @invoicing_request.valid?
+      render_invoice(project, invoicing_request)
+    else
+      render :new
+    end
   end
 
   private

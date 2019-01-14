@@ -217,5 +217,42 @@ RSpec.describe Setup::RulesController, type: :controller do
         expect(zone_formula.short_name).to eq("short")
       end
     end
+
+    describe "#create activity_zone rule" do
+      it "display form to create a " do
+        get :new, params: {
+          "project_id" => project.id,
+          "package_id" => package.id,
+          kind:                "zone_activity"
+        }
+      end
+
+      it "allow the creation of zone_activity rules referencing activity_rule formulas values" do
+        activity_rule = package.activity_rule
+        variable_used_in_activity_rule = activity_rule.formulas.first.code
+        post :create, params: {
+          "project_id" => project.id,
+          "package_id" => package.id,
+          kind:                "zone_activity",
+          rule: {
+            name:                "Zone Activity Rule",
+            kind:                "zone_activity",
+            formulas_attributes: [{
+              code:        "za_formula",
+              short_name:  "short za",
+              expression:  "sum(%{#{variable_used_in_activity_rule}_values})",
+              description: "zone activity rule"
+            }]
+          }
+        }
+        rule = assigns(:rule)
+        expect(rule.valid?).to eq(true)
+        expect(response).to have_http_status(302)
+        zone_formula = rule.formulas.first
+        expect(zone_formula.code).to eq("za_formula")
+        expect(zone_formula.id).not_to be_nil
+        expect(zone_formula.short_name).to eq("short za")
+      end
+    end
   end
 end
