@@ -17,12 +17,15 @@ raise "can't run against testing or prod" if ENV["DATABASE_URL"]
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 require "webmock/rspec"
 require "simplecov"
-SimpleCov.start "rails" do
-  coverage_dir  "./coverage"
-  add_filter    "/spec/"
-  add_filter    "/vendor/ruby"
 
-  add_group "Libraries", "lib/tasks/"
+unless ENV['SKIP_SIMPLECOV']
+  SimpleCov.start "rails" do
+    coverage_dir  "./coverage"
+    add_filter    "/spec/"
+    add_filter    "/vendor/ruby"
+
+    add_group "Libraries", "lib/tasks/"
+  end
 end
 
 Dir["./spec/support/shared_contexts/*.rb"].sort.each { |f| require f }

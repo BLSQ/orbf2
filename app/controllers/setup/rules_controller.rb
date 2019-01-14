@@ -5,9 +5,10 @@ class Setup::RulesController < PrivateController
   attr_reader :rule
 
   def new
-    if current_package.missing_rules_kind.empty?
-      flash[:alert] = "Sorry you can't create a new rule for the package, edit existing one."
-      redirect_to redirect_to(root_path)
+    reasons = reasons_rule_can_not_be_added(kind)
+    if reasons.any?
+      flash[:alert] = "Sorry, #{reasons.first}"
+      redirect_to(root_path)
       return
     end
 
@@ -21,9 +22,10 @@ class Setup::RulesController < PrivateController
   end
 
   def create
-    if current_package.missing_rules_kind.empty?
-      flash[:alert] = "Sorry you can't create a new rule for the package, edit existing one."
-      redirect_to redirect_to(root_path)
+    reasons = reasons_rule_can_not_be_added(kind)
+    if reasons.any?
+      flash[:alert] = "Sorry, #{reasons.first}"
+      redirect_to(root_path)
       return
     end
 
@@ -51,6 +53,16 @@ class Setup::RulesController < PrivateController
   end
 
   private
+
+  def reasons_rule_can_not_be_added(rule_kind)
+    reasons = []
+    # rubocop:disable Metrics/LineLength
+    reasons << "you can't create a new rule for the package" if current_package.missing_rules_kind.empty?
+    reasons << "this kind is not allowed for this package" unless current_package.rule_allowed?(rule_kind: rule_kind)
+    reasons << "there is already a rule for #{rule_kind}" if current_package.already_has_rule?(rule_kind: rule_kind)
+    # rubocop:enable Metrics/LineLength
+    reasons
+  end
 
   def kind
     if params[:kind]

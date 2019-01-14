@@ -4,13 +4,15 @@
 <%= f.input :name %>
 <%= f.hidden_field :kind %>
 
-<a class="btn pull-right" data-toggle="collapse" data-target="#cheat_sheet">
-  <%= icon("question-circle fa-5x") %>
-</a>
-<div id="cheat_sheet" class="collapse">
-  <%= render "setup/rules/cheat_sheet", rule: rule %>
-</div>
+<% unless rule.zone_related_kind? %>
+  <a class="btn pull-right" data-toggle="collapse" data-target="#cheat_sheet">
+    <%= icon("question-circle fa-5x") %>
+  </a>
 
+  <div id="cheat_sheet" class="collapse">
+    <%= render "setup/rules/cheat_sheet", rule: rule %>
+  </div>
+<% end %>
 
 <div id="words" data-dictionary="<%= JSON.generate(rule.available_variables) %>"/>
 <label class="control-label string"> Available variables names for expressions</label>

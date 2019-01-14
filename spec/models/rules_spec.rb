@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 
 RSpec.describe Rule, kind: :model do
@@ -305,6 +307,21 @@ RSpec.describe Rule, kind: :model do
       rule
     end
 
+    let!(:zone_activity_rule) do
+      rule = quantity_package.rules.build(
+        name: "Zone points",
+        kind: "zone_activity"
+      )
+
+      rule.formulas.build(
+        rule:        rule,
+        code:        :zone_points_per_org,
+        expression:  "SUM(%{attributed_points_values})/org_units_count ",
+        description: "Zone points per org"
+      )
+      rule
+    end
+
     let!(:package_rule) do
       rule = quantity_package.rules.build(
         name: "QUALITY score",
@@ -345,6 +362,11 @@ RSpec.describe Rule, kind: :model do
     it "has validations for activity_rules" do
       activity_rule.valid?
       expect(activity_rule.errors.full_messages).to eq []
+    end
+
+    it "has validations for zone_activity_rules" do
+      zone_activity_rule.valid?
+      expect(zone_activity_rule.errors.full_messages).to eq []
     end
 
     it "has validations for package_rules" do
@@ -388,6 +410,14 @@ RSpec.describe Rule, kind: :model do
         "\n diff 2",
         (expected - activity_rule.available_variables).join("\n")
       ].join
+    end
+
+    it "has available_variables for zone_activity_rule" do
+      expect(zone_activity_rule.available_variables).to eq [
+        "zone_points_per_org",
+        "%{attributed_points_values}",
+        "org_units_count"
+      ]
     end
 
     it "has available_variables for package_rule" do

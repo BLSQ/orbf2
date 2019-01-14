@@ -95,7 +95,29 @@ class Package < ApplicationRecord
   end
 
   def missing_rules_kind
-    %w[activity package multi-entities zone] - rules.map(&:kind)
+    %w[activity package multi-entities zone zone_activity] - rules.map(&:kind)
+  end
+
+  def allowed_rules
+    allowed_rules = [
+      Rule::RULE_TYPE_PAYMENT,
+      Rule::RULE_TYPE_ACTIVITY,
+      Rule::RULE_TYPE_PACKAGE,
+      Rule::RULE_TYPE_MULTI_ENTITIES
+    ]
+    if zone_kind?
+      allowed_rules << Rule::RULE_TYPE_ZONE
+      allowed_rules << Rule::RULE_TYPE_ZONE_ACTIVITY
+    end
+    allowed_rules
+  end
+
+  def rule_allowed?(rule_kind:)
+    allowed_rules.include?(rule_kind)
+  end
+
+  def already_has_rule?(rule_kind:)
+    rules.where(kind: rule_kind).any?
   end
 
   def apply_for(entity)
@@ -134,6 +156,10 @@ class Package < ApplicationRecord
 
   def activity_rule
     rules.find(&:activity_kind?)
+  end
+
+  def zone_activity_rule
+    rules.find(&:zone_activity_kind?)
   end
 
   def zone_rule

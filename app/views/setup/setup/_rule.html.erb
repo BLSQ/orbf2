@@ -6,10 +6,10 @@
     </td>
 
     <td>
-    <% if package.multi_entities_rule%>
+      <% if package.multi_entities_rule%>
         <%= link_to( package.multi_entities_rule.name,
-                     edit_setup_project_package_rule_path(project, package, package.multi_entities_rule) ,
-                     class: package.multi_entities_rule.invalid? ? 'btn btn-danger' :'')
+          edit_setup_project_package_rule_path(project, package, package.multi_entities_rule) ,
+          class: package.multi_entities_rule.invalid? ? 'btn btn-danger' :'')
         %>
         <% if package.multi_entities_rule.present? %>
             <%= render partial: "rule_formulas", locals: { formulas: package.multi_entities_rule.formulas, readonly: readonly }%>
@@ -25,61 +25,83 @@
     </td>
 
     <td valign="top">
-        <div class="col-md-8">
-          <%if readonly %>
-             <%= package.activity_rule.name if package.activity_rule.present? %>
+      <div class="col-md-8">
+        <%if readonly %>
+          <%= package.activity_rule.name if package.activity_rule.present? %>
+        <% else %>
+          <% if package.activity_rule %>
+            <%= link_to package.activity_rule.name, edit_setup_project_package_rule_path(project, package, package.activity_rule) ,
+            title:package.activity_rule.formulas.first.description, class: package.activity_rule.invalid? ? 'btn btn-danger' :''
+            %>
+            <%= package.activity_rule.invalid? ? icon('exclamation-triangle text-danger fa-lg') :''%>
           <% else %>
-            <% if package.activity_rule %>
-              <%= link_to package.activity_rule.name, edit_setup_project_package_rule_path(project, package, package.activity_rule) ,
-                    title:package.activity_rule.formulas.first.description, class: package.activity_rule.invalid? ? 'btn btn-danger' :''
-              %>
-              <%= package.activity_rule.invalid? ? icon('exclamation-triangle text-danger fa-lg') :''%>
-            <% else %>
-                <%= link_to 'Create new rule', new_setup_project_package_rule_path(project, package) , class: 'btn btn-warning' %>
-            <% end %>
-          <%end%>
+            <%= link_to 'Create new rule', new_setup_project_package_rule_path(project, package) , class: 'btn btn-warning' %>
+          <% end %>
+        <%end%>
 
-           <% if package.activity_rule.present? %>
-              <%= render partial: "rule_formulas", locals: { formulas: package.activity_rule.formulas, readonly: readonly }%>
-              <%= render partial: "decision_table", collection: package.activity_rule.decision_tables, as: :decision_table %>
-           <%end%>
+        <% if package.activity_rule.present? %>
+          <%= render partial: "rule_formulas", locals: { formulas: package.activity_rule.formulas, readonly: readonly }%>
+          <%= render partial: "decision_table", collection: package.activity_rule.decision_tables, as: :decision_table %>
+        <%end%>
 
-         </div>
+      </div>
+    </td>
+
+    <td>
+      <% if package.zone_kind? %>
+        <%if readonly %>
+          <%= package.zone_activity_rule.name if package.zone_activity_rule.present? %>
+        <% else %>
+          <% if package.zone_activity_rule %>
+            <%= link_to package.zone_activity_rule.name, edit_setup_project_package_rule_path(project, package, package.zone_activity_rule) ,
+            title:package.zone_activity_rule.formulas.first.description, class: package.zone_activity_rule.invalid? ? 'btn btn-danger' :''
+            %>
+            <%= package.zone_activity_rule.invalid? ? icon('exclamation-triangle text-danger fa-lg') :''%>
+          <% else %>
+            <%= link_to 'Create new rule', new_setup_project_package_rule_path(project, package, kind: 'zone_activity') , class: 'btn btn-default' %>
+          <% end %>
+        <% end %>
+
+        <% if package.zone_activity_rule.present? %>
+          <%= render partial: "rule_formulas", locals: { formulas: package.zone_activity_rule.formulas, readonly: readonly }%>
+          <%= render partial: "decision_table", collection: package.zone_activity_rule.decision_tables, as: :decision_table %>
+        <%end%>
+      <% end %>
     </td>
 
     <td valign="top">
-        <div class="col-md-8">
-            <%if readonly %>
-              <%= package.package_rule.name  if package.package_rule.present?%>
-            <% else %>
-              <% if package.package_rule %>
-                <%= link_to package.package_rule.name, edit_setup_project_package_rule_path(project, package, package.package_rule) , class: package.package_rule.invalid? ? 'btn btn-danger' :''  %>
-                <%= package.package_rule.invalid? ? icon('exclamation-triangle text-danger fa-lg') :''%>
-              <% elsif package.activity_rule.present? %>
-                <%= link_to 'Create new rule', new_setup_project_package_rule_path(project, package)  , class: 'btn btn-warning' %>
-              <% end %>
-            <%end%>
-            <% if package.package_rule.present? %>
-               <%= render partial: "rule_formulas", locals: { formulas: package.package_rule.formulas, readonly: readonly }%>
-               <%= render partial: "decision_table", collection: package.package_rule.decision_tables, as: :decision_table%>
-            <% end %>
-        </div>
+      <div class="col-md-8">
+        <%if readonly %>
+          <%= package.package_rule.name  if package.package_rule.present?%>
+        <% else %>
+          <% if package.package_rule %>
+            <%= link_to package.package_rule.name, edit_setup_project_package_rule_path(project, package, package.package_rule) , class: package.package_rule.invalid? ? 'btn btn-danger' :''  %>
+            <%= package.package_rule.invalid? ? icon('exclamation-triangle text-danger fa-lg') :''%>
+          <% elsif package.activity_rule.present? %>
+            <%= link_to 'Create new rule', new_setup_project_package_rule_path(project, package)  , class: 'btn btn-warning' %>
+          <% end %>
+        <%end%>
+        <% if package.package_rule.present? %>
+          <%= render partial: "rule_formulas", locals: { formulas: package.package_rule.formulas, readonly: readonly }%>
+          <%= render partial: "decision_table", collection: package.package_rule.decision_tables, as: :decision_table%>
+        <% end %>
+      </div>
     </td>
 
     <td valign="top">
 
 
-     <%if package.zone_kind?%>
-       <%if package.zone_rule %>
+      <%if package.zone_kind?%>
+        <%if package.zone_rule %>
           <%= link_to( package.zone_rule.name,
-                      edit_setup_project_package_rule_path(project, package, package.zone_rule) ,
-                      class: package.zone_rule.invalid? ? 'btn btn-danger' :'')
+            edit_setup_project_package_rule_path(project, package, package.zone_rule) ,
+            class: package.zone_rule.invalid? ? 'btn btn-danger' :'')
           %>
           <% if package.zone_rule.present? %>
-              <%= render partial: "rule_formulas", locals: { formulas: package.zone_rule.formulas, readonly: readonly }%>
+            <%= render partial: "rule_formulas", locals: { formulas: package.zone_rule.formulas, readonly: readonly }%>
           <% end %>
-       <%else%>
-         <%= link_to 'Create new rule', new_setup_project_package_rule_path(project, package, kind: 'zone') , class: 'btn btn-default' %>
+        <%else%>
+          <%= link_to 'Create new rule', new_setup_project_package_rule_path(project, package, kind: 'zone') , class: 'btn btn-default' %>
        <%end%>
      <%end%>
     </td>

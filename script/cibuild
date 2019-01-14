@@ -23,4 +23,4 @@ script/test
 
 echo "[cibuild] Running system tests ..."
 date "+%H:%M:%S"
-bundle exec rails spec:system
+SKIP_SIMPLECOV=1 bundle exec rails spec:system

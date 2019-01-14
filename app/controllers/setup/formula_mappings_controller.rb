@@ -86,7 +86,7 @@ class Setup::FormulaMappingsController < PrivateController
     mapping_by_key = params[:formula_mappings] ? params[:formula_mappings].index_by { |mapping| [mapping[:formula_id].to_i, mapping[:activity_id].to_i] } : {}
 
     if options[:activity]
-      activity_rules = project.packages.flat_map(&:rules).select(&:activity_kind?)
+      activity_rules = project.packages.flat_map(&:rules).select(&:activity_related_kind?)
 
       mappings += activity_rules.map do |rule|
         rule.package

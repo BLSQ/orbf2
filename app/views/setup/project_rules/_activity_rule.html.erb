@@ -1,0 +1,33 @@
+<%#
+# - rule: activity or zone activity rule
+%>
+<div>
+  <h4>Activity rule formula mappings</h4>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Activity code</th>
+        <%rule.formulas.each do |formula|%>
+          <th><%=formula.code%></th>
+        <%end%>
+      </tr>
+    </thead>
+    <tbody>
+      <% rule.package.activities.sort {|a,b| NaturalSort.comparator(a.code, b.code)}.each do |activity|%>
+        <tr>
+          <td title="<%= activity.name%>">
+            <%=activity.code%>
+          </td>
+          <% rule.formulas.each do |formula|%>
+            <td>
+              <% external_reference = formula.formula_mappings.detect {|f| f.activity.code == activity.code}&.external_reference %>
+              <%if external_reference%>
+                <%= link_to_data_element(@current_project, external_reference) %>
+              <%end%>
+            </td>
+          <%end%>
+        </tr>
+      <%end%>
+    </tbody>
+  </table>
+</div>
