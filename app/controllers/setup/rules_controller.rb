@@ -56,9 +56,11 @@ class Setup::RulesController < PrivateController
 
   def reasons_rule_can_not_be_added(rule_kind)
     reasons = []
+    # rubocop:disable Metrics/LineLength
     reasons << "you can't create a new rule for the package" if current_package.missing_rules_kind.empty?
     reasons << "this kind is not allowed for this package" unless current_package.rule_allowed?(rule_kind: rule_kind)
     reasons << "there is already a rule for #{rule_kind}" if current_package.already_has_rule?(rule_kind: rule_kind)
+    # rubocop:enable Metrics/LineLength
     reasons
   end
 
