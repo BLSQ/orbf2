@@ -16,14 +16,14 @@ module RuleTypes
     RULE_TYPE_ZONE, RULE_TYPE_ZONE_ACTIVITY
   ].freeze
 
-  RULE_TYPES_MAPPING ={
-      RULE_TYPE_ACTIVITY => RuleTypes::ActivityRuleType,
-      RULE_TYPE_PACKAGE => RuleTypes::PackageRuleType,
-      RULE_TYPE_PAYMENT => RuleTypes::PaymentRuleType,
-      RULE_TYPE_MULTI_ENTITIES => RuleTypes::MultiEntityRuleType,
-      RULE_TYPE_ZONE => RuleTypes::ZoneRuleType,
-      RULE_TYPE_ZONE_ACTIVITY => RuleTypes::ZoneActivityRuleType
-    }.freeze
+  RULE_TYPES_MAPPING = {
+    RULE_TYPE_ACTIVITY       => RuleTypes::ActivityRuleType,
+    RULE_TYPE_PACKAGE        => RuleTypes::PackageRuleType,
+    RULE_TYPE_PAYMENT        => RuleTypes::PaymentRuleType,
+    RULE_TYPE_MULTI_ENTITIES => RuleTypes::MultiEntityRuleType,
+    RULE_TYPE_ZONE           => RuleTypes::ZoneRuleType,
+    RULE_TYPE_ZONE_ACTIVITY  => RuleTypes::ZoneActivityRuleType
+  }.freeze
 
   def self.from_rule(rule)
     klazz = RULE_TYPES_MAPPING.fetch(rule.kind) do
