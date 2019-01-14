@@ -1,6 +1,14 @@
 # frozen_string_literal: true
 
 module Activities
+  class DataElementInfo
+    attr_reader :id, :name
+    def initialize(infos)
+      @id = infos.fetch(:id)
+      @name = infos.fetch(:name)
+    end
+  end
+
   class AddToActivityStates
     attr_reader :project, :activity, :elements, :kind,
                 :existing_element_ids, :selectable_element_ids
@@ -54,7 +62,7 @@ module Activities
           composite_id = de.id + "." + coc["id"]
           next if existing_element_ids.include?(composite_id)
 
-          results << OpenStruct.new(
+          results << DataElementInfo.new(
             id:   composite_id,
             name: de.name + " - " + coc["name"]
           )
