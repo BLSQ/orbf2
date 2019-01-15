@@ -1,8 +1,11 @@
+# frozen_string_literal: true
+
 class Setup::ActivitiesController < PrivateController
   helper_method :states, :activity
   attr_reader :activity, :states
 
   def new
+    @states = activity_level_states
     @activity = current_project.activities.build
   end
 
@@ -56,46 +59,44 @@ class Setup::ActivitiesController < PrivateController
   end
 
   def handle_action(template)
-    if params[:commit]&.starts_with?("Add data elements")
-      data_compound = DataCompound.from(current_project)
-      existing_element_ids = @activity.activity_states.map(&:external_reference)
-      selectable_element_ids = params[:data_elements] - existing_element_ids
-      data_elements = selectable_element_ids.map { |element_id| data_compound.data_element(element_id) }
-
-      data_elements.each do |element|
-        @activity.activity_states.build(
-          external_reference: element.id,
-          name:               element.name,
-          kind:               "data_element"
-        )
-      end
-      flash[:notice] = "Assign states to desired data elements "
-      render template
-    elsif params[:commit]&.starts_with?("Add indicators")
-      data_compound = DataCompound.from(current_project)
-      existing_element_ids = @activity.activity_states.map(&:external_reference)
-      selectable_element_ids = params[:indicators] - existing_element_ids
-      data_elements = selectable_element_ids.map { |element_id| data_compound.indicator(element_id) }
-
-      data_elements.each do |element|
-        @activity.activity_states.build(
-          external_reference: element.id,
-          name:               element.name,
-          kind:               "indicator"
-        )
-      end
-      flash[:notice] = "Assign states to desired indicators"
-      render template
+    state_mapping = detect_state_mapping
+    if state_mapping
+      build_activity_states_with(state_mapping)
     elsif @activity.invalid?
       flash[:failure] = "Some validation errors occured"
       Rails.logger.info "invalid activity #{@activity.errors.full_messages}"
-      render template
     else
-      id = @activity.id
       @activity.save!
       SynchroniseDegDsWorker.perform_async(current_project.project_anchor.id)
-      flash[:success] = "Activity #{activity.name} #{id ? 'created' : 'updated'} !"
-      render template
+      flash[:success] = "Activity #{activity.name} saved !"
+    end
+
+    render template
+  end
+
+  def build_activity_states_with(state_mapping)
+    activity_states_to_add = Activities::ActivityStateAttributes.new(
+      project:  current_project,
+      activity: activity,
+      kind:     state_mapping[0],
+      elements: state_mapping[1]
+    ).call
+    activity_states_to_add.each do |element|
+      @activity.activity_states.build(
+        external_reference: element.id,
+        name:               element.name,
+        kind:               element.kind
+      )
+    end
+  end
+
+  def detect_state_mapping
+    [
+      [ActivityState::KIND_DATA_ELEMENT, params[:data_elements]],
+      [ActivityState::KIND_DATA_ELEMENT_COC, params[:data_element_cocs]],
+      [ActivityState::KIND_INDICATOR, params[:indicators]]
+    ].detect do |state_mapping_action, elements|
+      params["state-mapping-action"] == state_mapping_action && elements
     end
   end
 

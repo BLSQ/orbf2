@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: activity_states
@@ -39,21 +41,50 @@ class ActivityState < ApplicationRecord
 
   validates :state_id, uniqueness: { scope: [:activity_id] }
 
+  KIND_DATA_ELEMENT = "data_element"
+  KIND_INDICATOR = "indicator"
+  KIND_DATA_ELEMENT_COC = "data_element_coc"
+  KIND_FORMULA = "formula"
+
+  KINDS = [
+    KIND_DATA_ELEMENT,
+    KIND_FORMULA,
+    KIND_INDICATOR,
+    KIND_DATA_ELEMENT_COC
+  ].freeze
+
+  validates :kind, inclusion: {
+    in:      KINDS,
+    message: "%{value} is not a valid see #{KINDS.join(',')}"
+  }
+
   def external_reference=(external_reference)
     external_reference = nil if external_reference.blank?
     self[:external_reference] = external_reference
   end
 
   def kind_data_element?
-    kind == "data_element"
+    kind == KIND_DATA_ELEMENT
   end
 
   def kind_formula?
-    kind == "formula"
+    kind == KIND_FORMULA
   end
 
   def kind_indicator?
-    kind == "indicator"
+    kind == KIND_INDICATOR
+  end
+
+  def kind_data_element_coc?
+    kind == KIND_DATA_ELEMENT_COC
+  end
+
+  def data_element_related?
+    kind_data_element? || kind_data_element_coc?
+  end
+
+  def data_element_id
+    external_reference.split(".")[0]
   end
 
   def to_unified_h

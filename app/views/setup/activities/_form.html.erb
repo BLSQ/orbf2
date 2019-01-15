@@ -21,43 +21,100 @@ If they don't exist yet in dhis2, you can create them via this <%= link_to "page
 </p>
 <%end%>
 <hr>
-<div class="row">
-    <div class="col-md-6">
-      <div class="form-group">
-        <label class="control-label">Data Elements</label>
-        <select id="data_elements_selector" data-selected="<%=params[:data_elements].join(',') if params[:data_elements] %>" data-placeholder="Lookup the data elements here..." data-selection = "data_elements_selection" data-url = "<%= data_elements_setup_project_autocomplete_index_path(@activity.project) %>" class="form-control sol-powered" name="data_elements[]" multiple="multiple">
-        </select>
+<h2>Add dhis2 data for state mappings</h2>
+  <select class="state-mapping-action form-control" name="state-mapping-action">
+    <%= options_for_select([
+        ["Add data elements", "data_element"],
+        ["Add data elements with category option combo", "data_element_coc"],
+        ["Add indicators", "indicator"],
+        ["Add constants", "constant"]
+      ], params["state-mapping-action"] || "data_element") %>
+  </select>
+<ul>
+<br>
+<div class="state-mapping-form" data-action="data_element_coc">
+   <div class="row">
+    <div class="col-md-6 " >
+        <div class="form-group">
+          <label class="control-label">Data Elements</label>
+          <select id="data_elementcocs_selector" data-selected=""
+                data-placeholder="Lookup the data elements here..."
+                data-selection = "data_elementcocs_selection"
+                data-url = "<%= data_elements_setup_project_autocomplete_index_path(@activity.project) %>"
+                class="form-control sol-powered" name="data_element_cocs[]" multiple="multiple">
+          </select>
+        </div>
     </div>
-  </div>
-  <div class="col-md-6">
-     <div class="col-md-12" id="data_elements_selection"></div>
-     <div class="pull-right">
-      <%= f.button :submit, 'Add data elements for state mapping', class: "btn btn-primary" %>
+    <div class="col-md-6">
+     <div class="col-md-12" id="data_elementcocs_selection"></div>
+    </div>
+   </div>
+   <div class="col-md-6">
+     <div >
+      <%= f.button :submit, 'Add for state mapping', class: "btn btn-primary" %>
     </div>
   </div>
 </div>
-<hr>
 
-<div class="row">
+<div class="state-mapping-form" data-action="data_element">
+   <div class="row">
+    <div class="col-md-6 " >
+        <div class="form-group">
+          <label class="control-label">Data Elements</label>
+          <select id="data_elements_selector"
+                  data-selected=""
+                  data-placeholder="Lookup the data elements here..."
+                  data-selection = "data_elements_selection"
+                  data-url = "<%= data_elements_setup_project_autocomplete_index_path(@activity.project) %>"
+                  class="form-control sol-powered"
+                  name="data_elements[]"
+                  multiple="multiple">
+          </select>
+        </div>
+    </div>
+    <div class="col-md-6">
+     <div class="col-md-12" id="data_elements_selection"></div>
+    </div>
+   </div>
+   <div class="col-md-6">
+     <div class="col-md-12" id="data_elements_selection"></div>
+     <div >
+      <%= f.button :submit, 'Add for state mapping', class: "btn btn-primary" %>
+    </div>
+  </div>
+</div>
+
+
+<div class="row state-mapping-form" data-action="indicator">
     <div class="col-md-6">
       <div class="form-group">
         <label class="control-label">Indicators</label>
-        <select id="indicators_selector" data-selected="<%=params[:indicators].join(',') if params[:indicators] %>" data-placeholder="Lookup the indicators here..." data-selection = "indicators_selection" data-url = "<%= indicators_setup_project_autocomplete_index_path(@activity.project) %>" class="form-control sol-powered" name="indicators[]" multiple="multiple">
+        <select id="indicators_selector"
+                data-selected=""
+                data-placeholder="Lookup the indicators here..."
+                data-selection = "indicators_selection"
+                data-url = "<%= indicators_setup_project_autocomplete_index_path(@activity.project) %>"
+                class="form-control sol-powered" name="indicators[]" multiple="multiple">
         </select>
     </div>
-  </div>
-  <div class="col-md-6">
+
      <div class="col-md-12" id="indicators_selection"></div>
-     <div class="pull-right">
+     <div >
       <%= f.button :submit, 'Add indicators for state mapping', class: "btn btn-primary" %>
     </div>
   </div>
 </div>
 
+<div class="row state-mapping-form" data-action="constant">
+    <%= link_to_add_association 'Add a constant', f, :activity_states, partial: 'constant',class: "btn btn-secondary" %>
+    <%= f.button :submit, 'Add for state mapping', class: "btn btn-primary" %>
+</div>
+</ul>
+<br>
 <hr>
 
 <% if params.has_key?(:activity) || activity.activity_states.present? %>
-
+<h2>Map data to state</h2>
 <div>
     <table class="table table-striped table-condensed">
         <thead>
@@ -77,7 +134,6 @@ If they don't exist yet in dhis2, you can create them via this <%= link_to "page
                prefix:  "activity[activity_states_attributes][#{activity_state_form.index}]"
                } %>
           <% end %>
-          <%= link_to_add_association 'Add constant', f, :activity_states, partial: 'constant',class: "btn btn-primary pull-right" %>
         </body>
     </table>
 </div>
@@ -89,4 +145,7 @@ If they don't exist yet in dhis2, you can create them via this <%= link_to "page
   <br><br>
 <% end %>
 <%= f.button :submit, class: "btn btn-success" %>
-<%= link_to "Cancel and back to setup", root_path(activity.project) ,class: "btn btn-default"%>
+<%= link_to "Cancel and back to setup", root_path(activity.project, anchor: "step-activities") ,class: "btn btn-default"%>
+  <br><br>
+    <br><br>
+      <br><br>

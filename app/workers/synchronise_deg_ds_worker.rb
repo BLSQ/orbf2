@@ -27,10 +27,7 @@ class SynchroniseDegDsWorker
     package.package_states.each do |package_state|
       state = package_state.state
       Rails.logger.info "\t ---------------- #{state.name}"
-      activity_states = package.activities.map { |activity| activity.activity_state(state) }.reject(&:nil?)
-      data_element_ids = activity_states.select(&:kind_data_element?).map(&:external_reference).flatten.reject(&:nil?).reject(&:empty?)
-      data_element_ids += indicators_data_element_references(@indicators, activity_states)
-      data_element_ids = data_element_ids.uniq
+      data_element_ids = data_element_ids_used_for(package, state)
       next if data_element_ids.empty?
 
       Rails.logger.info "dataelements : #{data_element_ids}"
@@ -47,6 +44,15 @@ class SynchroniseDegDsWorker
 
       package
     end
+  end
+
+  def data_element_ids_used_for(package, state)
+    activity_states = package.activities
+                             .flat_map { |activity| activity.activity_state(state) }
+                             .reject(&:nil?)
+    data_element_ids = activity_states.select(&:data_element_related?).map(&:data_element_id)
+    data_element_ids += indicators_data_element_references(@indicators, activity_states)
+    data_element_ids.reject(&:nil?).reject(&:empty?).uniq
   end
 
   def create_data_element_group(package, state, data_element_ids)
@@ -79,7 +85,8 @@ class SynchroniseDegDsWorker
       created_deg
     rescue RestClient::Exception => e
       puts deg.to_json
-      Rails.logger.warn("failed create_data_element_group " + e.message + "\n" + e&.response&.body + "\n" + +e&.response&.request&.payload.inspect)
+      Rails.logger.warn("failed create_data_element_group " + e.message + "\n" +
+                         e&.response&.body + "\n" + +e&.response&.request&.payload.inspect)
 
       return created_deg
     end
@@ -135,11 +142,13 @@ class SynchroniseDegDsWorker
     end
     created_ds.update
     raise "dataset not created #{ds_name} : #{ds} : #{status.inspect}" unless created_ds
+
     # due to v2.20 compat, looks data_elements is not always taken into accounts
     if created_ds.data_elements
       existing = created_ds.data_elements.map { |de| de["id"] }
       data_element_ids.map do |data_element_id|
         next if existing.include?(data_element_id)
+
         begin
           Rails.logger.info "adding element #{data_element_id} to #{created_ds.id} #{created_ds.name}"
           created_ds.add_relation(:dataElements, data_element_id)

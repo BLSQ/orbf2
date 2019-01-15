@@ -38,6 +38,7 @@ class MapProjectToOrbfProject
     @cache_package ||= {}
     from_cache = @cache_package[package]
     return from_cache if from_cache
+
     @cache_package[package] = Orbf::RulesEngine::Package.new(
       code:                          package.code,
       kind:                          PACKAGE_KINDS[package.kind] || package.kind,
@@ -72,12 +73,22 @@ class MapProjectToOrbfProject
   def map_activity_states(activity_states, package_states)
     activity_states.select { |activity_state| package_states.include?(activity_state.state) }
                    .map do |activity_state|
+      kind = ACTIVITY_STATE_KIND[activity_state.kind] || activity_state.kind
+      formula = activity_state.formula ||
+                dhis2_indicators_by_id[activity_state.external_reference]&.numerator
+      ext_id = activity_state.external_reference
+      if activity_state.kind_data_element_coc?
+        # fake date_element_coc as indicator
+        kind = "indicator"
+        formula = '#{' + activity_state.external_reference + "}"
+        ext_id = "inlined-" + ext_id
+      end
       Orbf::RulesEngine::ActivityState.with(
         state:   activity_state.state.code,
         name:    activity_state.name,
-        formula: activity_state.formula || dhis2_indicators_by_id[activity_state.external_reference]&.numerator,
-        kind:    ACTIVITY_STATE_KIND[activity_state.kind] || activity_state.kind,
-        ext_id:  activity_state.external_reference
+        formula: formula,
+        kind:    kind,
+        ext_id:  ext_id
       )
     end
   end
