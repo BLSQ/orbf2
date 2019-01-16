@@ -121,7 +121,13 @@ $(document).ready(function() {
 
   filter_table("#searchEquation", "#equationsTable");
   filter_table("#searchMeta", "#metaTable");
+
+  $("#words").on("click", ".js-toggle-rules", function(event){
+    $(".shortened-rules-container").toggle();
+    $(".full-rules-container").toggle();
+  });
 });
+
 
 function copyToClipboard(element) {
   var $temp = $("<input>");
