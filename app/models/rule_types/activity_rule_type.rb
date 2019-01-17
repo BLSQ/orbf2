@@ -50,14 +50,20 @@ module RuleTypes
         var_names.push(*activity_level_states.map { |formula| "#{formula.code}_current_quarter_quarterly_values" })
         if package.monthly?
           (1..12).each do |i|
-            var_names.push(*activity_level_states.map { |formula| "#{formula.code}_last_#{i}_months_window_values" })
-            var_names.push(*activity_level_states.map { |formula| "#{formula.code}_is_null_last_#{i}_months_window_values" })
+            monthly_vars = activity_level_states.each_with_object([]) do |formula, result|
+              result << "#{formula.code}_last_#{i}_months_window_values"
+              result << "#{formula.code}_is_null_last_#{i}_months_window_values"
+            end
+            var_names.push(*monthly_vars)
           end
         end
         if package.quarterly?
           (1..4).each do |i|
-            var_names.push(*activity_level_states.map { |formula| "#{formula.code}_last_#{i}_quarters_window_values" })
-            var_names.push(*activity_level_states.map { |formula| "#{formula.code}_is_null_last_#{i}_quarters_window_values" })
+            quarterly_vars = activity_level_states.each_with_object([]) do |formula, result|
+              result << "#{formula.code}_last_#{i}_quarters_window_values"
+              result << "#{formula.code}_is_null_last_#{i}_quarters_window_values"
+            end
+            var_names.push(*quarterly_vars)
           end
         end
       end
