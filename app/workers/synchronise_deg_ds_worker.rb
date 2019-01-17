@@ -164,8 +164,9 @@ class SynchroniseDegDsWorker
 
   def indicators_data_element_references(indicators, activity_states)
     indicator_references = Set.new(activity_states.select(&:kind_indicator?).map(&:external_reference))
+    parser_klazz = Orbf::RulesEngine::IndicatorExpressionParser
     dataelement_references = indicators.select { |i| indicator_references.include?(i.id) }
-                                       .map { |indicator| Orbf::RulesEngine::IndicatorExpressionParser.parse_expression(indicator.numerator) }
+                                       .map { |indicator| parser_klazz.parse_expression(indicator.numerator) }
                                        .flatten
                                        .compact
                                        .map(&:data_element)

@@ -31,7 +31,7 @@ RSpec.describe SynchroniseDegDsWorker do
     # minimize the project packages to ease stubbing
     project.payment_rules.destroy_all
     project.packages[1..-1].map(&:destroy)
-    project.packages.first.activities.first.activity_states.first.update_attributes(kind: "indicator", external_reference: "indicator-dhis-id")
+    project.packages.first.activities.first.activity_states.first.update(kind: "indicator", external_reference: "indicator-dhis-id")
     stub_all_indicators
     all_deg.each do |deg|
       stub_data_elements_groups_creation(deg)
