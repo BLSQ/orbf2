@@ -165,10 +165,10 @@ class SynchroniseDegDsWorker
   def indicators_data_element_references(indicators, activity_states)
     indicator_references = Set.new(activity_states.select(&:kind_indicator?).map(&:external_reference))
     dataelement_references = indicators.select { |i| indicator_references.include?(i.id) }
-                                       .map { |indicator| Analytics::IndicatorCalculator.parse_expression(indicator.numerator) }
+                                       .map { |indicator| Orbf::RulesEngine::IndicatorExpressionParser.parse_expression(indicator.numerator) }
                                        .flatten
                                        .compact
-                                       .map { |expr| expr[:data_element] }
+                                       .map(&:data_element)
     Rails.logger.info "Adding indicator's data elements #{indicator_references.to_a} => #{dataelement_references}"
     dataelement_references
   end
