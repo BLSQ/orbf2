@@ -3,7 +3,7 @@
     <div class="navbar-header">
       <%= link_to root_path, class: "navbar-brand" do %>
         <i class="fa fa-home" aria-hidden="true"></i>
-        <%= (@current_project&.name&.humanize || "Home") %>
+        <%= truncate(@current_project&.name&.humanize, length: 50) || "Home" %>
       <%end%>
     </div>
     <% if @current_project %>
