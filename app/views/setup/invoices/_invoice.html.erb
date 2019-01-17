@@ -151,11 +151,6 @@
           </div>
         </div>
       <%end%>
-
-    <div id="payment-descriptors-<%= invoice.payment_result.payment_rule.rule.id %>" class="collapse">
-
-    <pre><%= as_pretty_json_string(payment_descriptor(invoice.payment_result.payment_rule))%></pre>
-
     </div>
   </div>
   <%end%>
