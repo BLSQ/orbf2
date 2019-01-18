@@ -52,10 +52,11 @@
         <td><%= formula.code.humanize %></td>
         <% invoicing_request.quarter_dates.each do |month| %>
           <% quarter_package_result =  package_invoices.select { |invoice| invoice.date == month }
-                                                       .flat_map(&:package_results)
-                                                       .select {|r| r.package == formula.rule.package }
-                                                       .compact.first
-           %>
+          .flat_map(&:package_results)
+          .select {|r| r.package == formula.rule.package }
+          .select {|r| (r.frequency || "monthly") == formula.rule.package.frequency }
+          .compact.last
+          %>
           <td>
             <span class="num-span"><%= quarter_package_result.solution[formula.code] if quarter_package_result %></span>
           </td>

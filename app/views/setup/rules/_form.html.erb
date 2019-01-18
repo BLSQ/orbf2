@@ -16,7 +16,16 @@
 
 <div id="words" data-dictionary="<%= JSON.generate(rule.available_variables) %>"/>
 <label class="control-label string"> Available variables names for expressions</label>
-<pre><%= rule.available_variables.each_slice(3).map {|slice| slice.join("    ")}.join("\n") %></pre>
+<pre class="shortened-rules-container">
+  <%= truncate(rule.available_variables.each_slice(3).map {|slice| slice.join("    ")}.join("\n"), length: 500) do %>
+    <%= link_to "Show full variables", "#", {class: "js-toggle-rules"} %>
+  <% end %>
+</pre>
+
+<pre style="display: none;" class="full-rules-container">
+  <%= rule.available_variables.each_slice(3).map {|slice| slice.join("    ")}.join("\n") %>
+  <%= link_to "Hide full variables", "#", {class: "js-toggle-rules"} %>
+</pre>
 
 <label class="control-label string"> Used variables</label>
 <pre><%= rule.used_available_variables.each_slice(3).map {|slice| slice.join("    ")}.join("\n") %></pre>

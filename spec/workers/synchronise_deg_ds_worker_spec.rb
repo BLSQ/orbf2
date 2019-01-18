@@ -4,7 +4,7 @@ RSpec.describe SynchroniseDegDsWorker do
   include_context "basic_context"
   let(:project) { full_project }
 
-  let(:claimed_deg) { "{\"dataElementGroups\":[{\"name\":\"ORBF - Claimeds - Quantity PMA\",\"shortName\":\"ORBF-claimed-Quantity PMA\",\"code\":\"ORBF-claimed-Quantity PMA\",\"dataElements\":[{\"id\":\"cl-ext-2\"},{\"id\":\"cl-ext-1\"}]}]}" }
+  let(:claimed_deg) { "{\"dataElementGroups\":[{\"name\":\"ORBF - Claimeds - Quantity PMA\",\"shortName\":\"ORBF-claimed-Quantity PMA\",\"code\":\"ORBF-claimed-Quantity PMA\",\"dataElements\":[{\"id\":\"cl-ext-2\"},{\"id\":\"clext1\"}]}]}" }
   let(:verified_deg) { "{\"dataElementGroups\":[{\"name\":\"ORBF - Verifieds - Quantity PMA\",\"shortName\":\"ORBF-verified-Quantity PMA\",\"code\":\"ORBF-verified-Quantity PMA\",\"dataElements\":[]}]}" }
   let(:tarif_deg) { "{\"dataElementGroups\":[{\"name\":\"ORBF - Tarifs - Quantity PMA\",\"shortName\":\"ORBF-tarif-Quantity PMA\",\"code\":\"ORBF-tarif-Quantity PMA\",\"dataElements\":[{\"id\":\"tarif-ext-2\"},{\"id\":\"tarif-ext-1\"}]}]}" }
 
@@ -31,6 +31,7 @@ RSpec.describe SynchroniseDegDsWorker do
     # minimize the project packages to ease stubbing
     project.payment_rules.destroy_all
     project.packages[1..-1].map(&:destroy)
+    project.packages.first.activities.first.activity_states.first.update(kind: "indicator", external_reference: "indicator-dhis-id")
     stub_all_indicators
     all_deg.each do |deg|
       stub_data_elements_groups_creation(deg)
@@ -42,7 +43,7 @@ RSpec.describe SynchroniseDegDsWorker do
       stub_find_dataset_by_name(ds)
       stub_update_data_element_sets
     end
-    stub_data_elements_in_dataset("cl-ext-1")
+    stub_data_elements_in_dataset("clext1")
     stub_data_elements_in_dataset("cl-ext-2")
     stub_data_elements_in_dataset("tarif-ext-1")
     stub_data_elements_in_dataset("tarif-ext-2")
@@ -52,7 +53,7 @@ RSpec.describe SynchroniseDegDsWorker do
 
   def stub_all_indicators
     stub_request(:get, "#{project.dhis2_url}/api/indicators?fields=:all&pageSize=50000")
-      .to_return(status: 200, body: fixture_content(:dhis2, "indicators.json"))
+      .to_return(status: 200, body: fixture_content(:dhis2, "one_indicator.json"))
   end
 
   def stub_data_elements_groups_creation(deg)

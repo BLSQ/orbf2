@@ -69,6 +69,18 @@ class Package < ApplicationRecord
     activities.flat_map(&:activity_states).select { |activity_state| activity_state.state == state }
   end
 
+  def monthly?
+    frequency == "monthly"
+  end
+
+  def quarterly?
+    frequency == "quarterly"
+  end
+
+  def yearly?
+    frequency == "yearly"
+  end
+
   def multi_entities?
     kind == "multi-groupset"
   end
