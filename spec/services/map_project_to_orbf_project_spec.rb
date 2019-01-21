@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 RSpec.describe MapProjectToOrbfProject do
   include_context "basic_context"
@@ -43,5 +45,36 @@ RSpec.describe MapProjectToOrbfProject do
     expect(orbf_package_formula.dhis2_mapping).to eq("package_dhis2_out")
     # dump with yaml to support circular references
     puts YAML.dump(orbf_project)
+  end
+
+  it "should map zone activity rule mappings" do
+    project = full_project
+
+    package = project.packages.build(name: "zone_test", kind: "zone", frequency: "monthly")
+    package.package_entity_groups.build(kind: "main", organisation_unit_group_ext_ref: "mainextid")
+    package.package_entity_groups.build(kind: "target", organisation_unit_group_ext_ref: "targetextid")
+
+    activity1 = project.activities[0]
+    activity2 = project.activities[1]
+    package.activities << activity1
+    package.activities << activity2
+
+    rule = package.rules.build(kind: "zone_activity")
+    formula = rule.formulas.build(expression: "1", code: "z_act")
+    formula.formula_mappings.build(
+      external_reference: "act1",
+      activity:           package.activities[0]
+    )
+    formula.formula_mappings.build(
+      external_reference: "act2",
+      activity:           package.activities[1]
+    )
+
+    orbf_project = MapProjectToOrbfProject.new(project, []).map
+    orbf_formula = orbf_project.packages.last.zone_activity_rules.first.formulas.first
+    expect(orbf_formula.send(:activity_mappings)).to eq(
+      activity1.code => "act1",
+      activity2.code => "act2"
+    )
   end
 end
