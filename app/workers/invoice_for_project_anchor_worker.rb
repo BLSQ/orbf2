@@ -26,8 +26,7 @@ class InvoiceForProjectAnchorWorker
         options = Invoicing::InvoicingOptions.new(
           publish_to_dhis2:             true,
           force_project_id:             nil,
-          allow_fresh_dhis2_data:       false,
-          do_nothing_if_not_contracted: true
+          allow_fresh_dhis2_data:       false
         )
         request.entity = selected_org_unit_ids.first
         invoice_entity = Invoicing::InvoiceEntity.new(project_anchor, request, options)

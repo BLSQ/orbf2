@@ -9,7 +9,7 @@ module Invoicing
     end
 
     def call
-      if do_nothing_if_not_contracted?
+      if ignore_non_contracted?
         Rails.logger.warn("#{invoicing_request.entity} is not contracted. Stopping invoicing")
         return
       end
@@ -25,8 +25,8 @@ module Invoicing
 
     attr_reader :invoicing_request, :project_anchor, :options
 
-    def do_nothing_if_not_contracted?
-      return false unless options.do_nothing_if_not_contracted?
+    def ignore_non_contracted?
+      return false unless options.ignore_non_contracted?
 
       # let it fail later if orgunit not found
       # else check the contracted entity group

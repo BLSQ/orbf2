@@ -58,8 +58,7 @@ class Setup::InvoicesController < PrivateController
     options = Invoicing::InvoicingOptions.new(
       publish_to_dhis2:             false,
       force_project_id:             params[:simulate_draft] ? project.id : nil,
-      allow_fresh_dhis2_data:       params[:simulate_draft],
-      do_nothing_if_not_contracted: false
+      allow_fresh_dhis2_data:       params[:simulate_draft]
     )
 
     @invoice_entity = Invoicing::InvoiceEntity.new(project.project_anchor, invoicing_request, options)
