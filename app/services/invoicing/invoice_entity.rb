@@ -30,6 +30,7 @@ module Invoicing
 
       legacy_org_unit = legacy_pyramid.org_unit(invoicing_request.entity)
       return false unless legacy_org_unit
+
       # let it fail later if orgunit not found
       # else check the contracted entity group
 
