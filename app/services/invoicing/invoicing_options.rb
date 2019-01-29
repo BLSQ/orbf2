@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Invoicing
   class InvoicingOptions
     def initialize(publish_to_dhis2: false, force_project_id:, allow_fresh_dhis2_data: false)
@@ -12,6 +14,10 @@ module Invoicing
 
     def allow_fresh_dhis2_data?
       @allow_fresh_dhis2_data
+    end
+
+    def ignore_non_contracted?
+      @publish_to_dhis2
     end
 
     attr_reader :force_project_id

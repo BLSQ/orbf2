@@ -164,6 +164,7 @@ class Setup::InvoicesController < PrivateController
 
   def add_contract_warning_if_non_contracted(invoicing_request, project)
     return if contracted?(invoicing_request, project)
+
     flash[:failure] = non_contracted_orgunit_message(project)
   end
 

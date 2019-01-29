@@ -9,6 +9,11 @@ module Invoicing
     end
 
     def call
+      if ignore_non_contracted?
+        Rails.logger.warn("#{invoicing_request.entity} is not contracted. Stopping invoicing")
+        return
+      end
+
       fetch_and_solve
       publish_to_dhis2 if options.publish_to_dhis2?
       @success = true
@@ -19,6 +24,21 @@ module Invoicing
     end
 
     attr_reader :invoicing_request, :project_anchor, :options
+
+    def ignore_non_contracted?
+      return false unless options.ignore_non_contracted?
+
+      # let it fail later if orgunit not found
+      # else check the contracted entity group
+      legacy_org_unit = legacy_pyramid.org_unit(invoicing_request.entity)
+      return false unless legacy_org_unit
+
+      contracted = legacy_pyramid.belong_to_group(
+        legacy_org_unit,
+        project.entity_group.external_reference
+      )
+      !contracted
+    end
 
     def fetch_and_solve
       @fetch_and_solve ||= begin
@@ -42,6 +62,7 @@ module Invoicing
     def publish_to_dhis2
       Rails.logger.info "about to publish #{@dhis2_export_values.size} values to dhis2"
       return if @dhis2_export_values.empty?
+
       status = project.dhis2_connection.data_value_sets.create(@dhis2_export_values)
       Rails.logger.info @dhis2_export_values.to_json
       Rails.logger.info status.raw_status.to_json
