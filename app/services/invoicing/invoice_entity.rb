@@ -10,7 +10,7 @@ module Invoicing
 
     def call
       if do_nothing_if_not_contracted?
-        Rails.logger.warn("#{invoicing_request.entity} is not contracted. Stopping invoicing process")
+        Rails.logger.warn("#{invoicing_request.entity} is not contracted. Stopping invoicing")
         return
       end
 
@@ -28,13 +28,15 @@ module Invoicing
     def do_nothing_if_not_contracted?
       return false unless options.do_nothing_if_not_contracted?
 
+      # let it fail later if orgunit not found
+      # else check the contracted entity group
       legacy_org_unit = legacy_pyramid.org_unit(invoicing_request.entity)
       return false unless legacy_org_unit
 
-      # let it fail later if orgunit not found
-      # else check the contracted entity group
-
-      contracted = legacy_pyramid.belong_to_group(legacy_org_unit, project.entity_group.external_reference)
+      contracted = legacy_pyramid.belong_to_group(
+        legacy_org_unit,
+        project.entity_group.external_reference
+      )
       !contracted
     end
 
