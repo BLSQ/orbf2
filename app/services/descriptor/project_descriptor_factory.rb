@@ -28,7 +28,8 @@ module Descriptor
         matching_groupset_ids:     package.groupsets_ext_refs,
         activity_formulas:         activity_formulas_descriptors(package),
         formulas:                  formulas_descriptors(package.package_rule),
-        zone_formulas:             formulas_descriptors(package.zone_rule)
+        zone_formulas:             formulas_descriptors(package.zone_rule),
+        zone_activity_formulas:    zone_activity_formulas_descriptors(package)
       }
     end
 
@@ -65,6 +66,10 @@ module Descriptor
 
     def activity_formulas_descriptors(package)
       RuleDescription.new(package.activity_rule).activity_formulas_descriptors
+    end
+
+    def zone_activity_formulas_descriptors(package)
+      RuleDescription.new(package.zone_activity_rule).activity_formulas_descriptors
     end
   end
 end
