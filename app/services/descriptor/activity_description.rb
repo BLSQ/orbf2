@@ -31,6 +31,7 @@ module Descriptor
 
     def fill_formulas(rule, activity, activity_descriptor)
       return unless rule
+
       rule.formulas.each do |formula|
         mapping = formula.formula_mapping(activity)
         activity_descriptor[formula.code] = mapping.external_reference if mapping
