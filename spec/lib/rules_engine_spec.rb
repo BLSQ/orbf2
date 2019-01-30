@@ -12,24 +12,19 @@ RSpec.describe "Rules Engine" do
   # By using one of the newer features we can make sure that the whole
   # pipeline: `orfb-rules_engine -> hesabu -> go-hesabu` works.
   describe 'can use newish features' do
-    it ".eval_array (version 3)" do
-      calculator = Orbf::RulesEngine::CalculatorFactory.build(3)
-      solution = calculator.solve(
-        "arr" => "array(1,2,-3,4,5)",
-        "evaled_arr" => "eval_array('a', arr, 'b', arr, 'a - b')",
-        "result" => "sum(evaled_arr)"
-      )
-      expect(solution["result"]).to eq(0.0)
-    end
-
-    it ".eval_array (version 2)" do
-      calculator = Orbf::RulesEngine::CalculatorFactory.build(2)
-      solution = calculator.solve(
-        "arr" => "array(1,2,-3,4,5)",
-        "evaled_arr" => "eval_array('a', arr, 'b', arr, 'a - b')",
-        "result" => "sum(evaled_arr)"
-      )
-      expect(solution["result"]).to eq(0.0)
+    {
+      "version 3" => Orbf::RulesEngine::CalculatorFactory.build(3),
+      "version 2" => Orbf::RulesEngine::CalculatorFactory.build(2),
+      "internal" => Rules::CalculatorFactory.new.new_calculator
+    }.each do |name, calculator|
+      it ".eval_array (#{name})" do
+        solution = calculator.solve(
+          "arr" => "array(1,2,-3,4,5)",
+          "evaled_arr" => "eval_array('a', arr, 'b', arr, 'a - b')",
+          "result" => "sum(evaled_arr)"
+        )
+        expect(solution["result"]).to eq(0.0)
+      end
     end
   end
 end
