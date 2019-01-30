@@ -1,0 +1,349 @@
+{
+  "payment_rules": {
+    "payment_rule_pma": {
+      "name": "Payment rule pma",
+      "frequency": "quarterly",
+      "formulas": {},
+      "packages": {
+        "quantity_pma": {
+          "name": "Quantity PMA",
+          "code": "quantity_pma",
+          "frequency": "monthly",
+          "kind": "single",
+          "activities": [
+            {
+              "name": "Vaccination",
+              "code": "vaccination",
+              "claimed": "cl-ext-1",
+              "tarif": "tarif-ext-1"
+            },
+            {
+              "name":
+                "Clients sous traitement ARV suivi pendant les 6 premiers mois",
+              "code":
+                "clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois",
+              "claimed": "cl-ext-2",
+              "tarif": "tarif-ext-2"
+            }
+          ],
+          "zone_activities": [
+            {
+              "name": "Vaccination",
+              "code": "vaccination",
+              "zone_points_per_org": "zone_formulas_de"
+            },
+            {
+              "name":
+                "Clients sous traitement ARV suivi pendant les 6 premiers mois",
+              "code":
+                "clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois"
+            }
+          ],
+          "data_set_ids": [],
+          "data_element_group_ids": [],
+          "main_org_unit_group_ids": ["RXL3lPSK8oG"],
+          "target_org_unit_group_ids": [],
+          "groupset_ext_id": null,
+          "matching_groupset_ids": [],
+          "activity_formulas": {
+            "difference_percentage": {
+              "short_name": "Pourcentage difference entre déclaré & vérifié",
+              "description": "Pourcentage difference entre déclaré & vérifié",
+              "expression":
+                "if (verified != 0.0, (ABS(claimed - verified) / verified ) * 100.0, 0.0)",
+              "frequency": "monthly",
+              "exportable_formula_code": null
+            },
+            "quantity": {
+              "short_name": "Quantity for PBF payment",
+              "description": "Quantity for PBF payment",
+              "expression": "IF(difference_percentage < 50, verified , 0.0)",
+              "frequency": "monthly",
+              "exportable_formula_code": null
+            },
+            "amount": {
+              "short_name": "Total payment",
+              "description": "Total payment",
+              "expression": "quantity * tarif",
+              "frequency": "monthly",
+              "exportable_formula_code": null
+            }
+          },
+          "formulas": {},
+          "zone_formulas": {},
+          "zone_activity_formulas": {
+            "zone_points_per_org": {
+              "short_name": "Zone points per org",
+              "description": "Zone points per org",
+              "expression": "SUM(%{amount_values})/org_units_count ",
+              "frequency": "monthly",
+              "exportable_formula_code": null
+            }
+          }
+        },
+        "quality": {
+          "name": "Quality",
+          "code": "quality",
+          "frequency": "quarterly",
+          "kind": "single",
+          "activities": [
+            {
+              "name": "Vaccination",
+              "code": "vaccination",
+              "claimed": "cl-ext-1"
+            },
+            {
+              "name":
+                "Clients sous traitement ARV suivi pendant les 6 premiers mois",
+              "code":
+                "clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois",
+              "claimed": "cl-ext-2"
+            }
+          ],
+          "zone_activities": [
+            {
+              "name": "Vaccination",
+              "code": "vaccination",
+              "zone_points_per_org": "zone_formulas_de"
+            },
+            {
+              "name":
+                "Clients sous traitement ARV suivi pendant les 6 premiers mois",
+              "code":
+                "clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois"
+            }
+          ],
+          "data_set_ids": [],
+          "data_element_group_ids": [],
+          "main_org_unit_group_ids": ["RXL3lPSK8oG", "tDZVQ1WtwpA"],
+          "target_org_unit_group_ids": [],
+          "groupset_ext_id": null,
+          "matching_groupset_ids": [],
+          "activity_formulas": {
+            "attributed_points": {
+              "short_name": "Attrib. Points",
+              "description": "Attrib. Points",
+              "expression": "claimed",
+              "frequency": "quarterly",
+              "exportable_formula_code": null
+            },
+            "max_points": {
+              "short_name": "Max Points",
+              "description": "Max Points",
+              "expression": "max_score",
+              "frequency": "quarterly",
+              "exportable_formula_code": null
+            },
+            "quality_technical_score_value": {
+              "short_name": "Quality score",
+              "description": "Quality score",
+              "expression":
+                "if (max_points != 0.0, (attributed_points / max_points) * 100.0, 0.0)",
+              "frequency": "quarterly",
+              "exportable_formula_code": null
+            }
+          },
+          "formulas": {
+            "attributed_points": {
+              "short_name": "Quality score",
+              "description": "Quality score",
+              "expression": "SUM(%{attributed_points_values})",
+              "frequency": "quarterly",
+              "exportable_formula_code": null,
+              "de_id": "ext-attributed_points"
+            },
+            "max_points": {
+              "short_name": "Quality score",
+              "description": "Quality score",
+              "expression": "SUM(%{max_points_values})",
+              "frequency": "quarterly",
+              "exportable_formula_code": null,
+              "de_id": "ext-max_points"
+            },
+            "quality_technical_score_value": {
+              "short_name": "Quality score",
+              "description": "Quality score",
+              "expression":
+                "SAFE_DIV(SUM(%{attributed_points_values}),SUM(%{max_points_values})) * 100.0",
+              "frequency": "quarterly",
+              "exportable_formula_code": null,
+              "de_id": "ext-quality_technical_score_value"
+            }
+          },
+          "zone_formulas": {},
+          "zone_activity_formulas": {}
+        }
+      },
+      "output_data_sets": []
+    },
+    "payment_rule_pca": {
+      "name": "Payment rule pca",
+      "frequency": "quarterly",
+      "formulas": {},
+      "packages": {
+        "quantity_pca": {
+          "name": "Quantity PCA",
+          "code": "quantity_pca",
+          "frequency": "monthly",
+          "kind": "single",
+          "activities": [
+            {
+              "name": "Vaccination",
+              "code": "vaccination",
+              "claimed": "cl-ext-1",
+              "tarif": "tarif-ext-1"
+            },
+            {
+              "name":
+                "Clients sous traitement ARV suivi pendant les 6 premiers mois",
+              "code":
+                "clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois",
+              "claimed": "cl-ext-2",
+              "tarif": "tarif-ext-2"
+            }
+          ],
+          "zone_activities": [
+            {
+              "name": "Vaccination",
+              "code": "vaccination",
+              "zone_points_per_org": "zone_formulas_de"
+            },
+            {
+              "name":
+                "Clients sous traitement ARV suivi pendant les 6 premiers mois",
+              "code":
+                "clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois"
+            }
+          ],
+          "data_set_ids": [],
+          "data_element_group_ids": [],
+          "main_org_unit_group_ids": ["tDZVQ1WtwpA"],
+          "target_org_unit_group_ids": [],
+          "groupset_ext_id": null,
+          "matching_groupset_ids": [],
+          "activity_formulas": {
+            "difference_percentage": {
+              "short_name": "Pourcentage difference entre déclaré & vérifié",
+              "description": "Pourcentage difference entre déclaré & vérifié",
+              "expression":
+                "if (verified != 0.0, (ABS(claimed - verified) / verified ) * 100.0, 0.0)",
+              "frequency": "monthly",
+              "exportable_formula_code": null
+            },
+            "quantity": {
+              "short_name": "Quantity for PBF payment",
+              "description": "Quantity for PBF payment",
+              "expression": "IF(difference_percentage < 5, verified , 0.0)",
+              "frequency": "monthly",
+              "exportable_formula_code": null
+            },
+            "amount": {
+              "short_name": "Total payment",
+              "description": "Total payment",
+              "expression": "quantity * tarif",
+              "frequency": "monthly",
+              "exportable_formula_code": null
+            }
+          },
+          "formulas": {},
+          "zone_formulas": {},
+          "zone_activity_formulas": {}
+        },
+        "quality": {
+          "name": "Quality",
+          "code": "quality",
+          "frequency": "quarterly",
+          "kind": "single",
+          "activities": [
+            {
+              "name": "Vaccination",
+              "code": "vaccination",
+              "claimed": "cl-ext-1"
+            },
+            {
+              "name":
+                "Clients sous traitement ARV suivi pendant les 6 premiers mois",
+              "code":
+                "clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois",
+              "claimed": "cl-ext-2"
+            }
+          ],
+          "zone_activities": [
+            {
+              "name": "Vaccination",
+              "code": "vaccination",
+              "zone_points_per_org": "zone_formulas_de"
+            },
+            {
+              "name":
+                "Clients sous traitement ARV suivi pendant les 6 premiers mois",
+              "code":
+                "clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois"
+            }
+          ],
+          "data_set_ids": [],
+          "data_element_group_ids": [],
+          "main_org_unit_group_ids": ["RXL3lPSK8oG", "tDZVQ1WtwpA"],
+          "target_org_unit_group_ids": [],
+          "groupset_ext_id": null,
+          "matching_groupset_ids": [],
+          "activity_formulas": {
+            "attributed_points": {
+              "short_name": "Attrib. Points",
+              "description": "Attrib. Points",
+              "expression": "claimed",
+              "frequency": "quarterly",
+              "exportable_formula_code": null
+            },
+            "max_points": {
+              "short_name": "Max Points",
+              "description": "Max Points",
+              "expression": "max_score",
+              "frequency": "quarterly",
+              "exportable_formula_code": null
+            },
+            "quality_technical_score_value": {
+              "short_name": "Quality score",
+              "description": "Quality score",
+              "expression":
+                "if (max_points != 0.0, (attributed_points / max_points) * 100.0, 0.0)",
+              "frequency": "quarterly",
+              "exportable_formula_code": null
+            }
+          },
+          "formulas": {
+            "attributed_points": {
+              "short_name": "Quality score",
+              "description": "Quality score",
+              "expression": "SUM(%{attributed_points_values})",
+              "frequency": "quarterly",
+              "exportable_formula_code": null,
+              "de_id": "ext-attributed_points"
+            },
+            "max_points": {
+              "short_name": "Quality score",
+              "description": "Quality score",
+              "expression": "SUM(%{max_points_values})",
+              "frequency": "quarterly",
+              "exportable_formula_code": null,
+              "de_id": "ext-max_points"
+            },
+            "quality_technical_score_value": {
+              "short_name": "Quality score",
+              "description": "Quality score",
+              "expression":
+                "SAFE_DIV(SUM(%{attributed_points_values}),SUM(%{max_points_values})) * 100.0",
+              "frequency": "quarterly",
+              "exportable_formula_code": null,
+              "de_id": "ext-quality_technical_score_value"
+            }
+          },
+          "zone_formulas": {},
+          "zone_activity_formulas": {}
+        }
+      },
+      "output_data_sets": []
+    }
+  },
+  "entity_group": { "id": "RXL3lPSK8oG", "name": "Clinic" }
+}

@@ -7,15 +7,15 @@ module Descriptor
       @package = package
     end
 
-    def activity_descriptors
+    def activity_descriptors(activity_type)
       package.activities.map do |activity|
         activity_descriptor = {
           name: activity.name,
           code: activity.code
         }
+        package_activity_rule = activity_type == :activity_rule ?  package.activity_rule : package.zone_activity_rule
         fill_states(activity, activity_descriptor)
-        fill_formulas(package.activity_rule, activity, activity_descriptor)
-        fill_formulas(package.zone_activity_rule, activity, activity_descriptor)
+        fill_formulas(package_activity_rule, activity, activity_descriptor)
         activity_descriptor
       end
     end
