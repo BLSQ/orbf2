@@ -14,7 +14,8 @@ module Descriptor
           code: activity.code
         }
         fill_states(activity, activity_descriptor)
-        fill_formulas(activity, activity_descriptor)
+        fill_formulas(package.activity_rule, activity, activity_descriptor)
+        fill_formulas(package.zone_activity_rule, activity, activity_descriptor)
         activity_descriptor
       end
     end
@@ -28,8 +29,9 @@ module Descriptor
       end
     end
 
-    def fill_formulas(activity, activity_descriptor)
-      package.activity_rule.formulas.each do |formula|
+    def fill_formulas(rule, activity, activity_descriptor)
+      return unless rule
+      rule.formulas.each do |formula|
         mapping = formula.formula_mapping(activity)
         activity_descriptor[formula.code] = mapping.external_reference if mapping
       end
