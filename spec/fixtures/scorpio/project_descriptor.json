@@ -3,7 +3,8 @@
     "payment_rule_pma": {
       "name": "Payment rule pma",
       "frequency": "quarterly",
-      "formulas": {},
+      "formulas": {
+      },
       "packages": {
         "quantity_pma": {
           "name": "Quantity PMA",
@@ -18,26 +19,33 @@
               "tarif": "tarif-ext-1"
             },
             {
-              "name":
-                "Clients sous traitement ARV suivi pendant les 6 premiers mois",
-              "code":
-                "clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois",
+              "name": "Clients sous traitement ARV suivi pendant les 6 premiers mois",
+              "code": "clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois",
               "claimed": "cl-ext-2",
               "tarif": "tarif-ext-2"
             }
           ],
-          "data_set_ids": [],
-          "data_element_group_ids": [],
-          "main_org_unit_group_ids": ["RXL3lPSK8oG"],
-          "target_org_unit_group_ids": [],
+          "data_set_ids": [
+
+          ],
+          "data_element_group_ids": [
+
+          ],
+          "main_org_unit_group_ids": [
+            "RXL3lPSK8oG"
+          ],
+          "target_org_unit_group_ids": [
+
+          ],
           "groupset_ext_id": null,
-          "matching_groupset_ids": [],
+          "matching_groupset_ids": [
+
+          ],
           "activity_formulas": {
             "difference_percentage": {
               "short_name": "Pourcentage difference entre déclaré & vérifié",
               "description": "Pourcentage difference entre déclaré & vérifié",
-              "expression":
-                "if (verified != 0.0, (ABS(claimed - verified) / verified ) * 100.0, 0.0)",
+              "expression": "if (verified != 0.0, (ABS(claimed - verified) / verified ) * 100.0, 0.0)",
               "frequency": "monthly",
               "exportable_formula_code": null
             },
@@ -56,9 +64,8 @@
               "exportable_formula_code": null
             }
           },
-          "formulas": {},
-          "zone_formulas": {},
-          "zone_activity_formulas": {}
+          "formulas": {
+          }
         },
         "quality": {
           "name": "Quality",
@@ -72,19 +79,28 @@
               "claimed": "cl-ext-1"
             },
             {
-              "name":
-                "Clients sous traitement ARV suivi pendant les 6 premiers mois",
-              "code":
-                "clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois",
+              "name": "Clients sous traitement ARV suivi pendant les 6 premiers mois",
+              "code": "clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois",
               "claimed": "cl-ext-2"
             }
           ],
-          "data_set_ids": [],
-          "data_element_group_ids": [],
-          "main_org_unit_group_ids": ["RXL3lPSK8oG", "tDZVQ1WtwpA"],
-          "target_org_unit_group_ids": [],
+          "data_set_ids": [
+
+          ],
+          "data_element_group_ids": [
+
+          ],
+          "main_org_unit_group_ids": [
+            "RXL3lPSK8oG",
+            "tDZVQ1WtwpA"
+          ],
+          "target_org_unit_group_ids": [
+
+          ],
           "groupset_ext_id": null,
-          "matching_groupset_ids": [],
+          "matching_groupset_ids": [
+
+          ],
           "activity_formulas": {
             "attributed_points": {
               "short_name": "Attrib. Points",
@@ -103,8 +119,7 @@
             "quality_technical_score_value": {
               "short_name": "Quality score",
               "description": "Quality score",
-              "expression":
-                "if (max_points != 0.0, (attributed_points / max_points) * 100.0, 0.0)",
+              "expression": "if (max_points != 0.0, (attributed_points / max_points) * 100.0, 0.0)",
               "frequency": "quarterly",
               "exportable_formula_code": null
             }
@@ -129,23 +144,26 @@
             "quality_technical_score_value": {
               "short_name": "Quality score",
               "description": "Quality score",
-              "expression":
-                "SAFE_DIV(SUM(%{attributed_points_values}),SUM(%{max_points_values})) * 100.0",
+              "expression": "SAFE_DIV(SUM(%{attributed_points_values}),SUM(%{max_points_values})) * 100.0",
               "frequency": "quarterly",
               "exportable_formula_code": null,
               "de_id": "ext-quality_technical_score_value"
             }
-          },
-          "zone_formulas": {},
-          "zone_activity_formulas": {}
+          }
         }
       },
-      "output_data_sets": [{ "frequency": "quarterly", "id": "aze123" }]
+      "output_data_sets": [
+        {
+          "frequency": "quarterly",
+          "id": "aze123"
+        }
+      ]
     },
     "payment_rule_pca": {
       "name": "Payment rule pca",
       "frequency": "quarterly",
-      "formulas": {},
+      "formulas": {
+      },
       "packages": {
         "quantity_pca": {
           "name": "Quantity PCA",
@@ -160,26 +178,33 @@
               "tarif": "tarif-ext-1"
             },
             {
-              "name":
-                "Clients sous traitement ARV suivi pendant les 6 premiers mois",
-              "code":
-                "clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois",
+              "name": "Clients sous traitement ARV suivi pendant les 6 premiers mois",
+              "code": "clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois",
               "claimed": "cl-ext-2",
               "tarif": "tarif-ext-2"
             }
           ],
-          "data_set_ids": [],
-          "data_element_group_ids": [],
-          "main_org_unit_group_ids": ["tDZVQ1WtwpA"],
-          "target_org_unit_group_ids": [],
+          "data_set_ids": [
+
+          ],
+          "data_element_group_ids": [
+
+          ],
+          "main_org_unit_group_ids": [
+            "tDZVQ1WtwpA"
+          ],
+          "target_org_unit_group_ids": [
+
+          ],
           "groupset_ext_id": null,
-          "matching_groupset_ids": [],
+          "matching_groupset_ids": [
+
+          ],
           "activity_formulas": {
             "difference_percentage": {
               "short_name": "Pourcentage difference entre déclaré & vérifié",
               "description": "Pourcentage difference entre déclaré & vérifié",
-              "expression":
-                "if (verified != 0.0, (ABS(claimed - verified) / verified ) * 100.0, 0.0)",
+              "expression": "if (verified != 0.0, (ABS(claimed - verified) / verified ) * 100.0, 0.0)",
               "frequency": "monthly",
               "exportable_formula_code": null
             },
@@ -198,9 +223,8 @@
               "exportable_formula_code": null
             }
           },
-          "formulas": {},
-          "zone_formulas": {},
-          "zone_activity_formulas": {}
+          "formulas": {
+          }
         },
         "quality": {
           "name": "Quality",
@@ -214,19 +238,28 @@
               "claimed": "cl-ext-1"
             },
             {
-              "name":
-                "Clients sous traitement ARV suivi pendant les 6 premiers mois",
-              "code":
-                "clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois",
+              "name": "Clients sous traitement ARV suivi pendant les 6 premiers mois",
+              "code": "clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois",
               "claimed": "cl-ext-2"
             }
           ],
-          "data_set_ids": [],
-          "data_element_group_ids": [],
-          "main_org_unit_group_ids": ["RXL3lPSK8oG", "tDZVQ1WtwpA"],
-          "target_org_unit_group_ids": [],
+          "data_set_ids": [
+
+          ],
+          "data_element_group_ids": [
+
+          ],
+          "main_org_unit_group_ids": [
+            "RXL3lPSK8oG",
+            "tDZVQ1WtwpA"
+          ],
+          "target_org_unit_group_ids": [
+
+          ],
           "groupset_ext_id": null,
-          "matching_groupset_ids": [],
+          "matching_groupset_ids": [
+
+          ],
           "activity_formulas": {
             "attributed_points": {
               "short_name": "Attrib. Points",
@@ -245,8 +278,7 @@
             "quality_technical_score_value": {
               "short_name": "Quality score",
               "description": "Quality score",
-              "expression":
-                "if (max_points != 0.0, (attributed_points / max_points) * 100.0, 0.0)",
+              "expression": "if (max_points != 0.0, (attributed_points / max_points) * 100.0, 0.0)",
               "frequency": "quarterly",
               "exportable_formula_code": null
             }
@@ -271,19 +303,21 @@
             "quality_technical_score_value": {
               "short_name": "Quality score",
               "description": "Quality score",
-              "expression":
-                "SAFE_DIV(SUM(%{attributed_points_values}),SUM(%{max_points_values})) * 100.0",
+              "expression": "SAFE_DIV(SUM(%{attributed_points_values}),SUM(%{max_points_values})) * 100.0",
               "frequency": "quarterly",
               "exportable_formula_code": null,
               "de_id": "ext-quality_technical_score_value"
             }
-          },
-          "zone_formulas": {},
-          "zone_activity_formulas": {}
+          }
         }
       },
-      "output_data_sets": []
+      "output_data_sets": [
+
+      ]
     }
   },
-  "entity_group": { "id": "RXL3lPSK8oG", "name": "Clinic" }
+  "entity_group": {
+    "id": "RXL3lPSK8oG",
+    "name": "Clinic"
+  }
 }

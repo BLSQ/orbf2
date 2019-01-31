@@ -14,13 +14,12 @@ module Descriptor
 
     def package_descriptor(package)
       package_description = PackageDescription.new(package)
-      {
+      descr = {
         name:                      package.name,
         code:                      package.code,
         frequency:                 package.frequency,
         kind:                      package.kind,
-        activities:                package_description.activity_descriptors(:activity_rule ),
-        zone_activities:           package_description.activity_descriptors(:zone_activity_rule ),
+        activities:                package_description.activity_descriptors(:activity_rule),
         data_set_ids:              package_description.data_set_ids,
         data_element_group_ids:    package_description.data_element_group_ids,
         main_org_unit_group_ids:   package_description.main_org_unit_group_ids,
@@ -28,10 +27,14 @@ module Descriptor
         groupset_ext_id:           package.ogs_reference,
         matching_groupset_ids:     package.groupsets_ext_refs,
         activity_formulas:         activity_formulas_descriptors(package),
-        formulas:                  formulas_descriptors(package.package_rule),
-        zone_formulas:             formulas_descriptors(package.zone_rule),
-        zone_activity_formulas:    zone_activity_formulas_descriptors(package)
+        formulas:                  formulas_descriptors(package.package_rule)
       }
+      if package.zone_kind?
+        descr[:zone_activities] = package_description.activity_descriptors(:zone_activity_rule)
+        descr[:zone_formulas] = formulas_descriptors(package.zone_rule)
+        descr[:zone_activity_formulas] = zone_activity_formulas_descriptors(package)
+      end
+      descr
     end
 
     def payment_rule_descriptors(project)
