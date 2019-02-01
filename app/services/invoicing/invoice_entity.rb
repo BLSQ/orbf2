@@ -44,7 +44,7 @@ module Invoicing
       @fetch_and_solve ||= begin
           solve_options = {
             pyramid:     pyramid,
-            mock_values: invoicing_request.mock_values? ? [] : nil
+            mock_values: invoicing_request.mocked_data
           }
           @fetch_and_solve = Orbf::RulesEngine::FetchAndSolve.new(
             orbf_project,
