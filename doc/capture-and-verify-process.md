@@ -11,6 +11,16 @@ Have an impact on previously made calculations.
 
 In order to do this we've identified several projects and org units that we want to check by using production data and comparing the results to a newer version.
 
+## How to run?
+
+Capturing can be done by running:
+
+      DB_NAME=<production-copy> bundle exec rake data_test:capture_and_upload
+
+Verifying can be run (and is run by CI) with:
+
+      bundle exec rake spec:data_test
+
 ## High level overview
 
 - Capture phase
@@ -50,25 +60,6 @@ Results:
 
 Things we are looking for:
 
-- Data should be versioned
-- Data should be protected
-- Data should be retrievable
-
-What I'd propose is to have the capture phase (on a successfull run):
-
-- upload the individual files to S3
-- Have the S3 bucket be setup to be versioned
-- Zip all the files and upload to S3 (for easier access)
-
-On a verify phase the ENV will be checked for the URL of the zip:
-
-- Zip would be downloaded and extracted
-- Verify phase would run against those files
-- Verify phase gets run on CI and results are displayed there (careful about leaking data in a public CI)
-
-Todos:
-
-- [ ] 1 command to start a capture phase
-- [ ] 1 command to upload capture artefacts to S3
-- [ ] Verify phase gets added to rspec run
-- [ ] Verify phase can use uploaded data
+- Data should be versioned (S3 bucket is versioned)
+- Data should be protected (S3 credentials are needed)
+- Data should be retrievable (S3 credentials available on CI, read only!)

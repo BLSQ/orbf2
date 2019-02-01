@@ -89,7 +89,10 @@ group :development, :test do
   gem "ruby-prof"
   gem "shoulda-matchers", require: false
 
+  gem "aws-sdk-s3", "~> 1.30.1"
   gem "capybara", "~> 3.12.0"
+  gem "json-diff", "~> 0.4.1"
+  gem "rubyzip", "~> 1.2.2"
   gem "selenium-webdriver", "~> 3.141.0"
 end
 

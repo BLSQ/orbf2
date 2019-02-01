@@ -23,12 +23,20 @@ namespace :spec do
     ]
     run_commands(cmds)
   end
+
+  desc "Run full data test"
+  task :data_test do
+    cmds = [
+      %w[rspec spec --tag @data_test]
+    ]
+    run_commands(cmds)
+  end
 end
 
 desc "Run specs (without system)"
 task :spec do
   cmds = [
-    %w[rspec spec --color --tag ~@type:system]
+    %w[rspec spec --color --tag ~@type:system --tag ~@data_test]
   ]
   run_commands(cmds)
 end
