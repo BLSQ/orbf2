@@ -16,6 +16,13 @@ else
     cp config/database-template.yml.example config/database.yml
 fi
 
+if [ -f "config/application.yml" ] ; then
+    true
+else
+    echo "==> Generating config/application.yml"
+    cp config/application.template.yml config/application.yml
+fi
+
 echo "==> Setting up DB…"
 # reset database to a fresh state.
 bin/rake db:reset db:create
