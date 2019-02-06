@@ -17,7 +17,7 @@ namespace :data_test do
     selected_test_case_name = ENV["test_case"] || "all"
 
     if selected_test_case_name != "all"
-      test_cases = test_cases.select { |(_name, _cases)| k =~ /#{selected_test_case_name}/ }
+      test_cases = test_cases.select { |(name, _cases)| name =~ /#{selected_test_case_name}/ }
     end
 
     failures = {}
