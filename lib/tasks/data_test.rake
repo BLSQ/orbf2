@@ -39,6 +39,27 @@ namespace :data_test do
     end
   end
 
+  desc "Quick check"
+  task verify: :environment do
+    puts "=> Verifying\n"
+    test_cases = DataTest.all_cases
+    selected_test_case_name = ENV["test_case"] || "all"
+
+    if selected_test_case_name != "all"
+      test_cases = test_cases.select { |(name, _cases)| name =~ /#{selected_test_case_name}/ }
+    end
+    test_cases.each.with_index do |(test_case_name, subject), i|
+      begin
+        puts "+ #{i + 1}/#{test_cases.keys.count} #{subject.project_name} - #{subject.orgunit_ext_id}"
+        DataTest::Verifier.new(subject).call
+      rescue StandardError => error
+        puts "  -> FAILED"
+        failures[test_case_name] = error
+        raise error if ENV["FAIL_FAST"]
+      end
+    end
+  end
+
   task check_upload_credentials: :environment do
     uploader = DataTest::Uploader.new
     unless uploader.can_run?
