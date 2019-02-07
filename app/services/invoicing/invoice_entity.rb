@@ -34,10 +34,10 @@ module Invoicing
 
       # let it fail later if orgunit not found
       # else check the contracted entity group
-      legacy_org_unit = legacy_pyramid.org_unit(invoicing_request.entity)
+      legacy_org_unit = pyramid.org_unit(invoicing_request.entity)
       return false unless legacy_org_unit
 
-      contracted = legacy_pyramid.belong_to_group(
+      contracted = pyramid.belong_to_group(
         legacy_org_unit,
         project.entity_group.external_reference
       )
@@ -50,6 +50,7 @@ module Invoicing
             pyramid:     pyramid,
             mock_values: invoicing_request.mocked_data
           }
+
           @fetch_and_solve = Orbf::RulesEngine::FetchAndSolve.new(
             orbf_project,
             invoicing_request.entity,
@@ -107,17 +108,17 @@ module Invoicing
       @orbf_project ||= MapProjectToOrbfProject.new(project, data_compound.indicators, invoicing_request.engine_version).map
     end
 
-    def legacy_pyramid
-      @legacy_pyramid ||= project_anchor.nearest_pyramid_for(invoicing_request.end_date_as_date) ||
-                          project_anchor.nearest_pyramid_for(invoicing_request.start_date_as_date)
+    def snapshot
+      @snapshot ||= project_anchor.nearest_pyramid_snapshot_for(invoicing_request.end_date_as_date) ||
+                    project_anchor.nearest_pyramid_snapshot_for(invoicing_request.start_date_as_date)
     end
 
     def pyramid
-      @pyramid ||= if legacy_pyramid
-                     Orbf::RulesEngine::PyramidFactory.from_dhis2(
-                       org_units:          legacy_pyramid.org_units,
-                       org_unit_groups:    legacy_pyramid.org_unit_groups,
-                       org_unit_groupsets: legacy_pyramid.organisation_unit_group_sets
+      @pyramid ||= if snapshot
+                     Orbf::RulesEngine::PyramidFactory.from_snapshot(
+                       org_units:          snapshot[:organisation_units].content,
+                       org_unit_groups:    snapshot[:organisation_unit_groups].content,
+                       org_unit_groupsets: snapshot[:organisation_unit_group_sets].content
                      )
                    end
     end
