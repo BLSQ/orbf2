@@ -8,6 +8,10 @@ module Invoicing
       @options = options || InvoicingOptions.default_options
     end
 
+    def profile_id
+      invoicing_request.entity
+    end
+
     def call
       if ignore_non_contracted?
         Rails.logger.warn("#{invoicing_request.entity} is not contracted. Stopping invoicing")
@@ -52,18 +56,29 @@ module Invoicing
             invoicing_request.year_quarter.to_dhis2,
             solve_options
           )
-          @pyramid = fetch_and_solve.pyramid
-          @dhis2_export_values = fetch_and_solve.call
-          @dhis2_input_values = fetch_and_solve.dhis2_values
+          @pyramid = @fetch_and_solve.pyramid
+          @dhis2_export_values = @fetch_and_solve.call
+          @dhis2_input_values = @fetch_and_solve.dhis2_values
           @fetch_and_solve
         end
+    end
+
+    def our_publish
+      url = project.dhis2_connection.instance_variable_get(:@base_url)
+      client = ParallelDhis2.new(project.dhis2_connection)
+      client.post_data_value_sets(@dhis2_export_values)
     end
 
     def publish_to_dhis2
       Rails.logger.info "about to publish #{@dhis2_export_values.size} values to dhis2"
       return if @dhis2_export_values.empty?
 
-      status = project.dhis2_connection.data_value_sets.create(@dhis2_export_values)
+      if ENV["USE_HYDRA"]
+        status = our_publish
+      else
+        status = project.dhis2_connection.data_value_sets.create(@dhis2_export_values)
+      end
+
       Rails.logger.info @dhis2_export_values.to_json
       Rails.logger.info status.raw_status.to_json
       project.project_anchor.dhis2_logs.create(sent: @dhis2_export_values, status: status.raw_status)

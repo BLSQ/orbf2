@@ -75,7 +75,9 @@ else
   gem "hesabu", github: "BLSQ/hesabu"
   gem "orbf-rules_engine", github: "BLSQ/orbf-rules_engine"
 end
-
+# Like a modern code version of the mythical beast with 100 serpent hea...
+# [typhoeus](https://github.com/typhoeus/typhoeus)
+gem "typhoeus", "~> 1.3.1"
 group :development, :test do
   gem "byebug", platform: :mri
   gem "database_cleaner"
