@@ -6,8 +6,9 @@ module DataTest
 
     attr_accessor :subject
 
-    def initialize(subject)
+    def initialize(subject, output_directory = ARTEFACT_DIR)
       @subject = subject
+      @output_directory = output_directory
     end
 
     def project_anchor_id
@@ -97,7 +98,7 @@ module DataTest
       parts = []
       parts << subject.name
       parts << name
-      Pathname.new("#{ARTEFACT_DIR}/#{parts.join('-')}.#{extension}")
+      Pathname.new("#{@output_directory}/#{parts.join('-')}.#{extension}")
     end
   end
 end

@@ -12,7 +12,10 @@ namespace :data_test do
 
   desc "Run simulation and capture all artefacts"
   task capture: :environment do
-    puts "=> Capturing\n"
+    output_directory = Rails.root.join("tmp/new_artefacts")
+    FileUtils.mkdir(output_directory) unless File.exist? output_directory
+
+    puts "=> Capturing to #{output_directory}\n"
     test_cases = DataTest.all_cases
     selected_test_case_name = ENV["test_case"] || "all"
 
@@ -24,7 +27,7 @@ namespace :data_test do
     test_cases.each.with_index do |(test_case_name, subject), i|
       begin
         puts "+ #{i + 1}/#{test_cases.keys.count} #{subject.project_name} - #{subject.orgunit_ext_id}"
-        DataTest::Capture.new(subject).call
+        DataTest::Capture.new(subject, output_directory).call
       rescue StandardError => error
         puts "  -> FAILED"
         failures[test_case_name] = error
@@ -32,7 +35,7 @@ namespace :data_test do
       end
     end
     if failures.empty?
-      puts "  -> Captured them all in #{DataTest::ARTEFACT_DIR}"
+      puts "  -> Captured them all in #{output_directory}"
     else
       puts failures
       abort "Encountered failures. Stopping"

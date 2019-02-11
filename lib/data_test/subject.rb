@@ -30,5 +30,9 @@ module DataTest
     def name
       "#{project_name}-#{orgunit_ext_id}"
     end
+
+    def filename(file, extension)
+      "#{[name, file].join("-")}.#{extension}"
+    end
   end
 end

@@ -3,6 +3,7 @@
 require_relative "data_test/subject"
 require_relative "data_test/file_helpers"
 require_relative "data_test/capture"
+require_relative "data_test/compare"
 require_relative "data_test/verifier"
 require_relative "data_test/uploader"
 require_relative "data_test/fetcher"
