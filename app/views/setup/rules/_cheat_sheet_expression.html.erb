@@ -1,29 +1,98 @@
 <h3>More advanced expression</h3>
 
-Math:
+<h4>Math:</h4>
 <pre>
  +, -, *, /
 </pre>
-Logic:
-<pre> <, >, <=, >=, <>, !=, =, AND, OR </pre>
-Functions:
-<pre>
-IF( expression , true_value, false_value)
-MIN(value1, value2)
-MAX(value1, value2)
-ROUND(value, decimals)
-ROUND(value)
 
-</pre>
-Functions taking a multiple arguments:
-<pre>
-SUM(a, b, c)
-AVG(quality_technical_score_value_values)
-SCORE_TABLE(
-   range_a, range_b, then_c,
-   range_b, range_d, then_f,
-   range_d, range_h, then_i,
-   else_z
-)
-SAFE_DIV(numerator, denominator) # will return 0 if denominator == 0
+<h4>Logic:</h4>
+<pre> <%= h "<, >, <=, >=, <>, !=, =, AND, OR" %> </pre>
+
+<h4>Functions:</h4>
+<%
+score_table = <<DEF
+    SCORE_TABLE(
+      range_a, range_b, then_c,
+      range_b, range_d, then_f,
+      range_d, range_h, then_i,
+      else_z
+    )
+DEF
+  functions = {
+    "IF" => [
+      "IF(expression, true_value, false_value)",
+      "If <code>expression</code> evaluates to true, returns <code>true_value</code> otherwise <code>false_value</code>"
+    ],
+    "MIN" => [
+      "MIN(value1, value2)",
+      "Returns the minum of the two values (can also take an <code>ARRAY</code>)"
+    ],
+    "MAX" => [
+      "MAX(value1, value2)",
+      "Returns the maximum of the two values (can also take an <code>ARRAY</code>)"
+    ],
+    "ROUND" => [
+      "ROUND(value(, decimals))",
+      "Rounds to nearest integer, when <code>decimals</code supplied, round to decimals after the comma)"
+    ],
+    "ABS" => [
+      "ABS(value)",
+      "Returns the absolute value of <code>value</code>"
+    ],
+    "RANDBETWEEN" => [
+      "RANDBETWEEN(a, b)",
+      "Generates a random number between <code>a</code> and <code>b</code>"
+    ],
+    "SUM" => [
+      "SUM(a,b,c,...)",
+      "Sums a, b and c. (can als take an <code>ARRAY</code>)"
+    ],
+    "AVG" => [
+      "AVG(a,b,c,...)",
+      "Returns the average of a,b and c (can also take an <code>ARRAY</code>)"
+    ],
+    "EVAL_ARRAY" => [
+      "EVAL_ARRAY(key1, arr1, key2, arr2, meta_formula)",
+      <<-EXPL
+Allows you to perform a function on two arrays which will return an array.
+
+    key1 - Key to use in meta_formula for arr1
+    arr1 - An array
+    key2 - Key to use in meta_formula for arr2
+    meta_formula - Formula which gets applied for each element
+
+EVAL_ARRAY('a', (1,2), 'b', (3,4), 'a + b')
+Would return [4, 6] (1+3 and 2+4)
+    EXPL
+    ],
+    "ARRAY" => [
+      "ARRAY(a,b,c,...)",
+      <<-EXPL
+Takes a variable number of arguments and returns an <code>ARRAY</code> which can be used in other formulas.
+
+You could make a formula ('a') which returns <code>ARRAY(1,2,3)</code> and then reuse this in another formula to get the sum of 'a' <code>SUM(a)</code>
+    EXPL
+    ],
+    "SCORE_TABLE" => [
+      score_table,
+      ""
+    ],
+    "SAVE_DIV" => [
+      "SAFE_DIV(numerator, denominator)",
+      "Returns numerator divided by denominator, but will return 0 when denominator is 0"
+    ]
+  }
+%>
+<dl>
+  <% functions.sort.to_h.each do |title, (example, usage)| %>
+    <dt><code><%= example %></code></dt>
+    <dd>
+      <pre>
+      <%= usage.html_safe %>
+      </pre>
+    </dd>
+  <% end %>
+</dl>
+
+
 </pre>

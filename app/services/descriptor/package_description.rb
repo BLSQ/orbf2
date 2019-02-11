@@ -23,8 +23,8 @@ module Descriptor
       package.target_entity_groups.map(&:organisation_unit_group_ext_ref).compact
     end
 
-    def activity_descriptors
-      ActivityDescription.new(package).activity_descriptors
+    def activity_descriptors(activity_type)
+      ActivityDescription.new(package).activity_descriptors(activity_type)
     end
   end
 end

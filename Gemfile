@@ -70,7 +70,9 @@ if ENV["ORBF_DEV_MODE"]
   gem "hesabu", path: "../hesabu"
   gem "orbf-rules_engine", path: "../orbf-rules_engine"
 else
-  gem "hesabu"
+  # We're using both of them against the latest master. We should set
+  # them to versions when they become more stable
+  gem "hesabu", github: "BLSQ/hesabu"
   gem "orbf-rules_engine", github: "BLSQ/orbf-rules_engine"
 end
 
