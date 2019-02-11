@@ -23,6 +23,11 @@ module DataTest
       !!access_key && !!secret
     end
 
+    def self.can_run?
+      return false unless !!S3_REGION
+      new.can_run?
+    end
+
     def bucket
       s3.bucket(S3_BUCKET)
     end

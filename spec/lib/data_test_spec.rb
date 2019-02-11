@@ -9,7 +9,7 @@ def result(name)
   JSON.parse(File.open(File.join(DataTest::RESULTS_DIR,name)).read)
 end
 
-if DataTest::Fetcher.new.can_run?
+if DataTest::Fetcher.can_run?
   RSpec.describe "Data Test", data_test: true do
     before(:all) do
       if DataTest.has_artefacts?

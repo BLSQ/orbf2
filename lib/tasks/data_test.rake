@@ -61,8 +61,7 @@ namespace :data_test do
   end
 
   task check_upload_credentials: :environment do
-    uploader = DataTest::Uploader.new
-    unless uploader.can_run?
+    unless DataTest::Uploader.can_run?
       abort "You don't have S3 configured. Upload would fail so not even starting"
     end
   end
