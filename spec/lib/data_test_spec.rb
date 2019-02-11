@@ -9,8 +9,8 @@ def result(name)
   JSON.parse(File.open(File.join(DataTest::RESULTS_DIR,name)).read)
 end
 
-if DataTest::Fetcher.can_run?
-  RSpec.describe "Data Test", data_test: true do
+RSpec.describe "Data Test", data_test: true do
+  if DataTest::Fetcher.can_run?
     before(:all) do
       if DataTest.has_artefacts?
         puts "Artefacts found (no new download)"
@@ -69,19 +69,19 @@ if DataTest::Fetcher.can_run?
         end
       end
     end
-  end
-else
-  message = <<DESC
+  else
+    message = <<DESC
 No FETCHER_S3_ACCESS and FETCHER_S3_KEY found in ENV-variables.
 
 These are needed to download the artefacts to verify the results with,
 so now skipping.
 DESC
-  if ENV["CI"]
-    it 'has S3 configured' do
-      fail message
+    if ENV["CI"]
+      it 'has S3 configured' do
+        fail message
+      end
+    else
+      puts message
     end
-  else
-    puts message
   end
 end
