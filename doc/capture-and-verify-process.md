@@ -13,13 +13,46 @@ In order to do this we've identified several projects and org units that we want
 
 ## How to run?
 
-Capturing can be done by running:
+There are two components, verifying and capturing. With verifying I mean using the artefacts from a capture phase as input files and comparing the results. Since the input files are set in time, we should always have the same results.
 
-      DB_NAME=<production-copy> bundle exec rake data_test:capture_and_upload
+To gather the artefacts (we don't commit them), you'll need to set:
 
-Verifying can be run (and is run by CI) with:
+- FETCHER_S3_KEY
+- FETCHER_S3_ACCESS
 
-      bundle exec rake spec:data_test
+(Easiest is this to add them to config/application.yml)
+
+You can now run `bundle exec rake spec:data_test`, which will download the artefacts and the run the verification against them. (If you add `KEEP_ARTEFACTS=1` it will not redownload the artefacts on each run).
+
+## Capture phase
+
+With capture phase, I mean running against a copy of production and take new snapshots and new results. Since verification runs against those we need to make sure we're using a valid set of data.
+
+**Step 1**: `DB_NAME=<production-copy> bundle exec rake data_test:capture`
+
+This will talk to DHIS2 and output new files into a `tmp/new_artefacts` directory.
+
+**Step 2**: `bundle exec rake data_test:capture_compare`
+
+This will compare all the files in the `spec/artefacts` and the `tmp/artefacts`
+
+It will list both the input files and the result files.
+
+If the input files changed, there's a high likelyhood that the result files will have been changed to (if they haven't, it's safe to use the new input files as the default).
+
+If the result files have changed without the input files having changed, **pay attention** you'll now need to investigate whether this is caused by our code changing slightly or that the state of the system has caused this. When in doubt, don't overwrite the old files, they contain a state that we always want to support.
+
+It's always safe to add new cases.
+
+**Step 3**: Copy the files you want to change/add to `spec/artefacts`
+**Step 4**: `bundle exec rake data_test:upload`
+
+This will prompt you for confirmation about the previous steps, if you enter `y` it will zip the current state of the `spec/artefacts` directory and upload it to S3 and from then on will be used as the new artefacts.
+
+For uploading you'll need the following keys set:
+
+- ARCHIVAL_S3_ACCESS
+- ARCHIVAL_S3_KEY
 
 ## High level overview
 
