@@ -30,17 +30,34 @@ module DataTest
   # You'll need upload permissions on S3 to run the capture phase,
   # you'll need read-only permissions to run the fetcher. If you don't
   # have the read-only permissions, the spec will be skipped. (CI has them)
-  S3_BUCKET = "orbf-artefacts"
-  S3_REGION = "eu-central-1" # Frankfurt
+  S3_BUCKET = ENV["DATA_TEST_S3_BUCKET"]
+  S3_REGION = ENV["DATA_TEST_S3_REGION"] # Frankfurt
   ARTEFACT_DIR = Rails.root.join("spec", "artefacts")
   RESULTS_DIR = Rails.root.join("tmp", "verifier")
+  CONFIG_PATH = Rails.root.join("config", "data_test.json")
 
   class NoS3Configured < StandardError; end
+
+  def self.can_verify?
+    has_artefacts? && has_config_file?
+  end
+
+  def self.can_capture?
+    has_config_file?
+  end
+
+  def self.keep_artefacts?
+    ENV["KEEP_ARTEFACTS"]
+  end
 
   # I think has_artefacts is more clear than artefacts.
   # rubocop:disable Naming/PredicateName
   def self.has_artefacts?
     Dir.glob(File.join(ARTEFACT_DIR, "*")).grep(/yml|json/).any?
+  end
+
+  def self.has_config_file?
+    File.exist? CONFIG_PATH
   end
   # rubocop:enable Naming/PredicateName
 
@@ -55,7 +72,7 @@ module DataTest
   end
 
   def self.all_cases
-    test_json  = JSON.parse(File.read(Rails.root.join("config", "data_test.json")))
+    test_json  = JSON.parse(File.read(CONFIG_PATH))
     test_cases = test_json.each_with_object({}) do |(name, cases), result|
       cases.each do |v|
         subject = DataTest::Subject.new(name, v)

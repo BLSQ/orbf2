@@ -25,7 +25,7 @@ if DataTest::Fetcher.can_run?
 
     after(:all) do
       puts "Clearing artefacts"
-      DataTest.clear_artefacts!
+      DataTest.clear_artefacts! unless DataTest.keep_artefacts?
     end
 
     DataTest.all_cases.each do |name, subject|

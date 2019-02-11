@@ -32,6 +32,15 @@ module DataTest
       s3.bucket(S3_BUCKET)
     end
 
+    def fetch_config_file
+      if DataTest.has_config_file?
+        puts "  -> Config file found"
+      else
+        puts "  -> Downloading config file"
+        get("data_test.json", CONFIG_PATH)
+      end
+    end
+
     def fetch_all_artefacts
       get_and_extract_zip(ARTEFACT_DIR)
     end
@@ -44,13 +53,14 @@ module DataTest
     end
 
     def get_and_extract_zip(output_directory, name: "latest.zip")
-      DataTest.clear_artefacts!
       output_file = Tempfile.new("latest.zip")
+      puts "  -> Fetching #{name}"
       get(name, output_file.path)
+      puts "  -> Extracting to #{output_directory}"
       Zip::File.open(output_file.path) do |zip_file|
         zip_file.each do |entry|
           output_path = File.join(output_directory, entry.name)
-          puts "  -> Extracting #{entry.name}"
+          File.unlink(output_path) if File.exist?(output_path)
           entry.extract(output_path)
         end
       end

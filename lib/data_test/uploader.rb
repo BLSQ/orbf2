@@ -32,6 +32,10 @@ module DataTest
       s3.bucket(S3_BUCKET)
     end
 
+    def store_config_file
+      store(CONFIG_PATH, name: "data_test.json")
+    end
+
     def store_all_artefacts
       all_artefacts = Pathname.new(ARTEFACT_DIR).join("*").to_s
       all_paths = Dir.glob(all_artefacts).grep(/yml|json/)
@@ -57,7 +61,7 @@ module DataTest
           zipfile.add(path.basename, path.to_s)
         end
       end
-      puts "  -> Uploading"
+      puts "  -> Uploading #{name}"
       store(zip_file.path, name: name)
       zip_file.unlink
     end

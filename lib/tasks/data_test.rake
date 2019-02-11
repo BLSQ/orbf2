@@ -80,6 +80,7 @@ namespace :data_test do
     puts "=> Uploading to S3+\n"
     uploader = DataTest::Uploader.new
     begin
+      uploader.store_config_file
       uploader.store_all_artefacts
     rescue DataTest::NoS3Configured => e
       abort "S3 was not configured properly: #{e}"
@@ -91,6 +92,27 @@ namespace :data_test do
     fetcher = DataTest::Fetcher.new
     begin
       fetcher.fetch_all_artefacts
+    rescue DataTest::NoS3Configured => e
+      abort "S3 was not configured properly: #{e}"
+    end
+  end
+
+  desc "Download config file"
+  task download_config: :environment do
+    fetcher = DataTest::Fetcher.new
+    begin
+      fetcher.fetch_config_file
+    rescue DataTest::NoS3Configured => e
+      abort "S3 was not configured properly: #{e}"
+    end
+  end
+
+  desc "Upload config file"
+  task upload_config: :environment do
+    uploader = DataTest::Uploader.new
+    begin
+      puts "=> Uploading to S3"
+      uploader.store_config_file
     rescue DataTest::NoS3Configured => e
       abort "S3 was not configured properly: #{e}"
     end
