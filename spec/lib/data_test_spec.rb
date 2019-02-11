@@ -71,10 +71,17 @@ if DataTest::Fetcher.can_run?
     end
   end
 else
-  puts <<DESC
+  message = <<DESC
 No FETCHER_S3_ACCESS and FETCHER_S3_KEY found in ENV-variables.
 
 These are needed to download the artefacts to verify the results with,
 so now skipping.
 DESC
+  if ENV["CI"]
+    it 'has S3 configured' do
+      fail message
+    end
+  else
+    puts message
+  end
 end
