@@ -3,11 +3,40 @@
 require "shellwords"
 require_relative "../data_test"
 
+def ask_for_confirmation(message)
+  puts message
+  puts "Are you sure? y/N"
+  input = STDIN.gets.chomp
+  input == "y"
+end
+
 namespace :data_test do
   desc "Clear all artefacts"
   task :clear_artefacts do
     puts "=> Clearing existing artefacts"
     DataTest.clear_artefacts!
+  end
+
+  desc "Compare your capture against known artefacts"
+  task compare_capture: :environment do
+    new_directory = Rails.root.join("tmp/new_artefacts")
+
+    test_cases = DataTest.all_cases
+    selected_test_case_name = ENV["test_case"] || "all"
+    if selected_test_case_name != "all"
+      test_cases = test_cases.select { |(name, _cases)| name =~ /#{selected_test_case_name}/ }
+    end
+
+    test_cases.each.with_index do |(test_case_name, subject), i|
+      begin
+        puts "+ #{i + 1}/#{test_cases.keys.count} #{subject.project_name} - #{subject.orgunit_ext_id}"
+        DataTest::Compare.new(subject, new_directory).call
+      rescue StandardError => error
+        puts "  -> FAILED"
+        failures[test_case_name] = error
+        raise error if ENV["FAIL_FAST"]
+      end
+    end
   end
 
   desc "Run simulation and capture all artefacts"
@@ -69,24 +98,25 @@ namespace :data_test do
     end
   end
 
-  task capture_and_upload: %i[check_upload_credentials clear_artefacts capture upload environment] do
-    # Thanks to the magic of rake, it will now:
-    # - check if you can upload
-    # - clear any existing artefacts
-    # - generate new artefacts
-    # - zips them and uploads them to S3
-    puts "All done. `latest.zip` will now be available on S3"
-  end
-
   desc "Upload artefacts"
   task upload: :environment do
-    puts "=> Uploading to S3+\n"
-    uploader = DataTest::Uploader.new
-    begin
-      uploader.store_config_file
-      uploader.store_all_artefacts
-    rescue DataTest::NoS3Configured => e
-      abort "S3 was not configured properly: #{e}"
+    message = <<STR
+Did you run?
+
+1. bundle exec rake data_test:capture
+2. bundle exec rake data_test:compare_capture
+3. Verified these results?
+4. Copied the files to the spec/artefacts folder? (these will be uploaded)
+STR
+    if ask_for_confirmation(message)
+      puts "=> Uploading to S3+\n"
+      uploader = DataTest::Uploader.new
+      begin
+        uploader.store_config_file
+        uploader.store_all_artefacts
+      rescue DataTest::NoS3Configured => e
+        abort "S3 was not configured properly: #{e}"
+      end
     end
   end
 
