@@ -81,9 +81,9 @@ module DataTest
     end
 
     def check_for_sensitive_data!(password)
-      result = `grep #{Shellwords.escape(password)} #{ARTEFACT_DIR}/*`
+      result = `grep -F #{Shellwords.escape(password)} #{ARTEFACT_DIR}/*`
       abort "Passwords leaked! => \n#{result}" unless result.empty?
-      result = `grep #{CGI.escape(password)} #{ARTEFACT_DIR}/*`
+      result = `grep -F #{CGI.escape(password)} #{ARTEFACT_DIR}/*`
       abort "Passwords leaked! => \n#{result}" unless result.empty?
     end
 
