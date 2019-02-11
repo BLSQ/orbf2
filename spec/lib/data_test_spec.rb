@@ -41,7 +41,7 @@ if DataTest::Fetcher.new.can_run?
           result = JsonDiff.diff(original, new, include_was: true)
           unless result.empty?
             puts "  + original: #{original.keys.count} vs new: #{new.keys.count}"
-            puts "  + diff (first 10): #{result.first(10)}"
+            puts "  + diff (first 10): #{result.sample(10)}"
           end
           expect(result).to be_empty
         end
@@ -52,7 +52,7 @@ if DataTest::Fetcher.new.can_run?
           result = JsonDiff.diff(original, new, include_was: true)
           unless result.empty?
             puts "  + original: #{original.keys.count} vs new: #{new.keys.count}"
-            puts "  + diff (first 10): #{result.first(10)}"
+            puts "  + diff (first 10): #{result.sample(10)}"
           end
           expect(result).to be_empty
         end
@@ -63,7 +63,7 @@ if DataTest::Fetcher.new.can_run?
           diff = HashDiff.diff(original, new, use_lcs: false)
           unless diff.empty?
             puts "  + original: #{original.count} vs new: #{new.count}"
-            puts "  + diff (first 10): #{diff.first(10)}"
+            puts "  + diff (first 10): #{diff.sample(10)}"
           end
           expect(diff).to be_empty
         end
