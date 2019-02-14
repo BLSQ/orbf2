@@ -9,7 +9,7 @@ module Invoicing
     end
 
     def profile_id
-      invoicing_request.entity
+      invoicing_request&.entity
     end
 
     def call
@@ -63,18 +63,12 @@ module Invoicing
         end
     end
 
-    def our_publish
-      url = project.dhis2_connection.instance_variable_get(:@base_url)
-      client = ParallelDhis2.new(project.dhis2_connection)
-      client.post_data_value_sets(@dhis2_export_values)
-    end
-
     def publish_to_dhis2
       Rails.logger.info "about to publish #{@dhis2_export_values.size} values to dhis2"
       return if @dhis2_export_values.empty?
 
-      if ENV["USE_HYDRA"]
-        status = our_publish
+      if Flipper[:use_parallel_publishing].enabled?(project.project_anchor)
+        status = parallel_publish_to_dhis2
       else
         status = project.dhis2_connection.data_value_sets.create(@dhis2_export_values)
       end
@@ -84,10 +78,16 @@ module Invoicing
       project.project_anchor.dhis2_logs.create(sent: @dhis2_export_values, status: status.raw_status)
     end
 
+    def parallel_publish_to_dhis2
+      url = project.dhis2_connection.instance_variable_get(:@base_url)
+      client = ParallelDhis2.new(project.dhis2_connection)
+      client.post_data_value_sets(@dhis2_export_values)
+    end
+
     def data_compound
       @datacompound ||= project.project_anchor
                                .nearest_data_compound_for(
-                                 invoicing_request.end_date_as_date
+                                 invoicing_request&.end_date_as_date
                                )
       @datacompound ||= DataCompound.from(project) if options.allow_fresh_dhis2_data?
 
@@ -98,7 +98,7 @@ module Invoicing
       @project ||= if options.force_project_id
                      project_anchor.projects.fully_loaded.find(options.force_project_id)
                    else
-                     project_anchor.projects.fully_loaded.for_date(invoicing_request.end_date_as_date) ||
+                     project_anchor.projects.fully_loaded.for_date(invoicing_request&.end_date_as_date) ||
                        project_anchor.latest_draft
                    end
     end

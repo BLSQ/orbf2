@@ -174,6 +174,15 @@ GEM
       path_expander (~> 1.0)
       ruby_parser (~> 3.0)
       sexp_processor (~> 4.0)
+    flipper (0.16.1)
+    flipper-active_record (0.16.1)
+      activerecord (>= 3.2, < 6)
+      flipper (~> 0.16.1)
+    flipper-ui (0.16.1)
+      erubis (~> 2.7.0)
+      flipper (~> 0.16.1)
+      rack (>= 1.4, < 3)
+      rack-protection (>= 1.5.3, < 2.1.0)
     font-awesome-rails (4.7.0.4)
       railties (>= 3.2, < 6.0)
     font-awesome-sass (4.7.0)
@@ -518,6 +527,9 @@ DEPENDENCIES
   fast_jsonapi
   figaro
   flamegraph
+  flipper (~> 0.16.1)
+  flipper-active_record (~> 0.16.1)
+  flipper-ui (~> 0.16.1)
   font-awesome-sass (~> 4.7.0)
   hashdiff
   heroku-deflater
