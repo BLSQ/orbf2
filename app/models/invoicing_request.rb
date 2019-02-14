@@ -2,9 +2,15 @@ class InvoicingRequest
   include ActiveModel::Model
   include ActiveModel::Validations
 
-  attr_accessor :entity, :year, :quarter, :project, :invoices, :mock_values, :engine_version, :with_details
+  attr_accessor :entity, :year, :quarter, :project, :invoices, :mock_values, :engine_version, :with_details, :mocked_data
 
   validates :entity, presence: true
+
+  def initialize(*)
+    super
+    @mocked_data ||= [] if mock_values?
+  end
+
 
   def start_date_as_date
     year_quarter.start_date
