@@ -18,14 +18,19 @@ RSpec.describe "Data Test", data_test: true do
         puts "Downloading artefacts"
         WebMock.allow_net_connect!
         fetcher = DataTest::Fetcher.new
+        fetcher.fetch_config_file
         fetcher.fetch_all_artefacts
         WebMock.disable_net_connect!
       end
     end
 
     after(:all) do
-      puts "Clearing artefacts"
-      DataTest.clear_artefacts! unless DataTest.keep_artefacts?
+      unless DataTest.keep_artefacts?
+        puts "Removing config file"
+        DataTest.clear_config_file!
+        puts "Clearing artefacts"
+        DataTest.clear_artefacts!
+      end
     end
 
     DataTest.all_cases.each do |name, subject|

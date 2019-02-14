@@ -62,6 +62,11 @@ module DataTest
   end
   # rubocop:enable Naming/PredicateName
 
+  def self.clear_config_file!
+    return unless has_config_file?
+    File.unlink(CONFIG_PATH)
+  end
+
   def self.clear_artefacts!
     artefact_directory = ARTEFACT_DIR
     Dir.foreach(artefact_directory) do |f|
@@ -73,6 +78,7 @@ module DataTest
   end
 
   def self.all_cases
+    return {} unless has_config_file?
     test_json  = JSON.parse(File.read(CONFIG_PATH))
     test_cases = test_json.each_with_object({}) do |(name, cases), result|
       cases.each do |v|
