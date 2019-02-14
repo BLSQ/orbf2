@@ -120,7 +120,6 @@ class ParallelDhis2
       @client = dhis2_client
     end
 
-    # rubocop:disable Rails/Delegate
     def user
       base_uri.user
     end
@@ -128,7 +127,6 @@ class ParallelDhis2
     def password
       base_uri.password
     end
-    # rubocop:enable Rails/Delegate
 
     def url
       uri = base_uri.dup
