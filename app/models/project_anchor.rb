@@ -139,4 +139,8 @@ class ProjectAnchor < ApplicationRecord
     indicators = snapshots.find(&:kind_indicators?)
     new_data_compound(data_elements, data_element_groups, indicators)
   end
+
+  def flipper_id
+    "ProjectAnchor:#{id}"
+  end
 end

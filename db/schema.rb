@@ -10,309 +10,325 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181204093346) do
+ActiveRecord::Schema.define(version: 2019_02_14_095526) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "uuid-ossp"
 
-  create_table "activities", force: :cascade do |t|
-    t.string   "name",                                             null: false
-    t.integer  "project_id",                                       null: false
-    t.uuid     "stable_id",  default: -> { "uuid_generate_v4()" }, null: false
-    t.datetime "created_at",                                       null: false
-    t.datetime "updated_at",                                       null: false
-    t.string   "code"
-    t.string   "short_name"
-    t.index ["name", "project_id"], name: "index_activities_on_name_and_project_id", unique: true, using: :btree
-    t.index ["project_id", "code"], name: "index_activities_on_project_id_and_code", unique: true, using: :btree
-    t.index ["project_id"], name: "index_activities_on_project_id", using: :btree
+  create_table "activities", id: :serial, force: :cascade do |t|
+    t.string "name", null: false
+    t.integer "project_id", null: false
+    t.uuid "stable_id", default: -> { "uuid_generate_v4()" }, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "code"
+    t.string "short_name"
+    t.index ["name", "project_id"], name: "index_activities_on_name_and_project_id", unique: true
+    t.index ["project_id", "code"], name: "index_activities_on_project_id_and_code", unique: true
+    t.index ["project_id"], name: "index_activities_on_project_id"
   end
 
-  create_table "activity_packages", force: :cascade do |t|
-    t.integer  "activity_id",                                       null: false
-    t.integer  "package_id",                                        null: false
-    t.uuid     "stable_id",   default: -> { "uuid_generate_v4()" }, null: false
-    t.datetime "created_at",                                        null: false
-    t.datetime "updated_at",                                        null: false
-    t.index ["activity_id"], name: "index_activity_packages_on_activity_id", using: :btree
-    t.index ["package_id", "activity_id"], name: "index_activity_packages_on_package_id_and_activity_id", unique: true, using: :btree
-    t.index ["package_id"], name: "index_activity_packages_on_package_id", using: :btree
+  create_table "activity_packages", id: :serial, force: :cascade do |t|
+    t.integer "activity_id", null: false
+    t.integer "package_id", null: false
+    t.uuid "stable_id", default: -> { "uuid_generate_v4()" }, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["activity_id"], name: "index_activity_packages_on_activity_id"
+    t.index ["package_id", "activity_id"], name: "index_activity_packages_on_package_id_and_activity_id", unique: true
+    t.index ["package_id"], name: "index_activity_packages_on_package_id"
   end
 
-  create_table "activity_states", force: :cascade do |t|
-    t.string   "external_reference"
-    t.string   "name",                                                     null: false
-    t.integer  "state_id",                                                 null: false
-    t.integer  "activity_id",                                              null: false
-    t.uuid     "stable_id",          default: -> { "uuid_generate_v4()" }, null: false
-    t.datetime "created_at",                                               null: false
-    t.datetime "updated_at",                                               null: false
-    t.string   "kind",               default: "data_element",              null: false
-    t.string   "formula"
-    t.index ["activity_id"], name: "index_activity_states_on_activity_id", using: :btree
-    t.index ["external_reference", "activity_id"], name: "index_activity_states_on_external_reference_and_activity_id", unique: true, using: :btree
-    t.index ["state_id"], name: "index_activity_states_on_state_id", using: :btree
+  create_table "activity_states", id: :serial, force: :cascade do |t|
+    t.string "external_reference"
+    t.string "name", null: false
+    t.integer "state_id", null: false
+    t.integer "activity_id", null: false
+    t.uuid "stable_id", default: -> { "uuid_generate_v4()" }, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "kind", default: "data_element", null: false
+    t.string "formula"
+    t.index ["activity_id"], name: "index_activity_states_on_activity_id"
+    t.index ["external_reference", "activity_id"], name: "index_activity_states_on_external_reference_and_activity_id", unique: true
+    t.index ["state_id"], name: "index_activity_states_on_state_id"
   end
 
-  create_table "decision_tables", force: :cascade do |t|
+  create_table "decision_tables", id: :serial, force: :cascade do |t|
     t.integer "rule_id"
-    t.text    "content"
-    t.index ["rule_id"], name: "index_decision_tables_on_rule_id", using: :btree
+    t.text "content"
+    t.index ["rule_id"], name: "index_decision_tables_on_rule_id"
   end
 
-  create_table "dhis2_logs", force: :cascade do |t|
-    t.jsonb    "sent"
-    t.jsonb    "status"
-    t.integer  "project_anchor_id"
-    t.datetime "created_at",        null: false
-    t.datetime "updated_at",        null: false
-    t.index ["project_anchor_id"], name: "index_dhis2_logs_on_project_anchor_id", using: :btree
+  create_table "dhis2_logs", id: :serial, force: :cascade do |t|
+    t.jsonb "sent"
+    t.jsonb "status"
+    t.integer "project_anchor_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_anchor_id"], name: "index_dhis2_logs_on_project_anchor_id"
   end
 
-  create_table "dhis2_snapshot_changes", force: :cascade do |t|
-    t.string   "dhis2_id",          null: false
-    t.integer  "dhis2_snapshot_id"
-    t.jsonb    "values_before"
-    t.jsonb    "values_after"
-    t.string   "whodunnit"
-    t.datetime "created_at",        null: false
-    t.datetime "updated_at",        null: false
-    t.index ["dhis2_snapshot_id"], name: "index_dhis2_snapshot_changes_on_dhis2_snapshot_id", using: :btree
+  create_table "dhis2_snapshot_changes", id: :serial, force: :cascade do |t|
+    t.string "dhis2_id", null: false
+    t.integer "dhis2_snapshot_id"
+    t.jsonb "values_before"
+    t.jsonb "values_after"
+    t.string "whodunnit"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["dhis2_snapshot_id"], name: "index_dhis2_snapshot_changes_on_dhis2_snapshot_id"
   end
 
-  create_table "dhis2_snapshots", force: :cascade do |t|
-    t.string   "kind",              null: false
-    t.jsonb    "content",           null: false
-    t.integer  "project_anchor_id"
-    t.string   "dhis2_version",     null: false
-    t.integer  "year",              null: false
-    t.integer  "month",             null: false
-    t.string   "job_id",            null: false
-    t.datetime "created_at",        null: false
-    t.datetime "updated_at",        null: false
-    t.index ["project_anchor_id"], name: "index_dhis2_snapshots_on_project_anchor_id", using: :btree
+  create_table "dhis2_snapshots", id: :serial, force: :cascade do |t|
+    t.string "kind", null: false
+    t.jsonb "content", null: false
+    t.integer "project_anchor_id"
+    t.string "dhis2_version", null: false
+    t.integer "year", null: false
+    t.integer "month", null: false
+    t.string "job_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_anchor_id"], name: "index_dhis2_snapshots_on_project_anchor_id"
   end
 
-  create_table "entity_groups", force: :cascade do |t|
-    t.string   "name"
-    t.string   "external_reference"
-    t.integer  "project_id"
-    t.datetime "created_at",                                      null: false
-    t.datetime "updated_at",                                      null: false
-    t.boolean  "limit_snaphot_to_active_regions", default: false, null: false
-    t.index ["project_id"], name: "index_entity_groups_on_project_id", using: :btree
+  create_table "entity_groups", id: :serial, force: :cascade do |t|
+    t.string "name"
+    t.string "external_reference"
+    t.integer "project_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "limit_snaphot_to_active_regions", default: false, null: false
+    t.index ["project_id"], name: "index_entity_groups_on_project_id"
   end
 
-  create_table "formula_mappings", force: :cascade do |t|
-    t.integer "formula_id",         null: false
+  create_table "flipper_features", force: :cascade do |t|
+    t.string "key", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["key"], name: "index_flipper_features_on_key", unique: true
+  end
+
+  create_table "flipper_gates", force: :cascade do |t|
+    t.string "feature_key", null: false
+    t.string "key", null: false
+    t.string "value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["feature_key", "key", "value"], name: "index_flipper_gates_on_feature_key_and_key_and_value", unique: true
+  end
+
+  create_table "formula_mappings", id: :serial, force: :cascade do |t|
+    t.integer "formula_id", null: false
     t.integer "activity_id"
-    t.string  "external_reference", null: false
-    t.string  "kind",               null: false
-    t.index ["activity_id"], name: "index_formula_mappings_on_activity_id", using: :btree
-    t.index ["formula_id"], name: "index_formula_mappings_on_formula_id", using: :btree
+    t.string "external_reference", null: false
+    t.string "kind", null: false
+    t.index ["activity_id"], name: "index_formula_mappings_on_activity_id"
+    t.index ["formula_id"], name: "index_formula_mappings_on_formula_id"
   end
 
-  create_table "formulas", force: :cascade do |t|
-    t.string   "code",                    null: false
-    t.string   "description",             null: false
-    t.text     "expression",              null: false
-    t.integer  "rule_id"
-    t.datetime "created_at",              null: false
-    t.datetime "updated_at",              null: false
-    t.string   "frequency"
-    t.string   "short_name"
-    t.string   "exportable_formula_code"
-    t.index ["rule_id"], name: "index_formulas_on_rule_id", using: :btree
+  create_table "formulas", id: :serial, force: :cascade do |t|
+    t.string "code", null: false
+    t.string "description", null: false
+    t.text "expression", null: false
+    t.integer "rule_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "frequency"
+    t.string "short_name"
+    t.string "exportable_formula_code"
+    t.index ["rule_id"], name: "index_formulas_on_rule_id"
   end
 
-  create_table "invoicing_jobs", force: :cascade do |t|
-    t.integer  "project_anchor_id", null: false
-    t.string   "orgunit_ref",       null: false
-    t.string   "dhis2_period",      null: false
-    t.string   "user_ref"
+  create_table "invoicing_jobs", id: :serial, force: :cascade do |t|
+    t.integer "project_anchor_id", null: false
+    t.string "orgunit_ref", null: false
+    t.string "dhis2_period", null: false
+    t.string "user_ref"
     t.datetime "processed_at"
     t.datetime "errored_at"
-    t.string   "last_error"
-    t.integer  "duration_ms"
-    t.string   "status"
-    t.string   "sidekiq_job_ref"
-    t.datetime "created_at",        null: false
-    t.datetime "updated_at",        null: false
-    t.index ["project_anchor_id", "orgunit_ref", "dhis2_period"], name: "index_invoicing_jobs_on_anchor_ou_period", unique: true, using: :btree
-    t.index ["project_anchor_id"], name: "index_invoicing_jobs_on_project_anchor_id", using: :btree
+    t.string "last_error"
+    t.integer "duration_ms"
+    t.string "status"
+    t.string "sidekiq_job_ref"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_anchor_id", "orgunit_ref", "dhis2_period"], name: "index_invoicing_jobs_on_anchor_ou_period", unique: true
+    t.index ["project_anchor_id"], name: "index_invoicing_jobs_on_project_anchor_id"
   end
 
-  create_table "package_entity_groups", force: :cascade do |t|
-    t.string   "name"
-    t.integer  "package_id"
-    t.string   "organisation_unit_group_ext_ref"
-    t.datetime "created_at",                                       null: false
-    t.datetime "updated_at",                                       null: false
-    t.string   "kind",                            default: "main", null: false
-    t.index ["package_id"], name: "index_package_entity_groups_on_package_id", using: :btree
+  create_table "package_entity_groups", id: :serial, force: :cascade do |t|
+    t.string "name"
+    t.integer "package_id"
+    t.string "organisation_unit_group_ext_ref"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "kind", default: "main", null: false
+    t.index ["package_id"], name: "index_package_entity_groups_on_package_id"
   end
 
-  create_table "package_payment_rules", force: :cascade do |t|
-    t.integer  "package_id",      null: false
-    t.integer  "payment_rule_id", null: false
-    t.datetime "created_at",      null: false
-    t.datetime "updated_at",      null: false
-    t.index ["package_id"], name: "index_package_payment_rules_on_package_id", using: :btree
-    t.index ["payment_rule_id"], name: "index_package_payment_rules_on_payment_rule_id", using: :btree
+  create_table "package_payment_rules", id: :serial, force: :cascade do |t|
+    t.integer "package_id", null: false
+    t.integer "payment_rule_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["package_id"], name: "index_package_payment_rules_on_package_id"
+    t.index ["payment_rule_id"], name: "index_package_payment_rules_on_payment_rule_id"
   end
 
-  create_table "package_states", force: :cascade do |t|
-    t.integer  "package_id"
-    t.integer  "state_id"
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
-    t.string   "ds_external_reference"
-    t.string   "deg_external_reference"
-    t.string   "de_external_reference"
-    t.index ["package_id", "state_id"], name: "index_package_states_on_package_id_and_state_id", unique: true, using: :btree
-    t.index ["package_id"], name: "index_package_states_on_package_id", using: :btree
-    t.index ["state_id", "package_id"], name: "index_package_states_on_state_id_and_package_id", unique: true, using: :btree
-    t.index ["state_id"], name: "index_package_states_on_state_id", using: :btree
+  create_table "package_states", id: :serial, force: :cascade do |t|
+    t.integer "package_id"
+    t.integer "state_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "ds_external_reference"
+    t.string "deg_external_reference"
+    t.string "de_external_reference"
+    t.index ["package_id", "state_id"], name: "index_package_states_on_package_id_and_state_id", unique: true
+    t.index ["package_id"], name: "index_package_states_on_package_id"
+    t.index ["state_id", "package_id"], name: "index_package_states_on_state_id_and_package_id", unique: true
+    t.index ["state_id"], name: "index_package_states_on_state_id"
   end
 
-  create_table "packages", force: :cascade do |t|
-    t.string   "name",                                                             null: false
-    t.string   "data_element_group_ext_ref",                                       null: false
-    t.string   "frequency",                                                        null: false
-    t.integer  "project_id"
-    t.datetime "created_at",                                                       null: false
-    t.datetime "updated_at",                                                       null: false
-    t.uuid     "stable_id",                  default: -> { "uuid_generate_v4()" }, null: false
-    t.string   "kind",                       default: "single"
-    t.string   "ogs_reference"
-    t.string   "groupsets_ext_refs",         default: [],                                       array: true
-    t.index ["project_id"], name: "index_packages_on_project_id", using: :btree
+  create_table "packages", id: :serial, force: :cascade do |t|
+    t.string "name", null: false
+    t.string "data_element_group_ext_ref", null: false
+    t.string "frequency", null: false
+    t.integer "project_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "stable_id", default: -> { "uuid_generate_v4()" }, null: false
+    t.string "kind", default: "single"
+    t.string "ogs_reference"
+    t.string "groupsets_ext_refs", default: [], array: true
+    t.index ["project_id"], name: "index_packages_on_project_id"
   end
 
-  create_table "payment_rule_datasets", force: :cascade do |t|
-    t.integer  "payment_rule_id"
-    t.string   "frequency"
-    t.string   "external_reference"
+  create_table "payment_rule_datasets", id: :serial, force: :cascade do |t|
+    t.integer "payment_rule_id"
+    t.string "frequency"
+    t.string "external_reference"
     t.datetime "last_synched_at"
-    t.string   "last_error"
-    t.boolean  "desynchronized"
-    t.datetime "created_at",         null: false
-    t.datetime "updated_at",         null: false
-    t.index ["payment_rule_id", "frequency"], name: "index_payment_rule_datasets_on_payment_rule_id_and_frequency", unique: true, using: :btree
-    t.index ["payment_rule_id"], name: "index_payment_rule_datasets_on_payment_rule_id", using: :btree
-  end
-
-  create_table "payment_rules", force: :cascade do |t|
-    t.integer  "project_id",                       null: false
-    t.datetime "created_at",                       null: false
-    t.datetime "updated_at",                       null: false
-    t.string   "frequency",  default: "quarterly", null: false
-    t.index ["project_id"], name: "index_payment_rules_on_project_id", using: :btree
-  end
-
-  create_table "programs", force: :cascade do |t|
-    t.string   "code",       null: false
+    t.string "last_error"
+    t.boolean "desynchronized"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["code"], name: "index_programs_on_code", unique: true, using: :btree
+    t.index ["payment_rule_id", "frequency"], name: "index_payment_rule_datasets_on_payment_rule_id_and_frequency", unique: true
+    t.index ["payment_rule_id"], name: "index_payment_rule_datasets_on_payment_rule_id"
   end
 
-  create_table "project_anchors", force: :cascade do |t|
-    t.integer  "program_id", null: false
+  create_table "payment_rules", id: :serial, force: :cascade do |t|
+    t.integer "project_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string   "token"
-    t.index ["program_id"], name: "index_project_anchors_on_program_id", using: :btree
+    t.string "frequency", default: "quarterly", null: false
+    t.index ["project_id"], name: "index_payment_rules_on_project_id"
   end
 
-  create_table "projects", force: :cascade do |t|
-    t.string   "name",                                        null: false
-    t.string   "dhis2_url",                                   null: false
-    t.string   "user"
-    t.string   "password"
-    t.boolean  "bypass_ssl",            default: false
-    t.boolean  "boolean",               default: false
-    t.datetime "created_at",                                  null: false
-    t.datetime "updated_at",                                  null: false
-    t.string   "status",                default: "draft",     null: false
+  create_table "programs", id: :serial, force: :cascade do |t|
+    t.string "code", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_programs_on_code", unique: true
+  end
+
+  create_table "project_anchors", id: :serial, force: :cascade do |t|
+    t.integer "program_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "token"
+    t.index ["program_id"], name: "index_project_anchors_on_program_id"
+  end
+
+  create_table "projects", id: :serial, force: :cascade do |t|
+    t.string "name", null: false
+    t.string "dhis2_url", null: false
+    t.string "user"
+    t.string "password"
+    t.boolean "bypass_ssl", default: false
+    t.boolean "boolean", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "status", default: "draft", null: false
     t.datetime "publish_date"
-    t.integer  "project_anchor_id"
-    t.integer  "original_id"
-    t.string   "cycle",                 default: "quarterly", null: false
-    t.integer  "engine_version",        default: 1,           null: false
-    t.string   "qualifier"
-    t.string   "default_coc_reference"
-    t.string   "default_aoc_reference"
-    t.index ["project_anchor_id"], name: "index_projects_on_project_anchor_id", using: :btree
+    t.integer "project_anchor_id"
+    t.integer "original_id"
+    t.string "cycle", default: "quarterly", null: false
+    t.integer "engine_version", default: 1, null: false
+    t.string "qualifier"
+    t.string "default_coc_reference"
+    t.string "default_aoc_reference"
+    t.index ["project_anchor_id"], name: "index_projects_on_project_anchor_id"
   end
 
-  create_table "rules", force: :cascade do |t|
-    t.string   "name",                                                  null: false
-    t.string   "kind",                                                  null: false
-    t.integer  "package_id"
-    t.datetime "created_at",                                            null: false
-    t.datetime "updated_at",                                            null: false
-    t.integer  "payment_rule_id"
-    t.uuid     "stable_id",       default: -> { "uuid_generate_v4()" }, null: false
-    t.index ["package_id"], name: "index_rules_on_package_id", using: :btree
-    t.index ["payment_rule_id"], name: "index_rules_on_payment_rule_id", using: :btree
+  create_table "rules", id: :serial, force: :cascade do |t|
+    t.string "name", null: false
+    t.string "kind", null: false
+    t.integer "package_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "payment_rule_id"
+    t.uuid "stable_id", default: -> { "uuid_generate_v4()" }, null: false
+    t.index ["package_id"], name: "index_rules_on_package_id"
+    t.index ["payment_rule_id"], name: "index_rules_on_payment_rule_id"
   end
 
-  create_table "states", force: :cascade do |t|
-    t.string   "name",                            null: false
-    t.datetime "created_at",                      null: false
-    t.datetime "updated_at",                      null: false
-    t.string   "level",      default: "activity", null: false
-    t.integer  "project_id",                      null: false
-    t.string   "short_name"
-    t.index ["project_id", "name"], name: "index_states_on_project_id_and_name", unique: true, using: :btree
-    t.index ["project_id"], name: "index_states_on_project_id", using: :btree
+  create_table "states", id: :serial, force: :cascade do |t|
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "level", default: "activity", null: false
+    t.integer "project_id", null: false
+    t.string "short_name"
+    t.index ["project_id", "name"], name: "index_states_on_project_id_and_name", unique: true
+    t.index ["project_id"], name: "index_states_on_project_id"
   end
 
-  create_table "users", force: :cascade do |t|
-    t.string   "email",                  default: "", null: false
-    t.string   "encrypted_password",     default: "", null: false
-    t.string   "reset_password_token"
+  create_table "users", id: :serial, force: :cascade do |t|
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",          default: 0,  null: false
+    t.integer "sign_in_count", default: 0, null: false
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
-    t.inet     "current_sign_in_ip"
-    t.inet     "last_sign_in_ip"
-    t.datetime "created_at",                          null: false
-    t.datetime "updated_at",                          null: false
-    t.integer  "program_id"
-    t.index ["email"], name: "index_users_on_email", unique: true, using: :btree
-    t.index ["program_id"], name: "index_users_on_program_id", using: :btree
-    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
+    t.inet "current_sign_in_ip"
+    t.inet "last_sign_in_ip"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "program_id"
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["program_id"], name: "index_users_on_program_id"
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
-  create_table "version_associations", force: :cascade do |t|
+  create_table "version_associations", id: :serial, force: :cascade do |t|
     t.integer "version_id"
-    t.string  "foreign_key_name", null: false
+    t.string "foreign_key_name", null: false
     t.integer "foreign_key_id"
-    t.index ["foreign_key_name", "foreign_key_id"], name: "index_version_associations_on_foreign_key", using: :btree
-    t.index ["version_id"], name: "index_version_associations_on_version_id", using: :btree
+    t.index ["foreign_key_name", "foreign_key_id"], name: "index_version_associations_on_foreign_key"
+    t.index ["version_id"], name: "index_version_associations_on_version_id"
   end
 
-  create_table "versions", force: :cascade do |t|
-    t.string   "item_type",      null: false
-    t.integer  "item_id",        null: false
-    t.string   "event",          null: false
-    t.string   "whodunnit"
-    t.text     "old_object"
+  create_table "versions", id: :serial, force: :cascade do |t|
+    t.string "item_type", null: false
+    t.integer "item_id", null: false
+    t.string "event", null: false
+    t.string "whodunnit"
+    t.text "old_object"
     t.datetime "created_at"
-    t.integer  "transaction_id"
-    t.jsonb    "object"
-    t.integer  "program_id"
-    t.integer  "project_id"
-    t.jsonb    "object_changes"
-    t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id", using: :btree
-    t.index ["program_id"], name: "index_versions_on_program_id", using: :btree
-    t.index ["project_id"], name: "index_versions_on_project_id", using: :btree
-    t.index ["transaction_id"], name: "index_versions_on_transaction_id", using: :btree
+    t.integer "transaction_id"
+    t.jsonb "object"
+    t.integer "program_id"
+    t.integer "project_id"
+    t.jsonb "object_changes"
+    t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
+    t.index ["program_id"], name: "index_versions_on_program_id"
+    t.index ["project_id"], name: "index_versions_on_project_id"
+    t.index ["transaction_id"], name: "index_versions_on_transaction_id"
   end
 
   add_foreign_key "activities", "projects"

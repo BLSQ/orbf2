@@ -29,6 +29,12 @@ gem "figaro"
 gem "lograge", "~> 0.10.0"
 gem "sentry-raven", "~> 2.7.4"
 
+# Feature flipper is the act of enabling/disabling features in your app...
+# [flipper](https://github.com/jnunemaker/flipper)
+gem "flipper", "~> 0.16.1"
+gem "flipper-active_record", "~> 0.16.1"
+gem "flipper-ui", "~> 0.16.1"
+
 ## Frontend and asset related
 
 gem "bootstrap-datepicker-rails"
@@ -75,7 +81,9 @@ else
   gem "hesabu", github: "BLSQ/hesabu"
   gem "orbf-rules_engine", github: "BLSQ/orbf-rules_engine"
 end
-
+# Like a modern code version of the mythical beast with 100 serpent hea...
+# [typhoeus](https://github.com/typhoeus/typhoeus)
+gem "typhoeus", "~> 1.3.1"
 group :development, :test do
   gem "byebug", platform: :mri
   gem "database_cleaner"

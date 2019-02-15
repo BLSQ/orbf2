@@ -48,4 +48,8 @@ class User < ApplicationRecord
   def label
     "User##{id} - #{email}"
   end
+
+  def flipper_id
+    "User:#{id}"
+  end
 end

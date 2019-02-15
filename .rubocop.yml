@@ -48,3 +48,5 @@ Naming/VariableNumber:
 # this one triggers a lot of false positive as orbf rules are "%{}"-based
 Style/FormatStringToken:
   EnforcedStyle: template
+Rails/Delegate:
+  Enabled: false
