@@ -49,15 +49,16 @@ class ParallelDhis2
     def call
       return {} if @responses.empty?
 
-      {
+      response = {
         "status"            => status,
-        "conflicts"         => conflicts,
         "description"       => description,
         "import_count"      => import_count,
         "response_type"     => response_type,
         "import_options"    => import_options,
         "data_set_complete" => data_set_complete
       }
+      response.merge!("conflicts" => conflicts) if conflicts.any?
+      response
     end
 
     def rolled_up

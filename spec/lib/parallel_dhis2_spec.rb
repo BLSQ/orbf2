@@ -114,35 +114,35 @@ RSpec.describe ParallelDhis2 do
   end
 
   describe ParallelDhis2::RollUpResponses do
-    describe "#call" do
-      let(:failed_response) {
-        fake_response(status:       "ERROR",
-                      conflicts:    [
-                        { value: "This", object: "123" },
-                        { value: "Other", object: "254" }
-                      ],
-                      description:  "The import process failed: Failed to update object",
-                      import_count: { "deleted": 0, "ignored": 0, "updated": 0, "imported": 0 })
-      }
-      let(:warning_response) {
-        fake_response(status:       "WARNING",
-                      conflicts:    [
-                        { value: "This", object: "123" },
-                        { value: "Other", object: "254" }
-                      ],
-                      description:  "Import process completed successfully",
-                      import_count: { "deleted": 1, "ignored": 2, "updated": 3, "imported": 4 })
-      }
-      let(:weird_response) {
-        fake_response(status: "WEIRD")
-      }
-      let(:success_response) {
-        fake_response(status:       "SUCCESS",
-                      description:  "Import process completed successfully",
-                      import_count: { "deleted": 10, "ignored": 20, "updated": 30, "imported": 40 })
-      }
+    let(:failed_response) {
+      fake_response(status:       "ERROR",
+                    conflicts:    [
+                      { value: "This", object: "123" },
+                      { value: "Other", object: "254" }
+                    ],
+                    description:  "The import process failed: Failed to update object",
+                    import_count: { "deleted": 0, "ignored": 0, "updated": 0, "imported": 0 })
+    }
+    let(:warning_response) {
+      fake_response(status:       "WARNING",
+                    conflicts:    [
+                      { value: "This", object: "123" },
+                      { value: "Other", object: "254" }
+                    ],
+                    description:  "Import process completed successfully",
+                    import_count: { "deleted": 1, "ignored": 2, "updated": 3, "imported": 4 })
+    }
+    let(:weird_response) {
+      fake_response(status: "WEIRD")
+    }
+    let(:success_response) {
+      fake_response(status:       "SUCCESS",
+                    description:  "Import process completed successfully",
+                    import_count: { "deleted": 10, "ignored": 20, "updated": 30, "imported": 40 })
+    }
 
-      describe "rolled up response" do
+    describe "#call" do
+      describe "with mixed results" do
         subject(:rolled_up) { described_class.new([failed_response, warning_response, success_response]).call }
 
         it(:status) { expect(rolled_up["status"]).to eq("ERROR") }
@@ -153,50 +153,50 @@ RSpec.describe ParallelDhis2 do
         it(:data_set_complete) { expect(rolled_up["data_set_complete"]).to eq(false) }
       end
 
-      describe "rolled up successes" do
+      describe "with only successes" do
         subject(:rolled_up) { described_class.new([success_response]*5).call }
 
         it(:status) { expect(rolled_up["status"]).to eq("SUCCESS") }
-        it(:conflicts) { expect(rolled_up["conflicts"].count).to eq(0) }
+        it(:conflicts) { expect(rolled_up).to_not have_key("conflicts") }
         it(:description) { expect(rolled_up["description"]).to eq("Import process completed successfully [parallel]") }
         it(:import_count) { expect(rolled_up["import_count"]).to eq(deleted: 5*10, ignored: 5*20, updated: 5*30, imported: 5*40) }
         it(:import_options) { expect(rolled_up["import_options"].count).to eq(5) }
         it(:data_set_complete) { expect(rolled_up["data_set_complete"]).to eq(false) }
       end
+    end
 
-      describe "#status" do
-        it "is error if any is error" do
-          roller = described_class.new([failed_response, warning_response, success_response])
-          expect(roller.status).to eq(described_class::ERROR)
-        end
-
-        it "is warning if no errors and any is warning" do
-          roller = described_class.new([warning_response, success_response])
-          expect(roller.status).to eq(described_class::WARNING)
-        end
-
-        it "is success if no errors and no warnings" do
-          roller = described_class.new([success_response, success_response])
-          expect(roller.status).to eq(described_class::SUCCESS)
-        end
-
-        it "defaults to ERROR when unknown status" do
-          roller = described_class.new([fake_response(status: "WEIRD")])
-          expect(roller.status).to eq(described_class::ERROR)
-        end
+    describe "#status" do
+      it "is error if any is error" do
+        roller = described_class.new([failed_response, warning_response, success_response])
+        expect(roller.status).to eq(described_class::ERROR)
       end
 
-      describe "#import_count" do
-        it "sums everything" do
-          roller = described_class.new([failed_response,
-                                        weird_response,
-                                        warning_response,
-                                        success_response])
-          expect(roller.import_count[:deleted]).to eq(0 + 1 + 10)
-          expect(roller.import_count[:ignored]).to eq(0 + 2 + 20)
-          expect(roller.import_count[:updated]).to eq(0 + 3 + 30)
-          expect(roller.import_count[:imported]).to eq(0 + 4 + 40)
-        end
+      it "is warning if no errors and any is warning" do
+        roller = described_class.new([warning_response, success_response])
+        expect(roller.status).to eq(described_class::WARNING)
+      end
+
+      it "is success if no errors and no warnings" do
+        roller = described_class.new([success_response, success_response])
+        expect(roller.status).to eq(described_class::SUCCESS)
+      end
+
+      it "defaults to ERROR when unknown status" do
+        roller = described_class.new([fake_response(status: "WEIRD")])
+        expect(roller.status).to eq(described_class::ERROR)
+      end
+    end
+
+    describe "#import_count" do
+      it "sums everything" do
+        roller = described_class.new([failed_response,
+                                      weird_response,
+                                      warning_response,
+                                      success_response])
+        expect(roller.import_count[:deleted]).to eq(0 + 1 + 10)
+        expect(roller.import_count[:ignored]).to eq(0 + 2 + 20)
+        expect(roller.import_count[:updated]).to eq(0 + 3 + 30)
+        expect(roller.import_count[:imported]).to eq(0 + 4 + 40)
       end
     end
   end
