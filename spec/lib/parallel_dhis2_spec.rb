@@ -116,10 +116,6 @@ RSpec.describe ParallelDhis2 do
   describe ParallelDhis2::RollUpResponses do
     let(:failed_response) {
       fake_response(status:       "ERROR",
-                    conflicts:    [
-                      { value: "This", object: "123" },
-                      { value: "Other", object: "254" }
-                    ],
                     description:  "The import process failed: Failed to update object",
                     import_count: { "deleted": 0, "ignored": 0, "updated": 0, "imported": 0 })
     }
@@ -146,7 +142,7 @@ RSpec.describe ParallelDhis2 do
         subject(:rolled_up) { described_class.new([failed_response, warning_response, success_response]).call }
 
         it(:status) { expect(rolled_up["status"]).to eq("ERROR") }
-        it(:conflicts) { expect(rolled_up["conflicts"].count).to eq(2 + 2 + 0) }
+        it(:conflicts) { expect(rolled_up["conflicts"].count).to eq(0 + 2 + 0) }
         it(:description) { expect(rolled_up["description"]).to eq("The import process failed: Failed to update object && Import process completed successfully [parallel]") }
         it(:import_count) { expect(rolled_up["import_count"]).to eq(deleted: 11, ignored: 22, updated: 33, imported: 44) }
         it(:import_options) { expect(rolled_up["import_options"].count).to eq(3) }
