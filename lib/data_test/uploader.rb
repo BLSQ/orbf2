@@ -25,6 +25,8 @@ module DataTest
 
     def self.can_run?
       return false unless !!S3_REGION
+      return false unless defined?(Aws)
+
       new.can_run?
     end
 

@@ -7,8 +7,14 @@ require_relative "data_test/compare"
 require_relative "data_test/verifier"
 require_relative "data_test/uploader"
 require_relative "data_test/fetcher"
-require "aws-sdk-s3"
-require "zip"
+begin
+  require "aws-sdk-s3"
+  require "zip"
+rescue LoadError
+  # We're probably in production, production should not be able to
+  # upload to S3, it's allowed to load this file, but it shouldn't
+  # break.
+end
 
 module DataTest
   # This module is to help get a test flow that uses actual production
