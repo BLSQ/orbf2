@@ -13,16 +13,17 @@ def dhis2_client(options = {})
   Dhis2::Client.new(options)
 end
 
-def fake_response(status:, conflicts: [], description: "", import_count: {})
-  {
+def fake_response(status:, conflicts: nil, description: "", import_count: {})
+  response = {
     "status"            => status,
-    "conflicts"         => conflicts,
     "description"       => description,
     "import_count"      => import_count,
     "response_type"     => "ImportSummary",
     "import_options"    => { some: "data", with: "keys", more: "data" },
     "data_set_complete" => false
   }
+  response.merge!("conflicts" => conflicts) if conflicts
+  response
 end
 
 RSpec.describe ParallelDhis2 do
@@ -137,7 +138,6 @@ RSpec.describe ParallelDhis2 do
       }
       let(:success_response) {
         fake_response(status:       "SUCCESS",
-                      conflicts:    [],
                       description:  "Import process completed successfully",
                       import_count: { "deleted": 10, "ignored": 20, "updated": 30, "imported": 40 })
       }
@@ -146,10 +146,21 @@ RSpec.describe ParallelDhis2 do
         subject(:rolled_up) { described_class.new([failed_response, warning_response, success_response]).call }
 
         it(:status) { expect(rolled_up["status"]).to eq("ERROR") }
-        it(:conflicts) { expect(rolled_up["conflicts"].count).to eq(2 + 2) }
+        it(:conflicts) { expect(rolled_up["conflicts"].count).to eq(2 + 2 + 0) }
         it(:description) { expect(rolled_up["description"]).to eq("The import process failed: Failed to update object && Import process completed successfully [parallel]") }
         it(:import_count) { expect(rolled_up["import_count"]).to eq(deleted: 11, ignored: 22, updated: 33, imported: 44) }
         it(:import_options) { expect(rolled_up["import_options"].count).to eq(3) }
+        it(:data_set_complete) { expect(rolled_up["data_set_complete"]).to eq(false) }
+      end
+
+      describe "rolled up successes" do
+        subject(:rolled_up) { described_class.new([success_response]*5).call }
+
+        it(:status) { expect(rolled_up["status"]).to eq("SUCCESS") }
+        it(:conflicts) { expect(rolled_up["conflicts"].count).to eq(0) }
+        it(:description) { expect(rolled_up["description"]).to eq("Import process completed successfully [parallel]") }
+        it(:import_count) { expect(rolled_up["import_count"]).to eq(deleted: 5*10, ignored: 5*20, updated: 5*30, imported: 5*40) }
+        it(:import_options) { expect(rolled_up["import_options"].count).to eq(5) }
         it(:data_set_complete) { expect(rolled_up["data_set_complete"]).to eq(false) }
       end
 
