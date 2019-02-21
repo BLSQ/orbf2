@@ -33,7 +33,10 @@ module Rules
 
     def validate_expression(formula)
       calculator.dependencies(
-        Rules::ValuesMocker.mock_values(formula.expression, formula.rule.available_variables_for_values)
+        Rules::ValuesMocker.mock_values(
+          formula.expression,
+          formula.rule.available_variables_for_values
+        )
       )
     rescue KeyError => e
       formula.errors[:expression] << "#{e.message}. " \
@@ -45,7 +48,10 @@ module Rules
 
     def dependencies(formula)
       calculator.dependencies(
-        Rules::ValuesMocker.mock_values(formula.expression, formula.rule.available_variables_for_values)
+        Rules::ValuesMocker.mock_values(
+          formula.expression,
+          formula.rule.available_variables_for_values
+        )
       )
     rescue StandardError => ignored
       []
@@ -56,7 +62,10 @@ module Rules
 
       facts = {}.merge(rule.fake_facts)
       rule.formulas.each do |formula|
-        facts[formula.code] = Rules::ValuesMocker.mock_values(formula.expression, rule.available_variables_for_values)
+        facts[formula.code] = Rules::ValuesMocker.mock_values(
+          formula.expression,
+          rule.available_variables_for_values
+        )
       end
       facts[:actictity_rule_name] = Solver.escape_string(rule.name)
       solve!("validate_all_formulas", facts)
@@ -78,6 +87,5 @@ module Rules
     def log(message)
       Rails.logger.info message
     end
-
   end
 end
