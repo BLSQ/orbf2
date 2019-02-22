@@ -56,7 +56,7 @@ if [ -f "Gemfile" ]; then
     }
 fi
 
-bundle exec ruby -e 'require "hesabu"; File.file?(Hesabu::HESABUCLI + "k") ? exit(0) : exit(1)' >/dev/null 2>&1  || {
+bundle exec ruby -e 'require "hesabu"; File.file?(Hesabu::HESABUCLI) ? exit(0) : exit(1)' >/dev/null 2>&1  || {
     cat <<HESABU
 You don't seem to have a binary for the hesabu gem.
 

@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: formulas
@@ -30,9 +31,17 @@ RSpec.describe Formula, type: :model do
     is_expected.to be_versioned
   end
 
+  let(:project) {
+    Project.new(engine_version: 3)
+  }
+  let(:package){
+    project.packages.build
+  }
+  let(:rule){
+    Rule.new(name:"rspec",kind: "activity", package: package)
+  }
   def new_formula(args)
-    rule = Rule.new(kind: "activity", package: Package.new)
-    Formula.new(
+    rule.formulas.build(
       args.merge(
         code:        args[:code] || "sample_expression",
         description: "description",
@@ -94,6 +103,18 @@ RSpec.describe Formula, type: :model do
 
       formula.valid?
       expect(formula.errors[:expression]).to eq(["malformed format string - %["])
+    end
+
+    it "propose appropriate %{..._values}" do
+      formula = new_formula(expression: 'eval_array( "is_nul", array(%{active_is_null_last_3_months_window_values}) , "hard_coded", array(1,2,3), "is_nul")')
+      formula.rule.package.project.engine_version = 3
+      package.frequency = "monthly"
+      state = project.states.build(name: "active")
+      package.package_states.build(state: state)
+
+      expect(formula.rule.available_variables_for_values).to include("active_is_null_last_3_months_window_values")
+      expect(formula.rule.formulas_are_coherent).to be_truthy
+      expect(formula.rule.errors[:formulas]).to eq([])
     end
   end
 

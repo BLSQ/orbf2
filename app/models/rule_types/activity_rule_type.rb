@@ -21,7 +21,6 @@ module RuleTypes
       var_names.push("quarter_of_year")
       var_names.push("month_of_year")
       var_names.push("month_of_quarter")
-
       if project.new_engine? && package.package_rule
         var_names.push(*package.package_rule.formulas.map(&:code))
       end
@@ -57,6 +56,7 @@ module RuleTypes
             var_names.push(*monthly_vars)
           end
         end
+
         if package.quarterly?
           (1..4).each do |i|
             quarterly_vars = activity_level_states.each_with_object([]) do |formula, result|

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "dentaku"
 require "dentaku/calculator"
 
@@ -31,7 +33,10 @@ module Rules
 
     def validate_expression(formula)
       calculator.dependencies(
-        mock_values(formula.expression, formula.rule.available_variables_for_values)
+        Rules::ValuesMocker.mock_values(
+          formula.expression,
+          formula.rule.available_variables_for_values
+        )
       )
     rescue KeyError => e
       formula.errors[:expression] << "#{e.message}. " \
@@ -43,7 +48,10 @@ module Rules
 
     def dependencies(formula)
       calculator.dependencies(
-        mock_values(formula.expression, formula.rule.available_variables_for_values)
+        Rules::ValuesMocker.mock_values(
+          formula.expression,
+          formula.rule.available_variables_for_values
+        )
       )
     rescue StandardError => ignored
       []
@@ -51,18 +59,22 @@ module Rules
 
     def validate_formulas(rule)
       return if rule.formulas.empty?
+
       facts = {}.merge(rule.fake_facts)
       rule.formulas.each do |formula|
-        facts[formula.code] = mock_values(formula.expression, rule.available_variables_for_values)
+        facts[formula.code] = Rules::ValuesMocker.mock_values(
+          formula.expression,
+          rule.available_variables_for_values
+        )
       end
       facts[:actictity_rule_name] = Solver.escape_string(rule.name)
-
       solve!("validate_all_formulas", facts)
     rescue Rules::SolvingError => e
       rule.errors[:formulas] << e.original_message
     rescue KeyError => e
       rule.errors[:formulas] << "#{e.message}. Remove extra spaces or verify it's in the available variables"
     rescue StandardError => e
+      log(e.message)
       rule.errors[:formulas] << e.message
     end
 
@@ -74,19 +86,6 @@ module Rules
 
     def log(message)
       Rails.logger.info message
-    end
-
-    def mock_values(expression, available_variables_for_values)
-      variables = {}
-      available_variables_for_values
-        .select { |name| name.ends_with?("_values") }
-        .each do |variable_name|
-          raise "please don't add extra spaces in '%{#{variable_name}}'" if variable_name.include?(" ")
-          variables[variable_name.to_sym] = "1 , 2"
-        end
-      expression % variables
-    rescue ArgumentError => e
-      raise e.message
     end
   end
 end

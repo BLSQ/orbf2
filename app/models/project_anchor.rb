@@ -37,7 +37,7 @@ class ProjectAnchor < ApplicationRecord
     projects.where(status: "draft").fully_loaded.last
   end
 
-  def nearest_pyramid_for(date)
+  def nearest_pyramid_snapshot_for(date)
     kinds = %i[organisation_units organisation_unit_groups organisation_unit_group_sets]
     pyramid_snapshots = dhis2_snapshots.select("id, year, month, kind").where(kind: kinds)
 
@@ -51,6 +51,13 @@ class ProjectAnchor < ApplicationRecord
     final_snapshots = final_candidates.map { |kind, candidate| [kind, candidate ? dhis2_snapshots.find(candidate.id) : nil] }
                                       .to_h
     return nil if final_snapshots.values.compact.size != kinds.size
+    final_snapshots
+  end
+
+  def nearest_pyramid_for(date)
+    final_snapshots = nearest_pyramid_snapshot_for(date)
+    return nil unless final_snapshots
+
     new_pyramid(final_snapshots)
   end
 
@@ -138,5 +145,9 @@ class ProjectAnchor < ApplicationRecord
     data_element_groups = snapshots.find(&:kind_data_element_groups?)
     indicators = snapshots.find(&:kind_indicators?)
     new_data_compound(data_elements, data_element_groups, indicators)
+  end
+
+  def flipper_id
+    "ProjectAnchor:#{id}"
   end
 end

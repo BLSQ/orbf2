@@ -22,7 +22,9 @@ RSpec.describe PaperTrailed do
     Dhis2Snapshot,
     Dhis2SnapshotChange,
     ProjectAnchor,
-    InvoicingJob
+    InvoicingJob,
+    Flipper::Adapters::ActiveRecord::Feature,
+    Flipper::Adapters::ActiveRecord::Gate,
   ].freeze
 
   ActiveRecord::Base.descendants

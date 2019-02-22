@@ -28,7 +28,9 @@ describe ProjectFactory do
       InvoicingJob,
       Version,
       PaperTrail::Version,
-      PaperTrail::VersionAssociation
+      PaperTrail::VersionAssociation,
+      Flipper::Adapters::ActiveRecord::Feature,
+      Flipper::Adapters::ActiveRecord::Gate,
     ].map(&:name).map(&:to_sym)
     project.payment_rules.first.datasets.create!(frequency: "quarterly", external_reference: "fakedsid")
     count_before = count_all_models

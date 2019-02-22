@@ -8,6 +8,10 @@ module Invoicing
       @options = options || InvoicingOptions.default_options
     end
 
+    def profile_id
+      invoicing_request&.entity
+    end
+
     def call
       if ignore_non_contracted?
         Rails.logger.warn("#{invoicing_request.entity} is not contracted. Stopping invoicing")
@@ -30,10 +34,10 @@ module Invoicing
 
       # let it fail later if orgunit not found
       # else check the contracted entity group
-      legacy_org_unit = legacy_pyramid.org_unit(invoicing_request.entity)
+      legacy_org_unit = pyramid.org_unit(invoicing_request.entity)
       return false unless legacy_org_unit
 
-      contracted = legacy_pyramid.belong_to_group(
+      contracted = pyramid.belong_to_group(
         legacy_org_unit,
         project.entity_group.external_reference
       )
@@ -44,17 +48,18 @@ module Invoicing
       @fetch_and_solve ||= begin
           solve_options = {
             pyramid:     pyramid,
-            mock_values: invoicing_request.mock_values? ? [] : nil
+            mock_values: invoicing_request.mocked_data
           }
+
           @fetch_and_solve = Orbf::RulesEngine::FetchAndSolve.new(
             orbf_project,
             invoicing_request.entity,
             invoicing_request.year_quarter.to_dhis2,
             solve_options
           )
-          @pyramid = fetch_and_solve.pyramid
-          @dhis2_export_values = fetch_and_solve.call
-          @dhis2_input_values = fetch_and_solve.dhis2_values
+          @pyramid = @fetch_and_solve.pyramid
+          @dhis2_export_values = @fetch_and_solve.call
+          @dhis2_input_values = @fetch_and_solve.dhis2_values
           @fetch_and_solve
         end
     end
@@ -63,16 +68,27 @@ module Invoicing
       Rails.logger.info "about to publish #{@dhis2_export_values.size} values to dhis2"
       return if @dhis2_export_values.empty?
 
-      status = project.dhis2_connection.data_value_sets.create(@dhis2_export_values)
+      if Flipper[:use_parallel_publishing].enabled?(project.project_anchor)
+        status = parallel_publish_to_dhis2
+      else
+        status = project.dhis2_connection.data_value_sets.create(@dhis2_export_values)
+      end
+
       Rails.logger.info @dhis2_export_values.to_json
       Rails.logger.info status.raw_status.to_json
       project.project_anchor.dhis2_logs.create(sent: @dhis2_export_values, status: status.raw_status)
     end
 
+    def parallel_publish_to_dhis2
+      url = project.dhis2_connection.instance_variable_get(:@base_url)
+      client = ParallelDhis2.new(project.dhis2_connection)
+      client.post_data_value_sets(@dhis2_export_values)
+    end
+
     def data_compound
       @datacompound ||= project.project_anchor
                                .nearest_data_compound_for(
-                                 invoicing_request.end_date_as_date
+                                 invoicing_request&.end_date_as_date
                                )
       @datacompound ||= DataCompound.from(project) if options.allow_fresh_dhis2_data?
 
@@ -83,7 +99,7 @@ module Invoicing
       @project ||= if options.force_project_id
                      project_anchor.projects.fully_loaded.find(options.force_project_id)
                    else
-                     project_anchor.projects.fully_loaded.for_date(invoicing_request.end_date_as_date) ||
+                     project_anchor.projects.fully_loaded.for_date(invoicing_request&.end_date_as_date) ||
                        project_anchor.latest_draft
                    end
     end
@@ -92,17 +108,17 @@ module Invoicing
       @orbf_project ||= MapProjectToOrbfProject.new(project, data_compound.indicators, invoicing_request.engine_version).map
     end
 
-    def legacy_pyramid
-      @legacy_pyramid ||= project_anchor.nearest_pyramid_for(invoicing_request.end_date_as_date) ||
-                          project_anchor.nearest_pyramid_for(invoicing_request.start_date_as_date)
+    def snapshot
+      @snapshot ||= project_anchor.nearest_pyramid_snapshot_for(invoicing_request.end_date_as_date) ||
+                    project_anchor.nearest_pyramid_snapshot_for(invoicing_request.start_date_as_date)
     end
 
     def pyramid
-      @pyramid ||= if legacy_pyramid
-                     Orbf::RulesEngine::PyramidFactory.from_dhis2(
-                       org_units:          legacy_pyramid.org_units,
-                       org_unit_groups:    legacy_pyramid.org_unit_groups,
-                       org_unit_groupsets: legacy_pyramid.organisation_unit_group_sets
+      @pyramid ||= if snapshot
+                     Orbf::RulesEngine::PyramidFactory.from_snapshot(
+                       org_units:          snapshot[:organisation_units].content,
+                       org_unit_groups:    snapshot[:organisation_unit_groups].content,
+                       org_unit_groupsets: snapshot[:organisation_unit_group_sets].content
                      )
                    end
     end
