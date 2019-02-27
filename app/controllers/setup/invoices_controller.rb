@@ -25,10 +25,44 @@ class Setup::InvoicesController < PrivateController
     project = current_project(project_scope: :fully_loaded)
 
     @invoicing_request = InvoicingRequest.new(invoice_params.merge(project: project))
+    @org_unit_limiter = OrgUnitLimiter.from_params(params)
+
     if @invoicing_request.valid?
       render_invoice(project, invoicing_request)
     else
       render :new
+    end
+  end
+
+  class OrgUnitLimiter
+    # Small PORO to help with the `selected_org_units` filter, a user
+    # can selectively choose to limit the results to certain org
+    # units.
+    def self.from_params(incoming)
+      org_unit_ids = (incoming[:selected_org_units] || "").split(",").map(&:strip)
+      new(org_unit_ids)
+    end
+
+    def active?
+      org_unit_ids.count > 0
+    end
+
+    def initialize(selected_org_units)
+      @selected_org_units = selected_org_units
+    end
+
+    def has_org_unit?(org_unit_id)
+      org_unit_ids.include?(org_unit_id)
+    end
+
+    def org_unit_ids
+      @selected_org_units || []
+    end
+
+    def to_param
+      return {} unless active?
+
+      { selected_org_units: org_unit_ids.join(",") }
     end
   end
 

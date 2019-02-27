@@ -30,8 +30,47 @@
       <%= f.input :engine_version, collection: @current_project.engine_version_enum %>
     </div>
   </div>
-  <%= f.input :mock_values, as: :boolean%>
-  <%= f.input :with_details, as: :boolean, label: "With details (dhis2 input/output values, equations)"%>
+
+  <h5>Advanced</h5>
+  <div>
+    <div class="form-check row">
+      <div class="col-sm-2">
+        <label class="form-check-label col-form-label">
+          Mock Values
+        </label>
+      </div>
+
+      <div class="col-sm-10">
+        <%= f.input_field :mock_values, as: :boolean, class: "form-check-input" %>
+      </div>
+    </div>
+
+    <div class="form-check row">
+      <div class="col-sm-2">
+        <label class="form-check-label col-form-label">
+          With details
+        </label>
+      </div>
+      <div class="col-sm-10">
+        <%= f.input_field :with_details, as: :boolean, class: "form-check-input" %>
+        <small class="form-text text-muted">
+          (DHIS2 input/output values, equations)
+        </small>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label class="string col-sm-2 col-form-label">Selected org units</label>
+      <div class="col-sm-10">
+        <%= text_field_tag "selected_org_units", params[:selected_org_units], class: "form-control" %>
+        <small class="form-text text-muted">
+          A comma separated listed of org unit ids, these will be the only ones shown in the result. If left blank, all org units will be available.
+        </small>
+      </div>
+    </div>
+  </div>
+
+
 
   <%= f.submit 'Push to dhis2',
   name: 'push_to_dhis2',
