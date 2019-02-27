@@ -3,7 +3,7 @@
   <fieldset class="form-group">
     <legend>Formula <%=f.object.code%></legend>
       <a class="btn pull-right" data-toggle="collapse" data-target="#cheat_sheet_expression">
-              <%= icon("question-circle fa-2x") %>
+              <%= icon('fas', "question-circle fa-2x") %>
             </a>
     <div class="row">
       <div class="col-md-5"><%= f.input :code , placeholder: (f.object.rule && f.object.rule.activity_kind? ? "eg 'difference_percentage'" : "eg 'amount'") %></div>
@@ -20,7 +20,7 @@
                                           %>
                                         </div>
 
-      <div class="col-md-1"><%= link_to_remove_association icon("trash text-danger fa-lg"), f , title: "This will delete the formula #{f.object.code} -#{f.object.description} ", class: "btn pull-right"  %></div>
+      <div class="col-md-1"><%= link_to_remove_association icon('fas', "trash text-danger fa-lg"), f , title: "This will delete the formula #{f.object.code} -#{f.object.description} ", class: "btn pull-right"  %></div>
     </div>
     <div class="row">
      <div class="col-md-5">

@@ -2,7 +2,7 @@
   <td> <%= activity_state.name %>
     <% if activity_state.errors.any? %>
     <br>
-      <%=icon("exclamation-triangle text-danger")%> <% activity_state.errors.full_messages.each do |msg| %>
+      <%=icon('fas', "exclamation-triangle text-danger")%> <% activity_state.errors.full_messages.each do |msg| %>
        <small class="text-danger"><%= msg %></small>
       <% end %>
     </ul>
@@ -10,7 +10,7 @@
    <% end %>
   </td>
     <td> <%= f.object.kind %></td>
-  <td> <%= link_to_remove_association icon("trash-o text-danger") , f %> </td>
+  <td> <%= link_to_remove_association icon('fas', "trash-o text-danger") , f %> </td>
   <td>
     <div class="switch-field pull-right">
       <div class="col-md-14">
