@@ -13,7 +13,7 @@ class Setup::InvoicesController < PrivateController
       quarter:        params[:quarter] || (Date.today.to_date.month / 4) + 1,
       entity:         params[:entity],
       with_details:   params[:with_details] || false,
-      engine_version: current_project.engine_version
+      engine_version: 3 # TODO: current_project.engine_version
     )
     if params["calculate"]
       render_invoice(project, invoicing_request)
@@ -78,7 +78,72 @@ class Setup::InvoicesController < PrivateController
 
     add_contract_warning_if_non_contracted(invoicing_request, project)
 
-    render "new_invoice"
+    render json: JSON.pretty_generate(
+      request:             {
+        entity:            invoicing_request.entity,
+        period:            invoicing_request.year_quarter.to_dhis2,
+        engine_version:    invoicing_request.engine_version,
+        organisation_unit: Invoicing::EntitySignalitic.new(
+          @invoice_entity.pyramid,
+          invoicing_request.entity
+        ).to_h,
+        warnings:          contracted?(invoicing_request, project) ? nil : non_contracted_orgunit_message(project)
+      },
+      invoices:            invoicing_request.invoices.map do |invoice|
+                             {
+                               orgunit_ext_id: invoice.orgunit_ext_id,
+                               period:         invoice.period,
+                               kind:           invoice.kind,
+                               code:           invoice.code,
+                               activity_items: invoice.activity_items.map do |activity_item|
+                                 {
+                                   activity: {
+                                     code: activity_item.activity.activity_code,
+                                     name: activity_item.activity.name
+                                   },
+                                   cells:    activity_item.variables.each_with_object({}) do |orbf_var, formulas|
+                                               key = orbf_var.formula&.code || orbf_var.state
+                                               next unless activity_item.solution[key]
+
+                                               activity_state = indexed_project.lookup_activity_state(orbf_var)
+                                               cell = {
+                                                 key:                     orbf_var.key,
+                                                 instantiated_expression: orbf_var.expression,
+                                                 not_exported:            activity_item.not_exported?(key),
+                                                 solution:                activity_item.solution[key]&.to_s,
+                                                 substitued:              activity_item.substitued[key]
+                                               }
+                                               if activity_state
+                                                 cell[:state] = {
+                                                   ext_id: activity_state.ext_id,
+                                                   kind:   activity_state.kind,
+                                                   name:   (@data_compound.data_element(activity_state.ext_id) || @data_compound.indicator(activity_state.ext_id))&.name
+                                                 }
+                                               end
+                                               if orbf_var.formula
+                                                 cell[:expression] = orbf_var.formula.expression
+                                                 cell[:dhis2_data_element] = orbf_var.dhis2_data_element
+                                               end
+                                               formulas[key] = cell
+                                             end
+                                 }
+                               end,
+                               total_items:    invoice.total_items.map do |total_item|
+                                 {
+                                   formula:                 total_item.formula.code,
+                                   not_exported:            total_item.not_exported,
+                                   expression:              total_item.explanations[0],
+                                   instantiated_expression: total_item.explanations[2],
+                                   solution:                total_item.value&.to_s,
+                                   substitued:              total_item.explanations[1]
+                                 }
+                               end
+                             }
+                           end,
+      dhis2_export_values: @dhis2_export_values,
+      dhis2_input_values:  @dhis2_input_values
+    )
+    # render "new_invoice"
   rescue StandardError => e
     @exception = e
     puts "An error occured during simulation #{e.class.name} #{e.message}" + e.backtrace.join("\n")
