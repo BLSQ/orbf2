@@ -9,6 +9,7 @@
   <%end%>
   See in current situation in dhis2 : <%= link_to_debug_orgunit(@current_project, invoicing_request.entity)%>
   <br>
+
   <button class="pull-right btn btn-default" onclick="copyToClipboard('#invoice-url')">Copy to clipboard this invoice url <i class="fa fa-copy"></i></button>
   <span id="invoice-url" class="hidden">
     <% url_params = {

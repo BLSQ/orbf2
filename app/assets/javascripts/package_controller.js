@@ -6,7 +6,7 @@ $(document).ready(function() {
             showSelectAll: true,
             selectionDestination: $sol_selector.data('selection'),
             texts: {
-                quickDelete: '<i class="fa fa-trash text-danger" aria-hidden="true"></i>',
+                quickDelete: '<i class="fas fa-trash-alt text-danger" aria-hidden="true"></i>',
                 searchplaceholder: $sol_selector.data('placeholder')
               }
         });
@@ -20,7 +20,7 @@ $(document).ready(function() {
             maxHeight: '250px',
             selectionDestination: $sol_selector.data('selection'),
             texts: {
-                quickDelete: '<i class="fa fa-trash text-danger" aria-hidden="true"></i>',
+                quickDelete: '<i class="fas fa-trash-alt text-danger" aria-hidden="true"></i>',
                 searchplaceholder: $sol_selector.data('placeholder')
             },
             converter: function (sol, rawDataFromUrl) {
