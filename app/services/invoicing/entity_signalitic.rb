@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 module Invoicing
   class EntitySignalitic
@@ -14,6 +15,26 @@ module Invoicing
         "Groups : " + groups.map(&:name).join(", "),
         "Facts : " + org_unit.facts.map(&:to_s).join(", ")
       ]
+    end
+
+    def to_h
+      {
+        id:                       org_unit_id,
+        name:                     org_unit.name,
+        ancestors:                parents.map do |p|
+                                    {
+                                      id:   p.ext_id,
+                                      name: p.name
+                                    }
+                                  end,
+        organisation_unit_groups: groups.map do |g|
+                                    {
+                                      id:   g.ext_id,
+                                      name: g.name
+                                    }
+                                  end,
+        facts:                    org_unit.facts
+      }
     end
 
     attr_reader :org_unit_id, :pyramid, :org_unit
