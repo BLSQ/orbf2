@@ -10,10 +10,20 @@
   See in current situation in dhis2 : <%= link_to_debug_orgunit(@current_project, invoicing_request.entity)%>
   <br>
   <button class="pull-right btn btn-default" onclick="copyToClipboard('#invoice-url')">Copy to clipboard this invoice url <i class="fa fa-copy"></i></button>
-   <span id="invoice-url" class="hidden"><%= new_setup_project_invoice_url(entity: invoicing_request.entity, year: invoicing_request.year, quarter: invoicing_request.quarter) %></span>
+  <span id="invoice-url" class="hidden">
+    <% url_params = {
+      entity: invoicing_request.entity,
+      year: invoicing_request.year,
+      quarter: invoicing_request.quarter
+    } %>
+    <% url_params = url_params.merge(@org_unit_limiter.to_param) %>
+
+    <%= new_setup_project_invoice_url(url_params) %>
+  </span>
   <br>
   <br>
 <%end%>
+
 <button class="pull-right btn btn-default" onclick="copyToClipboard('#rules-descriptors')"><i class="fa fa-copy"></i></button>
 <button class="pull-right btn btn-default" data-toggle="collapse" data-target="#rules-descriptors">Show descriptors</button>
 <div id="rules-descriptors" class="collapse">
@@ -22,6 +32,9 @@
 
 <% periods = invoicing_request.invoices.map(&:period).uniq.sort%>
 <% orgunits = invoicing_request.invoices.map(&:orgunit_ext_id).uniq.map {|id|  @pyramid.org_unit(id) }.map {|ou| [ou.name, ou.ext_id]}.to_h%>
+<% if @org_unit_limiter.active? %>
+  <% orgunits = orgunits.select { |_name, ext_id| @org_unit_limiter.has_org_unit?(ext_id) } %>
+<% end %>
 <% codes = invoicing_request.invoices.map {|invoice| invoice.package&.code || invoice.payment_rule&.code}.uniq.sort.map {|code| [code.humanize, code]}%>
 <br>
 <br>
@@ -42,6 +55,9 @@
                       "data-placeholder" => "Pick orgunits",
                          "data-selection" => "selected-orgunits"}%>
      <div id="selected-orgunits" ></div>
+     <% if @org_unit_limiter.active? %>
+       <small><strong>Note:</strong>You're currently actively limiting the org units, if you didn't expect this, you'll need to clear 'Selected org units'</small>
+     <% end %>
    </div>
    <div class="col-md-4">
    <label>Package or Payment rule (<%= codes.size %>)</label>
@@ -78,8 +94,14 @@
 <% end %>
 
 <h1> Invoice details </h1>
-<%= render partial: "new_invoice", collection: invoicing_request.invoices, :as => :invoice  %>
 
+<% if @org_unit_limiter.active? %>
+  <% selected_invoices = invoicing_request.invoices.select{ |invoice| @org_unit_limiter.has_org_unit?(invoice.orgunit_ext_id) } %>
+<% else %>
+  <% selected_invoices = invoicing_request.invoices %>
+<% end %>
+
+<%= render partial: "new_invoice", collection: selected_invoices, :as => :invoice  %>
 <br>
 <br>
 <br>
