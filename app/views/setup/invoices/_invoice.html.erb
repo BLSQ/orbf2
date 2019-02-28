@@ -8,7 +8,7 @@
 
   org unit(s) : <%= package.linked_org_units(@org_unit, @pyramid).map(&:name).join(", ") %><br>
   <%  periods = package.periods(Periods.year_month(invoice.date)) %>
-  date range : <%= periods.map { |period| [period.start_date, period.end_date] }.flatten.minmax.map(&:to_s).join(' <i class="fa fa-arrow-right" aria-hidden="true"></i> ').html_safe %> <br>
+  date range : <%= periods.map { |period| [period.start_date, period.end_date] }.flatten.minmax.map(&:to_s).join(icon("fas", "fa-arrow-right", "aria-hidden" => true)).html_safe %> <br>
   periods : <%= periods.map(&:to_dhis2).join(", ") %><br>
   <table class="table invoice num-span-table table-striped">
     <thead>

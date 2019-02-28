@@ -9,7 +9,10 @@
   <%end%>
   See in current situation in dhis2 : <%= link_to_debug_orgunit(@current_project, invoicing_request.entity)%>
   <br>
-  <button class="pull-right btn btn-default" onclick="copyToClipboard('#invoice-url')">Copy to clipboard this invoice url <i class="fa fa-copy"></i></button>
+
+  <button class="pull-right btn btn-default" onclick="copyToClipboard('#invoice-url')">
+    Copy to clipboard this invoice url <%= icon("fas", "copy") %>
+  </button>
   <span id="invoice-url" class="hidden">
     <% url_params = {
       entity: invoicing_request.entity,
@@ -24,7 +27,9 @@
   <br>
 <%end%>
 
-<button class="pull-right btn btn-default" onclick="copyToClipboard('#rules-descriptors')"><i class="fa fa-copy"></i></button>
+<button class="pull-right btn btn-default" onclick="copyToClipboard('#rules-descriptors')">
+  <%= icon("fas", "copy") %>
+</button>
 <button class="pull-right btn btn-default" data-toggle="collapse" data-target="#rules-descriptors">Show descriptors</button>
 <div id="rules-descriptors" class="collapse">
   <pre><%= as_pretty_json_string(project_descriptor(@current_project))%></pre>

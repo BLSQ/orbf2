@@ -18,7 +18,8 @@ gem "pg", "~> 0.18"
 gem "puma", "~> 3.0"
 gem "rack", ">= 2.0.6"
 gem "rails", "~> 5.2", "< 5.3"
-gem "rails_admin", "~> 1.3.0"
+
+gem "rails_admin", "~> 1.4.2"
 gem "sidekiq", "< 6"
 gem "sidekiq-throttled", "~> 0.9.0"
 
@@ -38,10 +39,9 @@ gem "flipper-ui", "~> 0.16.1"
 ## Frontend and asset related
 
 gem "bootstrap-datepicker-rails"
-gem "bootstrap-sass", "~> 3.3.6"
+gem "bootstrap-sass", "~> 3.4.1"
 gem "cocoon"
 gem "coffee-rails", "~> 4.2"
-gem "font-awesome-sass", "~> 4.7.0"
 gem "jquery-rails", "~> 4.3.3"
 gem "jquery-ui-rails", "~> 5.0.5"
 gem "rails-jquery-autocomplete"

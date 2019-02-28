@@ -2,6 +2,7 @@ $(document).ready(function() {
 
     $('.sol-simple').each(function(i) {
         var $sol_selector = $(this);
+        // fa5: change to fas and fa-trash-alt
         $sol_selector.searchableOptionList({
             showSelectAll: true,
             selectionDestination: $sol_selector.data('selection'),
@@ -13,6 +14,7 @@ $(document).ready(function() {
     });
     $('.sol-powered').each(function(i) {
         var $sol_selector = $(this);
+        // fa5: change to fas and fa-trash-alt
         $sol_selector.searchableOptionList({
             data: $sol_selector.data('url'),
             showSelectAll: true,

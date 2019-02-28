@@ -10,7 +10,7 @@
         <li><%= activity_package.package.name %>
           <% if activity_package.package.missing_activity_states[activity] && activity_package.package.missing_activity_states[activity].any? %>
             <br>
-            <%= icon("exclamation-triangle text-warning ")%> Missing element for :  <%= activity_package.package.missing_activity_states[activity].map(&:name).join(',') %>
+            <%= icon('fas', "exclamation-triangle", class: "text-warning")%> Missing element for :  <%= activity_package.package.missing_activity_states[activity].map(&:name).join(',') %>
           <% end%>
         </li>
       <%end%>
