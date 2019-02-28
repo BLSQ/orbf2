@@ -86,6 +86,11 @@ end
 gem "typhoeus", "~> 1.3.1"
 group :development, :test do
   gem "byebug", platform: :mri
+
+  # Use pry instead of irb: http://pryrepl.org
+  gem "pry", "~> 0.12.2"
+  gem "pry-rails", "~> 0.3.9"
+
   gem "database_cleaner"
   gem "factory_bot_rails", "~> 4.11.1"
   gem "faker"
