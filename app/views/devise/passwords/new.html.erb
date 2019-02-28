@@ -6,14 +6,14 @@
         <div class="col-md-6 col-md-offset-3">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">
-                        <i class="fas fa-user fa-2x text-primary"></i>
-                        <strong class="text-primary">Forgot your password?</strong>
-                    </h3>
+                  <h3 class="panel-title">
+                    <%= icon('fas', 'user', class: "fa-2x text-primary") %>
+                    <strong class="text-primary">Forgot your password?</strong>
+                  </h3>
                 </div>
                 <div class="panel-body">
 
-                    <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
+                  <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
                     <%= devise_error_messages! %>
 
                     <div class="form-group">

@@ -11,7 +11,7 @@
         <%= project_rule.rule.name %>
       <% else %>
       <%= link_to project_rule.rule.name, edit_setup_project_rule_path(project, project_rule) ,
-              class: project_rule.invalid? ? 'btn btn-danger' :''  %> <%= project_rule.invalid? ? icon('fas', 'exclamation-triangle text-danger fa-lg') :''%>
+              class: project_rule.invalid? ? 'btn btn-danger' :''  %> <%= project_rule.invalid? ? icon('fas', 'exclamation-triangle', class: "text-danger fa-lg") :''%>
        <%end%>
     </td>
 

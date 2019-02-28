@@ -49,7 +49,8 @@ $(document).ready(function() {
   }
 
   $("a.external").each(function() {
-    $(this).append(' <i class="fas fa-external-link-alt external-link"></i> ');
+    // fa5: change to fas and fa-external-link-alt
+    $(this).append(' <i class="fa fa-external-link external-link"></i> ');
   });
 
   $("form[data-update-target]").on("ajax:complete", function(
