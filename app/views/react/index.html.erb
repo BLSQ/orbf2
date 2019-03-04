@@ -1,0 +1,21 @@
+<html>
+  <head>
+    <meta charset="UTF-8"/>
+    <title>Async POC</title>
+    <%= csrf_meta_tags %>
+
+    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <style>
+     i#color {
+       display: block;
+       width: 10px;
+       height: 10px;
+     }
+    </style>
+    <%= javascript_pack_tag 'hello_react' %>
+  </head>
+  <body>
+    <div id='js-fetch-button'></div>
+    <div id="root"></div>
+  </body>
+</html>
