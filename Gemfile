@@ -50,7 +50,10 @@ gem "simple_form"
 gem "sprockets", "~> 3.7.2"
 gem "turbolinks", "~> 5"
 gem "uglifier", ">= 1.3.0"
-gem 'webpacker', '~> 3.5'
+# Use webpack to manage app-like JavaScript modules in Rails
+# [webpacker](https://github.com/rails/webpacker)
+gem "webpacker", "~> 4.0.1"
+
 
 ## Authentication
 
