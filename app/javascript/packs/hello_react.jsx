@@ -65,17 +65,45 @@ const InvoiceHeader = function(props) {
   )
 };
 
+const Solution = function(props) {
+    const safeData = (props.rowData || {})
+    const formattedSolution = numberFormatter.format(safeData.solution);
+    if (safeData.not_exported) {
+        return <del>{formattedSolution}</del>
+    } else {
+        return <>{formattedSolution}</>
+    }
+}
+
 const TableRow = function(props) {
     var row = props.row;
     // TODO:
-    // - not_exported?
     // - Rounded for display
+    const isInput = (rowData) =>
+          (rowData || {}).is_input
+    const isOutput = (rowData) =>
+          (rowData || {}).is_output
+    const isFormula = function(rowData) {
+        var safeData = (rowData || {})
+        return !!safeData.expression && !!safeData.dhis2_data_element
+    }
+
+    const classForRowData = function(rowData) {
+        if (isInput(rowData))
+            return "formula-input"
+        if (isOutput(rowData))
+            return "formula-output"
+        return ""
+    }
+    const solution = function(rowData) {
+
+    }
   return (
     <tr>
       {Object.keys(row.cells).map(function(key, index) {
-          return <td>
+          return <td className={classForRowData(row.cells[key])}>
               <span className="num-span" title={key}>
-                    {numberFormatter.format(row.cells[key].solution)}
+                    <Solution rowData={row.cells[key]} />
                   </span>
           </td>
        })}
