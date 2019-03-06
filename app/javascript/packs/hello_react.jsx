@@ -9,9 +9,14 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 
+const locale = undefined;
+
 // Used for the natural sorting, a collator is suggested to be used for large arrays.
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/localeCompare#Performance
-const collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
+const collator = new Intl.Collator(locale, {numeric: true, sensitivity: 'base'});
+
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat
+const numberFormatter = new Intl.NumberFormat(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: false});
 
 
 const FetchButton = function(props) {
@@ -27,7 +32,7 @@ const FetchButton = function(props) {
   }
 
   return (
-    <div class="pull-right">
+    <div className="pull-right">
       <i id="color"></i>
       <button onClick={handleClick}>
         Fetchez la vache!
@@ -46,8 +51,8 @@ const InvoiceHeader = function(props) {
       <a name={name + "-" + formatted_date}></a>
       <h2><span>{code}</span> -
         <span title={props.invoice.orgunit_ext_id}> {name} </span>
-        <span class="pull-right">
-          <i class="fa fa-calendar"></i> {props.invoice.period}
+        <span className="pull-right">
+          <i className="fa fa-calendar"></i> {props.invoice.period}
         </span>
       </h2>
     </div>
@@ -55,11 +60,11 @@ const InvoiceHeader = function(props) {
 };
 
 const TableRow = function(props) {
-  var row = props.row;
+    var row = props.row;
   return (
     <tr>
       {Object.keys(row.cells).map(function(key, index) {
-         return <td>{row.cells[key].solution}</td>
+          return <td>{numberFormatter.format(row.cells[key].solution)}</td>
        })}
       <td>{row.activity.name}</td>
     </tr>
