@@ -9,18 +9,6 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 
-const Hello = props => (
-  <div>Hello {props.name}!</div>
-)
-
-Hello.defaultProps = {
-  name: 'David'
-}
-
-Hello.propTypes = {
-  name: PropTypes.string
-}
-
 const FetchButton = function(props) {
   function handleClick(e) {
     var randomColor = "#"+((1<<24)*Math.random()|0).toString(16);
@@ -34,7 +22,7 @@ const FetchButton = function(props) {
   }
 
   return (
-    <div>
+    <div class="pull-right">
       <i id="color"></i>
       <button onClick={handleClick}>
         Fetchez la vache!
@@ -47,13 +35,16 @@ const FetchButton = function(props) {
 const InvoiceHeader = function(props) {
   var name = props.invoice.code;
   var formatted_date = props.invoice.period;
+  var code = props.invoice.code;
   return (
-    <div>
-      <a name="{name}-{formatted_date}"></a>
-      <h2>{name} at {formatted_date}</h2>
-      org unit(s): {props.invoice.orgunit_ext_id} <br />
-      date range: {props.invoice.period} <br />
-      periods: {props.invoice.period} <br />
+    <div className="invoice-container" data-period={props.invoice.period} data-orgunit={props.invoice.orgunit_ext_id} data-code={props.invoice.code}>
+      <a name={name + "-" + formatted_date}></a>
+      <h2><span>{code}</span> -
+        <span title={props.invoice.orgunit_ext_id}> {name} </span>
+        <span class="pull-right">
+          <i class="fa fa-calendar"></i> {props.invoice.period}
+        </span>
+      </h2>
     </div>
   )
 };
@@ -83,11 +74,19 @@ const Table = function(props) {
   const rowKey = function(invoice, row, i) {
     return [invoiceKey(invoice), row.activity.code, i].join("-");
   }
+    let headers = {};
+    if (invoice.activity_items[0]) {
+        headers = invoice.activity_items[0].cells || {};
+    }
+    console.log(headers)
   return (
     <table className="table invoice num-span-table table-striped">
       <thead>
         <tr>
-
+          {Object.keys(headers).map(function(key) {
+              return <th>{key}</th>;
+          })}
+          <th>Activity</th>
         </tr>
       </thead>
       <tbody>
