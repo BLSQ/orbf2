@@ -18,6 +18,12 @@ const collator = new Intl.Collator(locale, {numeric: true, sensitivity: 'base'})
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat
 const numberFormatter = new Intl.NumberFormat(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: false});
 
+// Poor man's version of Rails's humanize
+const humanize = (string) =>
+      (string || "").
+      replace("_", " ").
+      split(" ").
+      map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(" ")
 
 const FetchButton = function(props) {
   function handleClick(e) {
@@ -49,8 +55,8 @@ const InvoiceHeader = function(props) {
   return (
     <div className="invoice-container" data-period={props.invoice.period} data-orgunit={props.invoice.orgunit_ext_id} data-code={props.invoice.code}>
       <a name={name + "-" + formatted_date}></a>
-      <h2><span>{code}</span> -
-        <span title={props.invoice.orgunit_ext_id}> {name} </span>
+      <h2><span>{humanize(code)}</span> -
+        <span title={props.invoice.orgunit_ext_id}> {humanize(name)} </span>
         <span className="pull-right">
           <i className="fa fa-calendar"></i> {props.invoice.period}
         </span>
@@ -61,10 +67,17 @@ const InvoiceHeader = function(props) {
 
 const TableRow = function(props) {
     var row = props.row;
+    // TODO:
+    // - not_exported?
+    // - Rounded for display
   return (
     <tr>
       {Object.keys(row.cells).map(function(key, index) {
-          return <td>{numberFormatter.format(row.cells[key].solution)}</td>
+          return <td>
+              <span className="num-span" title={key}>
+                    {numberFormatter.format(row.cells[key].solution)}
+                  </span>
+          </td>
        })}
       <td>{row.activity.name}</td>
     </tr>
@@ -93,12 +106,14 @@ const Table = function(props) {
     rows = rows.sort((a,b) =>
                      collator.compare(a.activity.code, b.activity.code)
                     )
+    // TODO:
+    // - new_setup_project_formula_mapping_path
   return (
     <table className="table invoice num-span-table table-striped">
       <thead>
         <tr>
           {Object.keys(headers).map(function(key) {
-              return <th>{key}</th>;
+              return <th title={key}>{humanize(key)}</th>;
           })}
           <th>Activity</th>
         </tr>
