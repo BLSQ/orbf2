@@ -68,17 +68,20 @@ const InvoiceHeader = function(props) {
 const Solution = function(props) {
     const safeData = (props.rowData || {})
     const formattedSolution = numberFormatter.format(safeData.solution);
-    if (safeData.not_exported) {
-        return <del>{formattedSolution}</del>
-    } else {
-        return <>{formattedSolution}</>
+    let parts = []
+    if (parseFloat(formattedSolution) != parseFloat(safeData.solution)) {
+        parts.push(<span title={"Rounded for " + safeData.solution} className="text-danger" role="button">*</span>)
     }
+    if (safeData.not_exported) {
+        parts.push(<del>{formattedSolution}</del>)
+    } else {
+        parts.push(<>{formattedSolution}</>)
+    }
+    return parts
 }
 
 const TableRow = function(props) {
     var row = props.row;
-    // TODO:
-    // - Rounded for display
     const isInput = (rowData) =>
           (rowData || {}).is_input
     const isOutput = (rowData) =>
