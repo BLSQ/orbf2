@@ -9,6 +9,11 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 
+// Used for the natural sorting, a collator is suggested to be used for large arrays.
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/localeCompare#Performance
+const collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
+
+
 const FetchButton = function(props) {
   function handleClick(e) {
     var randomColor = "#"+((1<<24)*Math.random()|0).toString(16);
@@ -79,6 +84,10 @@ const Table = function(props) {
         headers = invoice.activity_items[0].cells || {};
     }
     console.log(headers)
+    let rows = invoice.activity_items;
+    rows = rows.sort((a,b) =>
+                     collator.compare(a.activity.code, b.activity.code)
+                    )
   return (
     <table className="table invoice num-span-table table-striped">
       <thead>
