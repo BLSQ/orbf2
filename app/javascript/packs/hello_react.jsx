@@ -80,8 +80,7 @@ const Solution = function(props) {
     return parts
 }
 
-const TableRow = function(props) {
-    var row = props.row;
+const Cell = function(props) {
     const isInput = (rowData) =>
           (rowData || {}).is_input
     const isOutput = (rowData) =>
@@ -98,17 +97,23 @@ const TableRow = function(props) {
             return "formula-output"
         return ""
     }
+
+    return <td className={classForRowData(props.rowData)}>
+        <span className="num-span" title={props.header}>
+        <Solution rowData={props.rowData} />
+        </span>
+        </td>
+}
+
+const TableRow = function(props) {
+    var row = props.row;
     const solution = function(rowData) {
 
     }
   return (
     <tr>
       {Object.keys(row.cells).map(function(key, index) {
-          return <td className={classForRowData(row.cells[key])}>
-              <span className="num-span" title={key}>
-                    <Solution rowData={row.cells[key]} />
-                  </span>
-          </td>
+          return <Cell header={key} rowData={row.cells[key]} />
        })}
       <td>{row.activity.name}</td>
     </tr>
