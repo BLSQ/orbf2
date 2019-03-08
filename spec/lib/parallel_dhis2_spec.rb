@@ -251,9 +251,17 @@ RSpec.describe ParallelDhis2 do
       expect(client.user).to eq("admin")
     end
 
-    it "#password" do
-      client = described_class.new(dhis2_client)
-      expect(client.password).to eq("district")
+    describe "#password" do
+      it "handles normal ones" do
+        client = described_class.new(dhis2_client)
+        expect(client.password).to eq("district")
+      end
+
+      it "with html entities in it" do
+        weird_chars_password = "&*/\d"
+        client = described_class.new(dhis2_client(password: weird_chars_password))
+        expect(client.password).to eq(weird_chars_password)
+      end
     end
 
     describe "#url" do

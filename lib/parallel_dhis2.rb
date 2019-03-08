@@ -126,7 +126,7 @@ class ParallelDhis2
     end
 
     def password
-      base_uri.password
+      CGI.unescape(base_uri.password)
     end
 
     def url
