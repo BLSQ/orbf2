@@ -49,6 +49,7 @@ $(document).ready(function() {
   }
 
   $("a.external").each(function() {
+    // fa5: change to fas and fa-external-link-alt
     $(this).append(' <i class="fa fa-external-link external-link"></i> ');
   });
 

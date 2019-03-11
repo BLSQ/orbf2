@@ -132,4 +132,47 @@ RSpec.describe Setup::InvoicesController, type: :controller do
         .to_return(status: 200, body: "")
     end
   end
+
+  describe Setup::InvoicesController::OrgUnitLimiter do
+    describe ".from_params" do
+      it "can handle empty params" do
+        limiter = described_class.from_params({})
+        expect(limiter.active?).to be false
+      end
+
+      it "can handle spaces" do
+        limiter = described_class.from_params(selected_org_units: "ding, dong, dang")
+        expect(limiter.active?).to be true
+        expect(limiter.org_unit_ids).to eq(["ding", "dong", "dang"])
+      end
+
+      it "can handle normal" do
+        limiter = described_class.from_params(selected_org_units: "1,2,3")
+        expect(limiter.active?).to be true
+        expect(limiter.org_unit_ids).to eq(["1","2","3"])
+      end
+    end
+
+    describe "#has_org_unit?" do
+      subject { described_class.new(["ABC", "def", "ghi"]) }
+      it { expect(subject.has_org_unit?("not-in-it")).to be false }
+      it { expect(subject.has_org_unit?("def")).to be true }
+      it { expect(subject.has_org_unit?("abc")).to be false }
+      it { expect(subject.has_org_unit?("ABC")).to be true }
+    end
+
+    describe "#to_param" do
+      it("normal") {
+        expect(described_class.new(["abc", "def"]).to_param).to eq(selected_org_units: "abc,def")
+      }
+
+      it("empty") {
+        expect(described_class.new([]).to_param).to eq({})
+      }
+
+      it("nil") {
+        expect(described_class.new(nil).to_param).to eq({})
+      }
+    end
+  end
 end
