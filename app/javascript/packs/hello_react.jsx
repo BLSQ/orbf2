@@ -8,6 +8,7 @@ import "babel-polyfill"
 import React from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
+import Button from '@material-ui/core/Button';
 
 const locale = undefined;
 
@@ -40,9 +41,9 @@ const FetchButton = function(props) {
   return (
     <div className="pull-right">
       <i id="color"></i>
-      <button onClick={handleClick}>
+      <Button variant="contained" color="primary" onClick={handleClick}>
         Fetchez la vache!
-      </button>
+      </Button>
     </div>
   )
 
