@@ -59,7 +59,9 @@
 </div>
   <div class="col-md-6" id="target_entity_groups_selection"></div>
 </div>
-
+<%= f.label :include_main_orgunit %>
+<%= f.input :include_main_orgunit %>
+<%= f.hint "For zone packages, check this one to include the main orgunit also as target for the package and specified the 'Multiple entity by contract group belonging to groupset?'" %>
 
 <%= f.association :states, collection: package.project.states, as: :check_boxes %>
 
