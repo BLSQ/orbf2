@@ -52,7 +52,8 @@ class MapProjectToOrbfProject
       matching_groupset_ext_ids:     package.groupsets_ext_refs,
       dataset_ext_ids:               package.package_states.map(&:ds_external_reference).compact,
       activities:                    map_activities(package.activities, package.states),
-      rules:                         map_rules(package.rules)
+      rules:                         map_rules(package.rules),
+      include_main_orgunit:          package.include_main_orgunit
     )
   end
 

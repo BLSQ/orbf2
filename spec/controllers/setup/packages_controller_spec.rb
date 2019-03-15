@@ -61,30 +61,30 @@ RSpec.describe Setup::PackagesController, type: :controller do
         "project_id"    => project.id,
         "data_elements" => { project.state(:tarif).id.to_s => { external_reference: "FTRrcoaog83" } },
         "package"       => {
-          "name"               => "azeaze",
-          "state_ids"          => state_ids,
-          "frequency"          => "monthly",
-          "main_entity_groups"      => ["entityid1"],
-          "target_entity_groups"      => [],
-          "groupsets_ext_refs" => %w[groupsets_ext_ref1 groupsets_ext_ref2]
+          "name"                 => "azeaze",
+          "state_ids"            => state_ids,
+          "frequency"            => "monthly",
+          "main_entity_groups"   => ["entityid1"],
+          "target_entity_groups" => [],
+          "groupsets_ext_refs"   => %w[groupsets_ext_ref1 groupsets_ext_ref2]
         }
       }
 
       package = assigns(:package)
 
-      groups_set_refs = ["sample_groupset_ext", "other_groupset_ext"]
+      groups_set_refs = %w[sample_groupset_ext other_groupset_ext]
 
       post :update, params: {
         "project_id"    => project.id,
-        "id" => package.id,
+        "id"            => package.id,
         "data_elements" => { project.state(:tarif).id.to_s => { external_reference: "FTRrcoaog83" } },
         "package"       => {
-          "name"               => "new name",
-          "state_ids"          => state_ids.slice(0, 2),
-          "frequency"          => "monthly",
-          "main_entity_groups"      => ["entityid1"],
-          "target_entity_groups"      => [],
-          "groupsets_ext_refs" => groups_set_refs
+          "name"                 => "new name",
+          "state_ids"            => state_ids.slice(0, 2),
+          "frequency"            => "monthly",
+          "main_entity_groups"   => ["entityid1"],
+          "target_entity_groups" => [],
+          "groupsets_ext_refs"   => groups_set_refs
         }
       }
 
@@ -116,34 +116,38 @@ RSpec.describe Setup::PackagesController, type: :controller do
         "project_id"    => project.id,
         "data_elements" => { project.state(:tarif).id.to_s => { external_reference: "FTRrcoaog83" } },
         "package"       => {
-          "name"               => "azeaze",
-          "state_ids"          => state_ids,
-          "frequency"          => "monthly",
-          "main_entity_groups"      => ["entityid1"],
-          "target_entity_groups"      => ["sub_entityid1"],
-          "groupsets_ext_refs" => %w[groupsets_ext_ref1 groupsets_ext_ref2]
+          "name"                 => "azeaze",
+          "state_ids"            => state_ids,
+          "frequency"            => "monthly",
+          "main_entity_groups"   => ["entityid1"],
+          "target_entity_groups" => ["sub_entityid1"],
+          "groupsets_ext_refs"   => %w[groupsets_ext_ref1 groupsets_ext_ref2],
+          "include_main_orgunit" => true
         }
       }
 
       package = assigns(:package)
+      expect(package.include_main_orgunit).to eq(true)
 
-      groups_set_refs = ["sample_groupset_ext", "other_groupset_ext"]
+      groups_set_refs = %w[sample_groupset_ext other_groupset_ext]
 
       post :update, params: {
         "project_id"    => project.id,
-        "id" => package.id,
+        "id"            => package.id,
         "data_elements" => { project.state(:tarif).id.to_s => { external_reference: "FTRrcoaog83" } },
         "package"       => {
-          "name"               => "new name",
-          "state_ids"          => state_ids.slice(0, 2),
-          "frequency"          => "monthly",
-          "main_entity_groups"      => ["entityid1"],
-          "target_entity_groups"      => ["sub_entityid1"],
-          "groupsets_ext_refs" => groups_set_refs
+          "name"                 => "new name",
+          "state_ids"            => state_ids.slice(0, 2),
+          "frequency"            => "monthly",
+          "main_entity_groups"   => ["entityid1"],
+          "target_entity_groups" => ["sub_entityid1"],
+          "groupsets_ext_refs"   => groups_set_refs,
+          "include_main_orgunit" => false
         }
       }
 
       package.reload
+      expect(package.include_main_orgunit).to eq(false)
       expect(package.groupsets_ext_refs).to eq(groups_set_refs)
       expect(package.main_entity_groups.map(&:organisation_unit_group_ext_ref)).to eq(["entityid1"])
       expect(package.target_entity_groups.map(&:organisation_unit_group_ext_ref)).to eq(["sub_entityid1"])

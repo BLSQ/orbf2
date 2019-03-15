@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_02_14_095526) do
+ActiveRecord::Schema.define(version: 2019_03_14_135553) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -203,6 +203,7 @@ ActiveRecord::Schema.define(version: 2019_02_14_095526) do
     t.string "kind", default: "single"
     t.string "ogs_reference"
     t.string "groupsets_ext_refs", default: [], array: true
+    t.boolean "include_main_orgunit", default: false, null: false
     t.index ["project_id"], name: "index_packages_on_project_id"
   end
 
@@ -257,9 +258,9 @@ ActiveRecord::Schema.define(version: 2019_02_14_095526) do
     t.integer "original_id"
     t.string "cycle", default: "quarterly", null: false
     t.integer "engine_version", default: 1, null: false
-    t.string "qualifier"
     t.string "default_coc_reference"
     t.string "default_aoc_reference"
+    t.string "qualifier"
     t.index ["project_anchor_id"], name: "index_projects_on_project_anchor_id"
   end
 
