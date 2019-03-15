@@ -7,6 +7,7 @@
 #  data_element_group_ext_ref :string           not null
 #  frequency                  :string           not null
 #  groupsets_ext_refs         :string           default([]), is an Array
+#  include_main_orgunit       :boolean          default(FALSE), not null
 #  kind                       :string           default("single")
 #  name                       :string           not null
 #  ogs_reference              :string

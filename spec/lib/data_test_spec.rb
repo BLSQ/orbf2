@@ -9,21 +9,21 @@ def result(name)
   JSON.parse(File.open(File.join(DataTest::RESULTS_DIR,name)).read)
 end
 
+if DataTest.has_artefacts?
+  puts "Artefacts found (no new download)"
+else
+  puts "Downloading artefacts"
+  WebMock.allow_net_connect!
+  fetcher = DataTest::Fetcher.new
+  fetcher.fetch_config_file
+  fetcher.fetch_all_artefacts
+  WebMock.disable_net_connect!
+end
+
+raise "should have downloaded the test artefacts" if ENV["CI"] && !DataTest.has_artefacts?
+
 RSpec.describe "Data Test", data_test: true do
   if DataTest::Fetcher.can_run?
-    before(:all) do
-      if DataTest.has_artefacts?
-        puts "Artefacts found (no new download)"
-      else
-        puts "Downloading artefacts"
-        WebMock.allow_net_connect!
-        fetcher = DataTest::Fetcher.new
-        fetcher.fetch_config_file
-        fetcher.fetch_all_artefacts
-        WebMock.disable_net_connect!
-      end
-    end
-
     after(:all) do
       unless DataTest.keep_artefacts?
         puts "Removing config file"
