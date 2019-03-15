@@ -43,6 +43,8 @@ RSpec.describe MapProjectToOrbfProject do
 
     orbf_package_formula = orbf_project.packages.last.package_rules.first.formulas.last
     expect(orbf_package_formula.dhis2_mapping).to eq("package_dhis2_out")
+
+    expect(orbf_project.packages.last.include_main_orgunit?).to eq(false)
     # dump with yaml to support circular references
     puts YAML.dump(orbf_project)
   end
@@ -53,6 +55,7 @@ RSpec.describe MapProjectToOrbfProject do
     package = project.packages.build(name: "zone_test", kind: "zone", frequency: "monthly")
     package.package_entity_groups.build(kind: "main", organisation_unit_group_ext_ref: "mainextid")
     package.package_entity_groups.build(kind: "target", organisation_unit_group_ext_ref: "targetextid")
+    package.include_main_orgunit = true
 
     activity1 = project.activities[0]
     activity2 = project.activities[1]
@@ -76,5 +79,6 @@ RSpec.describe MapProjectToOrbfProject do
       activity1.code => "act1",
       activity2.code => "act2"
     )
+    expect(orbf_project.packages.last.include_main_orgunit?).to eq(true)
   end
 end
