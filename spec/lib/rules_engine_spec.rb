@@ -25,6 +25,21 @@ RSpec.describe "Rules Engine" do
         )
         expect(solution["result"]).to eq(0.0)
       end
+
+      it ".stddevp (#{name})" do
+        solution = calculator.solve(
+          "formula" => "stdevp(1,2,3,4)",
+        )
+        expect(solution["formula"]).to eq(1.118033988749895)
+      end
+
+      it ".sqrt (#{name})" do
+        solution = calculator.solve(
+          "formula" => "sqrt(4.0)",
+        )
+        expect(solution["formula"]).to eq(2.0)
+      end
+
     end
   end
 end
