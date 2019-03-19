@@ -8,18 +8,19 @@ GIT
 
 GIT
   remote: https://github.com/BLSQ/hesabu.git
-  revision: e246b4b89f9bd11fa2736c155a82a543bef1c5bb
+  revision: 99b77100edb35ea40cb82b59a0da64008c9d6c2f
   specs:
     hesabu (0.1.14)
 
 GIT
   remote: https://github.com/BLSQ/orbf-rules_engine.git
-  revision: 584b7f70eeeb74c16c5a720d0b52f74c65f9a1ff
+  revision: 93ebdf228c4413b32583a1f1babb1c9cd61a7c72
   specs:
     orbf-rules_engine (0.1.0)
       activesupport
       colorize
       dentaku (= 3.1.0)
+      descriptive_statistics
       dhis2 (= 2.3.8)
       hesabu
 
@@ -139,6 +140,7 @@ GEM
     deep_cloneable (2.3.2)
       activerecord (>= 3.1.0, < 6)
     dentaku (3.1.0)
+    descriptive_statistics (2.5.1)
     devise (4.5.0)
       bcrypt (~> 3.0)
       orm_adapter (~> 0.1)

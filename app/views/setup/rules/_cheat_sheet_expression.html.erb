@@ -10,14 +10,7 @@
 
 <h4>Functions:</h4>
 <%
-score_table = <<DEF
-    SCORE_TABLE(
-      range_a, range_b, then_c,
-      range_b, range_d, then_f,
-      range_d, range_h, then_i,
-      else_z
-    )
-DEF
+
   functions = {
     "IF" => [
       "IF(expression, true_value, false_value)",
@@ -45,11 +38,19 @@ DEF
     ],
     "SUM" => [
       "SUM(a,b,c,...)",
-      "Sums a, b and c. (can als take an <code>ARRAY</code>)"
+      "Sums a, b and c. (can also take an <code>ARRAY</code>)"
     ],
     "AVG" => [
       "AVG(a,b,c,...)",
       "Returns the average of a,b and c (can also take an <code>ARRAY</code>)"
+    ],
+    "STDEVP" => [
+      "STDEVP(a,b,c,...)",
+       <<-EXPL
+      Return the standard deviation based on the entire population given as arguments.
+      The standard deviation is a measure of how widely values are dispersed from the average value (the mean).
+      (can also take an <code>ARRAY</code>)
+      EXPL
     ],
     "EVAL_ARRAY" => [
       "EVAL_ARRAY(key1, arr1, key2, arr2, meta_formula)",
@@ -74,12 +75,24 @@ You could make a formula ('a') which returns <code>ARRAY(1,2,3)</code> and then 
     EXPL
     ],
     "SCORE_TABLE" => [
-      score_table,
-      ""
+      "SCORE_TABLE(range_a, range_b, then_c,range_b, range_d, then_f,range_d, range_h, then_i,else_z)",
+ <<-EXPL
+SCORE_TABLE(
+      range_a, range_b, then_c,
+      range_b, range_d, then_f,
+      range_d, range_h, then_i,
+      else_z
+    )
+Allow compact if else ranges check
+EXPL
     ],
     "SAVE_DIV" => [
       "SAFE_DIV(numerator, denominator)",
       "Returns numerator divided by denominator, but will return 0 when denominator is 0"
+    ],
+    "SQRT" => [
+      "SQRT(number)",
+      "Returns a positive square root. If the the number is negative this will fails. "
     ]
   }
 %>
