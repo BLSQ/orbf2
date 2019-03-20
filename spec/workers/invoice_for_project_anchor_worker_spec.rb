@@ -134,6 +134,7 @@ RSpec.describe InvoiceForProjectAnchorWorker do
     end
 
     it 'can be overridden with env' do
+      skip("The `load` resets the code coverage, this test will pass but code coverage is incorrect")
       current_env = ENV["SDKQ_MAX_CONCURRENT_INVOICE"]
       ENV["SDKQ_MAX_CONCURRENT_INVOICE"] = "10"
       # Force a reload of the file to update throttled settings
