@@ -128,6 +128,25 @@ RSpec.describe InvoiceForProjectAnchorWorker do
     WebMock.reset!
   end
 
+  describe "throttled" do
+    it 'defaults to 3 concurrent' do
+      expect(Sidekiq::Throttled::Registry.get(InvoiceForProjectAnchorWorker).concurrency.limit).to eq(3)
+    end
+
+    it 'can be overridden with env' do
+      current_env = ENV["SDKQ_MAX_CONCURRENT_INVOICE"]
+      ENV["SDKQ_MAX_CONCURRENT_INVOICE"] = "10"
+      # Force a reload of the file to update throttled settings
+      load File.join(Rails.root, "app/workers/invoice_for_project_anchor_worker.rb")
+      expect(Sidekiq::Throttled::Registry.get(InvoiceForProjectAnchorWorker).concurrency.limit).to eq(10)
+      if current_env
+        ENV["SDKQ_MAX_CONCURRENT_INVOICE"] = current_env
+      else
+        ENV.delete("SDKQ_MAX_CONCURRENT_INVOICE")
+      end
+    end
+  end
+
   it "should NOT on non contracted entities" do
     project.entity_group.external_reference = "external_reference"
     project.entity_group.save!
