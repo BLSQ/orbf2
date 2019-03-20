@@ -219,19 +219,7 @@ class Setup::InvoicesController < PrivateController
   end
 
   def render_json(invoicing_request, project)
-  def invoice_output_input_act_class(activity_item, code)
-    begin
-      activity_item.input?(code)
-    rescue StandardError
-      return ""
-    end
-    if activity_item.input?(code)
-      "formula-input"
-    elsif activity_item.output?(code)
-      "formula-output"
-    end
-  end
-  is_input = -> (activity_item, code) {
+    is_input = -> (activity_item, code) {
     begin
       activity_item.input?(code)
     rescue StandardError

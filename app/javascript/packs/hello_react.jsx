@@ -10,6 +10,8 @@ import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import Button from '@material-ui/core/Button';
 
+import PeriodSelector from './period_selector'
+
 const locale = undefined;
 
 // Used for the natural sorting, a collator is suggested to be used for large arrays.
@@ -26,27 +28,29 @@ const humanize = (string) =>
       split(" ").
       map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(" ")
 
-const FetchButton = function(props) {
-  function handleClick(e) {
-    var randomColor = "#"+((1<<24)*Math.random()|0).toString(16);
-    document.getElementById("color").style.backgroundColor = randomColor;
+class FetchButton extends React.Component {
 
-    ReactDOM.render(
-      <InvoiceList invoices={[]} />,
-      document.getElementById('root')
-    );
-    fetchIt();
-  }
+    handleClick = event => {
+        var randomColor = "#"+((1<<24)*Math.random()|0).toString(16);
+        document.getElementById("color").style.backgroundColor = randomColor;
 
-  return (
-    <div className="pull-right">
-      <i id="color"></i>
-      <Button variant="contained" color="primary" onClick={handleClick}>
-        Fetchez la vache!
-      </Button>
-    </div>
-  )
+        ReactDOM.render(
+            <InvoiceList invoices={[]} />,
+            document.getElementById('root')
+        );
+        fetchIt();
+    };
 
+    render() {
+        return (
+            <div className="pull-right">
+                <i id="color"></i>
+                <Button variant="contained" color="primary" onClick={this.handleClick}>
+                Fetchez la vache!
+            </Button>
+                </div>
+        )
+    }
 }
 
 const InvoiceHeader = function(props) {
@@ -228,5 +232,9 @@ document.addEventListener('DOMContentLoaded', () => {
     ReactDOM.render(
         <FetchButton />,
         document.getElementById('js-fetch-button')
+    );
+    ReactDOM.render(
+        <PeriodSelector />,
+        document.getElementById('js-period-selector')
     );
 });
