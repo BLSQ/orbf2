@@ -51,8 +51,8 @@ module Analytics
         states = package.states.select(&:activity_level?)
         (1..5).each_with_object({}) do |level, result|
           states.each do |state|
-            result["#{state.code}_level_#{level}"]= state
-            result["#{state.code}_level_#{level}_quarterly"]= state
+            result["#{state.code}_level_#{level}"] = state
+            result["#{state.code}_level_#{level}_quarterly"] = state
           end
         end
       end
