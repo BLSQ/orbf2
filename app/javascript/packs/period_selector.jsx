@@ -40,24 +40,16 @@ const styles = theme => ({
 class PeriodSelector extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { selected: props.names };
-  }
-
-  state = {
-    selected: [],
-    names: []
   }
 
   handleChange = event => {
-    this.setState({ selected: event.target.value });
     this.props.optionsChanged(event.target.value);
   };
 
   handleDelete = deletedName => () => {
-    this.setState({
-      selected: this.state.selected.filter(name => name != deletedName)
-    });
-  }
+    this.props.optionsChanged(this.props.selected.filter(name => name != deletedName));
+  };
+
   render() {
     const {classes} = this.props;
     return (
@@ -65,7 +57,7 @@ class PeriodSelector extends React.Component {
         <InputLabel htmlFor="select-periods">Periods</InputLabel>
         <Select
           multiple
-          value={this.state.selected}
+          value={this.props.selected}
           onChange={this.handleChange}
           input={<Input id="select-periods" />}
           >
@@ -76,7 +68,7 @@ class PeriodSelector extends React.Component {
           ))}
       </Select>
         <List>
-        {this.state.selected.map(value => (
+        {this.props.selected.map(value => (
           <ListItem className={classes.chips}>
             <Chip key={value} label={value} onDelete={this.handleDelete(value)} className={classes.chip} />
           </ListItem>
