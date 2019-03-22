@@ -63,18 +63,21 @@ $(document).ready(function() {
     $("#" + target).html(data.responseText);
   });
 
-  $(".popper").popover({
-    container: "body",
-    html: true,
-    delay: {
-      show: 0,
-      hide: 0
-    },
-    content: function() {
-      return $(this)
-        .find(".popper-content")
-        .html();
-    }
+  $(document).on( "click", ".popper", function(e) {
+    $(this).popover({
+      container: "body",
+      html: true,
+      delay: {
+        show: 0,
+        hide: 0
+      },
+      content: function() {
+        return $(this)
+          .find(".popper-content")
+          .html();
+      }
+    });
+    $(this).popover("show")
   });
   $(document).on("click", function(e) {
     $('.invoice-container:visible [data-toggle="popover"]').each(function() {
