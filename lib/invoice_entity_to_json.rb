@@ -66,10 +66,11 @@ class InvoiceEntityToJson
         code: activity_item.activity.activity_code,
         name: activity_item.activity.name
       },
-      cells:    activity_item.variables.each_with_object({}) do |orbf_var, formulas|
+      cells:    activity_item.variables.map(&:state).uniq.each_with_object({}) do |code, formulas|
+        orbf_var = activity_item.variable(code)
+        next unless orbf_var
         key = orbf_var.formula&.code || orbf_var.state
         next unless activity_item.solution[key]
-
         activity_state = indexed_project.lookup_activity_state(orbf_var)
         cell = {
           key:                     orbf_var.key,
