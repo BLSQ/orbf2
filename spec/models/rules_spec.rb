@@ -151,10 +151,15 @@ RSpec.describe Rule, kind: :model do
       claimed
       claimed_is_null
       claimed_level_1
+      claimed_level_1_quarterly
       claimed_level_2
+      claimed_level_2_quarterly
       claimed_level_3
+      claimed_level_3_quarterly
       claimed_level_4
+      claimed_level_4_quarterly
       claimed_level_5
+      claimed_level_5_quarterly
       difference_percentage
       month_of_quarter
       month_of_year
@@ -163,17 +168,27 @@ RSpec.describe Rule, kind: :model do
       tarif
       tarif_is_null
       tarif_level_1
+      tarif_level_1_quarterly
       tarif_level_2
+      tarif_level_2_quarterly
       tarif_level_3
+      tarif_level_3_quarterly
       tarif_level_4
+      tarif_level_4_quarterly
       tarif_level_5
+      tarif_level_5_quarterly
       verified
       verified_is_null
       verified_level_1
+      verified_level_1_quarterly
       verified_level_2
+      verified_level_2_quarterly
       verified_level_3
+      verified_level_3_quarterly
       verified_level_4
+      verified_level_4_quarterly
       verified_level_5
+      verified_level_5_quarterly
     ].freeze
 
     it "should return all states and scoped states " do
@@ -390,10 +405,15 @@ RSpec.describe Rule, kind: :model do
         claimed
         claimed_is_null
         claimed_level_1
+        claimed_level_1_quarterly
         claimed_level_2
+        claimed_level_2_quarterly
         claimed_level_3
+        claimed_level_3_quarterly
         claimed_level_4
+        claimed_level_4_quarterly
         claimed_level_5
+        claimed_level_5_quarterly
         claimed_zone_main_orgunit
         fosa_attributed_points
         month_of_quarter
