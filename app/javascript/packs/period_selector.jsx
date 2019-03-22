@@ -14,19 +14,6 @@ import Chip from '@material-ui/core/Chip';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 
-const names = [
-    'Oliver Hansen',
-    'Van Henry',
-    'April Tucker',
-    'Ralph Hubbard',
-    'Omar Alexander',
-    'Carlos Abbott',
-    'Miriam Wagner',
-    'Bradley Wilkerson',
-    'Virginia Andrews',
-    'Kelly Snyder',
-];
-
 const styles = theme => ({
   root: {
     display: 'flex',
@@ -51,46 +38,52 @@ const styles = theme => ({
 
 
 class PeriodSelector extends React.Component {
-    state = {
-        selected: [],
-    }
+  constructor(props) {
+    super(props);
+    this.state = { selected: props.names };
+  }
 
-    handleChange = event => {
-        this.setState({ selected: event.target.value });
-    };
+  state = {
+    selected: [],
+    names: []
+  }
 
-    handleDelete = deletedName => () => {
-        this.setState({
-            selected: this.state.selected.filter(name => name != deletedName)
-        });
-    }
+  handleChange = event => {
+    this.setState({ selected: event.target.value });
+    this.props.optionsChanged(event.target.value);
+  };
 
-    render() {
-        const {classes} = this.props;
-        return (
-            <FormControl className={classes.formControl}>
-              <InputLabel htmlFor="select-periods">Periods</InputLabel>
-              <Select
-                multiple
-                value={this.state.selected}
-                onChange={this.handleChange}
-                input={<Input id="select-periods" />}
-                >
-                {names.map(name => (
-                    <MenuItem key={name} value={name}>
-                      {name}
-                    </MenuItem>
-                ))}
-            </Select>
-                <List>
-                {this.state.selected.map(value => (
-                    <ListItem className={classes.chips}>
-                      <Chip key={value} label={value} onDelete={this.handleDelete(value)} className={classes.chip} />
-                    </ListItem>
-                ))}
-            </List>
-                </FormControl>
-        )
-    }
+  handleDelete = deletedName => () => {
+    this.setState({
+      selected: this.state.selected.filter(name => name != deletedName)
+    });
+  }
+  render() {
+    const {classes} = this.props;
+    return (
+      <FormControl className={classes.formControl}>
+        <InputLabel htmlFor="select-periods">Periods</InputLabel>
+        <Select
+          multiple
+          value={this.state.selected}
+          onChange={this.handleChange}
+          input={<Input id="select-periods" />}
+          >
+          {this.props.names.map(name => (
+            <MenuItem key={name} value={name}>
+              {name}
+            </MenuItem>
+          ))}
+      </Select>
+        <List>
+        {this.state.selected.map(value => (
+          <ListItem className={classes.chips}>
+            <Chip key={value} label={value} onDelete={this.handleDelete(value)} className={classes.chip} />
+          </ListItem>
+        ))}
+      </List>
+        </FormControl>
+    );
+  }
 }
 export default withStyles(styles, { withTheme: true })(PeriodSelector);

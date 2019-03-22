@@ -3,15 +3,15 @@
 // of the page.
 
 
-import "babel-polyfill"
+import "babel-polyfill";
 
-import React from 'react'
-import ReactDOM from 'react-dom'
-import PropTypes from 'prop-types'
+import React from 'react';
+import ReactDOM from 'react-dom';
+import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
 
-import PeriodSelector from './period_selector'
-
+import PeriodSelector from './period_selector';
+import InvoiceList from './invoice_list';
 const locale = undefined;
 
 // Used for the natural sorting, a collator is suggested to be used for large arrays.
@@ -24,7 +24,7 @@ const numberFormatter = new Intl.NumberFormat(locale, { minimumFractionDigits: 2
 // Poor man's version of Rails's humanize
 const humanize = (string) =>
       (string || "").
-      replace("_", " ").
+      replace(/_/g, " ").
       split(" ").
       map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(" ")
 
@@ -142,7 +142,6 @@ const Table = function(props) {
     if (invoice.activity_items[0]) {
         headers = invoice.activity_items[0].cells || {};
     }
-    console.log(headers)
     let rows = invoice.activity_items;
     rows = rows.sort((a,b) =>
                      collator.compare(a.activity.code, b.activity.code)
@@ -191,7 +190,7 @@ const TotalItems = function(props) {
 
 }
 
-const Invoice = function(props) {
+export const Invoice = function(props) {
   return (
     <div>
       <InvoiceHeader invoice={props.invoice} />
@@ -199,19 +198,6 @@ const Invoice = function(props) {
       <TotalItems items={props.invoice.total_items} />
     </div>
   )
-}
-
-const InvoiceList = function(props) {
-  const numbers = props.numbers;
-
-  const invoices = props.invoices.map((invoice) =>
-    <Invoice key={invoiceKey(invoice)} invoice={invoice} />
-  );
-  return (
-    <div>
-      {invoices}
-    </div>
-  );
 }
 
 const getJSON = async function(url) {
@@ -232,9 +218,5 @@ document.addEventListener('DOMContentLoaded', () => {
     ReactDOM.render(
         <FetchButton />,
         document.getElementById('js-fetch-button')
-    );
-    ReactDOM.render(
-        <PeriodSelector />,
-        document.getElementById('js-period-selector')
     );
 });
