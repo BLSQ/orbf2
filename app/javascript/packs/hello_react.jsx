@@ -125,7 +125,7 @@ const Cell = withStyles(cellStyles)(function(props) {
 const SelectedCell = function(props) {
   return <tr>
            <td colSpan={props.rowSpan}>
-             <ul>
+             <ul className="col-sm-6">
                <li>{props.cell.key}</li>
                <li>
                  <code>
@@ -166,11 +166,17 @@ class TableRow extends React.Component {
   }
 
   cellClicked = cellKey => {
-    this.setState({
-      selectedHeader: this.state.selectedHeader ? null: cellKey,
-      selectedCell: this.state.selectedCell ? null : this.props.row.cells[cellKey]
-    });
-    console.log(this.props.row.cells[cellKey]);
+    if (this.state.selectedHeader === cellKey) {
+      this.setState({
+        selectedHeader: null,
+        selectedCell: null,
+      });
+    } else {
+      this.setState({
+        selectedHeader: cellKey,
+        selectedCell: this.props.row.cells[cellKey]
+      });
+    }
   }
 
   state = {
