@@ -10,7 +10,7 @@ import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
 import Collapse from '@material-ui/core/Collapse';
-
+import classNames from 'classnames';
 import PeriodSelector from './period_selector';
 import InvoiceList from './invoice_list';
 const locale = undefined;
@@ -115,7 +115,7 @@ const Cell = withStyles(cellStyles)(function(props) {
   const cellClicked = (event, header) => {
     props.cellClicked(props.header);
   };
-  return <td onClick={cellClicked} className={props.selected ? classes.selected : null}>
+  return <td onClick={cellClicked} className={classNames(classForRowData(props.rowData), props.selected ? classes.selected : null)}>
            <span className="num-span" title={props.header}>
              <Solution rowData={props.rowData} />
            </span>
@@ -123,39 +123,42 @@ const Cell = withStyles(cellStyles)(function(props) {
 });
 
 const SelectedCell = function(props) {
-  return <tr>
+  return <tr key={"explanation-" + props.header}>
            <td colSpan={props.rowSpan}>
-             <ul className="col-sm-6">
-               <li>{props.cell.key}</li>
-               <li>
-                 <code>
-                   {props.cell.key}
-                 </code>
-               </li>
-               {props.cell.dhis2_data_element && (
+             <div className="col-sm-6">
+               <h3>{humanize(props.header)}</h3>
+               <ul key="bla" className="col-sm-6">
+                 <li>{props.rowData.key}</li>
                  <li>
-                   {props.cell.expression}
+                   <code>
+                     {props.rowData.key}
+                   </code>
                  </li>
-               )}
-               {props.cell.state && (
-                 <li>
-                   Mapping : {props.cell.state.ext_id} - {props.cell.state.kind}  - {props.cell.state.ext_id}
-                 </li>
-               )}
-               {props.cell.dhis2_data_element && (
-                 <li>
-                   {props.cell.dhis2_data_element}
-                 </li>
-               )}
-               {(props.cell.expression && props.cell.dhis2_data_element) && (
-                 <>
-                   <h3>Step by step explanations</h3>
-                   <pre>{props.cell.key} = {props.cell.instantiated_expression}</pre>
-                   <pre>{props.cell.key} = {props.cell.substituted}</pre>
-                   <pre>{props.cell.key} = {props.cell.solution}</pre>
-                 </>
-               )}
-             </ul>
+                 {props.rowData.dhis2_data_element && (
+                   <li>
+                     {props.rowData.expression}
+                   </li>
+                 )}
+                 {props.rowData.state && (
+                   <li>
+                     Mapping : {props.rowData.state.ext_id} - {props.rowData.state.kind}  - {props.rowData.state.ext_id}
+                   </li>
+                 )}
+                 {props.rowData.dhis2_data_element && (
+                   <li>
+                     {props.rowData.dhis2_data_element}
+                   </li>
+                 )}
+                 {(props.rowData.expression && props.rowData.dhis2_data_element) && (
+                   <>
+                     <h3>Step by step explanations</h3>
+                     <pre>{props.header + " = " + props.rowData.instantiated_expression}</pre>
+                     <pre>{props.header + " = " + props.rowData.substituted}</pre>
+                     <pre>{props.header + " = " + props.rowData.solution}</pre>
+                   </>
+                 )}
+               </ul>
+             </div>
            </td>
          </tr>;
 };
@@ -187,7 +190,7 @@ class TableRow extends React.Component {
   render() {
     const colSpan = Object.keys(this.props.row.cells).length +1;
     return (
-      [
+      <>
         <tr key={"row-data"}>
           {Object.keys(this.props.row.cells).map((key, index) => {
             return <Cell key={key}
@@ -197,13 +200,11 @@ class TableRow extends React.Component {
                          rowData={this.props.row.cells[key]} />;
           })}
           <td>{this.props.row.activity.name}</td>
-        </tr>,
-        <>
-          {this.state.selectedCell ?
-           <SelectedCell cell={this.state.selectedCell} rowSpan={colSpan} /> : null
-          }
-        </>
-      ]
+        </tr>
+        {this.state.selectedCell ?
+         <SelectedCell key="ding" header={this.state.selectedHeader} rowData={this.state.selectedCell} rowSpan={colSpan} /> : null
+        }
+      </>
     );
   }
 }
@@ -269,8 +270,7 @@ const TotalItems = function(props) {
                     {value}
                   </div>
                 </div>
-            )}))
-
+            )}));
 }
 
 export const Invoice = function(props) {
