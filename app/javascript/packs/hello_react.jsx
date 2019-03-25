@@ -137,10 +137,23 @@ const SelectedCell = function(props) {
                    {props.cell.expression}
                  </li>
                )}
+               {props.cell.state && (
+                 <li>
+                   Mapping : {props.cell.state.ext_id} - {props.cell.state.kind}  - {props.cell.state.ext_id}
+                 </li>
+               )}
                {props.cell.dhis2_data_element && (
                  <li>
                    {props.cell.dhis2_data_element}
                  </li>
+               )}
+               {(props.cell.expression && props.cell.dhis2_data_element) && (
+                 <>
+                   <h3>Step by step explanations</h3>
+                   <pre>{props.cell.key} = {props.cell.instantiated_expression}</pre>
+                   <pre>{props.cell.key} = {props.cell.substituted}</pre>
+                   <pre>{props.cell.key} = {props.cell.solution}</pre>
+                 </>
                )}
              </ul>
            </td>
@@ -157,6 +170,7 @@ class TableRow extends React.Component {
       selectedHeader: this.state.selectedHeader ? null: cellKey,
       selectedCell: this.state.selectedCell ? null : this.props.row.cells[cellKey]
     });
+    console.log(this.props.row.cells[cellKey]);
   }
 
   state = {
