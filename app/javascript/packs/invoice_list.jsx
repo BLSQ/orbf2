@@ -47,9 +47,6 @@ class InvoiceList extends React.Component {
       return this.state.periods.includes(invoice.period) ||
         this.state.packages.includes(humanize(invoice.code));
     });
-    const invoices = filteredInvoices.map((invoice) => { //
-      return <Invoice key={invoiceKey(invoice)} invoice={invoice} />;
-    });
     const allPeriods = this.allPeriods(this.props.invoices);
     const allPackages = this.allPackages(this.props.invoices);
     const selectedPeriods = this.state.periods;
@@ -58,9 +55,9 @@ class InvoiceList extends React.Component {
     return ([
       <PeriodSelector names={allPeriods} selected={selectedPeriods} optionsChanged={this.periodsChanged} key={"periods"}/>,
       <PeriodSelector names={allPackages} selected={selectedPackages} optionsChanged={this.packagesChanged} key={"packages"}/>,
-      <div>
-        {invoices}
-      </div>
+      filteredInvoices.map((invoice, i) => { //
+        return <Invoice key={invoiceKey(invoice) + i} invoice={invoice} />;
+      })
     ]);
   }
 }

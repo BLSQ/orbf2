@@ -69,8 +69,8 @@ class PeriodSelector extends React.Component {
       </Select>
         <List>
         {this.props.selected.map(value => (
-          <ListItem className={classes.chips}>
-            <Chip key={value} label={value} onDelete={this.handleDelete(value)} className={classes.chip} />
+          <ListItem key={value} className={classes.chips}>
+            <Chip label={value} onDelete={this.handleDelete(value)} className={classes.chip} />
           </ListItem>
         ))}
       </List>

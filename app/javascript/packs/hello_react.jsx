@@ -9,6 +9,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
+import Collapse from '@material-ui/core/Collapse';
 
 import PeriodSelector from './period_selector';
 import InvoiceList from './invoice_list';
@@ -26,7 +27,7 @@ const humanize = (string) =>
       (string || "").
       replace(/_/g, " ").
       split(" ").
-      map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(" ")
+      map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(" ");
 
 class FetchButton extends React.Component {
 
@@ -35,7 +36,7 @@ class FetchButton extends React.Component {
         document.getElementById("color").style.backgroundColor = randomColor;
 
         ReactDOM.render(
-            <InvoiceList invoices={[]} />,
+          <InvoiceList key={"list"} invoices={[]} />,
             document.getElementById('root')
         );
         fetchIt();
@@ -49,7 +50,7 @@ class FetchButton extends React.Component {
                 Fetchez la vache!
             </Button>
                 </div>
-        )
+        );
     }
 }
 
@@ -67,62 +68,93 @@ const InvoiceHeader = function(props) {
         </span>
       </h2>
     </div>
-  )
+  );
 };
 
 const Solution = function(props) {
-    const safeData = (props.rowData || {})
-    const formattedSolution = numberFormatter.format(safeData.solution);
-    let parts = []
-    if (parseFloat(formattedSolution) != parseFloat(safeData.solution)) {
-        parts.push(<span title={"Rounded for " + safeData.solution} className="text-danger" role="button">*</span>)
-    }
-    if (safeData.not_exported) {
-        parts.push(<del>{formattedSolution}</del>)
-    } else {
-        parts.push(<>{formattedSolution}</>)
-    }
-    return parts
+  const safeData = (props.rowData || {});
+  const formattedSolution = numberFormatter.format(safeData.solution);
+  let parts = [];
+  if (parseFloat(formattedSolution) != parseFloat(safeData.solution)) {
+    parts.push(<span title={"Rounded for " + safeData.solution} className="text-danger" role="button">*</span>);
+  }
+  if (safeData.not_exported) {
+    parts.push(<del>{formattedSolution}</del>);
+  } else {
+    parts.push(<>{formattedSolution}</>);
+  }
+  // This needs a key somehow?
+  return (
+    <div>
+      {parts}
+    </div>
+  );
 }
 
 const Cell = function(props) {
-    const isInput = (rowData) =>
-          (rowData || {}).is_input
-    const isOutput = (rowData) =>
-          (rowData || {}).is_output
-    const isFormula = function(rowData) {
-        var safeData = (rowData || {})
-        return !!safeData.expression && !!safeData.dhis2_data_element
-    }
+  const isInput = (rowData) =>
+        (rowData || {}).is_input;
+  const isOutput = (rowData) =>
+        (rowData || {}).is_output;
+  const isFormula = function(rowData) {
+    var safeData = (rowData || {});
+    return !!safeData.expression && !!safeData.dhis2_data_element;
+  };
 
-    const classForRowData = function(rowData) {
-        if (isInput(rowData))
-            return "formula-input"
-        if (isOutput(rowData))
-            return "formula-output"
-        return ""
-    }
+  const classForRowData = function(rowData) {
+    if (isInput(rowData))
+      return "formula-input";
+    if (isOutput(rowData))
+      return "formula-output";
+    return "";
+  };
 
-    return <td className={classForRowData(props.rowData)}>
-        <span className="num-span" title={props.header}>
-        <Solution rowData={props.rowData} />
-        </span>
-        </td>
+  return <td onClick={() => props.cellClicked} className={classForRowData(props.rowData)}>
+           <span className="num-span" title={props.header}>
+             <Solution rowData={props.rowData} />
+           </span>
+         </td>;
 }
 
-const TableRow = function(props) {
-    var row = props.row;
-    const solution = function(rowData) {
+class TableRow extends React.Component {
+  constructor(props) {
+    super(props);
+  }
 
-    }
-  return (
-    <tr>
-      {Object.keys(row.cells).map(function(key, index) {
-          return <Cell header={key} rowData={row.cells[key]} />
-       })}
-      <td>{row.activity.name}</td>
-    </tr>
-  )
+  cellClicked = cellKey => {
+    alert("Clicked!")
+    this.setState({
+      collapsedRow: !this.state.collapsedRow,
+      selectedCell: this.props.row.cells[cellKey]
+    });
+  }
+
+  state = {
+    collapsedRow: false,
+    selectedCell: null,
+  }
+  render() {
+    console.log(this.props);
+    return (
+      [
+        <tr key={"row-data"}>
+          {Object.keys(this.props.row.cells).map((key, index) => {
+            return <Cell key={key} header={key} rowData={this.props.row.cells[key]} />;
+          })}
+          <td>{this.props.row.activity.name}</td>
+        </tr>,
+        <Collapse key="collapse" in={this.state.collapsedRow} timeout="auto" component="div" unmountOnExit>
+          <tr>
+            <td colspan={this.props.row.cells.length + 1}>
+              <code>
+                {this.props.row.cells[Object.keys(this.props.row.cells)[0]].instantiated_expression}
+              </code>
+            </td>
+          </tr>
+        </Collapse>
+      ]
+    );
+  }
 }
 
 const invoiceKey = function(invoice) {
@@ -145,22 +177,22 @@ const Table = function(props) {
     let rows = invoice.activity_items;
     rows = rows.sort((a,b) =>
                      collator.compare(a.activity.code, b.activity.code)
-                    )
+                    );
     // TODO:
-    // - new_setup_project_formula_mapping_path
+  // - new_setup_project_formula_mapping_path
   return (
     <table className="table invoice num-span-table table-striped">
       <thead>
         <tr>
           {Object.keys(headers).map(function(key) {
-              return <th title={key}>{humanize(key)}</th>;
+            return <th key={key} title={key}>{humanize(key)}</th>;
           })}
           <th>Activity</th>
         </tr>
       </thead>
       <tbody>
         {invoice.activity_items.map(function(row,i) {
-           return <TableRow key={rowKey(invoice,row, i)} row={row} />
+          return <TableRow key={rowKey(invoice,row, i)} row={row} />;
          })}
       </tbody>
     </table>
@@ -178,7 +210,7 @@ const TotalItems = function(props) {
                 value = <del>{value}</del>
             }
             return (
-                <div className="container">
+              <div key={'total-item'+i} className="container">
                   <div className="col-md-4">
                     <b>{humanize(item.formula)}</b> :
                   </div>
@@ -192,13 +224,13 @@ const TotalItems = function(props) {
 
 export const Invoice = function(props) {
   return (
-    <div>
-      <InvoiceHeader invoice={props.invoice} />
-      <Table invoice={props.invoice} />
-      <TotalItems items={props.invoice.total_items} />
-    </div>
-  )
-}
+    [
+      <InvoiceHeader key="header" invoice={props.invoice} />,
+      <Table key="invoice" invoice={props.invoice} />,
+      <TotalItems key="total-items" items={props.invoice.total_items} />,
+    ]
+  );
+};
 
 const getJSON = async function(url) {
   const response = await fetch(url);
@@ -207,9 +239,10 @@ const getJSON = async function(url) {
 };
 
 const fetchIt = async function() {
-  const response = await getJSON("cameroon-response-wx4w.json");
+//  const response = await getJSON("cameroon-response-wx4w.json");
+  const response = await getJSON("liberia.json");
   ReactDOM.render(
-    <InvoiceList invoices={response.invoices} />,
+    <InvoiceList key="list" invoices={response.invoices} />,
     document.getElementById('root')
   );
 };
