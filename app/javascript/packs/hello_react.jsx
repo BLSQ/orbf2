@@ -14,6 +14,7 @@ import Collapse from '@material-ui/core/Collapse';
 import PeriodSelector from './period_selector';
 import InvoiceList from './invoice_list';
 const locale = undefined;
+import { withStyles } from '@material-ui/core/styles';
 
 // Used for the natural sorting, a collator is suggested to be used for large arrays.
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/localeCompare#Performance
@@ -74,24 +75,27 @@ const InvoiceHeader = function(props) {
 const Solution = function(props) {
   const safeData = (props.rowData || {});
   const formattedSolution = numberFormatter.format(safeData.solution);
-  let parts = [];
-  if (parseFloat(formattedSolution) != parseFloat(safeData.solution)) {
-    parts.push(<span title={"Rounded for " + safeData.solution} className="text-danger" role="button">*</span>);
-  }
-  if (safeData.not_exported) {
-    parts.push(<del>{formattedSolution}</del>);
-  } else {
-    parts.push(<>{formattedSolution}</>);
-  }
-  // This needs a key somehow?
   return (
-    <div>
-      {parts}
-    </div>
+    <>
+    {(parseFloat(formattedSolution) != parseFloat(safeData.solution)) &&
+     <span title={"Rounded for " + safeData.solution} className="text-danger" role="button">*</span>
+    }
+
+    {safeData.not_exported ? (
+      <del>{formattedSolution}</del>
+    ) : formattedSolution}
+    </>
   );
 }
 
-const Cell = function(props) {
+const cellStyles = theme => ({
+  selected: {
+    fontWeight: 'bold',
+    backgroundColor: 'orange'
+  }
+});
+
+const Cell = withStyles(cellStyles)(function(props) {
   const isInput = (rowData) =>
         (rowData || {}).is_input;
   const isOutput = (rowData) =>
@@ -100,7 +104,7 @@ const Cell = function(props) {
     var safeData = (rowData || {});
     return !!safeData.expression && !!safeData.dhis2_data_element;
   };
-
+  const {classes} = props;
   const classForRowData = function(rowData) {
     if (isInput(rowData))
       return "formula-input";
@@ -108,13 +112,40 @@ const Cell = function(props) {
       return "formula-output";
     return "";
   };
-
-  return <td onClick={() => props.cellClicked} className={classForRowData(props.rowData)}>
+  const cellClicked = (event, header) => {
+    props.cellClicked(props.header);
+  };
+  return <td onClick={cellClicked} className={props.selected ? classes.selected : null}>
            <span className="num-span" title={props.header}>
              <Solution rowData={props.rowData} />
            </span>
          </td>;
-}
+});
+
+const SelectedCell = function(props) {
+  return <tr>
+           <td colSpan={props.rowSpan}>
+             <ul>
+               <li>{props.cell.key}</li>
+               <li>
+                 <code>
+                   {props.cell.key}
+                 </code>
+               </li>
+               {props.cell.dhis2_data_element && (
+                 <li>
+                   {props.cell.expression}
+                 </li>
+               )}
+               {props.cell.dhis2_data_element && (
+                 <li>
+                   {props.cell.dhis2_data_element}
+                 </li>
+               )}
+             </ul>
+           </td>
+         </tr>;
+};
 
 class TableRow extends React.Component {
   constructor(props) {
@@ -122,10 +153,9 @@ class TableRow extends React.Component {
   }
 
   cellClicked = cellKey => {
-    alert("Clicked!")
     this.setState({
-      collapsedRow: !this.state.collapsedRow,
-      selectedCell: this.props.row.cells[cellKey]
+      selectedHeader: this.state.selectedHeader ? null: cellKey,
+      selectedCell: this.state.selectedCell ? null : this.props.row.cells[cellKey]
     });
   }
 
@@ -133,25 +163,26 @@ class TableRow extends React.Component {
     collapsedRow: false,
     selectedCell: null,
   }
+
   render() {
-    console.log(this.props);
+    const colSpan = Object.keys(this.props.row.cells).length +1;
     return (
       [
         <tr key={"row-data"}>
           {Object.keys(this.props.row.cells).map((key, index) => {
-            return <Cell key={key} header={key} rowData={this.props.row.cells[key]} />;
+            return <Cell key={key}
+                         cellClicked={this.cellClicked}
+                         header={key}
+                         selected={key == this.state.selectedHeader}
+                         rowData={this.props.row.cells[key]} />;
           })}
           <td>{this.props.row.activity.name}</td>
         </tr>,
-        <Collapse key="collapse" in={this.state.collapsedRow} timeout="auto" component="div" unmountOnExit>
-          <tr>
-            <td colspan={this.props.row.cells.length + 1}>
-              <code>
-                {this.props.row.cells[Object.keys(this.props.row.cells)[0]].instantiated_expression}
-              </code>
-            </td>
-          </tr>
-        </Collapse>
+        <>
+          {this.state.selectedCell ?
+           <SelectedCell cell={this.state.selectedCell} rowSpan={colSpan} /> : null
+          }
+        </>
       ]
     );
   }
