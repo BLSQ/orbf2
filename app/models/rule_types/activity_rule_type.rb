@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module RuleTypes
   class ActivityRuleType < BaseRuleType
     def initialize(rule)
@@ -50,8 +52,7 @@ module RuleTypes
         if package.monthly?
           (1..12).each do |i|
             monthly_vars = activity_level_states.each_with_object([]) do |formula, result|
-              result << "#{formula.code}_last_#{i}_months_window_values"
-              result << "#{formula.code}_is_null_last_#{i}_months_window_values"
+              push_window_values(result, formula, "months", i)
             end
             var_names.push(*monthly_vars)
           end
@@ -60,8 +61,7 @@ module RuleTypes
         if package.quarterly?
           (1..4).each do |i|
             quarterly_vars = activity_level_states.each_with_object([]) do |formula, result|
-              result << "#{formula.code}_last_#{i}_quarters_window_values"
-              result << "#{formula.code}_is_null_last_#{i}_quarters_window_values"
+              push_window_values(result, formula, "quarters", i)
             end
             var_names.push(*quarterly_vars)
           end
@@ -73,6 +73,13 @@ module RuleTypes
       end
 
       var_names
+    end
+
+    def push_window_values(result, formula, time_unit, i)
+      result << "#{formula.code}_last_#{i}_#{time_unit}_window_values"
+      result << "#{formula.code}_is_null_last_#{i}_#{time_unit}_window_values"
+      result << "#{formula.code}_last_#{i}_#{time_unit}_exclusive_window_values"
+      result << "#{formula.code}_is_null_last_#{i}_#{time_unit}_exclusive_window_values"
     end
 
     def fake_facts
@@ -112,6 +119,7 @@ module RuleTypes
 
     def package_rules_facts
       return {} unless project.new_engine? && package.package_rule
+
       activity_formula_codes = activity_formula_as_values
 
       package_facts = package.package_rule
@@ -126,6 +134,7 @@ module RuleTypes
 
     def package_decision_table_facts
       return {} unless project.new_engine? && package.package_rule
+
       package.package_rule
              .decision_tables
              .each_with_object({})
@@ -144,6 +153,7 @@ module RuleTypes
 
     def zone_facts
       return {} unless package.zone_rule
+
       package.zone_rule
              .formulas
              .each_with_object({}) do |zone_formula, hash|
