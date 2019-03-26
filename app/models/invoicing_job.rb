@@ -33,7 +33,7 @@ class InvoicingJob < ApplicationRecord
   class << self
     def execute(project_anchor, period, orgunit_ref)
       start_time = time
-      invoicing_job = find_invoicing_job(project_anchor, period, orgunit_ref)
+      find_invoicing_job(project_anchor, period, orgunit_ref)
       begin
         yield
       ensure
