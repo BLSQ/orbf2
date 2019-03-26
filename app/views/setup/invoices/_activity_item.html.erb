@@ -23,7 +23,7 @@
             <%end%>
               <ul>
                   <li><%= variable.key %></li>
-                  <li><code><%= variable.expression %></code></li>
+                  <li><span class="expanded-equation"><code><%= variable.expression %></code></span></li>
                   <% activity_state = indexed_project.lookup_activity_state(variable) %>
 
                   <%if variable.dhis2_data_element %>
