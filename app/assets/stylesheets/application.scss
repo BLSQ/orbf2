@@ -91,6 +91,11 @@ input:invalid {
   }
 }
 
+.expanded-equation {
+  word-wrap: break-word;
+  max-width: 500px;
+  display:block
+}
 @media print {
   a[href]:after {
      visibility: hidden;

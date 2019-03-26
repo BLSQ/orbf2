@@ -33,16 +33,13 @@ class InvoicingJob < ApplicationRecord
   class << self
     def execute(project_anchor, period, orgunit_ref)
       start_time = time
-      invoicing_job = find_invoicing_job(project_anchor, period, orgunit_ref)
+      find_invoicing_job(project_anchor, period, orgunit_ref)
       begin
-        puts "FOUND #{invoicing_job.inspect} vs #{period} #{orgunit_ref}"
         yield
       ensure
-        puts "mark_as_processed #{invoicing_job.inspect}"
         find_invoicing_job(project_anchor, period, orgunit_ref)&.mark_as_processed(start_time, time)
       end
     rescue StandardError => err
-      puts "ERROR #{invoicing_job.inspect} #{err.message}"
       find_invoicing_job(project_anchor, period, orgunit_ref)&.mark_as_error(start_time, time, err)
       raise err
     end
