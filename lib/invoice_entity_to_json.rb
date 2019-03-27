@@ -48,6 +48,7 @@ class InvoiceEntityToJson
     total_items = invoice.total_items.sort_by {|total_item| total_item.formula.code }.uniq
     {
       orgunit_ext_id: invoice.orgunit_ext_id,
+      orgunit_name:   pyramid.org_unit(invoice.orgunit_ext_id)&.name,
       period:         invoice.period,
       kind:           invoice.kind,
       code:           invoice.code,
@@ -109,8 +110,12 @@ class InvoiceEntityToJson
     }
   end
 
+  def pyramid
+    @invoice_entity.pyramid
+  end
+
   def contracted?(invoicing_request, project)
-    org_unit = @invoice_entity.pyramid.org_unit(invoicing_request.entity)
+    org_unit = pyramid.org_unit(invoicing_request.entity)
     org_unit.group_ext_ids.include?(project.entity_group.external_reference)
   end
 
