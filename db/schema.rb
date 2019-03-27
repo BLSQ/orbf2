@@ -10,9 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_03_14_135553) do
+ActiveRecord::Schema.define(version: 2019_03_27_104701) do
 
   # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
   enable_extension "uuid-ossp"
 
@@ -155,7 +156,8 @@ ActiveRecord::Schema.define(version: 2019_03_14_135553) do
     t.string "sidekiq_job_ref"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["project_anchor_id", "orgunit_ref", "dhis2_period"], name: "index_invoicing_jobs_on_anchor_ou_period", unique: true
+    t.string "type", default: "InvoicingJob"
+    t.index ["project_anchor_id", "orgunit_ref", "dhis2_period", "type"], name: "index_invoicing_jobs_on_anchor_ou_period", unique: true
     t.index ["project_anchor_id"], name: "index_invoicing_jobs_on_project_anchor_id"
   end
 
@@ -258,9 +260,9 @@ ActiveRecord::Schema.define(version: 2019_03_14_135553) do
     t.integer "original_id"
     t.string "cycle", default: "quarterly", null: false
     t.integer "engine_version", default: 1, null: false
+    t.string "qualifier"
     t.string "default_coc_reference"
     t.string "default_aoc_reference"
-    t.string "qualifier"
     t.index ["project_anchor_id"], name: "index_projects_on_project_anchor_id"
   end
 
