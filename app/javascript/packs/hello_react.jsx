@@ -11,6 +11,7 @@ import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
 import Collapse from '@material-ui/core/Collapse';
 import classNames from 'classnames';
+import humanize from 'string-humanize';
 import InvoiceList from './invoice_list';
 const locale = undefined;
 import { withStyles } from '@material-ui/core/styles';
@@ -28,13 +29,6 @@ const collator = new Intl.Collator(locale, {numeric: true, sensitivity: 'base'})
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat
 const numberFormatter = new Intl.NumberFormat(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: false});
-
-// Poor man's version of Rails's humanize
-const humanize = (string) =>
-      (string || "").
-      replace(/_/g, " ").
-      split(" ").
-      map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(" ");
 
 class FetchButton extends React.Component {
 
