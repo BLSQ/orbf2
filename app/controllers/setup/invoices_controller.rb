@@ -84,9 +84,12 @@ class Setup::InvoicesController < PrivateController
     if invoicing_request.legacy_engine?
       render_legacy_invoice(project, invoicing_request)
     else
+      @json = InvoiceSimulationWorker::Simulation.new(*invoicing_request.to_h.values).call
+      return render "react_invoice"
       render_new_invoice(project, invoicing_request)
     end
   end
+
 
   def render_new_invoice(project, invoicing_request)
     options = Invoicing::InvoicingOptions.new(
@@ -112,11 +115,7 @@ class Setup::InvoicesController < PrivateController
 
     add_contract_warning_if_non_contracted(invoicing_request, project)
 
-    if false
-      render_json(@invoice_entity)
-    else
-      render "new_invoice"
-    end
+    render "new_invoice"
   rescue StandardError => e
     @exception = e
     puts "An error occured during simulation #{e.class.name} #{e.message}" + e.backtrace.join("\n")
@@ -216,11 +215,5 @@ class Setup::InvoicesController < PrivateController
      " (Snaphots last updated on #{project.project_anchor.updated_at.to_date})." \
      " Only simulation will work. Update the group and trigger a dhis2 snaphots." \
      " Note that it will only fix this issue for current or futur periods."
-  end
-
-  def render_json(invoicing_entity)
-    require "invoice_entity_to_json"
-    json = InvoiceEntityToJson.new(invoicing_entity).call
-    render json: json
   end
 end

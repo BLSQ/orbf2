@@ -394,7 +394,7 @@ const getJSON = async function(url) {
 
 const fetchIt = async function() {
 //  const response = await getJSON("cameroon-response-wx4w.json");
-  const response = await getJSON("liberia.json");
+  const response = await getJSON("also_liberia.json");
   ReactDOM.render(
     <InvoiceList key="list" invoices={response.invoices} />,
     document.getElementById('root')
@@ -402,8 +402,16 @@ const fetchIt = async function() {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    ReactDOM.render(
-        <FetchButton />,
-        document.getElementById('js-fetch-button')
-    );
+  const response = JSON.parse(document.getElementById("the-data").innerHTML);
+  ReactDOM.render(
+    <InvoiceList key="list" invoices={response.invoices} />,
+    document.getElementById('root')
+  );
 });
+
+// document.addEventListener('DOMContentLoaded', () => {
+//     ReactDOM.render(
+//         <FetchButton />,
+//         document.getElementById('js-fetch-button')
+//     );
+// });

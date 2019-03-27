@@ -47,4 +47,14 @@ class InvoicingRequest
   def with_details?
     with_details == "1"
   end
+
+  def to_h
+    {
+      entity: entity,
+      period: year_quarter.to_s,
+      project_id: project&.id,
+      with_details: with_details,
+      engine_version: engine_version
+    }
+  end
 end
