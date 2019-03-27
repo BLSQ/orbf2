@@ -1,6 +1,6 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
-import PropTypes from 'prop-types'
+import React from 'react';
+import ReactDOM from 'react-dom';
+import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
 import Input from '@material-ui/core/Input';
@@ -37,7 +37,7 @@ const styles = theme => ({
 });
 
 
-class PeriodSelector extends React.Component {
+class MultiSelectDropdown extends React.Component {
   constructor(props) {
     super(props);
   }
@@ -54,7 +54,7 @@ class PeriodSelector extends React.Component {
     const {classes} = this.props;
     return (
       <FormControl className={classes.formControl}>
-        <InputLabel htmlFor="select-periods">Periods</InputLabel>
+        <InputLabel htmlFor="select-periods">{this.props.name}</InputLabel>
         <Select
           multiple
           value={this.props.selected}
@@ -78,4 +78,4 @@ class PeriodSelector extends React.Component {
     );
   }
 }
-export default withStyles(styles, { withTheme: true })(PeriodSelector);
+export default withStyles(styles, { withTheme: true })(MultiSelectDropdown);

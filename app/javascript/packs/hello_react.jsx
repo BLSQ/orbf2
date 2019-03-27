@@ -11,7 +11,6 @@ import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
 import Collapse from '@material-ui/core/Collapse';
 import classNames from 'classnames';
-import PeriodSelector from './period_selector';
 import InvoiceList from './invoice_list';
 const locale = undefined;
 import { withStyles } from '@material-ui/core/styles';
