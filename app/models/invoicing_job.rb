@@ -3,7 +3,7 @@
 #
 # Table name: invoicing_jobs
 #
-#  id                :integer          not null, primary key
+#  id                :bigint(8)        not null, primary key
 #  dhis2_period      :string           not null
 #  duration_ms       :integer
 #  errored_at        :datetime
@@ -51,8 +51,12 @@ class InvoicingJob < ApplicationRecord
       Process.clock_gettime(Process::CLOCK_MONOTONIC)
     end
 
+    def scope_for(project_anchor)
+      project_anchor.invoicing_jobs
+    end
+
     def find_invoicing_job(project_anchor, period, orgunit_ref)
-      project_anchor.invoicing_jobs.find_by(
+      scope_for(project_anchor).find_by(
         dhis2_period: period,
         orgunit_ref:  orgunit_ref
       )
