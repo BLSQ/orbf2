@@ -265,16 +265,16 @@ class MaterialTableRow extends React.Component {
     const colSpan = Object.keys(this.props.row.cells).length +1;
     return (
       <>
-        <TableRow key={"row-data"}>
+        <BSTableRow key={"row-data"}>
           {Object.keys(this.props.row.cells).map((key, index) => {
-            return <MaterialCell key={key}
+            return <Cell key={key}
                          cellClicked={this.cellClicked}
                          header={key}
                          selected={key == this.state.selectedHeader}
                          rowData={this.props.row.cells[key]} />;
           })}
           <TableCell>{this.props.row.activity.name}</TableCell>
-        </TableRow>
+        </BSTableRow>
         {this.state.selectedCell ?
          <SelectedCell key="ding" header={this.state.selectedHeader} rowData={this.state.selectedCell} rowSpan={colSpan} /> : null
         }
@@ -313,7 +313,7 @@ const MaterialTable = withStyles({})(function(props) {
         </TableHead>
         <TableBody>
         {invoice.activity_items.map(function(row,i) {
-          return <MaterialTableRow key={rowKey(invoice,row, i)} row={row} />;
+          return <TableRow key={rowKey(invoice,row, i)} row={row} />;
          })}
         </TableBody>
       </Table>
@@ -380,7 +380,7 @@ export const Invoice = function(props) {
   return (
     [
       <InvoiceHeader key="header" invoice={props.invoice} />,
-      <MaterialTable key="invoice" invoice={props.invoice} />,
+      <BSTable key="invoice" invoice={props.invoice} />,
       <TotalItems key="total-items" items={props.invoice.total_items} />,
     ]
   );
