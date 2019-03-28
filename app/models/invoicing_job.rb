@@ -30,22 +30,47 @@
 
 class InvoicingJob < ApplicationRecord
   belongs_to :project_anchor, inverse_of: :invoicing_jobs
+  validates :dhis2_period, presence: true
+  validates :orgunit_ref, presence: true
+
+  class LogSubscriber < ActiveSupport::LogSubscriber
+    def execute(event)
+      found = color(event.payload[:found], CYAN)
+      processed = color(event.payload[:processed], CYAN)
+      info "[InvoicingJob] #{found}"
+      info "[InvoicingJob] #{processed}"
+    end
+  end
+  # If we want the metrics
+  # InvoicingJob::LogSubscriber.attach_to :invoicing_job
 
   class << self
     def execute(project_anchor, period, orgunit_ref)
+      invoicing_job = find_invoicing_job(project_anchor, period, orgunit_ref)
       start_time = time
-      find_invoicing_job(project_anchor, period, orgunit_ref)
-      begin
-        yield
-      ensure
-        find_invoicing_job(project_anchor, period, orgunit_ref)&.mark_as_processed(start_time, time)
+
+      instrument :execute do |payload|
+        begin
+          payload[:found] = "FOUND #{invoicing_job.inspect} vs #{period} #{orgunit_ref}"
+          yield
+        ensure
+          payload[:processed] = "mark_as_processed #{invoicing_job.inspect}"
+          find_invoicing_job(project_anchor, period, orgunit_ref)&.mark_as_processed(start_time, time)
+        end
       end
     rescue StandardError => err
+      warn "ERROR #{invoicing_job.inspect} #{err.message}"
       find_invoicing_job(project_anchor, period, orgunit_ref)&.mark_as_error(start_time, time, err)
       raise err
     end
 
     private
+
+    def instrument(operation, payload = {}, &block)
+      ActiveSupport::Notifications.instrument(
+        "#{operation}.#{self.name.underscore}",
+        payload, &block)
+    end
 
     def time
       Process.clock_gettime(Process::CLOCK_MONOTONIC)
@@ -79,7 +104,6 @@ class InvoicingJob < ApplicationRecord
       save!
     end
     self.reload
-    puts "mark_as_processed requires_new #{self.inspect}"
   end
 
   def mark_as_error(start_time, end_time, err)
