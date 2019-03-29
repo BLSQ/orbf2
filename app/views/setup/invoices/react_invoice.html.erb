@@ -1,4 +1,4 @@
-<%= javascript_pack_tag 'hello_react' %>
+<%= javascript_pack_tag 'simulator' %>
 
 <%= render partial: "form"  %>
 
@@ -32,9 +32,5 @@
   <pre><%= as_pretty_json_string(project_descriptor(@current_project))%></pre>
 </div>
 
-<script id='the-data' type="application/json">
- <%= @json.html_safe %>
-</script>
-
-<div id="root">
+<div id="root" data-url="<%= @simulation_job_url %>">
 </div>

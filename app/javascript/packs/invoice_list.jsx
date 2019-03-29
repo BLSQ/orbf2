@@ -1,15 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
+import humanize from 'string-humanize';
 import MultiSelectDropdown from './multi_select_dropdown';
-import {Invoice} from './hello_react';
-
-// Poor man's version of Rails's humanize
-const humanize = (string) =>
-      (string || "").
-      replace(/_/g, " ").
-      split(" ").
-      map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(" ");
+import {Invoice} from './invoice';
 
 class InvoiceList extends React.Component {
   constructor(props) {
