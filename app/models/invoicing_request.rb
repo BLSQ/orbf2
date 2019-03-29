@@ -24,6 +24,10 @@ class InvoicingRequest
     Periods::YearQuarter.new("#{year}Q#{quarter}")
   end
 
+  def period
+    year_quarter.to_s
+  end
+
   def invoices
     @invoices ||= []
   end
@@ -51,7 +55,7 @@ class InvoicingRequest
   def to_h
     {
       entity: entity,
-      period: year_quarter.to_s,
+      period: period,
       project_id: project&.id,
       with_details: with_details,
       engine_version: engine_version
