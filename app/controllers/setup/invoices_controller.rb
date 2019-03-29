@@ -84,7 +84,7 @@ class Setup::InvoicesController < PrivateController
     if invoicing_request.legacy_engine?
       render_legacy_invoice(project, invoicing_request)
     else
-      if true
+      if Flipper[:use_async_simulation].enabled?(current_user)
         job = project.project_anchor.invoicing_simulation_jobs.first_or_create(
           dhis2_period: invoicing_request.period,
           orgunit_ref:  invoicing_request.entity
@@ -93,7 +93,7 @@ class Setup::InvoicesController < PrivateController
         args = invoicing_request.to_h.merge(simulate_draft: params[:simulate_draft])
         InvoiceSimulationWorker.perform_async(*args.values)
         @simulation_job_url = api_simulation_path(job, token: project.project_anchor.token)
-        return render "react_invoice"
+        return render "async_invoice"
       else
         render_new_invoice(project, invoicing_request)
       end
