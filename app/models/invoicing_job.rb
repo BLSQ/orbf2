@@ -3,7 +3,7 @@
 #
 # Table name: invoicing_jobs
 #
-#  id                :bigint(8)        not null, primary key
+#  id                :integer          not null, primary key
 #  dhis2_period      :string           not null
 #  duration_ms       :integer
 #  errored_at        :datetime
@@ -30,6 +30,8 @@
 
 class InvoicingJob < ApplicationRecord
   belongs_to :project_anchor, inverse_of: :invoicing_jobs
+  has_one_attached :result
+
   validates :dhis2_period, presence: true
   validates :orgunit_ref, presence: true
 
@@ -52,7 +54,7 @@ class InvoicingJob < ApplicationRecord
       instrument :execute do |payload|
         begin
           payload[:found] = "FOUND #{invoicing_job.inspect} vs #{period} #{orgunit_ref}"
-          yield
+          yield(invoicing_job)
         ensure
           payload[:processed] = "mark_as_processed #{invoicing_job.inspect}"
           find_invoicing_job(project_anchor, period, orgunit_ref)&.mark_as_processed(start_time, time)
@@ -92,6 +94,10 @@ class InvoicingJob < ApplicationRecord
     return false if status == "processed" || status == "errored"
     return false if updated_at < 1.day.ago
     true
+  end
+
+  def result_url
+    result&.service_url
   end
 
   def mark_as_processed(start_time, end_time)

@@ -38,4 +38,5 @@ class InvoicingJobSerializer
   attribute :sidekiq_job_ref
 
   attribute :is_alive, &:alive?
+  attribute :result_url, &:result_url
 end

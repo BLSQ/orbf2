@@ -31,6 +31,7 @@ Rails.application.routes.draw do
   namespace :api do
     resources :invoices, only: [:create]
     resources :invoicing_jobs, only: [:index, :create]
+    resources :simulations, only: [:show]
     resources :orgunit_history, only: [:index] do
       collection do
         post :apply
