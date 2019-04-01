@@ -13,7 +13,7 @@ class Setup::InvoicesController < PrivateController
       quarter:        params[:quarter] || (Date.today.to_date.month / 4) + 1,
       entity:         params[:entity],
       with_details:   params[:with_details] || false,
-      engine_version: 3 # TODO: current_project.engine_version
+      engine_version: current_project.engine_version
     )
     if params["calculate"]
       render_invoice(project, invoicing_request)

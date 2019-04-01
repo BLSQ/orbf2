@@ -5,6 +5,11 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 
+// This is currently not in use, could be used as a drop in
+// replacement for the other Table classes, which would use the
+// Material UI instead of the Bootstrap UI.
+//
+// We could also just remove this and never speak of it again.
 
 const MaterialCell = withStyles(cellStyles)(function(props) {
   const isInput = (rowData) =>

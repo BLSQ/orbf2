@@ -8,7 +8,16 @@ import InvoiceList from './invoice_list';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Fade from '@material-ui/core/Fade';
 
-
+// This contains the kick-off point for an asynchronous simulation:
+//
+//       app/views/setup/invoices/async_invoice.html.erb
+//
+// Will include this file, it will also render a root element with the
+// URL to poll in it as a data-element.
+//
+// On load this page will poll that URL every 1 second, and once we
+// have a payload URL to a S3 blob, we will fetch that and create the
+// various invoices.
 const getJSON = async function(url) {
   const response = await fetch(url);
   const json = await response.json();

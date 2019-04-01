@@ -10,6 +10,13 @@ class InvoiceSimulationWorker
     key_suffix:  ->(entity, period, project_id, with_details, engine_version, simulate_draft) { project_id }
   )
 
+  # Roughly these operations will be done:
+  #
+  # 1. Find or create our InvoiceSimulationJob (each simulation will have a job for it)
+  # 2. Execute
+  # 3. Serialize to JSON
+  # 4. Store on S3
+  # 5. Update the job.
   def perform(entity, period, project_id, with_details, engine_version, simulate_draft)
     project = Project.find(project_id)
     InvoicingSimulationJob.execute(project.project_anchor, period, entity) do |job|
@@ -23,6 +30,17 @@ class InvoiceSimulationWorker
     end
   end
 
+  # Why don't we just use `result.attach(io: <some_io>)`?
+  #
+  # We want the json to be gzipped, so S3 can return gzipped JSON and
+  # our payloads are decidedly smaller, unfortunately ActiveStorage
+  # can't help use with that (for now).
+  #
+  # That's why this method exists, it handles the gzipping and
+  # uploading, then hands back the key of the upload to an
+  # `ActiveStorage::Blob` so that we do have a normal
+  # ActiveStorage::Blob and can use `ActiveStorage` as you would
+  # expect. The only difference is that we did the upload ourselves.
   def uploaded_blob(name, serialized_json)
     gzipped = gzip(serialized_json)
     s3_client = ActiveStorage::Blob.service.client
@@ -49,7 +67,12 @@ class InvoiceSimulationWorker
 
   class Simulation
     attr_accessor :entity, :period, :project_id, :with_details, :engine_version, :simulate_draft
-    # project_id, entity, period, engine_version, with_details, simulate_draft
+
+    # The class that does all the simulating.
+    #
+    # It has a lot of input-arguments, but it's basically a serialized
+    # version of an `InvoicingReqest`, from there it will build up the
+    # original `InvoicingRequest` and then render it to JSON.
     def initialize(*args)
       @entity, @period, @project_id, @with_details, @engine_version, @simulate_draft = *args
     end
@@ -75,7 +98,7 @@ class InvoiceSimulationWorker
         quarter:        quarter,
         entity:         @entity,
         with_details:   @with_details,
-        engine_version: 3 # TODO: current_project.engine_version
+        engine_version: project.engine_version
       )
     end
 
