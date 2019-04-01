@@ -19,6 +19,7 @@ describe ProjectFactory do
     project = full_project
     no_duplications = [
       ActiveRecord::SchemaMigration,
+      ActiveStorage::Attachment,
       User,
       Program,
       ProjectAnchor,
