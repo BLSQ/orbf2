@@ -38,10 +38,11 @@ ratings:
   - "**.module"
   - "**.php"
   - "**.py"
-exclude_paths:
+exclude_patterns:
 - config/
 - db/
 - spec/
 - vendor/
 - coverage/
 - bin/
+- babel.config.js
