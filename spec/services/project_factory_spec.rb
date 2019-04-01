@@ -20,6 +20,7 @@ describe ProjectFactory do
     no_duplications = [
       ActiveRecord::SchemaMigration,
       ActiveStorage::Attachment,
+      ActiveStorage::Blob,
       User,
       Program,
       ProjectAnchor,
