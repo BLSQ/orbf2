@@ -1,24 +1,24 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import PropTypes from 'prop-types';
-import classNames from 'classnames';
-import humanize from 'string-humanize';
-import { withStyles } from '@material-ui/core/styles';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import ListItemText from '@material-ui/core/ListItemText';
-import Select from '@material-ui/core/Select';
-import Checkbox from '@material-ui/core/Checkbox';
-import Chip from '@material-ui/core/Chip';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
+import React from "react";
+import ReactDOM from "react-dom";
+import PropTypes from "prop-types";
+import classNames from "classnames";
+import humanize from "string-humanize";
+import { withStyles } from "@material-ui/core/styles";
+import Input from "@material-ui/core/Input";
+import InputLabel from "@material-ui/core/InputLabel";
+import MenuItem from "@material-ui/core/MenuItem";
+import FormControl from "@material-ui/core/FormControl";
+import ListItemText from "@material-ui/core/ListItemText";
+import Select from "@material-ui/core/Select";
+import Checkbox from "@material-ui/core/Checkbox";
+import Chip from "@material-ui/core/Chip";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
 
 const styles = theme => ({
   root: {
-    display: 'flex',
-    flexWrap: 'wrap',
+    display: "flex",
+    flexWrap: "wrap",
   },
   formControl: {
     margin: theme.spacing.unit,
@@ -26,8 +26,8 @@ const styles = theme => ({
     maxWidth: 320,
   },
   chips: {
-    display: 'flex',
-    flexWrap: 'wrap',
+    display: "flex",
+    flexWrap: "wrap",
   },
   chip: {
     margin: theme.spacing.unit / 10,
@@ -49,11 +49,13 @@ class MultiSelectDropdown extends React.Component {
   };
 
   handleDelete = deletedName => () => {
-    this.props.optionsChanged(this.props.selected.filter(name => name != deletedName));
+    this.props.optionsChanged(
+      this.props.selected.filter(name => name != deletedName),
+    );
   };
 
   render() {
-    const {classes} = this.props;
+    const { classes } = this.props;
     return (
       <FormControl className={classes.formControl}>
         <InputLabel htmlFor="select-periods">{this.props.name}</InputLabel>
@@ -62,21 +64,25 @@ class MultiSelectDropdown extends React.Component {
           value={this.props.selected}
           onChange={this.handleChange}
           input={<Input id="select-periods" />}
-          >
+        >
           {this.props.names.map(name => (
             <MenuItem key={name} value={name}>
               {name}
             </MenuItem>
           ))}
-      </Select>
+        </Select>
         <List>
-        {this.props.selected.map(value => (
-          <ListItem key={value} className={classes.chips}>
-            <Chip label={value} onDelete={this.handleDelete(value)} className={classes.chip} />
-          </ListItem>
-        ))}
-      </List>
-        </FormControl>
+          {this.props.selected.map(value => (
+            <ListItem key={value} className={classes.chips}>
+              <Chip
+                label={value}
+                onDelete={this.handleDelete(value)}
+                className={classes.chip}
+              />
+            </ListItem>
+          ))}
+        </List>
+      </FormControl>
     );
   }
 }

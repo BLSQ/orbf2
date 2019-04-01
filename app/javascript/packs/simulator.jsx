@@ -1,12 +1,12 @@
 import "babel-polyfill";
 
-import React from 'react';
-import ReactDOM from 'react-dom';
-import PropTypes from 'prop-types';
-import Button from '@material-ui/core/Button';
-import InvoiceList from './invoice_list';
-import LinearProgress from '@material-ui/core/LinearProgress';
-import Fade from '@material-ui/core/Fade';
+import React from "react";
+import ReactDOM from "react-dom";
+import PropTypes from "prop-types";
+import Button from "@material-ui/core/Button";
+import LinearProgress from "@material-ui/core/LinearProgress";
+import Fade from "@material-ui/core/Fade";
+import InvoiceList from "./invoice_list";
 
 // This contains the kick-off point for an asynchronous simulation:
 //
@@ -25,15 +25,14 @@ const getJSON = async function(url) {
 };
 
 class Loader extends React.Component {
-
   constructor(props) {
     super(props);
   }
 
   state = {
     loading: true,
-    jsonPayload: {invoices: []}
-  }
+    jsonPayload: { invoices: [] },
+  };
 
   componentWillUnmount() {
     clearInterval(this.timer);
@@ -44,7 +43,7 @@ class Loader extends React.Component {
     const response = await fetch(url, {});
     const json = await response.json();
     return json;
-  };
+  }
 
   async apiFetch(url) {
     const payload = await this.fetchJSON(url);
@@ -61,7 +60,7 @@ class Loader extends React.Component {
     console.log(payload);
     this.setState({
       loading: false,
-      jsonPayload: payload
+      jsonPayload: payload,
     });
   }
 
@@ -77,28 +76,24 @@ class Loader extends React.Component {
         <Fade
           in={loading}
           style={{
-            transitionDelay: loading ? '800ms' : '0ms',
+            transitionDelay: loading ? "800ms" : "0ms",
           }}
           unmountOnExit
         >
           <LinearProgress variant="query" />
-        </Fade>,
-        { !loading && (
-          <InvoiceList key="list" invoices={jsonPayload.invoices} />
-        )}
+        </Fade>
+        ,
+        {!loading && <InvoiceList key="list" invoices={jsonPayload.invoices} />}
       </>
     );
   }
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
-  const node = document.getElementById('root');
-  const url = node.getAttribute('data-url');
+document.addEventListener("DOMContentLoaded", async () => {
+  const node = document.getElementById("root");
+  const url = node.getAttribute("data-url");
   const jobData = await getJSON(url);
   const simulationData = await getJSON(jobData.data.attributes.resultUrl);
 
-  ReactDOM.render(
-    <Loader url={url} />,
-    node
-  );
+  ReactDOM.render(<Loader url={url} />, node);
 });
