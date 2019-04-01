@@ -92,12 +92,13 @@ class InvoicingJob < ApplicationRecord
 
   def alive?
     return false if status == "processed" || status == "errored"
+    return false unless updated_at
     return false if updated_at < 1.day.ago
     true
   end
 
   def result_url
-    result&.service_url
+    result&.service_url if result.attached?
   end
 
   def mark_as_processed(start_time, end_time)
