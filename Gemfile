@@ -53,7 +53,9 @@ gem "uglifier", ">= 1.3.0"
 
 ## Authentication
 
-gem "devise", "~> 4.5.0"
+# Flexible authentication solution for Rails with Warden
+# [devise](https://github.com/plataformatec/devise)
+gem "devise", "~> 4.6.2"
 
 ## API related
 
