@@ -43,8 +43,8 @@ class InvoiceList extends React.Component {
   render() {
     const filteredInvoices = this.props.invoices.filter(invoice => {
       return (
-        this.state.periods.includes(invoice.period) ||
-        this.state.packages.includes(humanize(invoice.code)) ||
+        this.state.periods.includes(invoice.period) &&
+        this.state.packages.includes(humanize(invoice.code)) &&
         this.state.orgUnits.includes(invoice.orgunit_ext_id)
       );
     });
