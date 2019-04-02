@@ -82,7 +82,6 @@ class Loader extends React.Component {
         >
           <LinearProgress variant="query" />
         </Fade>
-        ,
         {!loading && <InvoiceList key="list" invoices={jsonPayload.invoices} />}
       </>
     );
