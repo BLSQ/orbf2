@@ -1,5 +1,6 @@
 import React from "react";
 import humanize from "string-humanize";
+import PropTypes from "prop-types";
 import MultiSelectDropdown from "./multi_select_dropdown";
 import { Invoice } from "./invoice";
 
@@ -94,5 +95,9 @@ class InvoiceList extends React.Component {
     ];
   }
 }
+
+InvoiceList.propTypes = {
+  invoices: PropTypes.array,
+};
 
 export default InvoiceList;
