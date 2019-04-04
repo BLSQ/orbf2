@@ -20,16 +20,24 @@ const styles = theme => ({
     display: "flex",
     flexWrap: "wrap",
   },
+  label: {
+    fontSize: 16,
+  },
   formControl: {
+    display: "flex",
+    flexWrap: "wrap",
     margin: theme.spacing.unit,
-    minWidth: 200,
+    minWidth: 250,
     maxWidth: 320,
   },
   chips: {
     display: "flex",
     flexWrap: "wrap",
+    paddingTop: "5px",
+    paddingBottom: "0px",
   },
   chip: {
+    fontSize: 12,
     margin: theme.spacing.unit / 10,
   },
   noLabel: {
@@ -48,35 +56,40 @@ class MultiSelectDropdown extends React.Component {
     this.props.optionsChanged(event.target.value);
   };
 
-  handleDelete = deletedName => () => {
+  handleDelete = deletedKey => () => {
     this.props.optionsChanged(
-      this.props.selected.filter(name => name != deletedName),
+      this.props.selected
+        .filter(item => item.key != deletedKey)
+        .map(item => item.key),
     );
   };
 
   render() {
-    const { classes } = this.props;
+    const { classes, name, items, selected } = this.props;
+
     return (
       <FormControl className={classes.formControl}>
-        <InputLabel htmlFor="select-periods">{this.props.name}</InputLabel>
+        <InputLabel className={classes.label} htmlFor="select-periods">
+          {name}
+        </InputLabel>
         <Select
           multiple
-          value={this.props.selected}
+          value={selected.map(item => item.key)}
           onChange={this.handleChange}
           input={<Input id="select-periods" />}
         >
-          {this.props.names.map(name => (
-            <MenuItem key={name} value={name}>
-              {name}
+          {items.map(item => (
+            <MenuItem key={item.key} value={item.key}>
+              {item.human}
             </MenuItem>
           ))}
         </Select>
         <List>
-          {this.props.selected.map(value => (
-            <ListItem key={value} className={classes.chips}>
+          {selected.map(item => (
+            <ListItem key={item.key} className={classes.chips}>
               <Chip
-                label={value}
-                onDelete={this.handleDelete(value)}
+                label={item.human}
+                onDelete={this.handleDelete(item.key)}
                 className={classes.chip}
               />
             </ListItem>
@@ -86,4 +99,26 @@ class MultiSelectDropdown extends React.Component {
     );
   }
 }
+
+// `name` is the name that will be displayed
+// `items` and `selected` expect the same objects
+//
+// `selected` is a subset of `items` and is used to keep track of
+// which items are selected
+MultiSelectDropdown.propTypes = {
+  name: PropTypes.string,
+  items: PropTypes.arrayOf(
+    PropTypes.shape({
+      key: PropTypes.string,
+      human: PropTypes.string,
+    }),
+  ),
+  selected: PropTypes.arrayOf(
+    PropTypes.shape({
+      key: PropTypes.string,
+      human: PropTypes.string,
+    }),
+  ),
+};
+
 export default withStyles(styles, { withTheme: true })(MultiSelectDropdown);

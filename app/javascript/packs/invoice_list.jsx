@@ -1,19 +1,30 @@
 import React from "react";
 import humanize from "string-humanize";
 import PropTypes from "prop-types";
+import { some, uniqWith } from "lodash";
+import Grid from "@material-ui/core/Grid";
 import MultiSelectDropdown from "./multi_select_dropdown";
 import { Invoice } from "./invoice";
 
 const mapPeriods = invoices => {
-  return [...new Set(invoices.map(invoice => invoice.period))];
+  const all = invoices.map(invoice => {
+    return { key: invoice.period, human: invoice.period };
+  });
+  return uniqWith(all, (a, b) => a.key === b.key);
 };
 
 const mapPackages = invoices => {
-  return [...new Set(invoices.map(invoice => humanize(invoice.code)))];
+  const all = invoices.map(invoice => {
+    return { key: invoice.code, human: humanize(invoice.code) };
+  });
+  return uniqWith(all, (a, b) => a.key === b.key);
 };
 
 const mapOrgunits = invoices => {
-  return [...new Set(invoices.map(invoice => invoice.orgunit_ext_id))];
+  const all = invoices.map(invoice => {
+    return { key: invoice.orgunit_ext_id, human: invoice.orgunit_name };
+  });
+  return uniqWith(all, (a, b) => a.key === b.key);
 };
 
 class InvoiceList extends React.Component {
@@ -32,16 +43,25 @@ class InvoiceList extends React.Component {
     };
   }
 
-  periodsChanged = periods => {
-    this.setState({ periods });
+  periodsChanged = periodKeys => {
+    const selectedPeriods = this.state.allPeriods.filter(item =>
+      periodKeys.includes(item.key),
+    );
+    this.setState({ periods: selectedPeriods });
   };
 
-  packagesChanged = packages => {
-    this.setState({ packages });
+  packagesChanged = packageKeys => {
+    const selectedPackages = this.state.allPackages.filter(item =>
+      packageKeys.includes(item.key),
+    );
+    this.setState({ packages: selectedPackages });
   };
 
-  orgUnitsChanged = orgUnits => {
-    this.setState({ orgUnits });
+  orgUnitsChanged = orgUnitKeys => {
+    const selectedOrgUnits = this.state.allOrgUnits.filter(item =>
+      orgUnitKeys.includes(item.key),
+    );
+    this.setState({ orgUnits: selectedOrgUnits });
   };
 
   render() {
@@ -58,34 +78,41 @@ class InvoiceList extends React.Component {
 
     const filteredInvoices = invoices.filter(invoice => {
       return (
-        periods.includes(invoice.period) &&
-        packages.includes(humanize(invoice.code)) &&
-        orgUnits.includes(invoice.orgunit_ext_id)
+        some(periods, ["key", invoice.period]) &&
+        some(packages, ["key", invoice.code]) &&
+        some(orgUnits, ["key", invoice.orgunit_ext_id])
       );
     });
 
     return [
-      <MultiSelectDropdown
-        name="Periods"
-        names={allPeriods}
-        selected={periods}
-        optionsChanged={this.periodsChanged}
-        key="periods"
-      />,
-      <MultiSelectDropdown
-        name="Org Units"
-        names={allOrgUnits}
-        selected={orgUnits}
-        optionsChanged={this.orgUnitsChanged}
-        key="orgUnits"
-      />,
-      <MultiSelectDropdown
-        name="Packages"
-        names={allPackages}
-        selected={packages}
-        optionsChanged={this.packagesChanged}
-        key="packages"
-      />,
+      <Grid
+        container
+        direction="row"
+        justify="space-between"
+        alignItems="flex-start"
+      >
+        <MultiSelectDropdown
+          name="Periods"
+          items={allPeriods}
+          selected={periods}
+          optionsChanged={this.periodsChanged}
+          key="periods"
+        />
+        <MultiSelectDropdown
+          name="Org Units"
+          items={allOrgUnits}
+          selected={orgUnits}
+          optionsChanged={this.orgUnitsChanged}
+          key="orgUnits"
+        />
+        <MultiSelectDropdown
+          name="Packages"
+          items={allPackages}
+          selected={packages}
+          optionsChanged={this.packagesChanged}
+          key="packages"
+        />
+      </Grid>,
       filteredInvoices.map((invoice, i) => {
         const key = [invoice.orgunit_ext_id, invoice.period, invoice.code].join(
           "-",
