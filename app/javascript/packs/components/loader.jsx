@@ -1,8 +1,8 @@
 import LinearProgress from "@material-ui/core/LinearProgress";
 import Fade from "@material-ui/core/Fade";
-import InvoiceList from "./invoice_list";
 import React from "react";
-import Snackbar from '@material-ui/core/Snackbar';
+import Snackbar from "@material-ui/core/Snackbar";
+import InvoiceList from "./invoice_list";
 
 const getJSON = async function(url) {
   const response = await fetch(url);
@@ -35,9 +35,9 @@ class Loader extends React.Component {
     try {
       const response = await fetch(url, {});
       const json = await response.json();
-      return {success: true, payload: json};
+      return { success: true, payload: json };
     } catch (error) {
-      return {success: false, payload: error};
+      return { success: false, payload: error };
     }
   }
 
@@ -84,19 +84,18 @@ class Loader extends React.Component {
 
     return (
       <>
-        <Fade
-          in={loading}
-          unmountOnExit
-        >
+        <Fade in={loading} unmountOnExit>
           <LinearProgress variant="query" />
         </Fade>
         <Snackbar
-          anchorOrigin={{vertical: 'top', horizontal: 'right' }}
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
           open={isLoaded && hasError}
           autoHideDuration={6000}
           message={<span id="message-id">Error: {errorMessage}</span>}
         />
-        {isSuccess && <InvoiceList key="list" invoices={jsonPayload.invoices} />}
+        {isSuccess && (
+          <InvoiceList key="list" invoices={jsonPayload.invoices} />
+        )}
       </>
     );
   }

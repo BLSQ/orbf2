@@ -3,7 +3,7 @@ import classNames from "classnames";
 import React from "react";
 import Solution from "./solution";
 
-const selectedColor = 'rgb(254, 213, 149)';
+const selectedColor = "rgb(254, 213, 149)";
 
 const cellStyles = theme => ({
   selected: {
@@ -11,10 +11,10 @@ const cellStyles = theme => ({
   },
   selectedIcon: {
     color: selectedColor,
-    paddingRight: '5px',
+    paddingRight: "5px",
   },
   selectedSpan: {
-    borderBottom: '2px solid ' + selectedColor,
+    borderBottom: `2px solid ${selectedColor}`,
   },
 });
 
@@ -42,8 +42,18 @@ const Cell = withStyles(cellStyles)(function(props) {
         props.selected ? classes.selected : null,
       )}
     >
-      <span className={classNames("num-span", props.selected ? classes.selectedSpan : null)} title={props.header}>
-        {props.selected ? <i className={classNames("fa fa-info-circle", classes.selectedIcon)}></i> : null}
+      <span
+        className={classNames(
+          "num-span",
+          props.selected ? classes.selectedSpan : null,
+        )}
+        title={props.header}
+      >
+        {props.selected ? (
+          <i
+            className={classNames("fa fa-info-circle", classes.selectedIcon)}
+          />
+        ) : null}
         <Solution rowData={props.rowData} />
       </span>
     </td>
