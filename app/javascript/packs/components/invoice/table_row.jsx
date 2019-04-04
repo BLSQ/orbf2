@@ -44,14 +44,14 @@ class TableRow extends React.Component {
           })}
           <td>{this.props.row.activity.name}</td>
         </tr>
-        {this.state.selectedCell ? (
+        {this.state.selectedCell && (
           <ExplanationRow
             key="ding"
             header={this.state.selectedHeader}
             rowData={this.state.selectedCell}
             rowSpan={colSpan}
           />
-        ) : null}
+        )}
       </>
     );
   }

@@ -18,7 +18,7 @@ const cellStyles = theme => ({
   },
 });
 
-const Cell = withStyles(cellStyles)(function(props) {
+const Cell = function(props) {
   const isInput = rowData => (rowData || {}).is_input;
   const isOutput = rowData => (rowData || {}).is_output;
   const isFormula = function(rowData) {
@@ -43,21 +43,20 @@ const Cell = withStyles(cellStyles)(function(props) {
       )}
     >
       <span
-        className={classNames(
-          "num-span",
-          props.selected ? classes.selectedSpan : null,
-        )}
+        className={classNames("num-span", {
+          [classes.selectedSpan]: props.selected,
+        })}
         title={props.header}
       >
-        {props.selected ? (
+        {props.selected && (
           <i
             className={classNames("fa fa-info-circle", classes.selectedIcon)}
           />
-        ) : null}
+        )}
         <Solution rowData={props.rowData} />
       </span>
     </td>
   );
-});
+};
 
-export default Cell;
+export default withStyles(cellStyles)(Cell);

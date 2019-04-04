@@ -1,29 +1,35 @@
 import React from "react";
 import humanize from "string-humanize";
 import PropTypes from "prop-types";
-import { some, uniqWith } from "lodash";
+import some from "lodash/some";
+import uniqWith from "lodash/uniqWith";
 import Grid from "@material-ui/core/Grid";
 import MultiSelectDropdown from "./multi_select_dropdown";
 import { Invoice } from "./invoice";
 
 const mapPeriods = invoices => {
-  const all = invoices.map(invoice => {
-    return { key: invoice.period, human: invoice.period };
-  });
+  const all = invoices.map(invoice => ({
+    key: invoice.period,
+    human: humanize(invoice.period),
+  }));
   return uniqWith(all, (a, b) => a.key === b.key);
 };
 
 const mapPackages = invoices => {
-  const all = invoices.map(invoice => {
-    return { key: invoice.code, human: humanize(invoice.code) };
-  });
+  const all = invoices.map(invoice => ({
+    key: invoice.code,
+    human: humanize(invoice.code),
+  }));
+
   return uniqWith(all, (a, b) => a.key === b.key);
 };
 
 const mapOrgunits = invoices => {
-  const all = invoices.map(invoice => {
-    return { key: invoice.orgunit_ext_id, human: invoice.orgunit_name };
-  });
+  const all = invoices.map(invoice => ({
+    key: invoice.orgunit_ext_id,
+    human: invoice.orgunit_name,
+  }));
+
   return uniqWith(all, (a, b) => a.key === b.key);
 };
 
@@ -83,7 +89,6 @@ class InvoiceList extends React.Component {
         some(orgUnits, ["key", invoice.orgunit_ext_id])
       );
     });
-
     return [
       <Grid
         container
