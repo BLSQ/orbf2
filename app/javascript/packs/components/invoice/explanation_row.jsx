@@ -1,40 +1,46 @@
 import humanize from "string-humanize";
 import React from "react";
 
+const backgroundColor = 'rgb(253, 250, 249)';
+
 const ExplanationRow = function(props) {
   return (
-    <tr key={`explanation-${props.header}`}>
+    <tr key={`explanation-${props.header}`} style={{backgroundColor: backgroundColor}}>
       <td colSpan={props.rowSpan}>
-        <div className="col-sm-6">
-          <h3>{humanize(props.header)}</h3>
-          <ul key="bla" className="col-sm-6">
-            <li>{props.rowData.key}</li>
-            <li>
-              <code>{props.rowData.key}</code>
-            </li>
+        <div className="col-sm-9">
+          <dl className="dl-horizontal">
+            <dt>Name</dt>
+            <dt>{humanize(props.header)}</dt>
+            <dt>Key</dt>
+            <dd>{props.rowData.key}</dd>
             {props.rowData.dhis2_data_element && (
-              <li>{props.rowData.expression}</li>
+              [<dt>Expression</dt>,
+               <dd>{props.rowData.expression}</dd>]
             )}
             {props.rowData.state && (
-              <li>
-                Mapping : {props.rowData.state.ext_id} -{" "}
-                {props.rowData.state.kind} - {props.rowData.state.ext_id}
-              </li>
+              [<dt>Mapping</dt>,
+              <dd>{props.rowData.state.kind} - {props.rowData.state.ext_id}</dd>]
             )}
             {props.rowData.dhis2_data_element && (
-              <li>{props.rowData.dhis2_data_element}</li>
+              [<dt>DHIS2-element</dt>,
+               <dd>{props.rowData.dhis2_data_element}</dd>]
             )}
-            {props.rowData.expression && props.rowData.dhis2_data_element && (
-              <>
-                <h3>Step by step explanations</h3>
-                <pre>
-                  {`${props.header} = ${props.rowData.instantiated_expression}`}
-                </pre>
-                <pre>{`${props.header} = ${props.rowData.substituted}`}</pre>
-                <pre>{`${props.header} = ${props.rowData.solution}`}</pre>
-              </>
-            )}
-          </ul>
+          </dl>
+
+          {props.rowData.expression && props.rowData.dhis2_data_element && (
+            <>
+              <h5>Step by step explanations:</h5>
+              <pre style={{whiteSpace: "pre-wrap"}}>
+                {`${props.header} = ${props.rowData.instantiated_expression}`}
+              </pre>
+              <pre style={{whiteSpace: "pre-wrap"}}>
+                {`${props.header} = ${props.rowData.substituted}`}
+              </pre>
+              <pre style={{whiteSpace: "pre-wrap"}}>
+                {`${props.header} = ${props.rowData.solution}`}
+              </pre>
+            </>
+          )}
         </div>
       </td>
     </tr>
