@@ -87,6 +87,7 @@ class InvoiceList extends React.Component {
     return [
       <Grid
         container
+        key="selection-grid"
         direction="row"
         justify="space-between"
         alignItems="flex-start"

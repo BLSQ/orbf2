@@ -6,7 +6,7 @@ import PropTypes from "prop-types";
 import Button from "@material-ui/core/Button";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import Fade from "@material-ui/core/Fade";
-import InvoiceList from "./invoice_list";
+import InvoiceList from "./components/invoice_list";
 
 // This contains the kick-off point for an asynchronous simulation:
 //
