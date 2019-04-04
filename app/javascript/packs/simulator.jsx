@@ -34,6 +34,11 @@ class Loader extends React.Component {
     jsonPayload: { invoices: [] },
   };
 
+  async componentDidMount() {
+    const url = this.props.url;
+    this.timer = setInterval(() => this.apiFetch(url), 1000);
+  }
+
   componentWillUnmount() {
     clearInterval(this.timer);
     this.timer = null;
@@ -47,7 +52,6 @@ class Loader extends React.Component {
 
   async apiFetch(url) {
     const payload = await this.fetchJSON(url);
-    console.table(payload.data.attributes);
     if (!payload.data.attributes.isAlive) {
       clearInterval(this.timer);
       this.fetchSimulationResult(payload.data.attributes.resultUrl);
@@ -55,22 +59,16 @@ class Loader extends React.Component {
   }
 
   async fetchSimulationResult(url) {
-    console.log("Fetching simulation: ", url);
     const payload = await this.fetchJSON(url);
-    console.log(payload);
     this.setState({
       loading: false,
       jsonPayload: payload,
     });
   }
 
-  async componentDidMount() {
-    const url = this.props.url;
-    this.timer = setInterval(() => this.apiFetch(url), 1000);
-  }
-
   render() {
     const { loading, jsonPayload } = this.state;
+
     return (
       <>
         <Fade
@@ -91,8 +89,6 @@ class Loader extends React.Component {
 document.addEventListener("DOMContentLoaded", async () => {
   const node = document.getElementById("root");
   const url = node.getAttribute("data-url");
-  const jobData = await getJSON(url);
-  const simulationData = await getJSON(jobData.data.attributes.resultUrl);
 
   ReactDOM.render(<Loader url={url} />, node);
 });
