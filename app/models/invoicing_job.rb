@@ -90,6 +90,10 @@ class InvoicingJob < ApplicationRecord
     end
   end
 
+  def processed_within_last?(interval: 10.minutes)
+    status == "processed" && processed_at > interval.ago
+  end
+
   def alive?
     return false if status == "processed" || status == "errored"
     return false unless updated_at

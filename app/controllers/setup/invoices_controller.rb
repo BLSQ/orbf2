@@ -84,14 +84,20 @@ class Setup::InvoicesController < PrivateController
     if invoicing_request.legacy_engine?
       render_legacy_invoice(project, invoicing_request)
     else
-      if Flipper[:use_async_simulation].enabled?(current_user)
+      if params[:simulate_async] && Flipper[:use_async_simulation].enabled?(current_user)
         job = project.project_anchor.invoicing_simulation_jobs.first_or_create(
           dhis2_period: invoicing_request.period,
           orgunit_ref:  invoicing_request.entity
         )
-        job.update(status: "enqueued")
-        args = invoicing_request.to_h.merge(simulate_draft: params[:simulate_draft])
-        InvoiceSimulationWorker.perform_async(*args.values)
+        shouldEnqueue, reason = enqueue_simulation_job(job, params[:force])
+        if shouldEnqueue
+          job.update(status: "enqueued")
+          args = invoicing_request.to_h.merge(simulate_draft: params[:simulate_draft])
+          InvoiceSimulationWorker.perform_async(*args.values)
+        else
+          @not_enqueued_reason = reason
+        end
+
         @simulation_job_url = api_simulation_path(job, token: project.project_anchor.token)
         return render "async_invoice"
       else
@@ -225,5 +231,14 @@ class Setup::InvoicesController < PrivateController
      " (Snaphots last updated on #{project.project_anchor.updated_at.to_date})." \
      " Only simulation will work. Update the group and trigger a dhis2 snaphots." \
      " Note that it will only fix this issue for current or futur periods."
+  end
+
+  def enqueue_simulation_job(job, force)
+    return [false, "This job is still processing"] if job.alive?
+    if job.processed_within_last?(interval: 10.minutes) && force != "strong"
+      [false, "This job was recently processed: #{job.processed_at}, you can force a regeneration with `?force=strong`"]
+    else
+      [true]
+    end
   end
 end
