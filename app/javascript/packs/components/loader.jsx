@@ -58,9 +58,8 @@ class Loader extends React.Component {
         if (status === "processed") {
           this.fetchSimulationResult(resultUrl);
         } else {
-          this.showError(lastError);
+          this.showError({ message: lastError });
         }
-
       }
     } else {
       clearInterval(this.timer);
