@@ -150,4 +150,15 @@ class ProjectAnchor < ApplicationRecord
   def flipper_id
     "ProjectAnchor:#{id}"
   end
+
+  # If no token is present update the database with a new token.
+  #
+  # Returns the newly set token
+  def update_token_if_needed(force_refresh: false)
+    return if token.present? && !force_refresh
+
+    token = SecureRandom.uuid
+    update(token: token)
+    token
+  end
 end

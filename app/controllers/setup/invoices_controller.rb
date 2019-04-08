@@ -98,6 +98,7 @@ class Setup::InvoicesController < PrivateController
           @not_enqueued_reason = reason
         end
 
+        project.project_anchor.update_token_if_needed
         @simulation_job_url = api_simulation_path(job, token: project.project_anchor.token)
         return render "async_invoice"
       else
