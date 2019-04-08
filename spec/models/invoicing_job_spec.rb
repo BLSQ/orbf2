@@ -59,6 +59,11 @@ RSpec.describe InvoicingJob, type: :model do
       job = project_anchor.invoicing_jobs.create!(dhis2_period: "2016Q4", orgunit_ref: "orgunit_ref", status: "enqueued")
       expect(job.alive?).to eq true
     end
+
+    it "new job is not immediately alive" do
+      job = project_anchor.invoicing_jobs.create!(dhis2_period: "2016Q4", orgunit_ref: "orgunit_ref")
+      expect(job.alive?).to eq false
+    end
   end
 
   it "handle nicely when no invoicing job" do
