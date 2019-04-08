@@ -12,6 +12,7 @@
 #  processed_at      :datetime
 #  sidekiq_job_ref   :string
 #  status            :string
+#  type              :string           default("InvoicingJob")
 #  user_ref          :string
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
@@ -19,7 +20,7 @@
 #
 # Indexes
 #
-#  index_invoicing_jobs_on_anchor_ou_period   (project_anchor_id,orgunit_ref,dhis2_period) UNIQUE
+#  index_invoicing_jobs_on_anchor_ou_period   (project_anchor_id,orgunit_ref,dhis2_period,type) UNIQUE
 #  index_invoicing_jobs_on_project_anchor_id  (project_anchor_id)
 #
 # Foreign Keys
@@ -126,6 +127,26 @@ RSpec.describe InvoicingJob, type: :model do
         slept = true
         return "456747"
       end
+    end
+  end
+
+  describe "processed_within_last?" do
+    it 'true for processed and in interval' do
+      job = FactoryBot.build_stubbed(:invoicing_simulation_job, :processed)
+      job.processed_at = 9.minutes.ago
+      expect(job.processed_within_last?(interval: 10.minutes)).to eq true
+    end
+
+    it 'false for processed and outside interval' do
+      job = FactoryBot.build_stubbed(:invoicing_simulation_job, :processed)
+      job.processed_at = 11.minutes.ago
+      expect(job.processed_within_last?(interval: 10.minutes)).to eq false
+    end
+
+    it 'false for not processed' do
+      job = FactoryBot.build_stubbed(:invoicing_simulation_job, :errored)
+      job.processed_at = 11.minutes.ago
+      expect(job.processed_within_last?(interval: 10.minutes)).to eq false
     end
   end
 end

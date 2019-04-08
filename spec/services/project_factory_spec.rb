@@ -19,6 +19,8 @@ describe ProjectFactory do
     project = full_project
     no_duplications = [
       ActiveRecord::SchemaMigration,
+      ActiveStorage::Attachment,
+      ActiveStorage::Blob,
       User,
       Program,
       ProjectAnchor,
@@ -26,6 +28,7 @@ describe ProjectFactory do
       Dhis2SnapshotChange,
       Dhis2Log,
       InvoicingJob,
+      InvoicingSimulationJob,
       Version,
       PaperTrail::Version,
       PaperTrail::VersionAssociation,

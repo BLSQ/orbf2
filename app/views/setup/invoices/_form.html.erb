@@ -80,4 +80,8 @@
 
   <%= f.submit 'Simulate with draft', name: "simulate_draft", class: "btn btn-primary"  %>
   <%= f.submit 'Simulate with published', name: "simulate_published", class: "btn btn-primary" %>
+  <% if Flipper[:use_async_simulation].enabled?(current_user) %>
+    <%= f.submit 'Simulate asynchronously', name: "simulate_async", class: "btn btn-warning" %>
+  <% end %>
+
 <%end%>

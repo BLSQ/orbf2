@@ -15,6 +15,16 @@ hostname
 bundle install
 bundle exec rake db:test:prepare
 
+yarn install
+
+echo "[cibuild] Check JS properly formatted"
+yarn run format
+git diff --exit-code --quiet || {
+    echo "yarn run format changed source files"
+    echo "Please run: yarn run format"
+    exit 1
+}
+
 echo "[cibuild] Running tests ..."
 date "+%H:%M:%S"
 

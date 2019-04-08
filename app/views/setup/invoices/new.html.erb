@@ -1,95 +1,98 @@
+<div class="container">
+  <div class="row form-group">
+    <%= render partial: "form"  %>
 
+    <% if @org_unit_summaries %>
+      <br>
+      <br>
+      <% @org_unit_summaries.each do |summary|%>
+        <%= summary %> <br>
+      <%end%>
+      <br>
+      <br>
+      <br>
+    <%end%>
 
-<%= render partial: "form"  %>
+    <br>
+    <br>
+    <button class="pull-right btn btn-default" onclick="copyToClipboard('#project_descriptor')"><%= icon("fas", "copy") %></button>
 
-<% if @org_unit_summaries %>
-  <br>
-  <br>
-  <% @org_unit_summaries.each do |summary|%>
-    <%= summary %> <br>
-  <%end%>
-  <br>
-  <br>
-  <br>
-<%end%>
+    <button class="pull-right btn btn-default" data-toggle="collapse" data-target="#rules-descriptors">Show descriptors</button>
+    <div id="rules-descriptors" class="collapse">
+      <pre id="project_descriptor" ><%= as_pretty_json_string(project_descriptor(@current_project))%></pre>
+    </div>
+  </div>
 
-  <br>
-  <br>
-  <button class="pull-right btn btn-default" onclick="copyToClipboard('#project_descriptor')"><%= icon("fas", "copy") %></button>
+  <%if invoicing_request.invoices && invoicing_request.invoices.any? %>
+    <h1>Invoice Summary</h1>
+    <% payments =  invoicing_request.invoices.select{ |invoice| invoice.payment_result}
+    payments_formulas = payments.flat_map { |invoice| invoice.payment_result.payment_rule.rule.formulas }.uniq
+    %>
 
-<button class="pull-right btn btn-default" data-toggle="collapse" data-target="#rules-descriptors">Show descriptors</button>
-<div id="rules-descriptors" class="collapse">
-  <pre id="project_descriptor" ><%= as_pretty_json_string(project_descriptor(@current_project))%></pre>
-</div>
+    <% package_invoices = invoicing_request.invoices.select{ |invoice| invoice.package_results.any? } %>
+    <% package_formulas =  package_invoices
+    .flat_map(&:package_results)
+    .map(&:package)
+    .map(&:package_rule)
+    .flat_map(&:formulas)
+    .uniq
+    %>
 
-<%if invoicing_request.invoices && invoicing_request.invoices.any? %>
-  <h1>Invoice Summary</h1>
-  <% payments =  invoicing_request.invoices.select{ |invoice| invoice.payment_result}
-     payments_formulas = payments.flat_map { |invoice| invoice.payment_result.payment_rule.rule.formulas }.uniq
-   %>
-
-  <% package_invoices = invoicing_request.invoices.select{ |invoice| invoice.package_results.any? } %>
-  <% package_formulas =  package_invoices
-                                                  .flat_map(&:package_results)
-                                                  .map(&:package)
-                                                  .map(&:package_rule)
-                                                  .flat_map(&:formulas)
-                                                  .uniq
-  %>
-
-   <table class="table">
-     <thead>
+    <table class="table">
+      <thead>
         <tr>
           <th></th>
           <th>Formula</th>
           <%invoicing_request.quarter_dates.each_with_index do |month, index| %>
             <th>Month <%= index + 1 %><br><%= month.strftime('%Y-%m') %></th>
           <%end%>
-     </thead>
-    <% package_formulas.each do |formula| %>
-    <tr>
-        <td> <%= formula.rule.package.name %></td>
-        <td><%= formula.code.humanize %></td>
-        <% invoicing_request.quarter_dates.each do |month| %>
-          <% quarter_package_result =  package_invoices.select { |invoice| invoice.date == month }
-          .flat_map(&:package_results)
-          .select {|r| r.package == formula.rule.package }
-          .select {|r| (r.frequency || "monthly") == formula.rule.package.frequency }
-          .compact.last
-          %>
-          <td>
-            <span class="num-span"><%= quarter_package_result.solution[formula.code] if quarter_package_result %></span>
-          </td>
-        <%end%>
-    </tr>
-    <% end %>
-    <% payments_formulas.each do |formula| %>
-    <tr>
-        <td><%= formula.rule.name %></td>
-        <td><%= formula.code.humanize %></td>
-        <% invoicing_request.quarter_dates.each do |month| %>
-          <% quarter_payments =  payments.select { |invoice| invoice.date == month } %>
-          <td>
-             <span class="num-span"><%= quarter_payments.map { |invoice| invoice.payment_result.solution[formula.code]}.compact.first %></span>
-          </td>
-        <%end%>
-    </tr>
-    <% end %>
-  </table>
+        </tr>
+      </thead>
+      <% package_formulas.each do |formula| %>
+        <tr>
+          <td> <%= formula.rule.package.name %></td>
+          <td><%= formula.code.humanize %></td>
+          <% invoicing_request.quarter_dates.each do |month| %>
+            <% quarter_package_result =  package_invoices.select { |invoice| invoice.date == month }
+            .flat_map(&:package_results)
+            .select {|r| r.package == formula.rule.package }
+            .select {|r| (r.frequency || "monthly") == formula.rule.package.frequency }
+            .compact.last
+            %>
+            <td>
+              <span class="num-span"><%= quarter_package_result.solution[formula.code] if quarter_package_result %></span>
+            </td>
+          <%end%>
+        </tr>
+      <% end %>
+      <% payments_formulas.each do |formula| %>
+        <tr>
+          <td><%= formula.rule.name %></td>
+          <td><%= formula.code.humanize %></td>
+          <% invoicing_request.quarter_dates.each do |month| %>
+            <% quarter_payments =  payments.select { |invoice| invoice.date == month } %>
+            <td>
+              <span class="num-span"><%= quarter_payments.map { |invoice| invoice.payment_result.solution[formula.code]}.compact.first %></span>
+            </td>
+          <%end%>
+        </tr>
+      <% end %>
+    </table>
 
 
-  <h1> Invoice details </h1>
-  <%= render partial: "invoice", collection: invoicing_request.invoices, :as => :invoice  %>
+    <h1> Invoice details </h1>
+    <%= render partial: "invoice", collection: invoicing_request.invoices, :as => :invoice  %>
 
-  <br>
-  <br>
-  <br>
-  <% values = Publishing::Dhis2InvoicePublisher.new.to_values(invoicing_request.invoices)%>
-  <% if values && values.any? %>
-    <h3 > Dhis2 values </h3>
-    <button class="btn btn-default" data-toggle="collapse" data-target="#dhis2-values">Show values</button>
-    <pre id="dhis2-values" class="collapse" >
-      <%= JSON.pretty_generate(values) %>
+    <br>
+    <br>
+    <br>
+    <% values = Publishing::Dhis2InvoicePublisher.new.to_values(invoicing_request.invoices)%>
+    <% if values && values.any? %>
+      <h3 > Dhis2 values </h3>
+      <button class="btn btn-default" data-toggle="collapse" data-target="#dhis2-values">Show values</button>
+      <pre id="dhis2-values" class="collapse" >
+        <%= JSON.pretty_generate(values) %>
     </pre>
   <%end%>
 <% end%>
+</div>
