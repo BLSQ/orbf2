@@ -44,12 +44,23 @@ class Loader extends React.Component {
   async apiFetch(url) {
     const response = await this.fetchJSON(url);
     if (response.success) {
-      if (!response.payload.data.attributes.isAlive) {
-        clearInterval(this.timer);
-        this.fetchSimulationResult(response.payload.data.attributes.resultUrl);
+      const {
+        isAlive,
+        status,
+        lastError,
+        resultUrl,
+      } = response.payload.data.attributes;
+      if (isAlive) {
+        // I'm still alive, keep polling.
       } else {
-        console.log(response.payload.data);
-        // I'm still alive
+        // I finished processing
+        clearInterval(this.timer);
+        if (status === "processed") {
+          this.fetchSimulationResult(resultUrl);
+        } else {
+          this.showError(lastError);
+        }
+
       }
     } else {
       clearInterval(this.timer);
