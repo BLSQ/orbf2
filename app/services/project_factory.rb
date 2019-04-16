@@ -1,4 +1,3 @@
-# coding: utf-8
 # frozen_string_literal: true
 
 class ProjectFactory
@@ -184,7 +183,7 @@ class ProjectFactory
             ),
             new_formula(
               :performance_amount,
-              "(performance_score_value / 100.0) * budget",
+              "(performance_score_value / 100.0) * 1000",
               "Performance amount"
             )
           ]
@@ -270,20 +269,20 @@ class ProjectFactory
     clinic_group = {   name: "Clinic",         organisation_unit_group_ext_ref: "RXL3lPSK8oG" }
     admin_group = {    name: "Administrative", organisation_unit_group_ext_ref: "w0gFTTmsUcF" }
     project.build_entity_group(
-      name: clinic_group[:name],
+      name:               clinic_group[:name],
       external_reference: clinic_group[:organisation_unit_group_ext_ref]
     )
 
     [
-      { name: "Claimed",           level: "activity" },
-      { name: "Verified",          level: "activity" },
-      { name: "Validated",         level: "activity" },
-      { name: "Max. Score",        level: "activity" },
-      { name: "Tarif",             level: "activity" },
-      { name: "Budget",            level: "package"  },
-      { name: "Remoteness Bonus",  level: "package"  },
-      { name: "Applicable Points", level: "activity" },
-      { name: "Waiver",            level: "activity" }
+      { name: "Claimed"            },
+      { name: "Verified"           },
+      { name: "Validated"          },
+      { name: "Max. Score"         },
+      { name: "Tarif"              },
+      { name: "Budget"              },
+      { name: "Remoteness Bonus"    },
+      { name: "Applicable Points"  },
+      { name: "Waiver"             }
     ].each do |state|
       project.states.build(state)
     end
@@ -329,24 +328,24 @@ class ProjectFactory
   end
 
   # These only get run by the seed controller. Adding them to the normal build operation would break some specs, since these two are not really related, keeping these separate.
-  def additional_seed_actions(project, suffix = "")
+  def additional_seed_actions(project, _suffix = "")
     verified_state = project.states.find { |s| s.name == "Verified" }
     max_state = project.states.find { |s| s.name == "Max. Score" }
 
-    activity_1 = project.activities.detect{|a| a.name == "Vaccination"}
+    activity_1 = project.activities.detect { |a| a.name == "Vaccination" }
     activity_1.activity_states.build(
-      { name: "Verified", state: verified_state, external_reference: 'M62VHgYT2n0'}
+      name: "Verified", state: verified_state, external_reference: "M62VHgYT2n0"
     )
     activity_1.activity_states.build(
-      { name: "Max. Score", state: max_state, external_reference: 'FQ2o8UBlcrS'}
+      name: "Max. Score", state: max_state, external_reference: "FQ2o8UBlcrS"
     )
 
     activity_2 = project.activities.last
     activity_2.activity_states.build(
-      { name: "Verified", state: verified_state, external_reference: 'CecywZWejT3'}
+      name: "Verified", state: verified_state, external_reference: "CecywZWejT3"
     )
     activity_2.activity_states.build(
-      { name: "Max. Score", state: max_state, external_reference: 'bVkFujnp3F2'}
+      name: "Max. Score", state: max_state, external_reference: "bVkFujnp3F2"
     )
 
     # Legacy-engine needs this engine, otherwise it won't propagate
@@ -421,6 +420,7 @@ class ProjectFactory
       package.package_entity_groups[index].assign_attributes(group)
     end
     return if suffix.blank?
+
     created_ged = package.create_data_element_group(activity_ids)
     package.data_element_group_ext_ref = created_ged.id
     package.activities.flat_map(&:activity_states).each_with_index do |activity_state, index|

@@ -32,7 +32,10 @@ RSpec.describe Setup::ActivitiesController, type: :controller do
       get :edit, params: { project_id: project.id, id: project.activities.first.id }
       activity = assigns(:activity)
       states = assigns(:states)
-      expect(states.map(&:code)).to eq %w[claimed verified validated max_score tarif applicable_points waiver]
+      expect(states.map(&:code)).to eq %w[
+        claimed verified validated max_score
+        tarif budget remoteness_bonus applicable_points waiver
+      ]
       expect(activity).to eq project.activities.first
     end
 

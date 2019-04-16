@@ -15,7 +15,7 @@ module RuleTypes
     delegate :payment_rule, to: :rule
 
     def package_states
-      package.package_states.select(&:activity_level?).map(&:state)
+      package.package_states.map(&:state)
     end
 
     def to_fake_facts(states)

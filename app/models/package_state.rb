@@ -31,7 +31,4 @@ class PackageState < ApplicationRecord
   belongs_to :package
   belongs_to :state
 
-  def activity_level?
-    state.activity_level?
-  end
 end

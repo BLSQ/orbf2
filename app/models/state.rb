@@ -3,7 +3,6 @@
 # Table name: states
 #
 #  id         :integer          not null, primary key
-#  level      :string           default("activity"), not null
 #  name       :string           not null
 #  short_name :string
 #  created_at :datetime         not null
@@ -40,14 +39,6 @@ class State < ApplicationRecord
 
   def code
     @code ||= Codifier.codify(name)
-  end
-
-  def package_level?
-    level == "package"
-  end
-
-  def activity_level?
-    level == "activity"
   end
 
   def to_unified_h

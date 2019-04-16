@@ -29,7 +29,6 @@ module RuleTypes
     def available_variables
       var_names = []
 
-      var_names << package.package_states.map(&:state).select(&:package_level?).map(&:code) if package
       var_names << available_variables_for_values.map { |code| "%{#{code}}" }
 
       var_names << package.zone_rule.formulas.map(&:code) if package.zone_rule
@@ -49,7 +48,7 @@ module RuleTypes
 
     def fake_facts
       # in case we are in a clone packages a not there so go through long road package_states instead of package.states
-      to_fake_facts(package.package_states.map(&:state).select(&:package_level?))
+      to_fake_facts([])
         .merge(zone_rule_fake_facts)
     end
 
