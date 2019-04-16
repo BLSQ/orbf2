@@ -14,6 +14,10 @@ module RuleTypes
     delegate :decision_tables, to: :rule
     delegate :payment_rule, to: :rule
 
+    def package_states
+      package.package_states.select(&:activity_level?).map(&:state)
+    end
+
     def to_fake_facts(states)
       facts = states.map { |state| [state.code.to_sym, "10"] }.to_h
       facts[:month_of_year] = 6

@@ -48,7 +48,7 @@ module Analytics
       end
 
       def variable_states(package)
-        states = package.states.select(&:activity_level?)
+        states = package.package_states.select(&:activity_level?).map(&:state)
         (1..5).each_with_object({}) do |level, result|
           states.each do |state|
             result["#{state.code}_level_#{level}"] = state

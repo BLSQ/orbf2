@@ -39,7 +39,7 @@ class DecisionTable < ApplicationRecord
 
   def in_activity_code_exists
     return unless in_headers.include?("activity_code")
-    available_codes = rule.package.activities.map(&:code).compact
+    available_codes = rule.package.activity_packages.map(&:activity).map(&:code).compact
     available_codes.push Decision::Rule::ANY
     invalid_rules = decision_table.rules.reject { |rule| available_codes.include?(rule[HEADER_IN_ACTIVITY_CODE]) }
     invalid_rules.each { |invalid_rule| errors[:content] << "#{invalid_rule.inspect} not in available package codes #{available_codes}!" }
