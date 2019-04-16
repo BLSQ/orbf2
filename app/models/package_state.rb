@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: package_states
@@ -30,5 +32,4 @@ class PackageState < ApplicationRecord
   delegate :program_id, to: :package
   belongs_to :package
   belongs_to :state
-
 end
