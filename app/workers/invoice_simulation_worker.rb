@@ -66,6 +66,8 @@ class InvoiceSimulationWorker
   end
 
   class Simulation
+    class ErrorDuringSimulation < StandardError; end
+
     attr_accessor :entity, :period, :project_id, :with_details, :engine_version, :simulate_draft
 
     # The class that does all the simulating.
@@ -85,6 +87,10 @@ class InvoiceSimulationWorker
       Invoicing::MapToInvoices.new(invoicing_request, invoicing_entity.fetch_and_solve.solver).call
       json = InvoiceEntityToJson.new(invoicing_entity).call
       json
+    rescue StandardError => e
+      exception = ErrorDuringSimulation.new(e.message)
+      exception.set_backtrace(e.backtrace)
+      raise exception
     end
 
     def invoicing_entity
