@@ -28,7 +28,7 @@ describe ProjectFactory do
     Flipper::Adapters::ActiveRecord::Gate
   ].freeze
 
-  NON_PROJECT_AR =[
+  NON_PROJECT_AR = [
     User,
     Program,
     ProjectAnchor,
@@ -38,7 +38,7 @@ describe ProjectFactory do
     InvoicingJob,
     InvoicingSimulationJob,
     Version
-  ]
+  ].freeze
 
   EXCEPTIONS = INFRA_AR + NON_PROJECT_AR
 
@@ -76,10 +76,16 @@ describe ProjectFactory do
 
     descendants_with_project_id.each do |model|
       counters = count_by_project_id(model.all)
-      #puts model.name + " => " + counters.to_json
+      # puts model.name + " => " + counters.to_json
       expect(counters[project.id]).to eq(counters[new_draft.id])
       expect(counters[project.id]).to be >= 0
     end
+  end
+
+  def descendants_with_project_id
+    ActiveRecord::Base.descendants
+                      .reject(&:abstract_class?)
+                      .reject { |klass| EXCEPTIONS.include?(klass) }
   end
 
   def count_by_project_id(arr)
