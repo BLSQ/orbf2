@@ -49,6 +49,20 @@ which foreman >/dev/null 2>&1 || {
     gem install foreman
 }
 
+# Install bundler if needed
+which yarn >/dev/null 2>&1  || {
+cat <<"YARN"
+You need to install yarn
+
+https://yarnpkg.com/en/docs/install
+
+app/javascripts is used by rails/webpacker, which in turns depends on
+yarn to install the dependencies, so rather than finding out later,
+better install yarn now.
+YARN
+  exit 1
+}
+
 if [ -f "Gemfile" ]; then
     echo "==> Installing gem dependencies…"
     bundle check >/dev/null 2>&1  || {
