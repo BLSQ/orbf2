@@ -45,7 +45,7 @@ RSpec.describe Api::InvoicingJobsController, type: :controller do
                           "status"        => nil,
                           "lastError"     => nil,
                           "sidekiqJobRef" => nil,
-                          "isAlive"       => true }
+                          "isAlive"       => false }
       )
     end
   end
