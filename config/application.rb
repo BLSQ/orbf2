@@ -37,6 +37,8 @@ module Scorpio
       }
     end
 
+    config.active_job.queue_adapter = :sidekiq
+
     # These are defined in `/lib/*.rb
     require "scorpio"
     require "parallel_dhis2"
