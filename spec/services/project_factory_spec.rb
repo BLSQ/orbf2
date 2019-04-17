@@ -1,4 +1,7 @@
+# frozen_string_literal: true
+
 require "rails_helper"
+
 describe ProjectFactory do
   include_context "basic_context"
 
@@ -15,26 +18,33 @@ describe ProjectFactory do
     project.destroy!
   end
 
+  INFRA_AR = [
+    ActiveRecord::SchemaMigration,
+    ActiveStorage::Attachment,
+    ActiveStorage::Blob,
+    PaperTrail::Version,
+    PaperTrail::VersionAssociation,
+    Flipper::Adapters::ActiveRecord::Feature,
+    Flipper::Adapters::ActiveRecord::Gate
+  ].freeze
+
+  NON_PROJECT_AR =[
+    User,
+    Program,
+    ProjectAnchor,
+    Dhis2Snapshot,
+    Dhis2SnapshotChange,
+    Dhis2Log,
+    InvoicingJob,
+    InvoicingSimulationJob,
+    Version
+  ]
+
+  EXCEPTIONS = INFRA_AR + NON_PROJECT_AR
+
   it "should publish and create a draft with a copy of all the records linked to project" do
     project = full_project
-    no_duplications = [
-      ActiveRecord::SchemaMigration,
-      ActiveStorage::Attachment,
-      ActiveStorage::Blob,
-      User,
-      Program,
-      ProjectAnchor,
-      Dhis2Snapshot,
-      Dhis2SnapshotChange,
-      Dhis2Log,
-      InvoicingJob,
-      InvoicingSimulationJob,
-      Version,
-      PaperTrail::Version,
-      PaperTrail::VersionAssociation,
-      Flipper::Adapters::ActiveRecord::Feature,
-      Flipper::Adapters::ActiveRecord::Gate,
-    ].map(&:name).map(&:to_sym)
+    no_duplications = EXCEPTIONS.map(&:name).map(&:to_sym)
     project.payment_rules.first.datasets.create!(frequency: "quarterly", external_reference: "fakedsid")
     count_before = count_all_models
     new_draft = project.publish(Date.today.to_date)
@@ -52,12 +62,28 @@ describe ProjectFactory do
     expect(project.publish_date).to eq Date.today.to_date
   end
 
-  it "should publish and create a draft with a copy of all the records linked to project" do
+  it "should publish and create a draft with a copy of all the records linked to project with correct project_id" do
     project = full_project
     project.save!
+    project.payment_rules.first.datasets.create!(frequency: "monthly", external_reference: "demodataset")
 
     new_draft = project.publish(Date.today.to_date)
     expect(new_draft.changelog.size).to(eq(0))
+
+    descendants_with_project_id = ActiveRecord::Base.descendants
+                                                    .reject(&:abstract_class?)
+                                                    .reject { |klass| EXCEPTIONS.include?(klass) }
+
+    descendants_with_project_id.each do |model|
+      counters = count_by_project_id(model.all)
+      #puts model.name + " => " + counters.to_json
+      expect(counters[project.id]).to eq(counters[new_draft.id])
+      expect(counters[project.id]).to be >= 0
+    end
+  end
+
+  def count_by_project_id(arr)
+    Hash[arr.group_by(&:project_id).map { |k, v| [k, v.size] }]
   end
 
   def count_all_models

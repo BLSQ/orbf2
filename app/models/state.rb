@@ -20,6 +20,9 @@
 #
 
 class State < ApplicationRecord
+  include PaperTrailed
+  delegate :program_id, to: :project
+
   validates :name, presence: true
   validates :code, presence: true, format: {
     with:    Formula::REGEXP_VALIDATION,
