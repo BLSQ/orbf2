@@ -64,15 +64,10 @@ describe ProjectFactory do
 
   it "should publish and create a draft with a copy of all the records linked to project with correct project_id" do
     project = full_project
-    project.save!
     project.payment_rules.first.datasets.create!(frequency: "monthly", external_reference: "demodataset")
 
     new_draft = project.publish(Date.today.to_date)
     expect(new_draft.changelog.size).to(eq(0))
-
-    descendants_with_project_id = ActiveRecord::Base.descendants
-                                                    .reject(&:abstract_class?)
-                                                    .reject { |klass| EXCEPTIONS.include?(klass) }
 
     descendants_with_project_id.each do |model|
       counters = count_by_project_id(model.all)
