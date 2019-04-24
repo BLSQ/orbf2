@@ -42,10 +42,10 @@ RSpec.describe Api::InvoicingJobsController, type: :controller do
                           "erroredAt"     => nil,
                           "durationMs"    => nil,
                           "resultUrl"     => nil,
-                          "status"        => nil,
+                          "status"        => InvoicingJob.statuses[:enqueued],
                           "lastError"     => nil,
                           "sidekiqJobRef" => nil,
-                          "isAlive"       => false }
+                          "isAlive"       => true }
       )
     end
   end
