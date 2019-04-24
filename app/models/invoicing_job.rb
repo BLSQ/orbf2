@@ -36,11 +36,10 @@ class InvoicingJob < ApplicationRecord
   validates :orgunit_ref, presence: true
 
   enum status: {
-         enqueued: "enqueued",
-         processed: "processed",
-         errored: "errored"
-       }
-
+    enqueued:  "enqueued",
+    processed: "processed",
+    errored:   "errored"
+  }
 
   class LogSubscriber < ActiveSupport::LogSubscriber
     def execute(event)
@@ -77,8 +76,9 @@ class InvoicingJob < ApplicationRecord
 
     def instrument(operation, payload = {}, &block)
       ActiveSupport::Notifications.instrument(
-        "#{operation}.#{self.name.underscore}",
-        payload, &block)
+        "#{operation}.#{name.underscore}",
+        payload, &block
+      )
     end
 
     def time
@@ -105,6 +105,7 @@ class InvoicingJob < ApplicationRecord
     return false if processed? || errored?
     return false unless updated_at
     return false if updated_at < 1.day.ago
+
     true
   end
 
@@ -121,7 +122,7 @@ class InvoicingJob < ApplicationRecord
       self.last_error = nil
       save!
     end
-    self.reload
+    reload
   end
 
   def mark_as_error(start_time, end_time, err)
