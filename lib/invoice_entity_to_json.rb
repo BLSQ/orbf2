@@ -119,6 +119,13 @@ class InvoiceEntityToJson
     org_unit.group_ext_ids.include?(project.entity_group.external_reference)
   end
 
+  def non_contracted_orgunit_message(project)
+    "Entity is not in the contracted entity group : #{project.entity_group.name}." \
+     " (Snaphots last updated on #{project.project_anchor.updated_at.to_date})." \
+     " Only simulation will work. Update the group and trigger a dhis2 snaphots." \
+     " Note that it will only fix this issue for current or futur periods."
+  end
+
   def is_input(activity_item, code)
     activity_item.input?(code)
   rescue StandardError
