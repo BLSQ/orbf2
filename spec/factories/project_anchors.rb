@@ -19,5 +19,6 @@
 
 FactoryBot.define do
   factory :project_anchor do
+    program
   end
 end

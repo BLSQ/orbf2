@@ -10,7 +10,7 @@
 #  orgunit_ref       :string           not null
 #  processed_at      :datetime
 #  sidekiq_job_ref   :string
-#  status            :string
+#  status            :string           default("enqueued")
 #  type              :string           default("InvoicingJob")
 #  user_ref          :string
 #  created_at        :datetime         not null
@@ -33,6 +33,7 @@ FactoryBot.define do
     duration_ms { 6.seconds * 1000 }
     orgunit_ref { "aaa_123" }
     type { "InvoicingJob" }
+    project_anchor
   end
 
   factory :invoicing_simulation_job, parent: :invoicing_job do
@@ -41,14 +42,14 @@ FactoryBot.define do
 
   trait :processed do
     processed_at { 10.minutes.ago }
-    status { "processed" }
+    status { InvoicingJob.statuses[:processed] }
   end
 
   trait :errored do
     processed_at { nil }
     errored_at { 10.minutes.ago }
     last_error { "This was the error" }
-    status { "errored" }
+    status { InvoicingJob.statuses[:errored] }
   end
 
   trait :with_result do

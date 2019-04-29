@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_04_16_082904) do
+ActiveRecord::Schema.define(version: 2019_04_29_140000) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -173,7 +173,7 @@ ActiveRecord::Schema.define(version: 2019_04_16_082904) do
     t.datetime "errored_at"
     t.string "last_error"
     t.integer "duration_ms"
-    t.string "status"
+    t.string "status", default: "enqueued"
     t.string "sidekiq_job_ref"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
