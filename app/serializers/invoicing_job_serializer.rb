@@ -11,7 +11,7 @@
 #  orgunit_ref       :string           not null
 #  processed_at      :datetime
 #  sidekiq_job_ref   :string
-#  status            :string
+#  status            :string           default("enqueued")
 #  type              :string           default("InvoicingJob")
 #  user_ref          :string
 #  created_at        :datetime         not null

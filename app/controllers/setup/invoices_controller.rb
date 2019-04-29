@@ -91,13 +91,13 @@ class Setup::InvoicesController < PrivateController
         )
         shouldEnqueue, reason = enqueue_simulation_job(job, params[:force])
         if shouldEnqueue
-          job.update(status: "enqueued")
           args = invoicing_request.to_h.merge(simulate_draft: params[:simulate_draft])
           InvoiceSimulationWorker.perform_async(*args.values)
         else
           @not_enqueued_reason = reason
         end
 
+        project.project_anchor.update_token_if_needed
         @simulation_job_url = api_simulation_path(job, token: project.project_anchor.token)
         return render "async_invoice"
       else
@@ -234,6 +234,8 @@ class Setup::InvoicesController < PrivateController
   end
 
   def enqueue_simulation_job(job, force)
+    # New jobs always need processing
+    return true if job.id_previously_changed?
     return [false, "This job is still processing"] if job.alive?
     if job.processed_within_last?(interval: 10.minutes) && force != "strong"
       [false, "This job was recently processed: #{job.processed_at}, you can force a regeneration with `?force=strong`"]

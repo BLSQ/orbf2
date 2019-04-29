@@ -11,7 +11,7 @@
 #  orgunit_ref       :string           not null
 #  processed_at      :datetime
 #  sidekiq_job_ref   :string
-#  status            :string
+#  status            :string           default("enqueued")
 #  type              :string           default("InvoicingJob")
 #  user_ref          :string
 #  created_at        :datetime         not null
@@ -34,6 +34,12 @@ class InvoicingJob < ApplicationRecord
 
   validates :dhis2_period, presence: true
   validates :orgunit_ref, presence: true
+
+  enum status: {
+    enqueued:  "enqueued",
+    processed: "processed",
+    errored:   "errored"
+  }
 
   class LogSubscriber < ActiveSupport::LogSubscriber
     def execute(event)
@@ -70,8 +76,9 @@ class InvoicingJob < ApplicationRecord
 
     def instrument(operation, payload = {}, &block)
       ActiveSupport::Notifications.instrument(
-        "#{operation}.#{self.name.underscore}",
-        payload, &block)
+        "#{operation}.#{name.underscore}",
+        payload, &block
+      )
     end
 
     def time
@@ -91,13 +98,14 @@ class InvoicingJob < ApplicationRecord
   end
 
   def processed_within_last?(interval: 10.minutes)
-    status == "processed" && processed_at > interval.ago
+    processed? && processed_at > interval.ago
   end
 
   def alive?
-    return false if status == "processed" || status == "errored"
+    return false if processed? || errored?
     return false unless updated_at
     return false if updated_at < 1.day.ago
+
     true
   end
 
@@ -110,11 +118,11 @@ class InvoicingJob < ApplicationRecord
       fill_duration(start_time, end_time)
       self.processed_at = Time.now
       self.errored_at = nil
-      self.status = "processed"
+      self.status = InvoicingJob.statuses[:processed]
       self.last_error = nil
       save!
     end
-    self.reload
+    reload
   end
 
   def mark_as_error(start_time, end_time, err)
@@ -122,7 +130,7 @@ class InvoicingJob < ApplicationRecord
       fill_duration(start_time, end_time)
       self.processed_at = nil
       self.errored_at = Time.now
-      self.status = "errored"
+      self.status = InvoicingJob.statuses[:errored]
       self.last_error = "#{err&.class&.name}: #{err&.message}"
       save!
     end

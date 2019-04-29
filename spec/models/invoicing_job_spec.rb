@@ -11,7 +11,7 @@
 #  orgunit_ref       :string           not null
 #  processed_at      :datetime
 #  sidekiq_job_ref   :string
-#  status            :string
+#  status            :string           default("enqueued")
 #  type              :string           default("InvoicingJob")
 #  user_ref          :string
 #  created_at        :datetime         not null
@@ -57,6 +57,11 @@ RSpec.describe InvoicingJob, type: :model do
 
     it "is alive if enqueued" do
       job = project_anchor.invoicing_jobs.create!(dhis2_period: "2016Q4", orgunit_ref: "orgunit_ref", status: "enqueued")
+      expect(job.alive?).to eq true
+    end
+
+    it "new job is immediately alive" do
+      job = project_anchor.invoicing_jobs.create!(dhis2_period: "2016Q4", orgunit_ref: "orgunit_ref")
       expect(job.alive?).to eq true
     end
   end
@@ -147,6 +152,30 @@ RSpec.describe InvoicingJob, type: :model do
       job = FactoryBot.build_stubbed(:invoicing_simulation_job, :errored)
       job.processed_at = 11.minutes.ago
       expect(job.processed_within_last?(interval: 10.minutes)).to eq false
+    end
+  end
+
+  describe "status" do
+    it 'adds scopes' do
+      processed_job = FactoryBot.create(:invoicing_simulation_job, :processed)
+      errored_job = FactoryBot.create(:invoicing_simulation_job, :errored)
+      new_job = FactoryBot.create(:invoicing_simulation_job)
+      expect(InvoicingJob.processed.pluck(:id)).to eq([processed_job.id])
+      expect(InvoicingJob.errored.pluck(:id)).to eq([errored_job.id])
+      expect(InvoicingJob.enqueued.pluck(:id)).to eq([new_job.id])
+    end
+
+    it 'complains on invalid state' do
+      new_job = FactoryBot.create(:invoicing_simulation_job)
+
+      expect {
+        new_job.status = "amazing-but-faulty"
+      }.to raise_error(ArgumentError)
+    end
+
+    it 'defaults to enqueued' do
+      new_job = FactoryBot.create(:invoicing_simulation_job)
+      expect(new_job.enqueued?).to eq(true)
     end
   end
 end
