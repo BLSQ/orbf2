@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: invoicing_jobs
@@ -28,13 +30,15 @@
 #
 
 class InvoicingSimulationJob < InvoicingJob
-
   def self.scope_for(project_anchor)
     project_anchor.invoicing_simulation_jobs
   end
 
   def self.find_invoicing_job(project_anchor, period, orgunit_ref)
-    scope_for(project_anchor).first_or_create(
+    scope_for(project_anchor).where(
+      dhis2_period: period,
+      orgunit_ref:  orgunit_ref
+    ).first_or_create(
       dhis2_period: period,
       orgunit_ref:  orgunit_ref
     )
