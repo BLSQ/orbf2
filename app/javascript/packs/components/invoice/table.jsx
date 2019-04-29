@@ -5,10 +5,16 @@ import TableRow from "./table_row";
 
 const Table = function(props) {
   const invoice = props.invoice;
-  let headers = {};
-  if (invoice.activity_items[0]) {
-    headers = invoice.activity_items[0].cells || {};
-  }
+  let headers = [];
+
+  invoice.activity_items.forEach(activity_item => {
+    Object.keys(activity_item.cells).forEach(state_or_formula => {
+      if (!headers.includes(state_or_formula)) {
+        headers.push(state_or_formula);
+      }
+    });
+  });
+
   let rows = invoice.activity_items;
   rows = rows.sort((a, b) =>
     sortCollator.compare(a.activity.code, b.activity.code),
@@ -19,19 +25,23 @@ const Table = function(props) {
     <table className="table invoice num-span-table table-striped">
       <thead>
         <tr>
-          {Object.keys(headers).map(function(key) {
-            return (
-              <th key={key} title={key}>
-                {humanize(key)}
-              </th>
-            );
-          })}
+          {headers.map(key => (
+            <th key={key} title={key}>
+              {humanize(key)}
+            </th>
+          ))}
           <th>Activity</th>
         </tr>
       </thead>
       <tbody>
         {invoice.activity_items.map(function(row, i) {
-          return <TableRow key={[row.activity.code, i].join("-")} row={row} />;
+          return (
+            <TableRow
+              key={[row.activity.code, i].join("-")}
+              row={row}
+              headers={headers}
+            />
+          );
         })}
       </tbody>
     </table>

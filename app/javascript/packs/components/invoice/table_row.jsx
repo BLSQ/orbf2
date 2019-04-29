@@ -27,22 +27,23 @@ class TableRow extends React.Component {
   };
 
   render() {
+    const { row, headers } = this.props;
     const colSpan = Object.keys(this.props.row.cells).length + 1;
     return (
       <>
         <tr key={"row-data"}>
-          {Object.keys(this.props.row.cells).map((key, index) => {
+          {headers.map((key, index) => {
             return (
               <Cell
                 key={key}
                 cellClicked={this.cellClicked}
                 header={key}
                 selected={key == this.state.selectedHeader}
-                rowData={this.props.row.cells[key]}
+                rowData={row.cells[key]}
               />
             );
           })}
-          <td>{this.props.row.activity.name}</td>
+          <td>{row.activity.name}</td>
         </tr>
         {this.state.selectedCell && (
           <ExplanationRow

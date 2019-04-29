@@ -10,7 +10,7 @@ const ExplanationRow = function(props) {
         <div className="col-sm-9">
           <dl className="dl-horizontal">
             <dt>Name</dt>
-            <dt>{humanize(props.header)}</dt>
+            <dd>{humanize(props.header)}</dd>
             <dt>Key</dt>
             <dd>{props.rowData.key}</dd>
             {props.rowData.dhis2_data_element && [
@@ -18,9 +18,9 @@ const ExplanationRow = function(props) {
               <dd>{props.rowData.expression}</dd>,
             ]}
             {props.rowData.state && [
-              <dt>Mapping</dt>,
-              <dd>
-                {props.rowData.state.kind} - {props.rowData.state.ext_id}
+              <dt key="mapping-label">Mapping</dt>,
+              <dd key="mapping-value">
+                {props.rowData.state.kind} - {props.rowData.state.ext_id || "" }
               </dd>,
             ]}
             {props.rowData.dhis2_data_element && [
