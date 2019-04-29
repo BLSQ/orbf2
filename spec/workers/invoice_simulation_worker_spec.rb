@@ -46,6 +46,20 @@ RSpec.describe InvoiceSimulationWorker do
     expect(simulation_json["request"]["warnings"]).to eq("Entity is not in the contracted entity group : Clinic. (Snaphots last updated on 2019-04-29). Only simulation will work. Update the group and trigger a dhis2 snaphots. Note that it will only fix this issue for current or futur periods.")
   end
 
+  it "stores exception message when dhis2 is not available" do
+    stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&orgUnit=#{ORG_UNIT_ID}&period=2015Q1")
+      .to_return(status: 503, body: "")
+
+    with_mocked_s3 do
+      begin
+        worker.perform(ORG_UNIT_ID, "2015Q1", project.id, true, 3, true)
+      rescue InvoiceSimulationWorker::Simulation::ErrorDuringSimulation => ignored
+      end
+    end
+
+    expect(InvoicingSimulationJob.last.last_error).to eq("InvoiceSimulationWorker::Simulation::ErrorDuringSimulation: 503 Service Unavailable")
+  end
+
   def with_mocked_s3
     asc = active_storage_client
     bucket = s3_bucket
@@ -67,9 +81,11 @@ RSpec.describe InvoiceSimulationWorker do
       }
     }
     yield
-    data = Zlib::GzipReader.open(file_path, &:read)
+    if file_path
+      data = Zlib::GzipReader.open(file_path, &:read)
 
-    File.delete(file_path)
-    JSON.parse(data)
+      File.delete(file_path)
+      JSON.parse(data)
+    end
   end
 end

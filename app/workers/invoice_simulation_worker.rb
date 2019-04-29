@@ -131,9 +131,5 @@ class InvoiceSimulationWorker
     def project
       @project ||= Project.find(project_id)
     end
-
-    def project_anchor
-      @project.project_anchor
-    end
   end
 end
