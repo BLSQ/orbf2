@@ -5,9 +5,14 @@ class InvoiceSimulationWorker
   include Sidekiq::Worker
   include Sidekiq::Throttled::Worker
 
+  sidekiq_options(
+    queue: "dhis2-safe",
+    retry: 3
+  )
+
   sidekiq_throttle(
     concurrency: { limit: 3 },
-    key_suffix:  ->(entity, period, project_id, with_details, engine_version, simulate_draft) { project_id }
+    key_suffix:  ->(_entity, _period, project_id, _with_details, _engine_version, _simulate_draft) { project_id }
   )
 
   # Roughly these operations will be done:
@@ -23,7 +28,7 @@ class InvoiceSimulationWorker
       serialized_json = InvoiceSimulationWorker::Simulation.new(entity, period, project_id, engine_version, with_details, simulate_draft).call
 
       if job
-        name = "%s.json" % [project_id.to_s, entity, period].map(&:underscore).join("-")
+        name = format("%s.json", [project_id.to_s, entity, period].map(&:underscore).join("-"))
         active_storage_blob = uploaded_blob(name, serialized_json)
         job.result.attach(active_storage_blob)
       end
