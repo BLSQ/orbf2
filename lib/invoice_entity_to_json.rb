@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class InvoiceEntityToJson
   attr_accessor :indexed_project
 
@@ -22,10 +24,10 @@ class InvoiceEntityToJson
       invoice_hash(invoice)
     end
     serializable_hash[:dhis2_export_values] = @dhis2_export_values,
-    serializable_hash[:dhis2_input_values] =  @dhis2_input_values
+                                              serializable_hash[:dhis2_input_values] = @dhis2_input_values
     serializable_hash
   end
-  alias_method :to_hash, :serializable_hash
+  alias to_hash serializable_hash
 
   def serialized_json
     ActiveSupport::JSON.encode(serializable_hash)
@@ -40,12 +42,12 @@ class InvoiceEntityToJson
         @invoice_entity.pyramid,
         @invoicing_request.entity
       ).to_h,
-      warnings: contracted?(@invoicing_request, @project) ? nil : non_contracted_orgunit_message(@project)
+      warnings:          contracted?(@invoicing_request, @project) ? nil : non_contracted_orgunit_message(@project)
     }
   end
 
   def invoice_hash(invoice)
-    total_items = invoice.total_items.sort_by {|total_item| total_item.formula.code }.uniq
+    total_items = invoice.total_items.sort_by { |total_item| total_item.formula.code }.uniq
     {
       orgunit_ext_id: invoice.orgunit_ext_id,
       orgunit_name:   pyramid.org_unit(invoice.orgunit_ext_id)&.name,
@@ -55,7 +57,7 @@ class InvoiceEntityToJson
       activity_items: invoice.activity_items.map do |activity_item|
         activity_item_hash(activity_item)
       end,
-      total_items: total_items.map do |total_item|
+      total_items:    total_items.map do |total_item|
         total_item_hash(total_item)
       end
     }
@@ -70,17 +72,19 @@ class InvoiceEntityToJson
       cells:    activity_item.variables.map(&:state).uniq.each_with_object({}) do |code, formulas|
         orbf_var = activity_item.variable(code)
         next unless orbf_var
+
         key = orbf_var.formula&.code || orbf_var.state
         next unless activity_item.solution[key]
+
         activity_state = indexed_project.lookup_activity_state(orbf_var)
         cell = {
           key:                     orbf_var.key,
           instantiated_expression: orbf_var.expression,
           not_exported:            activity_item.not_exported?(key),
           solution:                activity_item.solution[key]&.to_s,
-          substituted:              activity_item.substitued[key],
-          is_input: is_input(activity_item, key),
-          is_output: is_output(activity_item, key)
+          substituted:             activity_item.substitued[key],
+          is_input:                is_input(activity_item, key),
+          is_output:               is_output(activity_item, key)
         }
         if activity_state
           cell[:state] = {
@@ -105,8 +109,8 @@ class InvoiceEntityToJson
       expression:              total_item.explanations[0],
       instantiated_expression: total_item.explanations[2],
       solution:                total_item.value&.to_s,
-      substitued:              total_item.explanations[1],
-      is_output:               total_item.formula.dhis2_mapping,
+      substituted:             total_item.explanations[1],
+      is_output:               total_item.formula.dhis2_mapping
     }
   end
 

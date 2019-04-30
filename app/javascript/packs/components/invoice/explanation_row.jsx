@@ -1,11 +1,7 @@
 import humanize from "string-humanize";
 import React from "react";
-
+import ExplanationSteps from "./explanation_steps";
 const backgroundColor = "rgb(253, 250, 249)";
-
-const ExplanationStep = props => (
-  <pre style={{ whiteSpace: "pre-wrap" }}>{props.children}</pre>
-);
 
 const ExplanationRow = function(props) {
   return (
@@ -31,23 +27,7 @@ const ExplanationRow = function(props) {
           </dl>
 
           {props.rowData.instantiated_expression && (
-            <>
-              <h5>Step by step explanations:</h5>
-              {props.rowData.expression && (
-                <ExplanationStep>
-                  {`${props.header} = ${props.rowData.expression}`}
-                </ExplanationStep>
-              )}
-              <ExplanationStep>
-                {`${props.header} = ${props.rowData.instantiated_expression}`}
-              </ExplanationStep>
-              <ExplanationStep>
-                {`${props.header} = ${props.rowData.substituted}`}
-              </ExplanationStep>
-              <ExplanationStep>
-                {`${props.header} = ${props.rowData.solution}`}
-              </ExplanationStep>
-            </>
+            <ExplanationSteps item={props.rowData} variable={props.header} />
           )}
         </div>
       </td>
