@@ -1,6 +1,7 @@
 import humanize from "string-humanize";
 import React from "react";
 import ExplanationSteps from "./explanation_steps";
+
 const backgroundColor = "rgb(253, 250, 249)";
 
 const ExplanationRow = function(props) {

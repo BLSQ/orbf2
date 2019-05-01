@@ -1,8 +1,8 @@
 import humanize from "string-humanize";
 import React from "react";
-import ExplanationSteps from "./explanation_steps";
 import { withStyles } from "@material-ui/core/styles";
 import classNames from "classnames";
+import ExplanationSteps from "./explanation_steps";
 
 const selectedColor = "rgb(254, 213, 149)";
 

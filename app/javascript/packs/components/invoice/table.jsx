@@ -5,7 +5,7 @@ import TableRow from "./table_row";
 
 const Table = function(props) {
   const invoice = props.invoice;
-  let headers = [];
+  const headers = [];
 
   invoice.activity_items.forEach(activity_item => {
     Object.keys(activity_item.cells).forEach(state_or_formula => {
