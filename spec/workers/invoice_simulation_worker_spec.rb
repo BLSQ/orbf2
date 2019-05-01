@@ -42,7 +42,7 @@ RSpec.describe InvoiceSimulationWorker do
 
     expect(simulation_json["request"]["warnings"]).to eq(
       "Entity is not in the contracted entity group : Clinic. "\
-      "(Snaphots last updated on 2019-04-29). Only simulation will work. "\
+      "(Snaphots last updated on #{Time.now.to_date}). Only simulation will work. "\
       "Update the group and trigger a dhis2 snaphots. "\
       "Note that it will only fix this issue for current or futur periods."
     )
