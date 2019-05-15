@@ -45,6 +45,20 @@
       </div>
     </div>
 
+    <% if Flipper[:use_async_simulation].enabled?(current_user) %>
+      <div class="form-check row">
+        <div class="col-sm-2">
+          <label class="form-check-label col-form-label">
+            Simulate with draft
+          </label>
+        </div>
+
+        <div class="col-sm-10">
+          <%= check_box_tag 'simulate_draft' %>
+        </div>
+      </div>
+    <% end %>
+
     <div class="form-check row">
       <div class="col-sm-2">
         <label class="form-check-label col-form-label">
