@@ -14,7 +14,7 @@ GIT
 
 GIT
   remote: https://github.com/BLSQ/orbf-rules_engine.git
-  revision: 6a18a67a9285a51f80fa3bd3c5977b05757ebb5e
+  revision: 593e34b3310cf8fb9efb4b2e49c8c900a9ac071f
   specs:
     orbf-rules_engine (0.1.0)
       activesupport
@@ -252,7 +252,7 @@ GEM
     method_source (0.9.2)
     mime-types (3.2.2)
       mime-types-data (~> 3.2015)
-    mime-types-data (3.2018.0812)
+    mime-types-data (3.2019.0331)
     mimemagic (0.3.3)
     mini_mime (1.0.1)
     mini_portile2 (2.4.0)
@@ -492,7 +492,7 @@ GEM
       execjs (>= 0.3.0, < 3)
     unf (0.1.4)
       unf_ext
-    unf_ext (0.0.7.5)
+    unf_ext (0.0.7.6)
     unicode-display_width (1.4.0)
     warden (1.2.8)
       rack (>= 2.0.6)
