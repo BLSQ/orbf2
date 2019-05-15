@@ -97,8 +97,8 @@ class InvoicingJob < ApplicationRecord
     end
   end
 
-  def processed_within_last?(interval: 10.minutes)
-    processed? && processed_at > interval.ago
+  def processed_after?(time_stamp: 10.minutes.ago)
+    processed? && processed_at > time_stamp
   end
 
   def alive?

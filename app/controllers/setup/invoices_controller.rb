@@ -241,7 +241,9 @@ class Setup::InvoicesController < PrivateController
     # New jobs always need processing
     return true if job.id_previously_changed?
     return [false, "This job is still processing"] if job.alive?
-    if job.processed_within_last?(interval: 10.minutes) && force != "strong"
+
+    # TODO: Use papertail for a more accurate guess if simulation is outdated.
+    if job.processed_after?(time_stamp: 10.minutes.ago) && force != "strong"
       [false, "This job was recently processed: #{job.processed_at}, you can force a regeneration with `?force=strong`"]
     else
       [true]
