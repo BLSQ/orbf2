@@ -1,6 +1,10 @@
 <% if project.draft? %>
 <h1>Let's setup your Project</h1>
+<%if params[:readonly]%>
+<%= render "readonly" %>
+<%else%>
 <%= render partial: "setup/setup/step", collection: setup.steps, locals: { readonly: false }%>
+<%end%>
 <% else %>
 <h1>This project is in readonly</h1>
 <%= link_to "Latest project draft is available here", setup_project_path(current_program.project_anchor.latest_draft) %>

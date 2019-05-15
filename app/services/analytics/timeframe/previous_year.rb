@@ -31,7 +31,7 @@ module Analytics
           variables[activity_state.state.code.to_s + suffix] ||= [0]
         end
 
-        package.states.each do |state|
+        package.package_states.map(&:state).each do |state|
           variables["#{state.code}#{suffix}"] ||= [0]
         end
 

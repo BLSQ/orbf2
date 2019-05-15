@@ -55,7 +55,7 @@ class Setup::ActivitiesController < PrivateController
   private
 
   def activity_level_states
-    current_project.states.where(level: "activity")
+    current_project.states
   end
 
   def handle_action(template)

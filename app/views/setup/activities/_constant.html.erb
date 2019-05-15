@@ -1,7 +1,6 @@
-
 <tr>
   <td width="50%"><%= f.input :name,  input_html: {value: f.object.name || @activity.name} %></td>
-  <td><%= f.input :state_id , collection: states.where(level: "activity")%></td>
+  <td><%= f.input :state_id , collection: states%></td>
   <td><%= f.input :formula %></td>
   <%= f.hidden_field :kind, value: 'formula' %>
 </tr>

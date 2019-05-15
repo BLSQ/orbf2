@@ -13,7 +13,6 @@ RSpec.describe PaperTrailed do
   EXCEPTIONS = [
     User,
     ActiveRecord::SchemaMigration,
-    State,
     PaperTrail::Version,
     Version,
     Dhis2Log,

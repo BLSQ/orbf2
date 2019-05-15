@@ -25,7 +25,7 @@ module RuleTypes
     end
 
     def fake_facts
-      to_fake_facts(package.package_states.map(&:state)).merge(org_units_count: 1)
+      to_fake_facts(package_states).merge(org_units_count: 1)
     end
   end
 end
