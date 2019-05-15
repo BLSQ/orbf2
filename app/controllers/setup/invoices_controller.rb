@@ -242,9 +242,9 @@ class Setup::InvoicesController < PrivateController
     return true if job.id_previously_changed?
     return [false, "This job is still processing"] if job.alive?
 
-    # TODO: Use papertail for a more accurate guess if simulation is outdated.
-    if job.processed_after?(time_stamp: 10.minutes.ago) && force != "strong"
-      [false, "This job was recently processed: #{job.processed_at}, you can force a regeneration with `?force=strong`"]
+    last_change = PaperTrail::Version.where(project_id: current_project).maximum("created_at")
+    if job.processed_after?(time_stamp: last_change) && force != "strong"
+      [false, "This job was recently processed: #{job.processed_at}, you can force a regeneration by checking the checkbox"]
     else
       [true]
     end
