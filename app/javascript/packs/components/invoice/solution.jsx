@@ -3,10 +3,21 @@ import { numberFormatter } from "../../lib/formatters";
 
 const Solution = function(props) {
   const safeData = props.rowData || {};
-  const formattedSolution = numberFormatter.format(safeData.solution);
+
+  let formattedSolution;
+  let rounded;
+
+  if (safeData.solution === undefined) {
+    formattedSolution = "";
+    rounded = false;
+  } else {
+    formattedSolution = numberFormatter.format(safeData.solution);
+    rounded = parseFloat(formattedSolution) != parseFloat(safeData.solution);
+  }
+
   return (
     <>
-      {parseFloat(formattedSolution) != parseFloat(safeData.solution) && (
+      {rounded && (
         <span
           title={`Rounded for ${safeData.solution}`}
           className="text-danger"

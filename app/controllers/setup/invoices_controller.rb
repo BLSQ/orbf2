@@ -85,7 +85,11 @@ class Setup::InvoicesController < PrivateController
       render_legacy_invoice(project, invoicing_request)
     else
       if params[:simulate_async] && Flipper[:use_async_simulation].enabled?(current_user)
-        job = project.project_anchor.invoicing_simulation_jobs.first_or_create(
+
+        job = project.project_anchor.invoicing_simulation_jobs.where(
+          dhis2_period: invoicing_request.period,
+          orgunit_ref:  invoicing_request.entity
+        ).first_or_create(
           dhis2_period: invoicing_request.period,
           orgunit_ref:  invoicing_request.entity
         )
