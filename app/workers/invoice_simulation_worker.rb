@@ -12,7 +12,7 @@ class InvoiceSimulationWorker
 
   sidekiq_throttle(
     concurrency: { limit: 3 },
-    key_suffix:  ->(_entity, _period, project_id, _with_details, _engine_version, _simulate_draft) { project_id }
+    key_suffix:  ->(_entity, _period, project_id, _with_details, _engine_version, _mocked_data, _simulate_draft) { project_id }
   )
 
   # Roughly these operations will be done:
