@@ -95,6 +95,8 @@ class Setup::InvoicesController < PrivateController
         )
         shouldEnqueue, reason = enqueue_simulation_job(job, params[:force])
         if shouldEnqueue
+          # Ensure status of job back is enqueued
+          job.enqueued!
           args = invoicing_request.to_h.merge(simulate_draft: params[:simulate_draft])
           InvoiceSimulationWorker.perform_async(*args.values)
         else
