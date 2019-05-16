@@ -135,23 +135,23 @@ RSpec.describe InvoicingJob, type: :model do
     end
   end
 
-  describe "processed_within_last?" do
-    it 'true for processed and in interval' do
+  describe "processed_after?" do
+    it 'true for processed and after' do
       job = FactoryBot.build_stubbed(:invoicing_simulation_job, :processed)
       job.processed_at = 9.minutes.ago
-      expect(job.processed_within_last?(interval: 10.minutes)).to eq true
+      expect(job.processed_after?(time_stamp: 10.minutes.ago)).to eq true
     end
 
-    it 'false for processed and outside interval' do
+    it 'false for processed and before timestamp' do
       job = FactoryBot.build_stubbed(:invoicing_simulation_job, :processed)
       job.processed_at = 11.minutes.ago
-      expect(job.processed_within_last?(interval: 10.minutes)).to eq false
+      expect(job.processed_after?(time_stamp: 10.minutes.ago)).to eq false
     end
 
     it 'false for not processed' do
       job = FactoryBot.build_stubbed(:invoicing_simulation_job, :errored)
       job.processed_at = 11.minutes.ago
-      expect(job.processed_within_last?(interval: 10.minutes)).to eq false
+      expect(job.processed_after?(time_stamp: 10.minutes.ago)).to eq false
     end
   end
 

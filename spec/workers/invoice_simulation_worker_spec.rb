@@ -37,7 +37,7 @@ RSpec.describe InvoiceSimulationWorker do
       .to_return(status: 200, body: JSON.pretty_generate("dataValues": generate_quarterly_values_for(project)))
 
     simulation_json = with_mocked_s3 do
-      worker.perform(ORG_UNIT_ID, "2015Q1", project.id, true, 3, true)
+      worker.perform(ORG_UNIT_ID, "2015Q1", project.id, true, 3, nil, true)
     end
 
     expect(simulation_json["request"]["warnings"]).to eq(
@@ -54,7 +54,7 @@ RSpec.describe InvoiceSimulationWorker do
 
     with_mocked_s3 do
       begin
-        worker.perform(ORG_UNIT_ID, "2015Q1", project.id, true, 3, true)
+        worker.perform(ORG_UNIT_ID, "2015Q1", project.id, true, 3, nil, true)
       rescue InvoiceSimulationWorker::Simulation::ErrorDuringSimulation => _ignored
       end
     end
@@ -70,7 +70,7 @@ RSpec.describe InvoiceSimulationWorker do
 
     with_mocked_s3 do
       begin
-        worker.perform(ORG_UNIT_ID, "2015Q1", project.id, false, 3, true)
+        worker.perform(ORG_UNIT_ID, "2015Q1", project.id, false, 3, nil, true)
       rescue InvoiceSimulationWorker::Simulation::ErrorDuringSimulation => _ignored
       end
     end

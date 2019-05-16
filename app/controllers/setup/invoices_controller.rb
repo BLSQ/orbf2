@@ -95,6 +95,8 @@ class Setup::InvoicesController < PrivateController
         )
         shouldEnqueue, reason = enqueue_simulation_job(job, params[:force])
         if shouldEnqueue
+          # Ensure status of job back is enqueued
+          job.enqueued!
           args = invoicing_request.to_h.merge(simulate_draft: params[:simulate_draft])
           InvoiceSimulationWorker.perform_async(*args.values)
         else
@@ -241,8 +243,10 @@ class Setup::InvoicesController < PrivateController
     # New jobs always need processing
     return true if job.id_previously_changed?
     return [false, "This job is still processing"] if job.alive?
-    if job.processed_within_last?(interval: 10.minutes) && force != "strong"
-      [false, "This job was recently processed: #{job.processed_at}, you can force a regeneration with `?force=strong`"]
+
+    last_change = PaperTrail::Version.where(project_id: current_project).maximum("created_at")
+    if job.processed_after?(time_stamp: last_change) && force != "strong"
+      [false, "This job was recently processed: #{job.processed_at}, you can force a regeneration by checking the checkbox"]
     else
       [true]
     end

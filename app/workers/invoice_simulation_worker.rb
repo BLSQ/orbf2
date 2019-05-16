@@ -12,7 +12,7 @@ class InvoiceSimulationWorker
 
   sidekiq_throttle(
     concurrency: { limit: 3 },
-    key_suffix:  ->(_entity, _period, project_id, _with_details, _engine_version, _simulate_draft) { project_id }
+    key_suffix:  ->(_entity, _period, project_id, _with_details, _engine_version, _mocked_data, _simulate_draft) { project_id }
   )
 
   # Roughly these operations will be done:
@@ -22,10 +22,10 @@ class InvoiceSimulationWorker
   # 3. Serialize to JSON
   # 4. Store on S3
   # 5. Update the job.
-  def perform(entity, period, project_id, with_details, engine_version, simulate_draft)
+  def perform(entity, period, project_id, with_details, engine_version, mocked_data, simulate_draft)
     project = Project.find(project_id)
     InvoicingSimulationJob.execute(project.project_anchor, period, entity) do |job|
-      serialized_json = InvoiceSimulationWorker::Simulation.new(entity, period, project_id, engine_version, with_details, simulate_draft).call
+      serialized_json = InvoiceSimulationWorker::Simulation.new(entity, period, project_id, engine_version, with_details, mocked_data, simulate_draft).call
 
       if job
         name = format("%s.json", [project_id.to_s, entity, period].map(&:underscore).join("-"))
@@ -81,7 +81,7 @@ class InvoiceSimulationWorker
     # version of an `InvoicingReqest`, from there it will build up the
     # original `InvoicingRequest` and then render it to JSON.
     def initialize(*args)
-      @entity, @period, @project_id, @with_details, @engine_version, @simulate_draft = *args
+      @entity, @period, @project_id, @with_details, @engine_version, @mocked_data, @simulate_draft = *args
     end
 
     def call
@@ -103,14 +103,19 @@ class InvoiceSimulationWorker
     end
 
     def invoicing_request
-      @request ||= InvoicingRequest.new(
+      return @request if @request
+
+      request_options = {
         project:        project,
         year:           year,
         quarter:        quarter,
         entity:         @entity,
         with_details:   @with_details,
         engine_version: project.engine_version
-      )
+      }
+      request_options[:mock_values] = "1" if @mocked_data
+
+      @request ||= InvoicingRequest.new(request_options)
     end
 
     def invoicing_options

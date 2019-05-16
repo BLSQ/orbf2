@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class InvoicingRequest
   include ActiveModel::Model
   include ActiveModel::Validations
@@ -10,7 +12,6 @@ class InvoicingRequest
     super
     @mocked_data ||= [] if mock_values?
   end
-
 
   def start_date_as_date
     year_quarter.start_date
@@ -54,11 +55,12 @@ class InvoicingRequest
 
   def to_h
     {
-      entity: entity,
-      period: period,
-      project_id: project&.id,
-      with_details: with_details,
-      engine_version: engine_version
+      entity:         entity,
+      period:         period,
+      project_id:     project&.id,
+      with_details:   with_details,
+      engine_version: engine_version,
+      mocked_data:    mocked_data
     }
   end
 end
