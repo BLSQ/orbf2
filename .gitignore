@@ -30,3 +30,11 @@ config/data_test.json
 # I, pj, still vendor my ruby gems in the directory of the
 # application, this stops me from committing them here.
 vendor/ruby
+/public/packs
+/public/packs-test
+/node_modules
+yarn-debug.log*
+.yarn-integrity
+
+# Ignore master key for decrypting credentials and more.
+/config/master.key

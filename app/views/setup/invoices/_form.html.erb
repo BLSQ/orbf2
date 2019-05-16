@@ -45,6 +45,32 @@
       </div>
     </div>
 
+    <% if Flipper[:use_async_simulation].enabled?(current_user) %>
+      <div class="form-check row">
+        <div class="col-sm-2">
+          <label class="form-check-label col-form-label">
+            Simulate with draft
+          </label>
+        </div>
+
+        <div class="col-sm-10">
+          <%= check_box_tag 'simulate_draft' %>
+        </div>
+      </div>
+
+      <div class="form-check row">
+        <div class="col-sm-2">
+          <label class="form-check-label col-form-label">
+            Force regeneration
+          </label>
+        </div>
+
+        <div class="col-sm-10">
+          <%= check_box_tag 'force', 'strong' %>
+        </div>
+      </div>
+    <% end %>
+
     <div class="form-check row">
       <div class="col-sm-2">
         <label class="form-check-label col-form-label">
@@ -80,4 +106,8 @@
 
   <%= f.submit 'Simulate with draft', name: "simulate_draft", class: "btn btn-primary"  %>
   <%= f.submit 'Simulate with published', name: "simulate_published", class: "btn btn-primary" %>
+  <% if Flipper[:use_async_simulation].enabled?(current_user) %>
+    <%= f.submit 'Simulate asynchronously', name: "simulate_async", class: "btn btn-warning" %>
+  <% end %>
+
 <%end%>

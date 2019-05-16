@@ -104,3 +104,18 @@ input:invalid {
     width:100%;
   }
 }
+
+body.private {
+  padding-top: 70px;
+}
+
+@media only screen and (max-width : 992px) {
+  body.private {
+    padding-top: 100px;
+  }
+}
+@media only screen and (max-width : 768px) {
+  body.private {
+    padding-top: 250px;
+  }
+}

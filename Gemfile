@@ -50,13 +50,19 @@ gem "simple_form"
 gem "sprockets", "~> 3.7.2"
 gem "turbolinks", "~> 5"
 gem "uglifier", ">= 1.3.0"
+# Use webpack to manage app-like JavaScript modules in Rails
+# [webpacker](https://github.com/rails/webpacker)
+gem "webpacker", "~> 4.0.1"
 
 ## Authentication
 
-gem "devise", "~> 4.5.0"
+# Flexible authentication solution for Rails with Warden
+# [devise](https://github.com/plataformatec/devise)
+gem "devise", "~> 4.6.2"
 
 ## API related
 
+gem "aws-sdk-s3", "~> 1.30.1"
 gem "fast_jsonapi"
 gem "jbuilder", "~> 2.5"
 gem "json", "2.1.0"
@@ -84,6 +90,7 @@ end
 # Like a modern code version of the mythical beast with 100 serpent hea...
 # [typhoeus](https://github.com/typhoeus/typhoeus)
 gem "typhoeus", "~> 1.3.1"
+
 group :development, :test do
   gem "byebug", platform: :mri
 
@@ -102,7 +109,6 @@ group :development, :test do
   gem "ruby-prof"
   gem "shoulda-matchers", require: false
 
-  gem "aws-sdk-s3", "~> 1.30.1"
   gem "capybara", "~> 3.12.0"
   gem "json-diff", "~> 0.4.1"
   gem "rubyzip", "~> 1.2.2"

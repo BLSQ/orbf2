@@ -16,7 +16,8 @@ RailsAdmin.config do |config|
   ].freeze
 
   config.actions do
-    dashboard
+    dashboard do
+    end
     index
     show_in_app
     export
@@ -59,6 +60,12 @@ RailsAdmin.config do |config|
     end
   end
   config.model "ProjectAnchor" do
+    show do
+      field :program
+      field :token
+      field :projects
+    end
+
     edit do
       field :token
     end
@@ -80,6 +87,19 @@ RailsAdmin.config do |config|
     object_label_method do
       :label
     end
+    show do
+      field :code
+      field :project_anchor
+      field :users
+    end
+  end
+
+  config.model "InvoicingJob" do
+    visible { false }
+  end
+
+  config.model "Version" do
+    visible { false }
   end
 
   if ENV["ADMIN_PASSWORD"]

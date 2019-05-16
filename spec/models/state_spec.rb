@@ -3,7 +3,6 @@
 # Table name: states
 #
 #  id         :integer          not null, primary key
-#  level      :string           default("activity"), not null
 #  name       :string           not null
 #  short_name :string
 #  created_at :datetime         not null

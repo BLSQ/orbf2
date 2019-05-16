@@ -35,7 +35,8 @@ RSpec.describe Setup::ProjectRulesController, type: :controller do
     end
 
     describe "#index" do
-      it "should render new edit form" do
+      it "should render new documentation for published" do
+        project.publish(Date.today.to_date)
         stub_all_data_compound(project)
 
         get :index, params: {
@@ -45,6 +46,17 @@ RSpec.describe Setup::ProjectRulesController, type: :controller do
         expect(response.body).to include("graph TD")
         expect(response.body).to include("attributed_points--&gt; claimed;")
       end
+      it "should render new documentation for draft" do
+        stub_all_data_compound(project)
+
+        get :index, params: {
+          "project_id" => project.id
+        }
+        expect(response).to have_http_status(200)
+        expect(response.body).to include("graph TD")
+        expect(response.body).to include("attributed_points--&gt; claimed;")
+      end
+
     end
 
 

@@ -6,7 +6,7 @@
      </tr>
    </thead>
    <tbody>
-    <%rule.formulas.each do|formula|%>
+    <%rule.formulas.sort_by(&:code).each do|formula|%>
       <tr>
         <td ><%= formula.code%>
             <br>&nbsp;&nbsp;<i><%=formula.short_name%></i>

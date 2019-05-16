@@ -10,9 +10,7 @@ require "action_mailer/railtie"
 require "action_view/railtie"
 require "action_cable/engine"
 require "sprockets/railtie"
-if ENV["ENABLE_ACTIVE_STORAGE"]
-  require "active_storage/engine"
-end
+require "active_storage/engine"
 # require "rails/test_unit/railtie"
 
 # Require the gems listed in Gemfile, including any gems
@@ -38,6 +36,8 @@ module Scorpio
         exception_object: event.payload[:exception_object] # the exception instance
       }
     end
+
+    config.active_job.queue_adapter = :sidekiq
 
     # These are defined in `/lib/*.rb
     require "scorpio"

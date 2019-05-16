@@ -59,7 +59,7 @@ class Package < ApplicationRecord
   end
 
   def invoice_details
-    states.select(&:activity_level?).map(&:code) + activity_rule.formulas.map(&:code) + ["activity_name"]
+    states.map(&:code) + activity_rule.formulas.map(&:code) + ["activity_name"]
   end
 
   def package_state(state)
@@ -194,7 +194,7 @@ class Package < ApplicationRecord
   def missing_activity_states
     missing_activity_states = {}
     activities.each do |activity|
-      missing_states = states.select(&:activity_level?).map do |state|
+      missing_states = states.map do |state|
         state unless activity.activity_state(state)
       end
       missing_activity_states[activity] = missing_states.reject(&:nil?)

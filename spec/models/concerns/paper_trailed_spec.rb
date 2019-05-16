@@ -1,5 +1,3 @@
-
-
 require "rails_helper"
 
 Rails.application.eager_load!
@@ -15,7 +13,6 @@ RSpec.describe PaperTrailed do
   EXCEPTIONS = [
     User,
     ActiveRecord::SchemaMigration,
-    State,
     PaperTrail::Version,
     Version,
     Dhis2Log,
@@ -23,6 +20,7 @@ RSpec.describe PaperTrailed do
     Dhis2SnapshotChange,
     ProjectAnchor,
     InvoicingJob,
+    InvoicingSimulationJob,
     Flipper::Adapters::ActiveRecord::Feature,
     Flipper::Adapters::ActiveRecord::Gate,
   ].freeze

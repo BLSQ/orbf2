@@ -84,9 +84,34 @@ class Setup::InvoicesController < PrivateController
     if invoicing_request.legacy_engine?
       render_legacy_invoice(project, invoicing_request)
     else
-      render_new_invoice(project, invoicing_request)
+      if params[:simulate_async] && Flipper[:use_async_simulation].enabled?(current_user)
+
+        job = project.project_anchor.invoicing_simulation_jobs.where(
+          dhis2_period: invoicing_request.period,
+          orgunit_ref:  invoicing_request.entity
+        ).first_or_create(
+          dhis2_period: invoicing_request.period,
+          orgunit_ref:  invoicing_request.entity
+        )
+        shouldEnqueue, reason = enqueue_simulation_job(job, params[:force])
+        if shouldEnqueue
+          # Ensure status of job back is enqueued
+          job.enqueued!
+          args = invoicing_request.to_h.merge(simulate_draft: params[:simulate_draft])
+          InvoiceSimulationWorker.perform_async(*args.values)
+        else
+          @not_enqueued_reason = reason
+        end
+
+        project.project_anchor.update_token_if_needed
+        @simulation_job_url = api_simulation_path(job, token: project.project_anchor.token)
+        return render "async_invoice"
+      else
+        render_new_invoice(project, invoicing_request)
+      end
     end
   end
+
 
   def render_new_invoice(project, invoicing_request)
     options = Invoicing::InvoicingOptions.new(
@@ -212,5 +237,18 @@ class Setup::InvoicesController < PrivateController
      " (Snaphots last updated on #{project.project_anchor.updated_at.to_date})." \
      " Only simulation will work. Update the group and trigger a dhis2 snaphots." \
      " Note that it will only fix this issue for current or futur periods."
+  end
+
+  def enqueue_simulation_job(job, force)
+    # New jobs always need processing
+    return true if job.id_previously_changed?
+    return [false, "This job is still processing"] if job.alive?
+
+    last_change = PaperTrail::Version.where(project_id: current_project).maximum("created_at")
+    if job.processed_after?(time_stamp: last_change) && force != "strong"
+      [false, "This job was recently processed: #{job.processed_at}, you can force a regeneration by checking the checkbox"]
+    else
+      [true]
+    end
   end
 end

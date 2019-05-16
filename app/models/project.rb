@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: projects
@@ -200,36 +202,39 @@ class Project < ApplicationRecord
 
   def publish(date)
     raise "already published !" unless draft?
+
     old_project = self
     new_project = nil
+
     transaction do
-      new_project = deep_clone include: {
-        states:        [],
-        entity_group:  [],
-        activities:    {
-          activity_states: []
-        },
-        packages:      {
-          package_entity_groups: [],
-          package_states:        [],
-          rules:                 [
-            :decision_tables,
-            formulas: [:formula_mappings]
-          ],
-          activity_packages:     []
-        },
-        payment_rules: {
-          package_payment_rules: [],
-          rule:                  %i[
-            decision_tables
-            formulas
-          ],
-          datasets:              []
-        }
-      } # do |original, kopy|
-      #  log "cloning #{original} #{kopy}"
-      # end
+      new_project = deep_clone(
+        include: {
+          states:        [],
+          entity_group:  [],
+          activities:    {
+            activity_states: [:state]
+          },
+          packages:      {
+            package_entity_groups: [],
+            package_states:        [:state],
+            rules:                 [
+              :decision_tables,
+              formulas: [:formula_mappings]
+            ],
+            activity_packages:     [:activity]
+          },
+          payment_rules: {
+            package_payment_rules: [:package],
+            rule:                  [
+              :decision_tables,
+              formulas: [:formula_mappings]
+            ],
+            datasets:              []
+          }
+        }, use_dictionary: true
+      )
       new_project.original = old_project
+
       new_project.save!
 
       old_project.publish_date = date
@@ -253,6 +258,7 @@ class Project < ApplicationRecord
 
   def verify_connection
     return { status: :ko, message: errors.full_messages.join(",") } if invalid?
+
     infos = dhis2_connection.system_infos.get
     { status: :ok, message: infos }
   rescue StandardError => e
@@ -331,6 +337,7 @@ class Project < ApplicationRecord
 
   def changelog(other_project = original)
     return [] unless other_project
+
     diff_symbols = { "+" => :added, "-" => :removed, "~" => :modified }
     all_names = to_unified_names.merge(other_project.to_unified_names)
     HashDiff.diff(other_project.to_unified_h, to_unified_h).map do |hash_diff|
@@ -350,6 +357,7 @@ class Project < ApplicationRecord
   def replace_stable_id(all_names, path)
     return nil if path.nil?
     return path unless path.is_a?(String)
+
     all_names.each do |uuid, name|
       path = path.gsub(".#{uuid}.", " '#{name}' ")
       path = path.gsub(".#{uuid}", " '#{name}' ")
@@ -368,6 +376,7 @@ class Project < ApplicationRecord
     end
     packages.each do |package|
       next unless package.invalid?
+
       log package.errors.full_messages
       package.rules.each do |rule|
         dump_validation_rule(rule)
@@ -387,6 +396,7 @@ class Project < ApplicationRecord
     log rule.errors.full_messages
     rule.formulas.each do |formula|
       next unless formula.invalid?
+
       log "------* *** *"
       log formula.to_json
       log formula.errors.full_messages

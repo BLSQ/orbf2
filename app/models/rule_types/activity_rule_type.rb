@@ -14,7 +14,7 @@ module RuleTypes
       var_names = []
 
       if package
-        var_names.push(*package.states.select(&:activity_level?).map(&:code))
+        var_names.push(*package_states.map(&:code))
         var_names.push(*null_states)
       end
       var_names.push(*formulas.map(&:code))
@@ -41,7 +41,7 @@ module RuleTypes
     def available_variables_for_values
       var_names = []
 
-      activity_level_states = package.package_states.map(&:state).select(&:activity_level?)
+      activity_level_states = package_states
       Analytics::Timeframe.all_variables_builders.each do |timeframe|
         var_names.push(*activity_level_states.map { |state| "#{state.code}#{timeframe.suffix}" })
       end
@@ -84,7 +84,7 @@ module RuleTypes
 
     def fake_facts
       # in case we are in a clone packages a not there so go through long road package_states instead of states
-      to_fake_facts(package.package_states.map(&:state).select(&:activity_level?))
+      to_fake_facts(package_states)
         .merge(
           Analytics::Locations::LevelScope.new.to_fake_facts(package)
         )
@@ -98,7 +98,7 @@ module RuleTypes
     private
 
     def main_orgunit_states
-      package.states.select(&:activity_level?).map { |state| "#{state.code}_zone_main_orgunit" }
+      package_states.map { |state| "#{state.code}_zone_main_orgunit" }
     end
 
     def main_orgunit_facts
@@ -108,7 +108,7 @@ module RuleTypes
     end
 
     def null_states
-      package.states.select(&:activity_level?).map { |state| "#{state.code}_is_null" }
+      package_states.map { |state| "#{state.code}_is_null" }
     end
 
     def null_facts

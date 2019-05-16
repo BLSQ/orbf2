@@ -56,7 +56,7 @@ module Analytics
       package.multi_entities_rule.formulas.each do |formula|
         hash[formula.code] = formula.expression
       end
-      package.states.each do |state|
+      package.package_states.map(&:state).each do |state|
         hash[state.code] ||= 0
       end
       solver.solve!("multientities for #{package.name}", hash)

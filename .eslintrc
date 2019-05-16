@@ -1,0 +1,26 @@
+{
+  "parserOptions": {
+    "ecmaVersion": 9,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "env": {
+    "es6": true,
+    "node": true
+  },
+  "plugins": ["react", "prettier", "import"],
+  "rules": {
+    "prettier/prettier": "error",
+    "import/first": "off",
+    "no-debugger": "off"
+  },
+  "parser": "babel-eslint",
+  "extends": ["airbnb-base", "prettier", "plugin:react/recommended"],
+  "settings": {
+    "react": {
+      "version": "detect",
+    },
+  },
+}

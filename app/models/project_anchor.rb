@@ -23,8 +23,8 @@ class ProjectAnchor < ApplicationRecord
 
   has_many :dhis2_snapshots, inverse_of: :project_anchor, dependent: :destroy
   has_many :dhis2_logs, inverse_of: :project_anchor, dependent: :destroy
-  has_many :invoicing_jobs, inverse_of: :project_anchor, dependent: :destroy
-
+  has_many :invoicing_jobs, -> { where(type: "InvoicingJob") }, inverse_of: :project_anchor, dependent: :destroy
+  has_many :invoicing_simulation_jobs, -> { where(type: "InvoicingSimulationJob") }, inverse_of: :project_anchor, dependent: :destroy
   def invalid_project?
     project.nil? || project.invalid?
   end
@@ -149,5 +149,16 @@ class ProjectAnchor < ApplicationRecord
 
   def flipper_id
     "ProjectAnchor:#{id}"
+  end
+
+  # If no token is present update the database with a new token.
+  #
+  # Returns the newly set token
+  def update_token_if_needed(force_refresh: false)
+    return if token.present? && !force_refresh
+
+    token = SecureRandom.uuid
+    update(token: token)
+    token
   end
 end

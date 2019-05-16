@@ -11,7 +11,8 @@
 #  orgunit_ref       :string           not null
 #  processed_at      :datetime
 #  sidekiq_job_ref   :string
-#  status            :string
+#  status            :string           default("enqueued")
+#  type              :string           default("InvoicingJob")
 #  user_ref          :string
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
@@ -19,7 +20,7 @@
 #
 # Indexes
 #
-#  index_invoicing_jobs_on_anchor_ou_period   (project_anchor_id,orgunit_ref,dhis2_period) UNIQUE
+#  index_invoicing_jobs_on_anchor_ou_period   (project_anchor_id,orgunit_ref,dhis2_period,type) UNIQUE
 #  index_invoicing_jobs_on_project_anchor_id  (project_anchor_id)
 #
 # Foreign Keys
@@ -37,4 +38,5 @@ class InvoicingJobSerializer
   attribute :sidekiq_job_ref
 
   attribute :is_alive, &:alive?
+  attribute :result_url, &:result_url
 end
