@@ -87,6 +87,11 @@ RailsAdmin.config do |config|
     object_label_method do
       :label
     end
+    show do
+      field :code
+      field :project_anchor
+      field :users
+    end
   end
 
   config.model "InvoicingJob" do
