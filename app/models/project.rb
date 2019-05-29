@@ -65,6 +65,13 @@ class Project < ApplicationRecord
     message: "%{value} is not a valid see #{CYCLES.join(',')}"
   }
 
+  ENGINE_VERSIONS = [2, 3]
+
+  validates :engine_version, presence: true, inclusion: {
+    in:      ENGINE_VERSIONS,
+    message: "%{value} is not a valid see #{ENGINE_VERSIONS.join(',')}"
+  }
+
   # see PaperTrailed meta
   def project_id
     id
@@ -75,7 +82,7 @@ class Project < ApplicationRecord
   end
 
   def engine_version_enum
-    { "1.0 - legacy" => 1, "2.0 - dentaku" => 2, "3.0 - golang" => 3 }
+    { "2.0 - dentaku" => 2, "3.0 - golang" => 3 }
   end
 
   def cycle_yearly?

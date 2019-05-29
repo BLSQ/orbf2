@@ -32,19 +32,7 @@ class InvoiceForProjectAnchorWorker
         invoice_entity = Invoicing::InvoiceEntity.new(project_anchor, request, options)
         invoice_entity.call
       else
-        contracted_entities = organisation_units(project_anchor, request)
-        contracted_entities &= selected_org_unit_ids if selected_org_unit_ids
-
-        Rails.logger.info "contracted_entities #{contracted_entities.size}"
-        if contracted_entities.empty?
-          Rails.logger.info("WARN : selected_org_unit_ids '#{selected_org_unit_ids}'"\
-            " aren't in the contracted group !")
-        end
-
-        contracted_entities.each_slice(options[:slice_size]).each do |org_unit_ids|
-          # currently not doing it async but might be needed
-          InvoicesForEntitiesWorker.new.perform(project_anchor_id, year, quarter, org_unit_ids, options)
-        end
+        raise "TODO : no more supported"
       end
     end
   end

@@ -81,9 +81,7 @@ class Setup::InvoicesController < PrivateController
       return
     end
 
-    if invoicing_request.legacy_engine?
-      render_legacy_invoice(project, invoicing_request)
-    else
+
       if params[:simulate_async] && Flipper[:use_async_simulation].enabled?(current_user)
 
         job = project.project_anchor.invoicing_simulation_jobs.where(
@@ -109,7 +107,7 @@ class Setup::InvoicesController < PrivateController
       else
         render_new_invoice(project, invoicing_request)
       end
-    end
+
   end
 
 
@@ -143,68 +141,6 @@ class Setup::InvoicesController < PrivateController
     puts "An error occured during simulation #{e.class.name} #{e.message}" + e.backtrace.join("\n")
     flash[:failure] = "An error occured during simulation #{e.class.name} #{e.message[0..100]}"
     render "new_invoice"
-  end
-
-  def render_legacy_invoice(project, invoicing_request)
-    pyramid = project.project_anchor.nearest_pyramid_for(invoicing_request.end_date_as_date)
-    pyramid ||= Pyramid.from(project)
-    @pyramid = pyramid
-
-    @datacompound = project.project_anchor.nearest_data_compound_for(invoicing_request.end_date_as_date)
-    @datacompound ||= DataCompound.from(project)
-
-    org_unit = pyramid.org_unit(invoicing_request.entity)
-    @org_unit = org_unit
-
-    render(:new) && return unless org_unit
-    org_unit.pyramid ||= pyramid
-
-    @org_unit_summaries = [
-      org_unit.name,
-      "parents : " + pyramid.org_unit_parents(org_unit.id).map(&:name).join(" > "),
-      "groups : " + pyramid.org_unit_groups_of(org_unit).compact.map(&:name).join(", "),
-      "date range : " + project.date_range(invoicing_request.year_quarter).map(&:to_s).join(", "),
-      "periods : " + project.periods(invoicing_request.year_quarter).map(&:to_dhis2).join(", "),
-      "facts : " + Invoicing::EntityBuilder.new.to_entity(org_unit).facts.map(&:to_s).join(", ")
-    ]
-
-    unless pyramid.belong_to_group(org_unit, project.entity_group.external_reference)
-      flash[:failure] = "Warn this entity is not in the contracted entity group : #{project.entity_group.name}."
-      flash[:failure] += "Only simulation will work. Update the group and trigger a dhis2 snaphots."
-    end
-
-    options = {
-      publisher_ids: [],
-      mock_values:   invoicing_request.mock_values?
-    }
-
-    if params[:simulate_draft]
-      options = options.merge(
-        force_project_id:       project.id,
-        allow_fresh_dhis2_data: true
-      )
-    end
-
-    begin
-      invoicing_request.invoices = InvoicesForEntitiesWorker.new.perform(
-        project.project_anchor_id,
-        invoicing_request.year,
-        invoicing_request.quarter,
-        [org_unit.id],
-        options
-      )[org_unit.id]
-
-      invoicing_request.invoices = invoicing_request.invoices.sort_by(&:date)
-    rescue Rules::SolvingError => e
-      @exception = e
-      log(e)
-      flash[:alert] = "Failed to simulate invoice : #{e.class.name} #{e.message[0..100]} : <br>#{e.facts_and_rules.map { |k, v| [k, v].join(' : ') }.join(' <br>')}".html_safe
-    rescue StandardError => e
-      @exception = e
-      log(e)
-      flash[:alert] = "Failed to simulate invoice : #{e.class.name} #{e.message[0..100]}"
-    end
-    render :new
   end
 
   def log(exception)
