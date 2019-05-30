@@ -57,12 +57,12 @@ RSpec.describe InvoiceForProjectAnchorWorker do
   end
 
   it "should perform for subset of contracted_entities" do
-    stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&endDate=2015-12-31&orgUnit=vRC0stJ5y9Q&startDate=2015-01-01")
+    stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&orgUnit=vRC0stJ5y9Q&period=2015Q1")
       .to_return(status: 200, body: "", headers: {})
 
-    export_request = stub_export_values("invoice_zero_single.json")
+    export_request = stub_export_values("invoice_zero_new.json")
 
-    worker.perform(project.project_anchor.id, 2015, 1, [ORG_UNIT_ID, ORG_UNIT_ID])
+    worker.perform(project.project_anchor.id, 2015, 1, [ORG_UNIT_ID])
 
     expect(export_request).to have_been_made.once
   end
