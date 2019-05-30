@@ -1,286 +1,277 @@
 {
   "dataValues": [
     {
+      "dataElement": "Clients sous traitement ARV suivi pendant les 6 premiers mois-difference_percentage",
+      "orgUnit": "vRC0stJ5y9Q",
+      "period": "201501",
+      "value": 0,
+      "comment": "quantity_pma_clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois_difference_percentage_for_vRC0stJ5y9Q_and_201501"
+    },
+    {
+      "dataElement": "Clients sous traitement ARV suivi pendant les 6 premiers mois-quantity",
+      "orgUnit": "vRC0stJ5y9Q",
+      "period": "201501",
+      "value": 0,
+      "comment": "quantity_pma_clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois_quantity_for_vRC0stJ5y9Q_and_201501"
+    },
+    {
+      "dataElement": "Clients sous traitement ARV suivi pendant les 6 premiers mois-amount",
+      "orgUnit": "vRC0stJ5y9Q",
+      "period": "201501",
+      "value": 0,
+      "comment": "quantity_pma_clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois_amount_for_vRC0stJ5y9Q_and_201501"
+    },
+    {
+      "dataElement": "Clients sous traitement ARV suivi pendant les 6 premiers mois-sample_parent_values",
+      "orgUnit": "vRC0stJ5y9Q",
+      "period": "201501",
+      "value": 0,
+      "comment": "quantity_pma_clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois_sample_parent_values_for_vRC0stJ5y9Q_and_201501"
+    },
+    {
       "dataElement": "Vaccination-difference_percentage",
       "orgUnit": "vRC0stJ5y9Q",
       "period": "201501",
-      "value": "0.0",
-      "comment": "A-difference_percentage-Vaccination"
+      "value": 0,
+      "comment": "quantity_pma_vaccination_difference_percentage_for_vRC0stJ5y9Q_and_201501"
     },
     {
       "dataElement": "Vaccination-quantity",
       "orgUnit": "vRC0stJ5y9Q",
       "period": "201501",
       "value": 0,
-      "comment": "A-quantity-Vaccination"
+      "comment": "quantity_pma_vaccination_quantity_for_vRC0stJ5y9Q_and_201501"
     },
     {
       "dataElement": "Vaccination-amount",
       "orgUnit": "vRC0stJ5y9Q",
       "period": "201501",
       "value": 0,
-      "comment": "A-amount-Vaccination"
+      "comment": "quantity_pma_vaccination_amount_for_vRC0stJ5y9Q_and_201501"
     },
     {
       "dataElement": "Vaccination-sample_parent_values",
       "orgUnit": "vRC0stJ5y9Q",
       "period": "201501",
       "value": 0,
-      "comment": "A-sample_parent_values-Vaccination"
+      "comment": "quantity_pma_vaccination_sample_parent_values_for_vRC0stJ5y9Q_and_201501"
     },
     {
-      "dataElement":
-        "Clients sous traitement ARV suivi pendant les 6 premiers mois-difference_percentage",
-      "orgUnit": "vRC0stJ5y9Q",
-      "period": "201501",
-      "value": "0.0",
-      "comment":
-        "A-difference_percentage-Clients sous traitement ARV suivi pendant les 6 premiers mois"
-    },
-    {
-      "dataElement":
-        "Clients sous traitement ARV suivi pendant les 6 premiers mois-quantity",
+      "dataElement": "package-quantity_total_pma",
       "orgUnit": "vRC0stJ5y9Q",
       "period": "201501",
       "value": 0,
-      "comment":
-        "A-quantity-Clients sous traitement ARV suivi pendant les 6 premiers mois"
+      "comment": "quantity_pma_quantity_total_pma_for_vRC0stJ5y9Q_and_201501"
     },
     {
-      "dataElement":
-        "Clients sous traitement ARV suivi pendant les 6 premiers mois-amount",
+      "dataElement": "Clients sous traitement ARV suivi pendant les 6 premiers mois-difference_percentage",
       "orgUnit": "vRC0stJ5y9Q",
-      "period": "201501",
+      "period": "201502",
       "value": 0,
-      "comment":
-        "A-amount-Clients sous traitement ARV suivi pendant les 6 premiers mois"
+      "comment": "quantity_pma_clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois_difference_percentage_for_vRC0stJ5y9Q_and_201502"
     },
     {
-      "dataElement":
-        "Clients sous traitement ARV suivi pendant les 6 premiers mois-sample_parent_values",
+      "dataElement": "Clients sous traitement ARV suivi pendant les 6 premiers mois-quantity",
       "orgUnit": "vRC0stJ5y9Q",
-      "period": "201501",
+      "period": "201502",
       "value": 0,
-      "comment":
-        "A-sample_parent_values-Clients sous traitement ARV suivi pendant les 6 premiers mois"
+      "comment": "quantity_pma_clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois_quantity_for_vRC0stJ5y9Q_and_201502"
+    },
+    {
+      "dataElement": "Clients sous traitement ARV suivi pendant les 6 premiers mois-amount",
+      "orgUnit": "vRC0stJ5y9Q",
+      "period": "201502",
+      "value": 0,
+      "comment": "quantity_pma_clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois_amount_for_vRC0stJ5y9Q_and_201502"
+    },
+    {
+      "dataElement": "Clients sous traitement ARV suivi pendant les 6 premiers mois-sample_parent_values",
+      "orgUnit": "vRC0stJ5y9Q",
+      "period": "201502",
+      "value": 0,
+      "comment": "quantity_pma_clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois_sample_parent_values_for_vRC0stJ5y9Q_and_201502"
     },
     {
       "dataElement": "Vaccination-difference_percentage",
       "orgUnit": "vRC0stJ5y9Q",
       "period": "201502",
-      "value": "0.0",
-      "comment": "A-difference_percentage-Vaccination"
+      "value": 0,
+      "comment": "quantity_pma_vaccination_difference_percentage_for_vRC0stJ5y9Q_and_201502"
     },
     {
       "dataElement": "Vaccination-quantity",
       "orgUnit": "vRC0stJ5y9Q",
       "period": "201502",
       "value": 0,
-      "comment": "A-quantity-Vaccination"
+      "comment": "quantity_pma_vaccination_quantity_for_vRC0stJ5y9Q_and_201502"
     },
     {
       "dataElement": "Vaccination-amount",
       "orgUnit": "vRC0stJ5y9Q",
       "period": "201502",
       "value": 0,
-      "comment": "A-amount-Vaccination"
+      "comment": "quantity_pma_vaccination_amount_for_vRC0stJ5y9Q_and_201502"
     },
     {
       "dataElement": "Vaccination-sample_parent_values",
       "orgUnit": "vRC0stJ5y9Q",
       "period": "201502",
       "value": 0,
-      "comment": "A-sample_parent_values-Vaccination"
+      "comment": "quantity_pma_vaccination_sample_parent_values_for_vRC0stJ5y9Q_and_201502"
     },
     {
-      "dataElement":
-        "Clients sous traitement ARV suivi pendant les 6 premiers mois-difference_percentage",
-      "orgUnit": "vRC0stJ5y9Q",
-      "period": "201502",
-      "value": "0.0",
-      "comment":
-        "A-difference_percentage-Clients sous traitement ARV suivi pendant les 6 premiers mois"
-    },
-    {
-      "dataElement":
-        "Clients sous traitement ARV suivi pendant les 6 premiers mois-quantity",
+      "dataElement": "package-quantity_total_pma",
       "orgUnit": "vRC0stJ5y9Q",
       "period": "201502",
       "value": 0,
-      "comment":
-        "A-quantity-Clients sous traitement ARV suivi pendant les 6 premiers mois"
+      "comment": "quantity_pma_quantity_total_pma_for_vRC0stJ5y9Q_and_201502"
     },
     {
-      "dataElement":
-        "Clients sous traitement ARV suivi pendant les 6 premiers mois-amount",
+      "dataElement": "Clients sous traitement ARV suivi pendant les 6 premiers mois-difference_percentage",
       "orgUnit": "vRC0stJ5y9Q",
-      "period": "201502",
+      "period": "201503",
       "value": 0,
-      "comment":
-        "A-amount-Clients sous traitement ARV suivi pendant les 6 premiers mois"
+      "comment": "quantity_pma_clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois_difference_percentage_for_vRC0stJ5y9Q_and_201503"
     },
     {
-      "dataElement":
-        "Clients sous traitement ARV suivi pendant les 6 premiers mois-sample_parent_values",
+      "dataElement": "Clients sous traitement ARV suivi pendant les 6 premiers mois-quantity",
       "orgUnit": "vRC0stJ5y9Q",
-      "period": "201502",
+      "period": "201503",
       "value": 0,
-      "comment":
-        "A-sample_parent_values-Clients sous traitement ARV suivi pendant les 6 premiers mois"
+      "comment": "quantity_pma_clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois_quantity_for_vRC0stJ5y9Q_and_201503"
+    },
+    {
+      "dataElement": "Clients sous traitement ARV suivi pendant les 6 premiers mois-amount",
+      "orgUnit": "vRC0stJ5y9Q",
+      "period": "201503",
+      "value": 0,
+      "comment": "quantity_pma_clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois_amount_for_vRC0stJ5y9Q_and_201503"
+    },
+    {
+      "dataElement": "Clients sous traitement ARV suivi pendant les 6 premiers mois-sample_parent_values",
+      "orgUnit": "vRC0stJ5y9Q",
+      "period": "201503",
+      "value": 0,
+      "comment": "quantity_pma_clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois_sample_parent_values_for_vRC0stJ5y9Q_and_201503"
     },
     {
       "dataElement": "Vaccination-difference_percentage",
       "orgUnit": "vRC0stJ5y9Q",
       "period": "201503",
-      "value": "0.0",
-      "comment": "A-difference_percentage-Vaccination"
+      "value": 0,
+      "comment": "quantity_pma_vaccination_difference_percentage_for_vRC0stJ5y9Q_and_201503"
     },
     {
       "dataElement": "Vaccination-quantity",
       "orgUnit": "vRC0stJ5y9Q",
       "period": "201503",
       "value": 0,
-      "comment": "A-quantity-Vaccination"
+      "comment": "quantity_pma_vaccination_quantity_for_vRC0stJ5y9Q_and_201503"
     },
     {
       "dataElement": "Vaccination-amount",
       "orgUnit": "vRC0stJ5y9Q",
       "period": "201503",
       "value": 0,
-      "comment": "A-amount-Vaccination"
+      "comment": "quantity_pma_vaccination_amount_for_vRC0stJ5y9Q_and_201503"
     },
     {
       "dataElement": "Vaccination-sample_parent_values",
       "orgUnit": "vRC0stJ5y9Q",
       "period": "201503",
       "value": 0,
-      "comment": "A-sample_parent_values-Vaccination"
+      "comment": "quantity_pma_vaccination_sample_parent_values_for_vRC0stJ5y9Q_and_201503"
     },
     {
-      "dataElement":
-        "Clients sous traitement ARV suivi pendant les 6 premiers mois-difference_percentage",
-      "orgUnit": "vRC0stJ5y9Q",
-      "period": "201503",
-      "value": "0.0",
-      "comment":
-        "A-difference_percentage-Clients sous traitement ARV suivi pendant les 6 premiers mois"
-    },
-    {
-      "dataElement":
-        "Clients sous traitement ARV suivi pendant les 6 premiers mois-quantity",
+      "dataElement": "package-quantity_total_pma",
       "orgUnit": "vRC0stJ5y9Q",
       "period": "201503",
       "value": 0,
-      "comment":
-        "A-quantity-Clients sous traitement ARV suivi pendant les 6 premiers mois"
+      "comment": "quantity_pma_quantity_total_pma_for_vRC0stJ5y9Q_and_201503"
     },
     {
-      "dataElement":
-        "Clients sous traitement ARV suivi pendant les 6 premiers mois-amount",
+      "dataElement": "Clients sous traitement ARV suivi pendant les 6 premiers mois-attributed_points",
       "orgUnit": "vRC0stJ5y9Q",
-      "period": "201503",
-      "value": 0,
-      "comment":
-        "A-amount-Clients sous traitement ARV suivi pendant les 6 premiers mois"
+      "period": "2015Q1",
+      "value": 101,
+      "comment": "quality_clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois_attributed_points_for_vRC0stJ5y9Q_and_2015q1"
     },
     {
-      "dataElement":
-        "Clients sous traitement ARV suivi pendant les 6 premiers mois-sample_parent_values",
+      "dataElement": "Clients sous traitement ARV suivi pendant les 6 premiers mois-max_points",
       "orgUnit": "vRC0stJ5y9Q",
-      "period": "201503",
-      "value": 0,
-      "comment":
-        "A-sample_parent_values-Clients sous traitement ARV suivi pendant les 6 premiers mois"
+      "period": "2015Q1",
+      "value": 100,
+      "comment": "quality_clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois_max_points_for_vRC0stJ5y9Q_and_2015q1"
+    },
+    {
+      "dataElement": "Clients sous traitement ARV suivi pendant les 6 premiers mois-quality_technical_score_value",
+      "orgUnit": "vRC0stJ5y9Q",
+      "period": "2015Q1",
+      "value": 101,
+      "comment": "quality_clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois_quality_technical_score_value_for_vRC0stJ5y9Q_and_2015q1"
     },
     {
       "dataElement": "Vaccination-attributed_points",
       "orgUnit": "vRC0stJ5y9Q",
       "period": "2015Q1",
-      "value": "101.0",
-      "comment": "A-attributed_points-Vaccination"
+      "value": 101,
+      "comment": "quality_vaccination_attributed_points_for_vRC0stJ5y9Q_and_2015q1"
     },
     {
       "dataElement": "Vaccination-max_points",
       "orgUnit": "vRC0stJ5y9Q",
       "period": "2015Q1",
-      "value": "100.0",
-      "comment": "A-max_points-Vaccination"
+      "value": 100,
+      "comment": "quality_vaccination_max_points_for_vRC0stJ5y9Q_and_2015q1"
     },
     {
       "dataElement": "Vaccination-quality_technical_score_value",
       "orgUnit": "vRC0stJ5y9Q",
       "period": "2015Q1",
-      "value": "101.0",
-      "comment": "A-quality_technical_score_value-Vaccination"
-    },
-    {
-      "dataElement":
-        "Clients sous traitement ARV suivi pendant les 6 premiers mois-attributed_points",
-      "orgUnit": "vRC0stJ5y9Q",
-      "period": "2015Q1",
-      "value": "101.0",
-      "comment":
-        "A-attributed_points-Clients sous traitement ARV suivi pendant les 6 premiers mois"
-    },
-    {
-      "dataElement":
-        "Clients sous traitement ARV suivi pendant les 6 premiers mois-max_points",
-      "orgUnit": "vRC0stJ5y9Q",
-      "period": "2015Q1",
-      "value": "100.0",
-      "comment":
-        "A-max_points-Clients sous traitement ARV suivi pendant les 6 premiers mois"
-    },
-    {
-      "dataElement":
-        "Clients sous traitement ARV suivi pendant les 6 premiers mois-quality_technical_score_value",
-      "orgUnit": "vRC0stJ5y9Q",
-      "period": "2015Q1",
-      "value": "101.0",
-      "comment":
-        "A-quality_technical_score_value-Clients sous traitement ARV suivi pendant les 6 premiers mois"
-    },
-    {
-      "dataElement": "package-quantity_total_pma",
-      "orgUnit": "vRC0stJ5y9Q",
-      "period": "201501",
-      "value": "0.0",
-      "comment": "P-quantity_total_pma-Quantity PMA"
-    },
-    {
-      "dataElement": "package-quantity_total_pma",
-      "orgUnit": "vRC0stJ5y9Q",
-      "period": "201502",
-      "value": "0.0",
-      "comment": "P-quantity_total_pma-Quantity PMA"
-    },
-    {
-      "dataElement": "package-quantity_total_pma",
-      "orgUnit": "vRC0stJ5y9Q",
-      "period": "201503",
-      "value": "0.0",
-      "comment": "P-quantity_total_pma-Quantity PMA"
+      "value": 101,
+      "comment": "quality_vaccination_quality_technical_score_value_for_vRC0stJ5y9Q_and_2015q1"
     },
     {
       "dataElement": "package-attributed_points",
       "orgUnit": "vRC0stJ5y9Q",
       "period": "2015Q1",
-      "value": "202.0",
-      "comment": "P-attributed_points-Quality"
+      "value": 202,
+      "comment": "quality_attributed_points_for_vRC0stJ5y9Q_and_2015q1"
     },
     {
       "dataElement": "package-max_points",
       "orgUnit": "vRC0stJ5y9Q",
       "period": "2015Q1",
-      "value": "200.0",
-      "comment": "P-max_points-Quality"
+      "value": 200,
+      "comment": "quality_max_points_for_vRC0stJ5y9Q_and_2015q1"
     },
     {
       "dataElement": "package-quality_technical_score_value",
       "orgUnit": "vRC0stJ5y9Q",
       "period": "2015Q1",
-      "value": "101.0",
-      "comment": "P-quality_technical_score_value-Quality"
+      "value": 101,
+      "comment": "quality_quality_technical_score_value_for_vRC0stJ5y9Q_and_2015q1"
+    },
+    {
+      "dataElement": "payment-quality_bonus_percentage_value",
+      "orgUnit": "vRC0stJ5y9Q",
+      "period": "2015Q1",
+      "value": 38.349999999999994,
+      "comment": "payment_rule_pma_quality_bonus_percentage_value_for_vRC0stJ5y9Q_and_2015q1"
+    },
+    {
+      "dataElement": "payment-quality_bonus_value",
+      "orgUnit": "vRC0stJ5y9Q",
+      "period": "2015Q1",
+      "value": 0,
+      "comment": "payment_rule_pma_quality_bonus_value_for_vRC0stJ5y9Q_and_2015q1"
+    },
+    {
+      "dataElement": "payment-quarterly_payment",
+      "orgUnit": "vRC0stJ5y9Q",
+      "period": "2015Q1",
+      "value": 0,
+      "comment": "payment_rule_pma_quarterly_payment_for_vRC0stJ5y9Q_and_2015q1"
     }
   ]
 }
