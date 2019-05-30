@@ -58,10 +58,6 @@ class DecisionTable < ApplicationRecord
     @decision_table = nil
   end
 
-  def extra_facts(entity_facts)
-    decision_table.find(entity_facts)
-  end
-
   def decision_table
     @decision_table ||= Decision::Table.new(content || "in:nothing,out:nothing_too")
   end

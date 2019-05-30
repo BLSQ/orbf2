@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: projects
@@ -11,7 +10,7 @@
 #  default_aoc_reference :string
 #  default_coc_reference :string
 #  dhis2_url             :string           not null
-#  engine_version        :integer          default(1), not null
+#  engine_version        :integer          default(3), not null
 #  name                  :string           not null
 #  password              :string
 #  publish_date          :datetime
@@ -95,14 +94,6 @@ class Project < ApplicationRecord
 
   def package(code)
     packages.find { |package| package.code == code }
-  end
-
-  def periods(year_quarter)
-    packages.map { |package| year_quarter.months.map { |year_month| package.periods(year_month) } }.flatten.uniq
-  end
-
-  def date_range(year_quarter)
-    periods(year_quarter).map { |period| [period.start_date, period.end_date] }.flatten.minmax
   end
 
   def naming_patterns

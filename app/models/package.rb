@@ -90,23 +90,6 @@ class Package < ApplicationRecord
     kind == "zone"
   end
 
-  def periods(year_month)
-    return [] unless activity_rule
-    used_variables_for_values = activity_rule.used_variables_for_values
-
-    used_periods = Analytics::Timeframe.all_variables_builders.map do |timeframe|
-      use_variables = used_variables_for_values.any? do |var|
-        timeframe.suffix && var.ends_with?(timeframe.suffix)
-      end
-      next unless use_variables
-      timeframe.periods(self, year_month)
-    end
-    # whatever add the current timeframe periods
-    used_periods += Analytics::Timeframe.current.periods(self, year_month)
-    used_periods = used_periods.flatten.compact.uniq
-    used_periods
-  end
-
   def missing_rules_kind
     %w[activity package multi-entities zone zone_activity] - rules.map(&:kind)
   end
