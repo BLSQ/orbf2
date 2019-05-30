@@ -81,35 +81,32 @@ class Setup::InvoicesController < PrivateController
       return
     end
 
+    if params[:simulate_async] && Flipper[:use_async_simulation].enabled?(current_user)
 
-      if params[:simulate_async] && Flipper[:use_async_simulation].enabled?(current_user)
-
-        job = project.project_anchor.invoicing_simulation_jobs.where(
-          dhis2_period: invoicing_request.period,
-          orgunit_ref:  invoicing_request.entity
-        ).first_or_create(
-          dhis2_period: invoicing_request.period,
-          orgunit_ref:  invoicing_request.entity
-        )
-        shouldEnqueue, reason = enqueue_simulation_job(job, params[:force])
-        if shouldEnqueue
-          # Ensure status of job back is enqueued
-          job.enqueued!
-          args = invoicing_request.to_h.merge(simulate_draft: params[:simulate_draft])
-          InvoiceSimulationWorker.perform_async(*args.values)
-        else
-          @not_enqueued_reason = reason
-        end
-
-        project.project_anchor.update_token_if_needed
-        @simulation_job_url = api_simulation_path(job, token: project.project_anchor.token)
-        return render "async_invoice"
+      job = project.project_anchor.invoicing_simulation_jobs.where(
+        dhis2_period: invoicing_request.period,
+        orgunit_ref:  invoicing_request.entity
+      ).first_or_create(
+        dhis2_period: invoicing_request.period,
+        orgunit_ref:  invoicing_request.entity
+      )
+      shouldEnqueue, reason = enqueue_simulation_job(job, params[:force])
+      if shouldEnqueue
+        # Ensure status of job back is enqueued
+        job.enqueued!
+        args = invoicing_request.to_h.merge(simulate_draft: params[:simulate_draft])
+        InvoiceSimulationWorker.perform_async(*args.values)
       else
-        render_new_invoice(project, invoicing_request)
+        @not_enqueued_reason = reason
       end
 
+      project.project_anchor.update_token_if_needed
+      @simulation_job_url = api_simulation_path(job, token: project.project_anchor.token)
+      return render "async_invoice"
+    else
+      render_new_invoice(project, invoicing_request)
+    end
   end
-
 
   def render_new_invoice(project, invoicing_request)
     options = Invoicing::InvoicingOptions.new(
