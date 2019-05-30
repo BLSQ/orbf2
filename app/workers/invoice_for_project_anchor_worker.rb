@@ -13,6 +13,7 @@ class InvoiceForProjectAnchorWorker
     default_options = {
       slice_size: 25
     }
+    raise "no more supported : should provide an single selected_org_unit_ids " if selected_org_unit_ids.nil? || selected_org_unit_ids.size > 1
 
     options = default_options.merge(options)
     project_anchor = ProjectAnchor.find(project_anchor_id)
@@ -21,7 +22,6 @@ class InvoiceForProjectAnchorWorker
 
       project = project_anchor.projects.for_date(request.end_date_as_date) || project_anchor.latest_draft
       request.engine_version = project.engine_version
-
       if project.new_engine? && selected_org_unit_ids.size == 1
         options = Invoicing::InvoicingOptions.new(
           publish_to_dhis2:       true,

@@ -44,13 +44,13 @@ RSpec.describe InvoiceForProjectAnchorWorker do
   end
 
   it "should NOT on non contracted entities" do
-    project.entity_group.external_reference = "external_reference"
+    project.entity_group.external_reference = "gzcv65VyaGq"
     project.entity_group.save!
 
     fetch_values_request = stub_dhis2_values
     export_request = stub_request(:post, "http://play.dhis2.org/demo/api/dataValueSets")
-
-    worker.perform(project.project_anchor.id, 2015, 1)
+    
+    worker.perform(project.project_anchor.id, 2015, 1, ["Rp268JB6Ne4"])
 
     expect(fetch_values_request).to have_been_made.times(0)
     expect(export_request).to have_been_made.times(0)
