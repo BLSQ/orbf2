@@ -167,8 +167,6 @@ RSpec.describe InvoiceForProjectAnchorWorker do
       end]
     end
 
-    WebMock::Config.instance.query_values_notation = :flat_array
-
     stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&dataSet=ds-0&dataSet=ds-1&dataSet=ds-2&orgUnit=AhnK8hb3JWm&orgUnit=BLVKubgVxkF&orgUnit=Bift1B4gjru&orgUnit=Bq5nb7UAEGd&orgUnit=C9uduqDZr9d&orgUnit=DSBXsRQSXUW&orgUnit=DmaLM8WYmWv&orgUnit=ENHOJz3UH5L&orgUnit=Ea3j0kUvyWg&orgUnit=EmTN0L4EAVi&orgUnit=GvFqTavdpGE&orgUnit=HPg74Rr7UWp&orgUnit=IXJg79fclDm&orgUnit=ImspTQPwCqd&orgUnit=JLKGG67z7oj&orgUnit=JNJIPX9DfaW&orgUnit=KIUCimTXf8Q&orgUnit=KKkLOTpMXGV&orgUnit=KuR0y0h0mOM&orgUnit=LV2b3vaLRl1&orgUnit=LaxJ6CD2DHq&orgUnit=Ls2ESQONh9S&orgUnit=M2qEv692lS6&orgUnit=M721NHGtdZV&orgUnit=O6uvpzGd5pu&orgUnit=OuwX8H2CcRO&orgUnit=PD1fqyvJssC&orgUnit=PLoeN9CaL7z&orgUnit=PMa2VCrupOd&orgUnit=PQZJPIpTepd&orgUnit=Qw7c6Ckb0XC&orgUnit=QywkxFudXrC&orgUnit=RUCp6OaTSAD&orgUnit=T2Cn45nBY0u&orgUnit=TEQlaapDQoK&orgUnit=TQkG0sX9nca&orgUnit=U6Kr7Gtpidn&orgUnit=Uo4cyJwAhTW&orgUnit=VCtF1DbspR5&orgUnit=VGAFxBXz16y&orgUnit=Vnc2qIRLbyw&orgUnit=Vth0fbpFcsO&orgUnit=W5fN3G6y1VI&orgUnit=XEyIRFd9pct&orgUnit=XJ6DqDkMlPv&orgUnit=at6UHUQatSo&orgUnit=bM4Ky73uMao&orgUnit=bPHn9IgjKLC&orgUnit=bVZTNrnfn9G&orgUnit=cDw53Ej8rju&period=2014July&period=2015&period=201501&period=201502&period=201503&period=2015Q1")
       .to_return(status: 200, body: JSON.pretty_generate("dataValues": values.flatten))
 
@@ -178,8 +176,6 @@ RSpec.describe InvoiceForProjectAnchorWorker do
     export_request = stub_export_values("invoice_multi_entities.json")
 
     worker.perform(project.project_anchor.id, 2015, 1, [ORG_UNIT_ID])
-
-    WebMock::Config.instance.query_values_notation = :subscript
 
     expect(export_request).to have_been_made.once
   end
