@@ -73,12 +73,12 @@ RSpec.describe InvoiceForProjectAnchorWorker do
 
     with_activities_and_formula_mappings(project)
 
-    stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&endDate=2015-12-31&orgUnit=#{ORG_UNIT_ID}&startDate=2015-01-01")
+    stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&orgUnit=vRC0stJ5y9Q&period=2015Q1")
       .to_return(status: 200, body: JSON.pretty_generate("dataValues": generate_quarterly_values_for(project)))
 
     export_request = stub_export_values("invoice_quarterly.json")
 
-    worker.perform(project.project_anchor.id, 2015, 1)
+    worker.perform(project.project_anchor.id, 2015, 1, [ORG_UNIT_ID])
 
     expect(export_request).to have_been_made.once
   end
@@ -119,17 +119,6 @@ RSpec.describe InvoiceForProjectAnchorWorker do
       .to_return(status: 200, body: JSON.pretty_generate("dataValues": (org_unit_values + org_unit_level_1_values)))
 
     export_request = stub_export_values("invoice_with_parent.json")
-    worker.perform(project.project_anchor.id, 2015, 1, [ORG_UNIT_ID])
-
-    expect(export_request).to have_been_made.once
-  end
-
-  it "should perform for yearly project cycle" do
-    project.update(cycle: "yearly")
-
-    stub_dhis2_values_yearly("{}", "2015-01-01")
-    export_request = stub_export_values("invoice_zero_single.json")
-
     worker.perform(project.project_anchor.id, 2015, 1, [ORG_UNIT_ID])
 
     expect(export_request).to have_been_made.once
