@@ -77,6 +77,19 @@ describe ProjectFactory do
     end
   end
 
+  it "dump_rules for debug purpose" do
+    project = full_project
+    project.dump_rules
+  end
+
+  it "dump_validations errors for debug purpose" do
+    project = full_project
+    project.packages.first.name= ""
+    project.packages.first.activity_rule.formulas.build(expression: "invalid_reference")
+    project.payment_rules.first.rule.name = ""
+    project.dump_validations
+  end
+
   def descendants_with_project_id
     ActiveRecord::Base.descendants
                       .reject(&:abstract_class?)
