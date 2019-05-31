@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 
 RSpec.describe HomeController, type: :controller do
@@ -15,17 +17,17 @@ RSpec.describe HomeController, type: :controller do
     end
 
     let(:project) { full_project }
-  
+
     it "redirects to setup projects when no project" do
       get :index
       expect(response).to redirect_to("/setup/projects")
     end
 
-    it "redirect to lastest draft" do        
-        project.project_anchor = user.program.project_anchor
-        project.save!
-        get :index
-        expect(response).to redirect_to("/setup/projects/#{project.id}")
-      end
+    it "redirect to lastest draft" do
+      project.project_anchor = user.program.project_anchor
+      project.save!
+      get :index
+      expect(response).to redirect_to("/setup/projects/#{project.id}")
+    end
   end
 end
