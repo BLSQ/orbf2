@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: projects
@@ -64,7 +65,7 @@ class Project < ApplicationRecord
     message: "%{value} is not a valid see #{CYCLES.join(',')}"
   }
 
-  ENGINE_VERSIONS = [2, 3]
+  ENGINE_VERSIONS = [2, 3].freeze
 
   validates :engine_version, presence: true, inclusion: {
     in:      ENGINE_VERSIONS,
