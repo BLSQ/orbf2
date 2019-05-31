@@ -4,7 +4,7 @@ module Case
   SUPPORTER_CASE_CHANGES = %i[underscore camelize].freeze
   @cache_camelize = {}
   def self.deep_change(obj, type)
-    raise CaseError, deep_change_error(type) unless SUPPORTER_CASE_CHANGES.include?(type)
+    raise deep_change_error(type) unless SUPPORTER_CASE_CHANGES.include?(type)
     case obj
     when Array then obj.map { |v| deep_change(v, type) }
     when Hash
@@ -43,7 +43,7 @@ module Case
                     .downcase
   end
 
-  def deep_change_error(type)
+  def self.deep_change_error(type)
     "unsupported case changes #{type} vs #{SUPPORTER_CASE_CHANGES}"
   end
-    end
+end
