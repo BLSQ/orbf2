@@ -131,6 +131,29 @@ RSpec.describe Setup::InvoicesController, type: :controller do
       stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&orgUnit=cDw53Ej8rju&period=2017Q1")
         .to_return(status: 200, body: "")
     end
+
+    context "Async simulation" do
+      it "enqueue an invoicing simulation job" do
+        Flipper[:use_async_simulation].enable(user)
+        post :create, params: {
+          project_id:        full_project.id,
+          simulate_async:    true,
+          invoicing_request: {
+            entity:         org_unit_id,
+            year:           "2017",
+            quarter:        "1",
+            mock_values:    "1",
+            engine_version: "3"
+          },
+          simulate_draft:    true,
+          with_details: true,          
+        }
+        
+        expect(InvoiceSimulationWorker).to have_enqueued_sidekiq_job(
+          org_unit_id, "2017Q1", full_project.id, nil, 3, [], "true"
+        )
+      end
+    end
   end
 
   describe Setup::InvoicesController::OrgUnitLimiter do

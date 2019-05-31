@@ -90,8 +90,8 @@ class Setup::InvoicesController < PrivateController
         dhis2_period: invoicing_request.period,
         orgunit_ref:  invoicing_request.entity
       )
-      shouldEnqueue, reason = enqueue_simulation_job(job, params[:force])
-      if shouldEnqueue
+      should_enqueue, reason = enqueue_simulation_job(job, params[:force])
+      if should_enqueue
         # Ensure status of job back is enqueued
         job.enqueued!
         args = invoicing_request.to_h.merge(simulate_draft: params[:simulate_draft])
