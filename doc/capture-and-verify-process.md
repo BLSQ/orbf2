@@ -54,6 +54,20 @@ For uploading you'll need the following keys set:
 - ARCHIVAL_S3_ACCESS
 - ARCHIVAL_S3_KEY
 
+## Selective Capture
+
+A full 'Capture Phase' will replace all known files with updated ones, there's a high chance of DHIS2 being changed slightly, or even the order of the rules in the project changing, which alters the serialized YAML.
+
+Therefore if you have some small changes, I had a change which affected three test cases where it removed 10 lines from the solution and the problem, it's easier to do the following:
+
+1. Download the artefacts: `bundle exec rake data_test:download`
+2. Verify that you have small changes: `KEEP_ARTEFACTS=1 bundle exec rspec spec/lib/data_test.spec`
+3. Generate new files `TEST_CASE=your,changed,cases,comma,separated be rake data_test:verify`
+     Which will create new `solution.json`, `problem.json` and `exported_values.json` in `tmp/verifiers`, which you can then move to `spec/artefacts`.
+4. Move new files to `spec/artefacts`
+5. Spec should now pass: `KEEP_ARTEFACTS=1 bundle exec rspec spec/lib/data_test.spec`
+6. Upload new artefacts: `bundle exec rake data_test:upload`
+
 ## High level overview
 
 - Capture phase
