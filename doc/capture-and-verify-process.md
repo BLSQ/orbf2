@@ -32,7 +32,7 @@ With capture phase, I mean running against a copy of production and take new sna
 
 This will talk to DHIS2 and output new files into a `tmp/new_artefacts` directory.
 
-**Step 2**: `bundle exec rake data_test:capture_compare`
+**Step 2**: `bundle exec rake data_test:compare_capture`
 
 This will compare all the files in the `spec/artefacts` and the `tmp/artefacts`
 
