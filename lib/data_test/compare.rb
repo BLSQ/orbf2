@@ -1,7 +1,10 @@
 # frozen_string_literal: true
+require 'timeout'
 
 module DataTest
   class Compare
+    DIFF_TIMEOUT = 20
+
     include FileHelpers
 
     attr_accessor :subject
@@ -36,6 +39,17 @@ module DataTest
       @original_directory = original_directory
     end
 
+    def guard_timeout(&block)
+      result = nil
+      Timeout::timeout(DIFF_TIMEOUT) do
+        result = block.call
+      end
+    rescue Timeout::Error
+      result = Result.new(success: false, message: "Diff took too long")
+    ensure
+      result
+    end
+
     def filenames_for(filename)
       file_a = File.join(@original_directory, filename)
       file_b = File.join(@new_directory, filename)
@@ -49,9 +63,10 @@ module DataTest
     def simple_diff(filename)
       file_a, file_b = filenames_for(filename)
       return file_not_found_result unless File.exist?(file_a)
-      result = `diff -q #{file_a} #{file_b}`
-
-      Result.new(success: result.strip.empty?, message: result.strip)
+      guard_timeout do
+        result = `diff -q #{file_a} #{file_b}`
+        Result.new(success: result.strip.empty?, message: result.strip)
+      end
     end
 
     def json_diff(filename)
@@ -59,11 +74,13 @@ module DataTest
       return file_not_found_result unless File.exist?(file_a)
       a = JSON.parse(File.open(file_a).read)
       b = JSON.parse(File.open(file_b).read)
-      result = JsonDiff.diff(a, b, include_was: true)
-      if result.empty?
-        Result.new(success: true)
-      else
-        Result.new(success: false, key_count: [a.keys.count, b.keys.count], short: result.sample(10), full: result)
+      guard_timeout do
+        result = JsonDiff.diff(a, b, include_was: true)
+        if result.empty?
+          Result.new(success: true)
+        else
+          Result.new(success: false, key_count: [a.keys.count, b.keys.count], short: result.sample(10), full: result)
+        end
       end
     end
 
@@ -72,11 +89,13 @@ module DataTest
       return file_not_found_result unless File.exist?(file_a)
       a = JSON.parse(File.open(file_a).read)
       b = JSON.parse(File.open(file_b).read)
-      diff = HashDiff.diff(a, b, use_lcs: false)
-      if diff.empty?
-        Result.new(success: true)
-      else
-        Result.new(success: false, key_count: [a.count, b.count], short: diff.sample(10), full: diff)
+      guard_timeout do
+        diff = HashDiff.diff(a, b, use_lcs: false)
+        if diff.empty?
+          Result.new(success: true)
+        else
+          Result.new(success: false, key_count: [a.count, b.count], short: diff.sample(10), full: diff)
+        end
       end
     end
 
@@ -86,6 +105,7 @@ module DataTest
         puts "    #{result.ok_message}"
       else
         puts "    #{result.fail_message}"
+        puts "    #{result.message}"
         puts "    File change #{result.short}"
       end
     end
@@ -96,6 +116,7 @@ module DataTest
         puts "    #{result.ok_message}"
       else
         puts "    #{result.fail_message}"
+        puts "    #{result.message}"
         puts "    + Differences (first 10 out of #{result.full.count})"
         result.short.each do |item|
           puts "      [%s] Was: %s Is: %s Path: %s" % [item["op"], item["was"], item["value"], item["path"]]
@@ -109,6 +130,7 @@ module DataTest
         puts "    #{result.ok_message}"
       else
         puts "    #{result.fail_message}"
+        puts "    #{result.message}"
         puts "    + Differences (first 10 out of #{result.full.count})"
         result.short.each do |arr|
           puts "      [%s] Was: %s Is: %s Path: %s" % [arr[0], arr[2], arr[3], arr[1]]
@@ -118,8 +140,16 @@ module DataTest
 
     def call
       puts " [input files]"
-      filename = subject.filename("input-values", "json")
-      handle_hash_diff(filename, hash_diff(filename))
+      begin
+        filename = subject.filename("input-values", "json")
+        Timeout::timeout(20) do
+          handle_hash_diff(filename, hash_diff(filename))
+        end
+      rescue Timeout::Error
+        result = Result.new(success: false, message: "Diff took too long")
+        handle_simple_diff(filename, result)
+      end
+
       [
         ["project", "yml"],
         ["data-compound", "yml"],
