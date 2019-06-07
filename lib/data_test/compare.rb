@@ -1,5 +1,6 @@
 # frozen_string_literal: true
-require 'timeout'
+
+require "timeout"
 
 module DataTest
   class Compare
@@ -39,10 +40,10 @@ module DataTest
       @original_directory = original_directory
     end
 
-    def guard_timeout(&block)
+    def guard_timeout
       result = nil
-      Timeout::timeout(DIFF_TIMEOUT) do
-        result = block.call
+      Timeout.timeout(DIFF_TIMEOUT) do
+        result = yield
       end
     rescue Timeout::Error
       result = Result.new(success: false, message: "Diff took too long")
@@ -63,6 +64,7 @@ module DataTest
     def simple_diff(filename)
       file_a, file_b = filenames_for(filename)
       return file_not_found_result unless File.exist?(file_a)
+
       guard_timeout do
         result = `diff -q #{file_a} #{file_b}`
         Result.new(success: result.strip.empty?, message: result.strip)
@@ -72,6 +74,7 @@ module DataTest
     def json_diff(filename)
       file_a, file_b = filenames_for(filename)
       return file_not_found_result unless File.exist?(file_a)
+
       a = JSON.parse(File.open(file_a).read)
       b = JSON.parse(File.open(file_b).read)
       guard_timeout do
@@ -87,6 +90,7 @@ module DataTest
     def hash_diff(filename)
       file_a, file_b = filenames_for(filename)
       return file_not_found_result unless File.exist?(file_a)
+
       a = JSON.parse(File.open(file_a).read)
       b = JSON.parse(File.open(file_b).read)
       guard_timeout do
@@ -119,7 +123,7 @@ module DataTest
         puts "    #{result.message}"
         puts "    + Differences (first 10 out of #{result.full.count})"
         result.short.each do |item|
-          puts "      [%s] Was: %s Is: %s Path: %s" % [item["op"], item["was"], item["value"], item["path"]]
+          puts format("      [%s] Was: %s Is: %s Path: %s", item["op"], item["was"], item["value"], item["path"])
         end
       end
     end
@@ -133,27 +137,19 @@ module DataTest
         puts "    #{result.message}"
         puts "    + Differences (first 10 out of #{result.full.count})"
         result.short.each do |arr|
-          puts "      [%s] Was: %s Is: %s Path: %s" % [arr[0], arr[2], arr[3], arr[1]]
+          puts format("      [%s] Was: %s Is: %s Path: %s", arr[0], arr[2], arr[3], arr[1])
         end
       end
     end
 
     def call
       puts " [input files]"
-      begin
-        filename = subject.filename("input-values", "json")
-        Timeout::timeout(20) do
-          handle_hash_diff(filename, hash_diff(filename))
-        end
-      rescue Timeout::Error
-        result = Result.new(success: false, message: "Diff took too long")
-        handle_simple_diff(filename, result)
-      end
-
+      filename = subject.filename("input-values", "json")
+      handle_hash_diff(filename, hash_diff(filename))
       [
-        ["project", "yml"],
+        %w[project yml],
         ["data-compound", "yml"],
-        ["pyramid", "yml"]
+        %w[pyramid yml]
       ].each do |(name, extension)|
         filename = subject.filename(name, extension)
         result = simple_diff(filename)
@@ -162,8 +158,8 @@ module DataTest
 
       puts " [result files]"
       [
-        ["problem", "json"],
-        ["solution", "json"]
+        %w[problem json],
+        %w[solution json]
       ].each do |(name, extension)|
         filename = subject.filename(name, extension)
         result = json_diff(filename)
