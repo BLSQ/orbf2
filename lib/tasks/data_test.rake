@@ -10,6 +10,28 @@ def ask_for_confirmation(message)
   input == "y"
 end
 
+def find_test_cases
+  test_cases = DataTest.all_cases
+  if test_cases.empty?
+    abort <<MSG
+Error: No test cases!
+
+No test cases found, do you have a config/data_test.json?
+
+Get one using bundle exec rake data_test:download
+MSG
+  end
+
+  selected_test_case_name = ENV["TEST_CASE"] || "all"
+  if selected_test_case_name != "all"
+    wanted_cases = selected_test_case_name.split(",")
+    test_cases = test_cases.select do |(name, _cases)|
+      wanted_cases.any? {|w| name =~ /#{w}/ }
+    end
+  end
+  test_cases
+end
+
 namespace :data_test do
   desc "Clear all artefacts"
   task :clear_artefacts do
@@ -20,13 +42,7 @@ namespace :data_test do
   desc "Compare your capture against known artefacts"
   task compare_capture: :environment do
     new_directory = Rails.root.join("tmp/new_artefacts")
-
-    test_cases = DataTest.all_cases
-    selected_test_case_name = ENV["test_case"] || "all"
-    if selected_test_case_name != "all"
-      test_cases = test_cases.select { |(name, _cases)| name =~ /#{selected_test_case_name}/ }
-    end
-
+    test_cases = find_test_cases
     test_cases.each.with_index do |(test_case_name, subject), i|
       begin
         puts "+ #{i + 1}/#{test_cases.keys.count} #{subject.project_name} - #{subject.orgunit_ext_id}"
@@ -45,12 +61,7 @@ namespace :data_test do
     FileUtils.mkdir(output_directory) unless File.exist? output_directory
 
     puts "=> Capturing to #{output_directory}\n"
-    test_cases = DataTest.all_cases
-    selected_test_case_name = ENV["test_case"] || "all"
-
-    if selected_test_case_name != "all"
-      test_cases = test_cases.select { |(name, _cases)| name =~ /#{selected_test_case_name}/ }
-    end
+    test_cases = find_test_cases
 
     failures = {}
     test_cases.each.with_index do |(test_case_name, subject), i|
@@ -74,12 +85,8 @@ namespace :data_test do
   desc "Quick check"
   task verify: :environment do
     puts "=> Verifying\n"
-    test_cases = DataTest.all_cases
-    selected_test_case_name = ENV["test_case"] || "all"
+    test_cases = find_test_cases
 
-    if selected_test_case_name != "all"
-      test_cases = test_cases.select { |(name, _cases)| name =~ /#{selected_test_case_name}/ }
-    end
     test_cases.each.with_index do |(test_case_name, subject), i|
       begin
         puts "+ #{i + 1}/#{test_cases.keys.count} #{subject.project_name} - #{subject.orgunit_ext_id}"
@@ -124,6 +131,7 @@ STR
   task download: :environment do
     fetcher = DataTest::Fetcher.new
     begin
+      fetcher.fetch_config_file
       fetcher.fetch_all_artefacts
     rescue DataTest::NoS3Configured => e
       abort "S3 was not configured properly: #{e}"
