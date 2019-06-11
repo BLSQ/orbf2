@@ -65,9 +65,11 @@
 
 <%= f.association :states, collection: package.project.states, as: :check_boxes %>
 
-<%= f.association :activities, collection: package.project.activities.sort {|a,b| NaturalSort.comparator(a.code, b.code)},
+<%= f.association :activities, collection: package.project.activities.sort {|a,b| NaturalSort.comparator(a.code, b.code)}, :label_method => lambda { |owner| "#{owner.code} | #{owner.name}" },
  input_html: {class: 'sol-powered', data: { selection:"activities_selection", selected: package.project.activities.map(&:id)}} %>
 <div id="activities_selection">
 </div>
 <%= f.input :frequency, collection: Package::FREQUENCIES, as: :select %>
 <%= f.button :submit, class: "btn btn-success" %>
+<br>
+<br><br><br><br><br><br><br>
