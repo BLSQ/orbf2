@@ -30,16 +30,16 @@
       "description": "Designates it as a QA environment"
     },
     "S3_SIMULATION_ACCESS": {
-        required: true
-    }
+        "required": true
+    },
     "S3_SIMULATION_SECRET": {
-        required: true
-    }
+        "required": true
+    },
     "S3_SIMULATION_REGION": {
-        required: true
-    }
+        "required": true
+    },
     "S3_SIMULATION_BUCKET": {
-        required: true
+        "required": true
     }
   },
   "formation": {
