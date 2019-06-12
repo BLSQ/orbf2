@@ -28,6 +28,18 @@
     },
     "ORBF_STAGING": {
       "description": "Designates it as a QA environment"
+    },
+    "S3_SIMULATION_ACCESS": {
+      "description": "S3 Access Token"
+    },
+    "S3_SIMULATION_BUCKET": {
+      "description": "S3 Bucket"
+    },
+    "S3_SIMULATION_REGION:": {
+      "description": "S3 Region"
+    },
+    "S3_SIMULATION_SECRET": {
+      "description": "S3 Secret Token"
     }
   },
   "formation": {
@@ -40,10 +52,7 @@
       "size": "free"
     }
   },
-  "addons": [
-    "heroku-postgresql",
-    "heroku-redis"
-  ],
+  "addons": ["heroku-postgresql", "heroku-redis"],
   "buildpacks": [
     {
       "url": "heroku/nodejs"
