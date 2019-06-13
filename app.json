@@ -28,6 +28,18 @@
     },
     "ORBF_STAGING": {
       "description": "Designates it as a QA environment"
+    },
+    "S3_SIMULATION_ACCESS": {
+        "required": true
+    },
+    "S3_SIMULATION_SECRET": {
+        "required": true
+    },
+    "S3_SIMULATION_REGION": {
+        "required": true
+    },
+    "S3_SIMULATION_BUCKET": {
+        "required": true
     }
   },
   "formation": {
