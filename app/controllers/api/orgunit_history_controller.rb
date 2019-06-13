@@ -9,7 +9,7 @@ module Api
       project_anchor = current_project_anchor
       group_params = Groups::GroupParams.new(project_anchor, params)
       groups = { organisationUnits: Groups::ListHistory.new(group_params).call }
-      render json: Case.deep_change(groups, :camelize).to_json
+      render json: Dhis2::Case.deep_change(groups, :camelize).to_json
     end
 
     def apply
