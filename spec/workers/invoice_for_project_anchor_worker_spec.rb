@@ -44,25 +44,25 @@ RSpec.describe InvoiceForProjectAnchorWorker do
   end
 
   it "should NOT on non contracted entities" do
-    project.entity_group.external_reference = "external_reference"
+    project.entity_group.external_reference = "gzcv65VyaGq"
     project.entity_group.save!
 
     fetch_values_request = stub_dhis2_values
     export_request = stub_request(:post, "http://play.dhis2.org/demo/api/dataValueSets")
-
-    worker.perform(project.project_anchor.id, 2015, 1)
+    
+    worker.perform(project.project_anchor.id, 2015, 1, ["Rp268JB6Ne4"])
 
     expect(fetch_values_request).to have_been_made.times(0)
     expect(export_request).to have_been_made.times(0)
   end
 
   it "should perform for subset of contracted_entities" do
-    stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&endDate=2015-12-31&orgUnit=vRC0stJ5y9Q&startDate=2015-01-01")
+    stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&orgUnit=vRC0stJ5y9Q&period=2015Q1")
       .to_return(status: 200, body: "", headers: {})
 
-    export_request = stub_export_values("invoice_zero_single.json")
+    export_request = stub_export_values("invoice_zero_new.json")
 
-    worker.perform(project.project_anchor.id, 2015, 1, [ORG_UNIT_ID, ORG_UNIT_ID])
+    worker.perform(project.project_anchor.id, 2015, 1, [ORG_UNIT_ID])
 
     expect(export_request).to have_been_made.once
   end
@@ -73,12 +73,12 @@ RSpec.describe InvoiceForProjectAnchorWorker do
 
     with_activities_and_formula_mappings(project)
 
-    stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&endDate=2015-12-31&orgUnit=#{ORG_UNIT_ID}&startDate=2015-01-01")
+    stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&orgUnit=vRC0stJ5y9Q&period=2015Q1")
       .to_return(status: 200, body: JSON.pretty_generate("dataValues": generate_quarterly_values_for(project)))
 
     export_request = stub_export_values("invoice_quarterly.json")
 
-    worker.perform(project.project_anchor.id, 2015, 1)
+    worker.perform(project.project_anchor.id, 2015, 1, [ORG_UNIT_ID])
 
     expect(export_request).to have_been_made.once
   end
@@ -115,62 +115,10 @@ RSpec.describe InvoiceForProjectAnchorWorker do
     end
 
     Rails.logger.info "org_unit_level_1_values #{org_unit_level_1_values.to_json}"
-    stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&endDate=2015-12-31&orgUnit=#{ORG_UNIT_ID}&startDate=2015-01-01")
+    stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&orgUnit=vRC0stJ5y9Q&period=2015Q1")
       .to_return(status: 200, body: JSON.pretty_generate("dataValues": (org_unit_values + org_unit_level_1_values)))
 
     export_request = stub_export_values("invoice_with_parent.json")
-    worker.perform(project.project_anchor.id, 2015, 1, [ORG_UNIT_ID])
-
-    expect(export_request).to have_been_made.once
-  end
-
-  it "should perform for yearly project cycle" do
-    project.update(cycle: "yearly")
-
-    stub_dhis2_values_yearly("{}", "2015-01-01")
-    export_request = stub_export_values("invoice_zero_single.json")
-
-    worker.perform(project.project_anchor.id, 2015, 1, [ORG_UNIT_ID])
-
-    expect(export_request).to have_been_made.once
-  end
-
-  it "should perform for yearly project cycle and appropriate values" do
-    project.update(cycle: "yearly")
-
-    with_last_year_verified_values(project)
-    with_cycle_values(project)
-    with_monthly_payment_rule(project)
-    with_activities_and_formula_mappings(project)
-
-    refs = project.activities
-                  .flat_map(&:activity_states)
-                  .map(&:external_reference)
-                  .uniq
-                  .reject(&:empty?).sort
-    values = refs.each_with_index.map do |data_element, index|
-      [{
-        dataElement:          data_element,
-        value:                index,
-        period:               "2015",
-        orgUnit:              ORG_UNIT_ID,
-        categoryOptionCombo:  "HllvX50cXC0",
-        attributeOptionCombo: "HllvX50cXC0"
-      }, (1..12).map do |month|
-        {
-          dataElement:          data_element,
-          value:                index,
-          period:               "2014#{month}",
-          orgUnit:              ORG_UNIT_ID,
-          categoryOptionCombo:  "HllvX50cXC0",
-          attributeOptionCombo: "HllvX50cXC0"
-        }
-      end]
-    end
-
-    stub_dhis2_values_yearly(JSON.pretty_generate("dataValues": values.flatten), "2014-01-01")
-    export_request = stub_export_values("invoice_yearly.json")
-
     worker.perform(project.project_anchor.id, 2015, 1, [ORG_UNIT_ID])
 
     expect(export_request).to have_been_made.once
@@ -219,7 +167,10 @@ RSpec.describe InvoiceForProjectAnchorWorker do
       end]
     end
 
-    stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&dataSet=ds-2&endDate=2015-12-31&orgUnit=XJ6DqDkMlPv&startDate=2015-01-01")
+    stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&dataSet=ds-0&dataSet=ds-1&dataSet=ds-2&orgUnit=AhnK8hb3JWm&orgUnit=BLVKubgVxkF&orgUnit=Bift1B4gjru&orgUnit=Bq5nb7UAEGd&orgUnit=C9uduqDZr9d&orgUnit=DSBXsRQSXUW&orgUnit=DmaLM8WYmWv&orgUnit=ENHOJz3UH5L&orgUnit=Ea3j0kUvyWg&orgUnit=EmTN0L4EAVi&orgUnit=GvFqTavdpGE&orgUnit=HPg74Rr7UWp&orgUnit=IXJg79fclDm&orgUnit=ImspTQPwCqd&orgUnit=JLKGG67z7oj&orgUnit=JNJIPX9DfaW&orgUnit=KIUCimTXf8Q&orgUnit=KKkLOTpMXGV&orgUnit=KuR0y0h0mOM&orgUnit=LV2b3vaLRl1&orgUnit=LaxJ6CD2DHq&orgUnit=Ls2ESQONh9S&orgUnit=M2qEv692lS6&orgUnit=M721NHGtdZV&orgUnit=O6uvpzGd5pu&orgUnit=OuwX8H2CcRO&orgUnit=PD1fqyvJssC&orgUnit=PLoeN9CaL7z&orgUnit=PMa2VCrupOd&orgUnit=PQZJPIpTepd&orgUnit=Qw7c6Ckb0XC&orgUnit=QywkxFudXrC&orgUnit=RUCp6OaTSAD&orgUnit=T2Cn45nBY0u&orgUnit=TEQlaapDQoK&orgUnit=TQkG0sX9nca&orgUnit=U6Kr7Gtpidn&orgUnit=Uo4cyJwAhTW&orgUnit=VCtF1DbspR5&orgUnit=VGAFxBXz16y&orgUnit=Vnc2qIRLbyw&orgUnit=Vth0fbpFcsO&orgUnit=W5fN3G6y1VI&orgUnit=XEyIRFd9pct&orgUnit=XJ6DqDkMlPv&orgUnit=at6UHUQatSo&orgUnit=bM4Ky73uMao&orgUnit=bPHn9IgjKLC&orgUnit=bVZTNrnfn9G&orgUnit=cDw53Ej8rju&period=2014July&period=2015&period=201501&period=201502&period=201503&period=2015Q1")
+      .to_return(status: 200, body: JSON.pretty_generate("dataValues": values.flatten))
+
+    stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&dataSet=ds-0&dataSet=ds-1&dataSet=ds-2&orgUnit=cM2BKSrj9F9&orgUnit=cZtKKa9eJZ3&orgUnit=cgqkFdShPzg&orgUnit=ctfiYW0ePJ8&orgUnit=eIQbndfxQMb&orgUnit=fXT1scbEObM&orgUnit=fdc6uOvgoji&orgUnit=gmen7SXL9CU&orgUnit=jCnyQOKQBFX&orgUnit=jUb8gELQApl&orgUnit=jmIPBj66vD6&orgUnit=kBP1UvZpsNj&orgUnit=kJq2mPyFEHo&orgUnit=kLNQT4KQ9hT&orgUnit=kMTHqMgenme&orgUnit=lc3eMKXaEfw&orgUnit=mTNOoGXuC39&orgUnit=nCh5dBoJVNw&orgUnit=nV3OkyzF4US&orgUnit=nq7F0t1Pz6t&orgUnit=qhqAxPSTUXp&orgUnit=qtr8GGlm4gg&orgUnit=roQ2l7TX0eZ&orgUnit=tHUYjt9cU6h&orgUnit=u6ZGNI8yUmt&orgUnit=uNEhNuBUr0i&orgUnit=vRC0stJ5y9Q&orgUnit=vn9KJsLyP5f&orgUnit=vv1QJFONsT6&orgUnit=wNYYRm2c9EK&orgUnit=wicmjKI3xiP&orgUnit=yP2nhllbQPh&period=2014July&period=2015&period=201501&period=201502&period=201503&period=2015Q1")
       .to_return(status: 200, body: JSON.pretty_generate("dataValues": values.flatten))
 
     export_request = stub_export_values("invoice_multi_entities.json")

@@ -52,10 +52,7 @@
       "size": "free"
     }
   },
-  "addons": [
-    "heroku-postgresql",
-    "heroku-redis"
-  ],
+  "addons": ["heroku-postgresql", "heroku-redis"],
   "buildpacks": [
     {
       "url": "heroku/nodejs"
