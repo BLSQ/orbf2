@@ -90,23 +90,6 @@ class Package < ApplicationRecord
     kind == "zone"
   end
 
-  def periods(year_month)
-    return [] unless activity_rule
-    used_variables_for_values = activity_rule.used_variables_for_values
-
-    used_periods = Analytics::Timeframe.all_variables_builders.map do |timeframe|
-      use_variables = used_variables_for_values.any? do |var|
-        timeframe.suffix && var.ends_with?(timeframe.suffix)
-      end
-      next unless use_variables
-      timeframe.periods(self, year_month)
-    end
-    # whatever add the current timeframe periods
-    used_periods += Analytics::Timeframe.current.periods(self, year_month)
-    used_periods = used_periods.flatten.compact.uniq
-    used_periods
-  end
-
   def missing_rules_kind
     %w[activity package multi-entities zone zone_activity] - rules.map(&:kind)
   end
@@ -133,26 +116,8 @@ class Package < ApplicationRecord
     rules.where(kind: rule_kind).any?
   end
 
-  def apply_for(entity)
-    configured? && package_entity_groups.any? { |group| entity.groups.include?(group.organisation_unit_group_ext_ref) }
-  end
-
   def configured?
     activity_rule && package_rule
-  end
-
-  def linked_org_units(org_unit, pyramid)
-    if kind_multi?
-      (pyramid.org_units_in_same_group(org_unit, ogs_reference).to_a + [org_unit]).uniq
-    else
-      [org_unit]
-    end
-  end
-
-  def apply_for_org_unit(org_unit)
-    group_ids = org_unit.organisation_unit_groups.map { |g| g["id"] }
-    apply_to = package_entity_groups.any? { |group| group_ids.include?(group.organisation_unit_group_ext_ref) }
-    apply_to
   end
 
   def for_frequency(frequency_to_apply)

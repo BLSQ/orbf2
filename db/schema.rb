@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_04_29_140000) do
+ActiveRecord::Schema.define(version: 2019_05_29_063601) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -280,7 +280,7 @@ ActiveRecord::Schema.define(version: 2019_04_29_140000) do
     t.integer "project_anchor_id"
     t.integer "original_id"
     t.string "cycle", default: "quarterly", null: false
-    t.integer "engine_version", default: 1, null: false
+    t.integer "engine_version", default: 3, null: false
     t.string "qualifier"
     t.string "default_coc_reference"
     t.string "default_aoc_reference"

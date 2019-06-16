@@ -170,16 +170,4 @@ class Rule < ApplicationRecord
   def to_s
     "Rule##{id}-#{kind}-#{name}"
   end
-
-  def extra_facts(activity, entity_facts)
-    return {} if decision_tables.empty?
-    entity_and_activity_facts = entity_facts.merge(activity_code: activity.code)
-    extra_facts = decision_tables.map { |decision_table| decision_table.extra_facts(entity_and_activity_facts) }.compact
-    extra_facts ||= [{}]
-    final_facts = extra_facts.reduce({}, :merge)
-    raise "#{name} : no value found for #{entity_and_activity_facts} in decision table #{decision_tables.map(&:decision_table).map(&:to_s).join("\n")}" if final_facts.empty?
-    final_facts
-  end
-
-
 end

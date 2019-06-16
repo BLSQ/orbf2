@@ -62,7 +62,7 @@ RSpec.describe Setup::RulesController, type: :controller do
           "project_id" => project.id,
           rule: {
             name:                "sample rule",
-            kind:                "activity",
+            kind:                "zone",
             formulas_attributes: [
               {
                 code:        "zone_formula",
