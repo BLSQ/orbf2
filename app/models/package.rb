@@ -5,6 +5,7 @@
 #
 #  id                         :integer          not null, primary key
 #  data_element_group_ext_ref :string           not null
+#  description                :string
 #  frequency                  :string           not null
 #  groupsets_ext_refs         :string           default([]), is an Array
 #  include_main_orgunit       :boolean          default(FALSE), not null

@@ -3,11 +3,11 @@
     "payment_rule_pma": {
       "name": "Payment rule pma",
       "frequency": "quarterly",
-      "formulas": {
-      },
+      "formulas": {},
       "packages": {
         "quantity_pma": {
           "name": "Quantity PMA",
+          "description": null,
           "code": "quantity_pma",
           "frequency": "monthly",
           "kind": "zone",
@@ -25,22 +25,12 @@
               "tarif": "tarif-ext-2"
             }
           ],
-          "data_set_ids": [
-
-          ],
-          "data_element_group_ids": [
-
-          ],
-          "main_org_unit_group_ids": [
-            "RXL3lPSK8oG"
-          ],
-          "target_org_unit_group_ids": [
-
-          ],
+          "data_set_ids": [],
+          "data_element_group_ids": [],
+          "main_org_unit_group_ids": ["RXL3lPSK8oG"],
+          "target_org_unit_group_ids": [],
           "groupset_ext_id": null,
-          "matching_groupset_ids": [
-
-          ],
+          "matching_groupset_ids": [],
           "activity_formulas": {
             "difference_percentage": {
               "short_name": "Pourcentage difference entre déclaré & vérifié",
@@ -64,8 +54,7 @@
               "exportable_formula_code": null
             }
           },
-          "formulas": {
-          },
+          "formulas": {},
           "zone_activities": [
             {
               "name": "Vaccination",
@@ -78,8 +67,7 @@
               "zone_points_per_org": "zone_formulas_de2"
             }
           ],
-          "zone_formulas": {
-          },
+          "zone_formulas": {},
           "zone_activity_formulas": {
             "zone_points_per_org": {
               "short_name": "Zone points per org",
@@ -92,6 +80,7 @@
         },
         "quality": {
           "name": "Quality",
+          "description": null,
           "code": "quality",
           "frequency": "quarterly",
           "kind": "single",
@@ -107,23 +96,12 @@
               "claimed": "cl-ext-2"
             }
           ],
-          "data_set_ids": [
-
-          ],
-          "data_element_group_ids": [
-
-          ],
-          "main_org_unit_group_ids": [
-            "RXL3lPSK8oG",
-            "tDZVQ1WtwpA"
-          ],
-          "target_org_unit_group_ids": [
-
-          ],
+          "data_set_ids": [],
+          "data_element_group_ids": [],
+          "main_org_unit_group_ids": ["RXL3lPSK8oG", "tDZVQ1WtwpA"],
+          "target_org_unit_group_ids": [],
           "groupset_ext_id": null,
-          "matching_groupset_ids": [
-
-          ],
+          "matching_groupset_ids": [],
           "activity_formulas": {
             "attributed_points": {
               "short_name": "Attrib. Points",
@@ -175,18 +153,16 @@
           }
         }
       },
-      "output_data_sets": [
-
-      ]
+      "output_data_sets": []
     },
     "payment_rule_pca": {
       "name": "Payment rule pca",
       "frequency": "quarterly",
-      "formulas": {
-      },
+      "formulas": {},
       "packages": {
         "quantity_pca": {
           "name": "Quantity PCA",
+          "description": null,
           "code": "quantity_pca",
           "frequency": "monthly",
           "kind": "single",
@@ -204,22 +180,12 @@
               "tarif": "tarif-ext-2"
             }
           ],
-          "data_set_ids": [
-
-          ],
-          "data_element_group_ids": [
-
-          ],
-          "main_org_unit_group_ids": [
-            "tDZVQ1WtwpA"
-          ],
-          "target_org_unit_group_ids": [
-
-          ],
+          "data_set_ids": [],
+          "data_element_group_ids": [],
+          "main_org_unit_group_ids": ["tDZVQ1WtwpA"],
+          "target_org_unit_group_ids": [],
           "groupset_ext_id": null,
-          "matching_groupset_ids": [
-
-          ],
+          "matching_groupset_ids": [],
           "activity_formulas": {
             "difference_percentage": {
               "short_name": "Pourcentage difference entre déclaré & vérifié",
@@ -243,11 +209,11 @@
               "exportable_formula_code": null
             }
           },
-          "formulas": {
-          }
+          "formulas": {}
         },
         "quality": {
           "name": "Quality",
+          "description": null,
           "code": "quality",
           "frequency": "quarterly",
           "kind": "single",
@@ -263,23 +229,12 @@
               "claimed": "cl-ext-2"
             }
           ],
-          "data_set_ids": [
-
-          ],
-          "data_element_group_ids": [
-
-          ],
-          "main_org_unit_group_ids": [
-            "RXL3lPSK8oG",
-            "tDZVQ1WtwpA"
-          ],
-          "target_org_unit_group_ids": [
-
-          ],
+          "data_set_ids": [],
+          "data_element_group_ids": [],
+          "main_org_unit_group_ids": ["RXL3lPSK8oG", "tDZVQ1WtwpA"],
+          "target_org_unit_group_ids": [],
           "groupset_ext_id": null,
-          "matching_groupset_ids": [
-
-          ],
+          "matching_groupset_ids": [],
           "activity_formulas": {
             "attributed_points": {
               "short_name": "Attrib. Points",
@@ -331,9 +286,7 @@
           }
         }
       },
-      "output_data_sets": [
-
-      ]
+      "output_data_sets": []
     }
   },
   "entity_group": {

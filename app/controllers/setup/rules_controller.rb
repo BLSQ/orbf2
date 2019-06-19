@@ -12,7 +12,7 @@ class Setup::RulesController < PrivateController
       return
     end
 
-    @rule = current_package.rules.build(kind: kind)
+    @rule = current_package.rules.build(kind: kind, name: "#{current_package.name} - #{kind}" )
     @rule.formulas.build(rule: @rule)
   end
 

@@ -16,6 +16,7 @@ module Descriptor
       package_description = PackageDescription.new(package)
       descr = {
         name:                      package.name,
+        description:               package.description,
         code:                      package.code,
         frequency:                 package.frequency,
         kind:                      package.kind,

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_29_063601) do
+ActiveRecord::Schema.define(version: 2019_06_19_063435) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -227,6 +227,7 @@ ActiveRecord::Schema.define(version: 2019_05_29_063601) do
     t.string "ogs_reference"
     t.string "groupsets_ext_refs", default: [], array: true
     t.boolean "include_main_orgunit", default: false, null: false
+    t.string "description"
     t.index ["project_id"], name: "index_packages_on_project_id"
   end
 
