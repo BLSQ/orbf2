@@ -1,4 +1,6 @@
-<%= f.input :name %>
+<%= f.input :name , hint: raw("Package name, limited length to match dhis2 resctrictions. Might be interesting to introduce a small naming convention : &lt;entity_type&gt; - &lt;package_type&gt; ( - &lt;small name&gt;) <br/> eg PMA - Quantity or School - Quality - Administration")%>
+<p></p>
+<%= f.input :description, hint: "Free form description, might be used to display in the invoice/report or document the package." %>
 
 <div class="row">
     <div class="col-md-6">

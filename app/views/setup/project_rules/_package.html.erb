@@ -4,6 +4,7 @@
 <h2><a href="?package=<%=pack.code %>"><%= pack.name.humanize%></a></h2>
 <h3>Package signalitic</h3>
 <ul>
+<li>Description :<b><%=pack.description%></b>
 <li>Frequency : <b><%=pack.frequency%></b>
 <li>Kind : <b><%=pack.kind%></b>
 <li>Target groups : <b><%=pack.package_entity_groups.map(&:name).join(", ")%></b>
