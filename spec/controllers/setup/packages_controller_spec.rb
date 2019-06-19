@@ -137,6 +137,7 @@ RSpec.describe Setup::PackagesController, type: :controller do
         "data_elements" => { project.state(:tarif).id.to_s => { external_reference: "FTRrcoaog83" } },
         "package"       => {
           "name"                 => "new name",
+          "description"          => "longer description for invoices",
           "state_ids"            => state_ids.slice(0, 2),
           "frequency"            => "monthly",
           "main_entity_groups"   => ["entityid1"],
@@ -151,6 +152,7 @@ RSpec.describe Setup::PackagesController, type: :controller do
       expect(package.groupsets_ext_refs).to eq(groups_set_refs)
       expect(package.main_entity_groups.map(&:organisation_unit_group_ext_ref)).to eq(["entityid1"])
       expect(package.target_entity_groups.map(&:organisation_unit_group_ext_ref)).to eq(["sub_entityid1"])
+      expect(package.description).to eq("longer description for invoices")
     end
   end
 end

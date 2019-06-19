@@ -8,6 +8,7 @@
       "packages": {
         "quantity_pma": {
           "name": "Quantity PMA",
+          "description": null,
           "code": "quantity_pma",
           "frequency": "monthly",
           "kind": "single",
@@ -69,6 +70,7 @@
         },
         "quality": {
           "name": "Quality",
+          "description": null,
           "code": "quality",
           "frequency": "quarterly",
           "kind": "single",
@@ -167,6 +169,7 @@
       "packages": {
         "quantity_pca": {
           "name": "Quantity PCA",
+          "description": null,
           "code": "quantity_pca",
           "frequency": "monthly",
           "kind": "single",
@@ -228,6 +231,7 @@
         },
         "quality": {
           "name": "Quality",
+          "description": null,
           "code": "quality",
           "frequency": "quarterly",
           "kind": "single",

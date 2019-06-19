@@ -9,7 +9,7 @@
 #  default_aoc_reference :string
 #  default_coc_reference :string
 #  dhis2_url             :string           not null
-#  engine_version        :integer          default(1), not null
+#  engine_version        :integer          default(3), not null
 #  name                  :string           not null
 #  password              :string
 #  publish_date          :datetime
