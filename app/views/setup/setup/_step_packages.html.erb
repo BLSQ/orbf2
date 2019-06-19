@@ -10,7 +10,7 @@
           </tr>
       </thead>
       <body>
-          <%= render partial: "package", collection: step.model %>
+          <%= render partial: "package", collection: step.model.sort {|a,b| NaturalSort.comparator(a.code, b.code)} %>
       </body>
   </table>
   <% else %>

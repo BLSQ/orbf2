@@ -11,7 +11,7 @@
           </tr>
       </thead>
       <body>
-          <%= render partial: "rule", collection: step.model, as: :package, locals: {readonly: readonly} %>
+          <%= render partial: "rule", collection: step.model.sort {|a,b| NaturalSort.comparator(a.code, b.code)}, as: :package, locals: {readonly: readonly} %>
       </body>
   </table>
 <br>
