@@ -2,7 +2,7 @@
 #
 # Table name: dhis2_logs
 #
-#  id                :integer          not null, primary key
+#  id                :bigint(8)        not null, primary key
 #  sent              :jsonb
 #  status            :jsonb
 #  created_at        :datetime         not null

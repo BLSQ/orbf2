@@ -2,7 +2,7 @@
 #
 # Table name: payment_rule_datasets
 #
-#  id                 :integer          not null, primary key
+#  id                 :bigint(8)        not null, primary key
 #  desynchronized     :boolean
 #  external_reference :string
 #  frequency          :string

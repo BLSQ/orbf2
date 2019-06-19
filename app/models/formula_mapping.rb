@@ -2,7 +2,7 @@
 #
 # Table name: formula_mappings
 #
-#  id                 :integer          not null, primary key
+#  id                 :bigint(8)        not null, primary key
 #  external_reference :string           not null
 #  kind               :string           not null
 #  activity_id        :integer

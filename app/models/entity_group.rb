@@ -2,7 +2,7 @@
 #
 # Table name: entity_groups
 #
-#  id                              :integer          not null, primary key
+#  id                              :bigint(8)        not null, primary key
 #  external_reference              :string
 #  limit_snaphot_to_active_regions :boolean          default(FALSE), not null
 #  name                            :string

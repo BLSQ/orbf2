@@ -2,7 +2,7 @@
 #
 # Table name: invoicing_jobs
 #
-#  id                :integer          not null, primary key
+#  id                :bigint(8)        not null, primary key
 #  dhis2_period      :string           not null
 #  duration_ms       :integer
 #  errored_at        :datetime

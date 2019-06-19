@@ -2,7 +2,7 @@
 #
 # Table name: dhis2_snapshot_changes
 #
-#  id                :integer          not null, primary key
+#  id                :bigint(8)        not null, primary key
 #  values_after      :jsonb
 #  values_before     :jsonb
 #  whodunnit         :string

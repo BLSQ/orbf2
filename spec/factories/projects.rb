@@ -2,7 +2,7 @@
 #
 # Table name: projects
 #
-#  id                    :integer          not null, primary key
+#  id                    :bigint(8)        not null, primary key
 #  boolean               :boolean          default(FALSE)
 #  bypass_ssl            :boolean          default(FALSE)
 #  calendar_name         :string           default("gregorian"), not null

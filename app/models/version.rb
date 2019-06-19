@@ -2,7 +2,7 @@
 #
 # Table name: versions
 #
-#  id             :integer          not null, primary key
+#  id             :bigint(8)        not null, primary key
 #  event          :string           not null
 #  item_type      :string           not null
 #  object         :jsonb

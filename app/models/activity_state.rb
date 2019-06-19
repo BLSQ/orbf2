@@ -3,7 +3,7 @@
 #
 # Table name: activity_states
 #
-#  id                 :integer          not null, primary key
+#  id                 :bigint(8)        not null, primary key
 #  external_reference :string
 #  formula            :string
 #  kind               :string           default("data_element"), not null

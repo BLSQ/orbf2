@@ -2,7 +2,7 @@
 #
 # Table name: packages
 #
-#  id                         :integer          not null, primary key
+#  id                         :bigint(8)        not null, primary key
 #  data_element_group_ext_ref :string           not null
 #  description                :string
 #  frequency                  :string           not null

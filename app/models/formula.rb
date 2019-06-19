@@ -3,7 +3,7 @@
 #
 # Table name: formulas
 #
-#  id                      :integer          not null, primary key
+#  id                      :bigint(8)        not null, primary key
 #  code                    :string           not null
 #  description             :string           not null
 #  exportable_formula_code :string

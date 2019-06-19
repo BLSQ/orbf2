@@ -4,7 +4,7 @@
 #
 # Table name: dhis2_snapshots
 #
-#  id                :integer          not null, primary key
+#  id                :bigint(8)        not null, primary key
 #  content           :jsonb            not null
 #  dhis2_version     :string           not null
 #  kind              :string           not null
