@@ -30,6 +30,7 @@ Rails.application.routes.draw do
     resources :invoices, only: [:create]
     resources :invoicing_jobs, only: [:index, :create]
     resources :simulations, only: [:show]
+    resources :workers, only:[:index]
     resources :orgunit_history, only: [:index] do
       collection do
         post :apply
