@@ -3,17 +3,15 @@
 module Api
   class WorkersController < Api::ApplicationController
     def index
-      if (request.headers["X-Token"] || params[:token])  != ENV.fetch("MONITORING_TOKEN")
+      if (request.headers["X-Token"] || params[:token]) != ENV.fetch("MONITORING_TOKEN")
 
-        render json: { message: "unauthorized"}, status: :unauthorized
+        render json: { message: "unauthorized" }, status: :unauthorized
         return
       end
 
       data = {
         timestamps: {
-          whenever_ran:      Redis.current.get("monitoring:timestamp:whenever_ran"),
-          sidekiq_performed: Redis.current.get("monitoring:timestamp:sidekiq_performed"),
-          requested:         Time.now.to_s(:db)
+          requested: Time.now.to_s(:db)
         },
         sidekiq:    {
           active_workers: sidekiq_stats.workers_size,
@@ -29,7 +27,10 @@ module Api
           }
         },
         invoicing:  {
-          last_day_stats: InvoicingJob.where("status in ('enqueued', 'errored', 'processed')").where("created_at > ? ", Time.now - 1.day).select("project_anchor_id, count(*), status").group("project_anchor_id, status").map do |j|
+          last_day_stats: InvoicingJob.where("status in ('enqueued', 'errored', 'processed')")
+                                      .where("created_at > ? ", Time.now - 1.day)
+                                      .select("project_anchor_id, count(*), status")
+                                      .group("project_anchor_id, status").map do |j|
                             { id:     j.project_anchor.id,
                               code:   j.project_anchor.program.code,
                               status: j.status,
