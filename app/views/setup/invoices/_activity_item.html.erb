@@ -38,6 +38,7 @@
                       <li> numerator <code><%= @data_compound.indicator(activity_state.ext_id)&.numerator %></code></li>
                       <li><%= link_to_indicator(@current_project,activity_state.ext_id) %></li>
                     <%end%>
+                    <li><%= activity_state.origin %></li>
                   <%end%>
                   <% if variable&.formula&.frequency && (variable.formula.frequency!=variable.formula.rule.package.frequency) %>
                     <li><code><%= variable.formula.frequency %></code></li>

@@ -112,6 +112,7 @@ class Setup::ActivitiesController < PrivateController
         external_reference
         kind
         formula
+        origin
         _destroy
       ]
     )
