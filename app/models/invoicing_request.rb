@@ -11,7 +11,7 @@ class InvoicingRequest
   def initialize(*)
     super
     @mocked_data ||= [] if mock_values?
-    @mocked_data.each { |v| v["origin"] ||= "dataValueSets" }
+    @mocked_data.each { |v| v["origin"] ||= "dataValueSets" } if  @mocked_data
   end
 
   def start_date_as_date
