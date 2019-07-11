@@ -33,10 +33,9 @@
     <%end%>
   </td>
   <td>
-    <%= f.input("origin", collection:[
+    <%= f.input_field("origin", collection:[
               ["Data value sets api", "dataValueSets"],
               ["Analytics api","analytics"]
-            ],
-            input_html: { style: "width:180px" }) %>
+            ],           style: "width:180px", class:"form-control", include_blank: false, include_hidden: false) %>
   </td>
 </tr>
