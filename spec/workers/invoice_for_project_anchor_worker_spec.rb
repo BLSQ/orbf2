@@ -49,7 +49,7 @@ RSpec.describe InvoiceForProjectAnchorWorker do
 
     fetch_values_request = stub_dhis2_values
     export_request = stub_request(:post, "http://play.dhis2.org/demo/api/dataValueSets")
-    
+
     worker.perform(project.project_anchor.id, 2015, 1, ["Rp268JB6Ne4"])
 
     expect(fetch_values_request).to have_been_made.times(0)
@@ -70,10 +70,10 @@ RSpec.describe InvoiceForProjectAnchorWorker do
   it "should perform for packages and payments quarterly" do
     project.payment_rules.each { |p| p.update(frequency: "quarterly") }
     project.packages.each { |p| p.update(frequency: "quarterly") }
-
+    project.packages.first.package_states.first.update(ds_external_reference: "dataset")
     with_activities_and_formula_mappings(project)
 
-    stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&orgUnit=vRC0stJ5y9Q&period=2015Q1")
+    stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&dataSet=dataset&orgUnit=vRC0stJ5y9Q&period=2015Q1")
       .to_return(status: 200, body: JSON.pretty_generate("dataValues": generate_quarterly_values_for(project)))
 
     export_request = stub_export_values("invoice_quarterly.json")
@@ -114,13 +114,16 @@ RSpec.describe InvoiceForProjectAnchorWorker do
       }
     end
 
+    project.packages.first.package_states.first.update(ds_external_reference: "dataset")
+
     Rails.logger.info "org_unit_level_1_values #{org_unit_level_1_values.to_json}"
-    stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&orgUnit=vRC0stJ5y9Q&period=2015Q1")
-      .to_return(status: 200, body: JSON.pretty_generate("dataValues": (org_unit_values + org_unit_level_1_values)))
+    value_request = stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&dataSet=dataset&orgUnit=vRC0stJ5y9Q&period=2015Q1")
+                    .to_return(status: 200, body: JSON.pretty_generate("dataValues": (org_unit_values + org_unit_level_1_values)))
 
     export_request = stub_export_values("invoice_with_parent.json")
-    worker.perform(project.project_anchor.id, 2015, 1, [ORG_UNIT_ID])
 
+    worker.perform(project.project_anchor.id, 2015, 1, [ORG_UNIT_ID])
+    expect(value_request).to have_been_made.once
     expect(export_request).to have_been_made.once
   end
 
