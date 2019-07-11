@@ -49,7 +49,8 @@ RSpec.describe InvoiceSimulationWorker do
   end
 
   it "stores exception message when dhis2 is not available" do
-    stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&orgUnit=#{ORG_UNIT_ID}&period=2015Q1")
+    project.packages.first.package_states.first.update(ds_external_reference: "dataset")
+    stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&dataSet=dataset&orgUnit=#{ORG_UNIT_ID}&period=2015Q1")
       .to_return(status: 503, body: "")
 
     with_mocked_s3 do
@@ -64,9 +65,10 @@ RSpec.describe InvoiceSimulationWorker do
 
   it "stores exception message when there's problem with formula evaluation" do
     project.packages.first.activity_rule.formula("amount").update(expression: "tarif / 0")
+    project.packages.first.package_states.first.update(ds_external_reference: "dataset")
 
-    stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&orgUnit=#{ORG_UNIT_ID}&period=2015Q1")
-      .to_return(status: 200, body: JSON.pretty_generate("dataValues": generate_quarterly_values_for(project)))
+    request = stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&dataSet=dataset&orgUnit=#{ORG_UNIT_ID}&period=2015Q1")
+              .to_return(status: 200, body: JSON.pretty_generate("dataValues": generate_quarterly_values_for(project)))
 
     with_mocked_s3 do
       begin
@@ -75,10 +77,14 @@ RSpec.describe InvoiceSimulationWorker do
       end
     end
 
-    expect(InvoicingSimulationJob.last.last_error).to eq("InvoiceSimulationWorker::Simulation::ErrorDuringSimulation: "\
-      "In equation quantity_pma_clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois_amount_for_vRC0stJ5y9Q_and_2015q1 "\
-      "Divide by zero quantity_pma_clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois_amount_for_vRC0stJ5y9Q_and_2015q1 "\
-      ":= quantity_pma_clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois_tarif_for_vRC0stJ5y9Q_and_2015q1 / 0")
+    expect(request).to have_been_made.once
+
+    expected_message = "InvoiceSimulationWorker::Simulation::ErrorDuringSimulation: "\
+    "In equation quantity_pma_clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois_amount_for_vRC0stJ5y9Q_and_2015q1 "\
+    "Divide by zero quantity_pma_clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois_amount_for_vRC0stJ5y9Q_and_2015q1 "\
+    ":= quantity_pma_clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois_tarif_for_vRC0stJ5y9Q_and_2015q1 / 0"
+
+    expect(InvoicingSimulationJob.last.last_error).to eq(expected_message)
   end
 
   # double to mock s3 related calls
@@ -110,7 +116,7 @@ RSpec.describe InvoiceSimulationWorker do
     # store the file in binary mode (gzip json)
     allow(s3_bucket_client).to receive(:put) { |args|
       dirname = File.dirname(file_path)
-      puts "****************** \n"+dirname+"****************** "
+      puts "****************** \n" + dirname + "****************** "
       FileUtils.mkdir_p(dirname) unless File.directory?(dirname)
       File.open(file_path, "w") { |file|
         file.binmode

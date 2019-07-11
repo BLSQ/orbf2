@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: activity_states
@@ -9,6 +8,7 @@
 #  formula            :string
 #  kind               :string           default("data_element"), not null
 #  name               :string           not null
+#  origin             :string           default("dataValueSets")
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
 #  activity_id        :integer          not null
@@ -58,9 +58,29 @@ class ActivityState < ApplicationRecord
     message: "%{value} is not a valid see #{KINDS.join(',')}"
   }
 
+  ORIGIN_DATAVALUESETS = "dataValueSets"
+  ORIGIN_ANALYTICS = "analytics"
+  ORIGINS = [
+    ORIGIN_DATAVALUESETS,
+    ORIGIN_ANALYTICS
+  ].freeze
+
+  validates :origin, inclusion: {
+    in:      ORIGINS,
+    message: "%{value} is not a valid see #{ORIGINS.join(',')}"
+  }
+
   def external_reference=(external_reference)
     external_reference = nil if external_reference.blank?
     self[:external_reference] = external_reference
+  end
+
+  def origin_data_value_sets?
+    origin == ORIGIN_DATAVALUESETS
+  end
+
+  def origin_analytics?
+    origin == ORIGIN_ANALYTICS
   end
 
   def kind_data_element?

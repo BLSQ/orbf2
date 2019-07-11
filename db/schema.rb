@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_06_19_063435) do
+ActiveRecord::Schema.define(version: 2019_07_03_055831) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -72,6 +72,7 @@ ActiveRecord::Schema.define(version: 2019_06_19_063435) do
     t.datetime "updated_at", null: false
     t.string "kind", default: "data_element", null: false
     t.string "formula"
+    t.string "origin", default: "dataValueSets"
     t.index ["activity_id"], name: "index_activity_states_on_activity_id"
     t.index ["external_reference", "activity_id"], name: "index_activity_states_on_external_reference_and_activity_id", unique: true
     t.index ["state_id"], name: "index_activity_states_on_state_id"

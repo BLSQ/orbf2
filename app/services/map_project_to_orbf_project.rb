@@ -89,7 +89,8 @@ class MapProjectToOrbfProject
         name:    activity_state.name,
         formula: formula,
         kind:    kind,
-        ext_id:  ext_id
+        ext_id:  ext_id,
+        origin:  activity_state.origin
       )
     end
   end
