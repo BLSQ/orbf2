@@ -1,5 +1,8 @@
 <tr class="nested-fields">
-  <td> <%= activity_state.name %>
+  <td>
+      <%= activity_state.name %>
+      <br/><br/>
+      <i><%= f.object.kind.humanize %></i>
     <% if activity_state.errors.any? %>
     <br>
       <%=icon('fas', "exclamation-triangle", class: "text-danger")%> <% activity_state.errors.full_messages.each do |msg| %>
@@ -9,7 +12,6 @@
    </div>
    <% end %>
   </td>
-    <td> <%= f.object.kind %></td>
   <td> <%= link_to_remove_association icon('fas', "trash-o", class: "text-danger") , f %> </td>
   <td>
     <div class="switch-field pull-right">
@@ -29,5 +31,11 @@
     <%if f.object.kind_formula? %>
       <%= f.text_field :formula %>
     <%end%>
+  </td>
+  <td>
+    <%= f.input_field("origin", collection:[
+              ["Data value sets api", "dataValueSets"],
+              ["Analytics api","analytics"]
+            ],           style: "width:180px", class:"form-control", include_blank: false, include_hidden: false) %>
   </td>
 </tr>
