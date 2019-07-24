@@ -9,7 +9,7 @@ class Setup::ProjectRulesController < PrivateController
       raise_if_published: false
     )
     data_compound = project.project_anchor
-                           .nearest_data_compound_for(Date.new) || DataCompound.from(project)
+                           .nearest_data_compound_for(DateTime.now) || DataCompound.from(project)
     @orbf_project = MapProjectToOrbfProject.new(
       project,
       data_compound.indicators
