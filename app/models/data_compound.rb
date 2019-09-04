@@ -1,8 +1,9 @@
 class DataCompound
-  def initialize(data_elements, data_elements_groups, indicators)
+  def initialize(data_elements, data_elements_groups, indicators, category_combos)
     @data_elements_by_id = data_elements.index_by(&:id)
     @data_elements_groups_by_id = data_elements_groups.index_by(&:id)
     @indicators_by_id = indicators.index_by(&:id)
+    @category_combos_by_id = category_combos ? category_combos.index_by(&:id) : {}
 
     data_elements_by_group = {}
     data_elements.each do |de|
@@ -22,7 +23,7 @@ class DataCompound
     data_elements = dhis2.data_elements.list(fields: ":all", page_size: Dhis2SnapshotWorker::PAGE_SIZE)
     data_element_groups = dhis2.data_element_groups.list(fields: ":all", page_size: Dhis2SnapshotWorker::PAGE_SIZE)
     indicators = dhis2.indicators.list(fields: ":all", page_size: Dhis2SnapshotWorker::PAGE_SIZE)
-    DataCompound.new(data_elements, data_element_groups, indicators)
+    DataCompound.new(data_elements, data_element_groups, indicators, [])
   end
 
   def indicators(ids = nil)
@@ -51,5 +52,9 @@ class DataCompound
 
   def data_element_group(id)
     @data_elements_groups_by_id[id]
+  end
+
+  def category_combo(id)
+    @category_combos_by_id[id]
   end
 end

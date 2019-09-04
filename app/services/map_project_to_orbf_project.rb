@@ -53,7 +53,22 @@ class MapProjectToOrbfProject
       dataset_ext_ids:               package.package_states.map(&:ds_external_reference).compact,
       activities:                    map_activities(package.activities, package.states),
       rules:                         map_rules(package.rules),
-      include_main_orgunit:          package.include_main_orgunit
+      include_main_orgunit:          package.include_main_orgunit,
+
+      # TODO piet : I would use the dataCompound and only store the loop_over_combo_ext_id
+      #             need to add categoryCombos to dhis2_snapshots (and take the category_option_combos ids/names)
+
+     # loop_over_combo:               {
+     #   name: "HIV age+gender", id: "jCNGsC2NawV",
+     #   category_option_combos: [
+     # { "code": "COC_358738", name: "Male, 25-49y", id: "uX9yDetTdOp" },
+     #  { "code": "COC_358737", name: "Female, 25-49y", id: "qa0VqgYlgtN" },
+     #    { "code": "COC_358740", name: "Male, >49y", id: "GuJESuyOCMW" },
+     #      { "code": "COC_358736", name: "Male, 15-24y", id: "zPpvbvpmkxN" },
+     #     { "code": "COC_358735", name: "Female, 15-24y", id: "LbeIlyHEhKr" },
+     #          { "code": "COC_358739", name: "Female, >49y", id: "rCMUTmcreqP" },
+     #     { "code": "COC_358734", name: "Male, <15y", id: "TkDhg29x18A" },
+     #        { "code": "COC_358733", name: "Female, <15y", id: "qNCMOhkoQju" }] }
     )
   end
 
@@ -90,7 +105,9 @@ class MapProjectToOrbfProject
         formula: formula,
         kind:    kind,
         ext_id:  ext_id,
-        origin:  activity_state.origin
+        origin:  activity_state.origin,
+        # category_combo_ext_id: activity_state.state.code== "percentage" ? "jCNGsC2NawV" : "default"
+        # TODO piet : use the dataCompound or store when saving activity state ?
       )
     end
   end

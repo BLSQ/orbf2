@@ -70,13 +70,15 @@ class ProjectAnchor < ApplicationRecord
     data_elements = nearest(candidates.select(&:kind_data_elements?), date)
     data_element_groups = nearest(candidates.select(&:kind_data_element_groups?), date)
     indicators = nearest(candidates.select(&:kind_indicators?), date)
+    category_combos = nearest(candidates.select(&:kind_category_combos?), date)
 
     return nil unless data_elements || data_element_groups || indicators
     Rails.logger.info "for #{date} using snapshots #{data_elements.year} #{data_elements.month} and #{data_element_groups.year} #{data_element_groups.month} and #{indicators.year} #{indicators.month}"
     data_elements = dhis2_snapshots.find(data_elements.id) if data_elements
     data_element_groups = dhis2_snapshots.find(data_element_groups.id) if data_element_groups
     indicators = dhis2_snapshots.find(indicators.id) if indicators
-    new_data_compound(data_elements, data_element_groups, indicators)
+    category_combos = dhis2_snapshots.find(category_combos.id) if category_combos
+    new_data_compound(data_elements, data_element_groups, indicators, category_combos)
   end
 
   def nearest(snapshots, date)
@@ -112,12 +114,13 @@ class ProjectAnchor < ApplicationRecord
     )
   end
 
-  def new_data_compound(data_elements, data_element_groups, indicators)
+  def new_data_compound(data_elements, data_element_groups, indicators, category_combos)
     return nil unless data_elements && data_element_groups
     DataCompound.new(
       data_elements.content.map { |r| Dhis2::Api::DataElement.new(nil, r["table"]) },
       data_element_groups.content.map { |r| Dhis2::Api::DataElementGroup.new(nil, r["table"]) },
-      indicators ? indicators.content.map { |r| Dhis2::Api::Indicator.new(nil, r["table"]) } : []
+      indicators ? indicators.content.map { |r| Dhis2::Api::Indicator.new(nil, r["table"]) } : [],
+      category_combos ?  category_combos.content.map { |r| Dhis2::Api::CategoryCombo.new(nil, r["table"]) } : []
     )
   end
 
@@ -137,14 +140,15 @@ class ProjectAnchor < ApplicationRecord
 
   def data_compound_for(date)
     snapshots = dhis2_snapshots
-                .where(kind: %i[data_elements data_element_groups indicators])
+                .where(kind: %i[data_elements data_element_groups indicators category_combos])
                 .where(month: date.month)
                 .where(year: date.year)
 
     data_elements = snapshots.find(&:kind_data_elements?)
     data_element_groups = snapshots.find(&:kind_data_element_groups?)
     indicators = snapshots.find(&:kind_indicators?)
-    new_data_compound(data_elements, data_element_groups, indicators)
+    category_combos = snapshots.find(&:kind_category_combos?)
+    new_data_compound(data_elements, data_element_groups, indicators, category_combos)
   end
 
   def flipper_id
