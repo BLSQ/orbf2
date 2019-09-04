@@ -1,3 +1,4 @@
+# coding: utf-8
 # frozen_string_literal: true
 
 require "rails_helper"
@@ -333,13 +334,73 @@ RSpec.describe Rule, kind: :model do
        verified_level_4_quarterly
        verified_level_5
        verified_level_5_quarterly
+       %{claimed_is_null_last_1_quarters_exclusive_window_values}
+       %{claimed_is_null_last_1_quarters_window_values}
+       %{claimed_is_null_last_2_quarters_exclusive_window_values}
+       %{claimed_is_null_last_2_quarters_window_values}
+       %{claimed_is_null_last_3_quarters_exclusive_window_values}
+       %{claimed_is_null_last_3_quarters_window_values}
+       %{claimed_is_null_last_4_quarters_exclusive_window_values}
+       %{claimed_is_null_last_4_quarters_window_values}
+       %{claimed_last_1_quarters_exclusive_window_values}
+       %{claimed_last_1_quarters_window_values}
+       %{claimed_last_2_quarters_exclusive_window_values}
+       %{claimed_last_2_quarters_window_values}
+       %{claimed_last_3_quarters_exclusive_window_values}
+       %{claimed_last_3_quarters_window_values}
+       %{claimed_last_4_quarters_exclusive_window_values}
+       %{claimed_last_4_quarters_window_values}
+       %{verified_is_null_last_1_quarters_exclusive_window_values}
+       %{verified_is_null_last_1_quarters_window_values}
+       %{verified_is_null_last_2_quarters_exclusive_window_values}
+       %{verified_is_null_last_2_quarters_window_values}
+       %{verified_is_null_last_3_quarters_exclusive_window_values}
+       %{verified_is_null_last_3_quarters_window_values}
+       %{verified_is_null_last_4_quarters_exclusive_window_values}
+       %{verified_is_null_last_4_quarters_window_values}
+       %{verified_last_1_quarters_exclusive_window_values}
+       %{verified_last_1_quarters_window_values}
+       %{verified_last_2_quarters_exclusive_window_values}
+       %{verified_last_2_quarters_window_values}
+       %{verified_last_3_quarters_exclusive_window_values}
+       %{verified_last_3_quarters_window_values}
+       %{verified_last_4_quarters_exclusive_window_values}
+       %{verified_last_4_quarters_window_values}
+       %{tarif_is_null_last_1_quarters_exclusive_window_values}
+       %{tarif_is_null_last_1_quarters_window_values}
+       %{tarif_is_null_last_2_quarters_exclusive_window_values}
+       %{tarif_is_null_last_2_quarters_window_values}
+       %{tarif_is_null_last_3_quarters_exclusive_window_values}
+       %{tarif_is_null_last_3_quarters_window_values}
+       %{tarif_is_null_last_4_quarters_exclusive_window_values}
+       %{tarif_is_null_last_4_quarters_window_values}
+       %{tarif_last_1_quarters_exclusive_window_values}
+       %{tarif_last_1_quarters_window_values}
+       %{tarif_last_2_quarters_exclusive_window_values}
+       %{tarif_last_2_quarters_window_values}
+       %{tarif_last_3_quarters_exclusive_window_values}
+       %{tarif_last_3_quarters_window_values}
+       %{tarif_last_4_quarters_exclusive_window_values}
+       %{tarif_last_4_quarters_window_values}
     ].freeze
 
     it "should return all states and scoped states " do
       availailable_variables = valid_package_quantity_rule.available_variables
-      expect(availailable_variables).to eq(EXPECTED_VARIABLES), availailable_variables.join("\n")
+      expect(availailable_variables).to match_array(EXPECTED_VARIABLES)
+    end
+
+    it 'allows monthly package to reference quarterly values' do
+      p = project.packages.build(frequency: "monthly")
+      p.states << p.project.states.select { |state| %w[Claimed Verified Tarif].include?(state.name) }.to_a
+      rule = p.rules.build(
+        name: "Test thing",
+        kind: "activity"
+      )
+      vars = rule.available_variables
+      expect(vars).to include("%{verified_is_null_last_1_quarters_window_values}")
     end
   end
+
   describe "validation of formulas" do
     it "should say it's valid for quantity" do
       valid_activity_quantity_rule.valid?
@@ -593,6 +654,22 @@ RSpec.describe Rule, kind: :model do
        %{claimed_last_9_months_window_values}
        %{claimed_previous_year_same_quarter_values}
        %{claimed_previous_year_values}
+       %{claimed_is_null_last_1_quarters_exclusive_window_values}
+       %{claimed_is_null_last_1_quarters_window_values}
+       %{claimed_is_null_last_2_quarters_exclusive_window_values}
+       %{claimed_is_null_last_2_quarters_window_values}
+       %{claimed_is_null_last_3_quarters_exclusive_window_values}
+       %{claimed_is_null_last_3_quarters_window_values}
+       %{claimed_is_null_last_4_quarters_exclusive_window_values}
+       %{claimed_is_null_last_4_quarters_window_values}
+       %{claimed_last_1_quarters_exclusive_window_values}
+       %{claimed_last_1_quarters_window_values}
+       %{claimed_last_2_quarters_exclusive_window_values}
+       %{claimed_last_2_quarters_window_values}
+       %{claimed_last_3_quarters_exclusive_window_values}
+       %{claimed_last_3_quarters_window_values}
+       %{claimed_last_4_quarters_exclusive_window_values}
+       %{claimed_last_4_quarters_window_values}
        attributed_points
        claimed
        claimed_is_null
@@ -612,16 +689,7 @@ RSpec.describe Rule, kind: :model do
        month_of_year
        quarter_of_year
       ]
-      expect(activity_rule.available_variables).to eq(expected), [
-        " got : \n" +
-        activity_rule.available_variables.join("\n"),
-        "\n expected \n ",
-        expected.join("\n"),
-        "\ndiff 1\n",
-        (activity_rule.available_variables - expected).join("\n"),
-        "\n diff 2",
-        (expected - activity_rule.available_variables).join("\n")
-      ].join
+      expect(activity_rule.available_variables).to match_array(expected)
     end
 
     it "has available_variables for zone_activity_rule" do
