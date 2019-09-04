@@ -49,6 +49,7 @@ module RuleTypes
       if project&.new_engine?
         var_names.push(*rule.formulas.map { |formula| "#{formula.code}_current_quarter_values" })
         var_names.push(*activity_level_states.map { |formula| "#{formula.code}_current_quarter_quarterly_values" })
+
         if package.monthly?
           (1..12).each do |i|
             monthly_vars = activity_level_states.each_with_object([]) do |formula, result|
@@ -58,7 +59,7 @@ module RuleTypes
           end
         end
 
-        if package.quarterly?
+        if access_to_quarterly_values?
           (1..4).each do |i|
             quarterly_vars = activity_level_states.each_with_object([]) do |formula, result|
               push_window_values(result, formula, "quarters", i)
@@ -96,6 +97,10 @@ module RuleTypes
     end
 
     private
+
+    def access_to_quarterly_values?
+      package.monthly? || package.quarterly?
+    end
 
     def main_orgunit_states
       package_states.map { |state| "#{state.code}_zone_main_orgunit" }
