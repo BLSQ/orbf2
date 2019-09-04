@@ -14,7 +14,7 @@ GIT
 
 GIT
   remote: https://github.com/BLSQ/orbf-rules_engine.git
-  revision: 442a44f84207c722dab4ff63f0eb5bba3c5c86e6
+  revision: 72b5004a046e5bd4427f863c1537db4133b0b516
   specs:
     orbf-rules_engine (0.1.0)
       activesupport
@@ -604,4 +604,4 @@ RUBY VERSION
    ruby 2.5.1p57
 
 BUNDLED WITH
-   1.17.3
+   2.0.2
