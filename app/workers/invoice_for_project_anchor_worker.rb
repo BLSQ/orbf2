@@ -4,6 +4,10 @@ class InvoiceForProjectAnchorWorker
   include Sidekiq::Worker
   include Sidekiq::Throttled::Worker
 
+  sidekiq_options(
+    retry: 11 # around 7h max in the queue
+  )
+
   sidekiq_throttle(
     concurrency: { limit: ENV.fetch("SDKQ_MAX_CONCURRENT_INVOICE", 3).to_i },
     key_suffix:  ->(project_anchor_id, _year, _quarter, _selected_org_unit_ids = nil, _options = {}) { project_anchor_id }
