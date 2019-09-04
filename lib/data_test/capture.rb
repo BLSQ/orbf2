@@ -55,7 +55,7 @@ module DataTest
       dump_pyramid(invoice_entity.pyramid)
       dump_input_values(invoice_entity.fetch_and_solve.dhis2_values)
 
-      dump_project(project, invoice_entity.data_compound.indicators)
+      dump_project(project, invoice_entity.data_compound)
     end
 
     def dump_data_compound(compound)
@@ -73,11 +73,12 @@ module DataTest
       record_json(path_for_artefact("input-values", "json"), inputs)
     end
 
-    def dump_project(project, indicators)
+    def dump_project(project, _data_compound)
       project.dhis2_url = "https://redacted.example.com"
       project.user = "redacted"
       project.password = "redacted"
-      data = MapProjectToOrbfProject.new(project, indicators, engine_version).map
+      data = MapProjectToOrbfProject.new(project, indicators.indicators, indicators.category_combos,
+                                         indicators.data_elements, engine_version).map
       record_yaml(path_for_artefact("project", "yml"), data)
     end
 

@@ -3,9 +3,11 @@
 require "orbf/rules_engine"
 
 class MapProjectToOrbfProject
-  def initialize(project, dhis2_indicators, engine_version = nil)
+  def initialize(project, indicators, category_combos, data_elements, engine_version = nil)
     @project = project
-    @dhis2_indicators_by_id = dhis2_indicators.index_by(&:id)
+    @dhis2_indicators_by_id = indicators.index_by(&:id)
+    @category_combos_by_id = category_combos ? category_combos.index_by(&:id) : {}
+    @data_elements_by_id = data_elements ? data_elements.index_by(&:id) : {}
     @engine_version = engine_version || project.engine_version
   end
 
@@ -22,7 +24,7 @@ class MapProjectToOrbfProject
 
   private
 
-  attr_reader :project, :packages, :dhis2_indicators_by_id
+  attr_reader :project, :packages, :dhis2_indicators_by_id, :data_elements_by_id, :category_combos_by_id
 
   PACKAGE_KINDS = {
     "multi-groupset" => "subcontract"
@@ -38,6 +40,8 @@ class MapProjectToOrbfProject
     @cache_package ||= {}
     from_cache = @cache_package[package]
     return from_cache if from_cache
+
+    category_combo = category_combos_by_id["jCNGsC2NawV"]
 
     @cache_package[package] = Orbf::RulesEngine::Package.new(
       code:                          package.code,
@@ -55,20 +59,9 @@ class MapProjectToOrbfProject
       rules:                         map_rules(package.rules),
       include_main_orgunit:          package.include_main_orgunit,
 
-      # TODO piet : I would use the dataCompound and only store the loop_over_combo_ext_id
-      #             need to add categoryCombos to dhis2_snapshots (and take the category_option_combos ids/names)
+      # TODO piet :  store the loop_over_combo_ext_id
 
-     # loop_over_combo:               {
-     #   name: "HIV age+gender", id: "jCNGsC2NawV",
-     #   category_option_combos: [
-     # { "code": "COC_358738", name: "Male, 25-49y", id: "uX9yDetTdOp" },
-     #  { "code": "COC_358737", name: "Female, 25-49y", id: "qa0VqgYlgtN" },
-     #    { "code": "COC_358740", name: "Male, >49y", id: "GuJESuyOCMW" },
-     #      { "code": "COC_358736", name: "Male, 15-24y", id: "zPpvbvpmkxN" },
-     #     { "code": "COC_358735", name: "Female, 15-24y", id: "LbeIlyHEhKr" },
-     #          { "code": "COC_358739", name: "Female, >49y", id: "rCMUTmcreqP" },
-     #     { "code": "COC_358734", name: "Male, <15y", id: "TkDhg29x18A" },
-     #        { "code": "COC_358733", name: "Female, <15y", id: "qNCMOhkoQju" }] }
+      loop_over_combo:     category_combo
     )
   end
 
@@ -99,6 +92,8 @@ class MapProjectToOrbfProject
         formula = '#{' + activity_state.external_reference + "}"
         ext_id = "inlined-" + ext_id
       end
+      category_combo_ext_id = data_elements_by_id[activity_state.external_reference] ? data_elements_by_id[activity_state.external_reference].category_combo["id"] : nil
+
       Orbf::RulesEngine::ActivityState.with(
         state:   activity_state.state.code,
         name:    activity_state.name,
@@ -106,8 +101,7 @@ class MapProjectToOrbfProject
         kind:    kind,
         ext_id:  ext_id,
         origin:  activity_state.origin,
-        # category_combo_ext_id: activity_state.state.code== "percentage" ? "jCNGsC2NawV" : "default"
-        # TODO piet : use the dataCompound or store when saving activity state ?
+        category_combo_ext_id: category_combo_ext_id
       )
     end
   end

@@ -43,7 +43,9 @@ module Datasets
     def project
       @project = MapProjectToOrbfProject.new(
         legacy_project,
-        data_compound.indicators
+        data_compound.indicators,
+        data_compound.category_combos,
+        data_compound.data_elements
       ).map
     end
   end

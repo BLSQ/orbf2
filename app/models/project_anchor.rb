@@ -62,7 +62,7 @@ class ProjectAnchor < ApplicationRecord
   end
 
   def nearest_data_compound_for(date)
-    kinds = %i[data_elements data_element_groups indicators]
+    kinds = %i[data_elements data_element_groups indicators category_combos]
     pyramid_snapshots = dhis2_snapshots.select("id, year, month, kind").where(kind: kinds)
 
     candidates = pyramid_snapshots.sort_by { |snap| [snap.kind, [snap.year, snap.month].join("-")] }
@@ -78,6 +78,7 @@ class ProjectAnchor < ApplicationRecord
     data_element_groups = dhis2_snapshots.find(data_element_groups.id) if data_element_groups
     indicators = dhis2_snapshots.find(indicators.id) if indicators
     category_combos = dhis2_snapshots.find(category_combos.id) if category_combos
+
     new_data_compound(data_elements, data_element_groups, indicators, category_combos)
   end
 

@@ -12,7 +12,9 @@ class Setup::ProjectRulesController < PrivateController
                            .nearest_data_compound_for(Date.new) || DataCompound.from(project)
     @orbf_project = MapProjectToOrbfProject.new(
       project,
-      data_compound.indicators
+      data_compound.indicators,
+      data_compound.category_combos,
+      data_compound.data_elements
     ).map
   end
 

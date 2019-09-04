@@ -57,4 +57,8 @@ class DataCompound
   def category_combo(id)
     @category_combos_by_id[id]
   end
+
+  def category_combos
+    @category_combos_by_id.values
+  end
 end

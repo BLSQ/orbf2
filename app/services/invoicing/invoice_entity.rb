@@ -68,11 +68,11 @@ module Invoicing
       Rails.logger.info "about to publish #{@dhis2_export_values.size} values to dhis2"
       return if @dhis2_export_values.empty?
 
-      if Flipper[:use_parallel_publishing].enabled?(project.project_anchor)
-        status = parallel_publish_to_dhis2
-      else
-        status = project.dhis2_connection.data_value_sets.create(@dhis2_export_values)
-      end
+      status = if Flipper[:use_parallel_publishing].enabled?(project.project_anchor)
+                 parallel_publish_to_dhis2
+               else
+                 project.dhis2_connection.data_value_sets.create(@dhis2_export_values)
+               end
 
       Rails.logger.info @dhis2_export_values.to_json
       Rails.logger.info status.raw_status.to_json
@@ -105,7 +105,13 @@ module Invoicing
     end
 
     def orbf_project
-      @orbf_project ||= MapProjectToOrbfProject.new(project, data_compound.indicators, invoicing_request.engine_version).map
+      @orbf_project ||= MapProjectToOrbfProject.new(
+        project,
+        data_compound.indicators,
+        data_compound.category_combos,
+        data_compound.data_elements,
+        invoicing_request.engine_version
+      ).map
     end
 
     def snapshot
