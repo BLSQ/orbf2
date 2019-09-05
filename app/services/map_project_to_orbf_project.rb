@@ -58,7 +58,7 @@ class MapProjectToOrbfProject
       activities:                    map_activities(package.activities, package.states),
       rules:                         map_rules(package.rules),
       include_main_orgunit:          package.include_main_orgunit,
-      loop_over_combo:     category_combo
+      loop_over_combo:               category_combo
     )
   end
 
@@ -92,12 +92,12 @@ class MapProjectToOrbfProject
       category_combo_ext_id = data_elements_by_id[activity_state.external_reference] ? data_elements_by_id[activity_state.external_reference].category_combo["id"] : nil
 
       Orbf::RulesEngine::ActivityState.with(
-        state:   activity_state.state.code,
-        name:    activity_state.name,
-        formula: formula,
-        kind:    kind,
-        ext_id:  ext_id,
-        origin:  activity_state.origin,
+        state:                 activity_state.state.code,
+        name:                  activity_state.name,
+        formula:               formula,
+        kind:                  kind,
+        ext_id:                ext_id,
+        origin:                activity_state.origin,
         category_combo_ext_id: category_combo_ext_id
       )
     end

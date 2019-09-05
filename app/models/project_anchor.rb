@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: project_anchors
@@ -51,6 +53,7 @@ class ProjectAnchor < ApplicationRecord
     final_snapshots = final_candidates.map { |kind, candidate| [kind, candidate ? dhis2_snapshots.find(candidate.id) : nil] }
                                       .to_h
     return nil if final_snapshots.values.compact.size != kinds.size
+
     final_snapshots
   end
 
@@ -73,6 +76,7 @@ class ProjectAnchor < ApplicationRecord
     category_combos = nearest(candidates.select(&:kind_category_combos?), date)
 
     return nil unless data_elements || data_element_groups || indicators
+
     Rails.logger.info "for #{date} using snapshots #{data_elements.year} #{data_elements.month} and #{data_element_groups.year} #{data_element_groups.month} and #{indicators.year} #{indicators.month}"
     data_elements = dhis2_snapshots.find(data_elements.id) if data_elements
     data_element_groups = dhis2_snapshots.find(data_element_groups.id) if data_element_groups
@@ -90,6 +94,7 @@ class ProjectAnchor < ApplicationRecord
 
     past_candidate = past_candidates.first
     return past_candidate if past_candidate
+
     futur_candidates = snapshots.select { |snapshot| snapshot.snapshoted_at > date }
                                 .sort_by do |snapshot|
                                   snapshot.snapshoted_at.to_time - time
@@ -117,11 +122,12 @@ class ProjectAnchor < ApplicationRecord
 
   def new_data_compound(data_elements, data_element_groups, indicators, category_combos)
     return nil unless data_elements && data_element_groups
+
     DataCompound.new(
       data_elements.content.map { |r| Dhis2::Api::DataElement.new(nil, r["table"]) },
       data_element_groups.content.map { |r| Dhis2::Api::DataElementGroup.new(nil, r["table"]) },
       indicators ? indicators.content.map { |r| Dhis2::Api::Indicator.new(nil, r["table"]) } : [],
-      category_combos ?  category_combos.content.map { |r| Dhis2::Api::CategoryCombo.new(nil, r["table"]) } : []
+      category_combos ? category_combos.content.map { |r| Dhis2::Api::CategoryCombo.new(nil, r["table"]) } : []
     )
   end
 

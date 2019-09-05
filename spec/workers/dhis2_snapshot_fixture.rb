@@ -42,7 +42,6 @@ module Dhis2SnapshotFixture
     stub_request(:get, "http://play.dhis2.org/demo/api/categoryCombos?fields=id,name,code,categoryOptionCombos[id,name,code]&pageSize=5000").to_return(status: 200, body: fixture_content(:dhis2, "category_combos.json"))
   end
 
-
   def stub_snapshots(project, month = "201803")
     stub_organisation_unit_group_sets(project)
     stub_organisation_unit_groups(project)
