@@ -1,4 +1,8 @@
 ---
+plugins:
+  rubocop:
+    enabled: true
+    channel: rubocop-0-74
 engines:
   brakeman:
     enabled: true
