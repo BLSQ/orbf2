@@ -14,8 +14,7 @@ GIT
 
 GIT
   remote: https://github.com/BLSQ/orbf-rules_engine.git
-  revision: fc9decd8cb198589cc227ebbdffa755991ad3adf
-  branch: category_option_combos_support
+  revision: 082e9e6ab40b82baed678b37bfb44a365572a92e
   specs:
     orbf-rules_engine (0.1.0)
       activesupport

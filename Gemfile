@@ -85,7 +85,7 @@ else
   # We're using both of them against the latest master. We should set
   # them to versions when they become more stable
   gem "hesabu", github: "BLSQ/hesabu"
-  gem "orbf-rules_engine", github: "BLSQ/orbf-rules_engine", branch: "category_option_combos_support"
+  gem "orbf-rules_engine", github: "BLSQ/orbf-rules_engine"
 end
 # Like a modern code version of the mythical beast with 100 serpent hea...
 # [typhoeus](https://github.com/typhoeus/typhoeus)
