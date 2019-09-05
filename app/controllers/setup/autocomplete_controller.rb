@@ -46,6 +46,11 @@ class Setup::AutocompleteController < PrivateController
     end
   end
 
+  def category_combos
+    results = search_results(params[:term], "category_combos")
+    render_sol_items(results, params[:term])
+  end
+
   private
 
   def search_results(term, kind, limit: 20)

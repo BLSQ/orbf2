@@ -14,7 +14,7 @@ GIT
 
 GIT
   remote: https://github.com/BLSQ/orbf-rules_engine.git
-  revision: df66344aa5d0d54f653d54d8b52874fbf2956b8c
+  revision: fc9decd8cb198589cc227ebbdffa755991ad3adf
   branch: category_option_combos_support
   specs:
     orbf-rules_engine (0.1.0)
@@ -252,9 +252,9 @@ GEM
       mimemagic (~> 0.3.2)
     memory_profiler (0.9.12)
     method_source (0.9.2)
-    mime-types (3.2.2)
+    mime-types (3.3)
       mime-types-data (~> 3.2015)
-    mime-types-data (3.2019.0331)
+    mime-types-data (3.2019.0904)
     mimemagic (0.3.3)
     mini_mime (1.0.1)
     mini_portile2 (2.4.0)

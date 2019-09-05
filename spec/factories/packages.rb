@@ -13,6 +13,7 @@
 #  ogs_reference              :string
 #  created_at                 :datetime         not null
 #  updated_at                 :datetime         not null
+#  loop_over_combo_ext_id     :string
 #  project_id                 :integer
 #  stable_id                  :uuid             not null
 #

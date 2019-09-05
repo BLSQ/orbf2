@@ -41,7 +41,7 @@ class MapProjectToOrbfProject
     from_cache = @cache_package[package]
     return from_cache if from_cache
 
-    category_combo = category_combos_by_id["jCNGsC2NawV"]
+    category_combo = category_combos_by_id[package.loop_over_combo_ext_id]
 
     @cache_package[package] = Orbf::RulesEngine::Package.new(
       code:                          package.code,
@@ -58,9 +58,6 @@ class MapProjectToOrbfProject
       activities:                    map_activities(package.activities, package.states),
       rules:                         map_rules(package.rules),
       include_main_orgunit:          package.include_main_orgunit,
-
-      # TODO piet :  store the loop_over_combo_ext_id
-
       loop_over_combo:     category_combo
     )
   end
