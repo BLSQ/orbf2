@@ -73,12 +73,15 @@ module DataTest
       record_json(path_for_artefact("input-values", "json"), inputs)
     end
 
-    def dump_project(project, _data_compound)
+    def dump_project(project, data_compound)
       project.dhis2_url = "https://redacted.example.com"
       project.user = "redacted"
       project.password = "redacted"
-      data = MapProjectToOrbfProject.new(project, indicators.indicators, indicators.category_combos,
-                                         indicators.data_elements, engine_version).map
+      data = MapProjectToOrbfProject.new(project,
+                                         data_compound.indicators,
+                                         data_compound.category_combos,
+                                         data_compound.data_elements,
+                                         engine_version).map
       record_yaml(path_for_artefact("project", "yml"), data)
     end
 
