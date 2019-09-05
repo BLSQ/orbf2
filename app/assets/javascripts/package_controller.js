@@ -18,7 +18,7 @@ $(document).ready(function() {
         $sol_selector.searchableOptionList({
             data: $sol_selector.data('url'),
             showSelectAll: true,
-            allowNullSelection: false,
+            allowNullSelection: true,
             maxHeight: '250px',
             selectionDestination: $sol_selector.data('selection'),
             texts: {

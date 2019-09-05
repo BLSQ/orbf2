@@ -64,6 +64,23 @@
 <%= f.input :include_main_orgunit %>
 <%= f.hint "For zone packages, check this one to include the main orgunit also as target for the package and specified the 'Multiple entity by contract group belonging to groupset?'" %>
 
+<div class="row">
+    <div class="col-md-6">
+      <div class="form-group">
+        <label class="control-label">Loop over category combo</label>
+        <select id="loop_over_combo_ext_id_selector"
+                data-selected="<%=package.loop_over_combo_ext_id%>"
+                data-placeholder="Lookup the category combo groups here..."
+                 data-selection = "loop_over_combo_ext_id_selection"
+                data-url = "<%= category_combos_setup_project_autocomplete_index_path(package.project) %>"
+                class="form-control sol-powered" name="package[loop_over_combo_ext_id]" >
+        </select>
+    </div>
+  </div>
+    <div class="col-md-6" id="loop_over_combo_ext_id_selection"></div>
+</div>
+
+
 <%= f.association :states, collection: package.project.states, as: :check_boxes %>
 
 <%= f.association :activities, collection: package.project.activities.sort {|a,b| NaturalSort.comparator(a.code, b.code)}, :label_method => lambda { |owner| "#{owner.code} | #{owner.name}" },

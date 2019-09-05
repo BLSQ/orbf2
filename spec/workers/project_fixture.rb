@@ -114,6 +114,7 @@ module ProjectFixture
     stub_data_elements_groups(project)
     stub_system_info(project)
     stub_indicators(project)
+    stub_category_combos(project)
 
     Dhis2SnapshotWorker.new.perform(project.project_anchor.id)
     WebMock.reset!

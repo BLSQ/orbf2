@@ -35,6 +35,7 @@ RSpec.describe Dhis2SnapshotWorker do
     stub_data_elements_groups(project)
     stub_system_info(project)
     stub_indicators(project)
+    stub_category_combos(project)
 
     expect(Dhis2Snapshot.all.count).to eq 0
 

@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: dhis2_snapshots
@@ -33,7 +34,8 @@ class Dhis2Snapshot < ApplicationRecord
              organisation_unit_group_sets
              organisation_unit_groups
              organisation_units
-             indicators].freeze
+             indicators
+             category_combos].freeze
 
   has_many :dhis2_snapshot_changes, dependent: :destroy
 
@@ -61,6 +63,10 @@ class Dhis2Snapshot < ApplicationRecord
 
   def kind_indicators?
     kind.to_sym == :indicators
+  end
+
+  def kind_category_combos?
+    kind.to_sym == :category_combos
   end
 
   def snapshoted_at

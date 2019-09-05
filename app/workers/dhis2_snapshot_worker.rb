@@ -75,6 +75,8 @@ class Dhis2SnapshotWorker
   def fetcher(project, kind)
     if kind == :organisation_units && project&.entity_group&.limit_snaphot_to_active_regions
       Fetchers::OrganisationUnitsSnapshotFetcher.new(fields: ORGANISATION_UNITS_FIELDS)
+    elsif kind == :category_combos
+      Fetchers::GenericSnapshotFetcher.new(fields: "id,name,code,categoryOptionCombos[id,name,code]")
     else
       Fetchers::GenericSnapshotFetcher.new
     end

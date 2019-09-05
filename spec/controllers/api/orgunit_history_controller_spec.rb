@@ -150,6 +150,7 @@ RSpec.describe Api::OrgunitHistoryController, type: :controller do
     stub_organisation_unit_group_sets(project)
     stub_organisation_unit_groups(project)
     stub_organisation_units(project)
+    stub_category_combos(project)
     stub_system_info(project)
 
     Dhis2SnapshotWorker.new.perform(
