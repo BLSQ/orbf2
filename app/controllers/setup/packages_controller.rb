@@ -85,6 +85,7 @@ class Setup::PackagesController < PrivateController
   def params_package
     params.require(:package).permit(
       :name, :description, :frequency, :kind, :ogs_reference, :include_main_orgunit,
+      :loop_over_combo_ext_id,
       state_ids: [], activity_ids: [], groupsets_ext_refs: []
     )
   end

@@ -3,9 +3,11 @@
 require "orbf/rules_engine"
 
 class MapProjectToOrbfProject
-  def initialize(project, dhis2_indicators, engine_version = nil)
+  def initialize(project, indicators, category_combos, data_elements, engine_version = nil)
     @project = project
-    @dhis2_indicators_by_id = dhis2_indicators.index_by(&:id)
+    @dhis2_indicators_by_id = indicators.index_by(&:id)
+    @category_combos_by_id = category_combos ? category_combos.index_by(&:id) : {}
+    @data_elements_by_id = data_elements ? data_elements.index_by(&:id) : {}
     @engine_version = engine_version || project.engine_version
   end
 
@@ -22,7 +24,7 @@ class MapProjectToOrbfProject
 
   private
 
-  attr_reader :project, :packages, :dhis2_indicators_by_id
+  attr_reader :project, :packages, :dhis2_indicators_by_id, :data_elements_by_id, :category_combos_by_id
 
   PACKAGE_KINDS = {
     "multi-groupset" => "subcontract"
@@ -39,6 +41,8 @@ class MapProjectToOrbfProject
     from_cache = @cache_package[package]
     return from_cache if from_cache
 
+    category_combo = category_combos_by_id[package.loop_over_combo_ext_id]
+
     @cache_package[package] = Orbf::RulesEngine::Package.new(
       code:                          package.code,
       kind:                          PACKAGE_KINDS[package.kind] || package.kind,
@@ -53,7 +57,8 @@ class MapProjectToOrbfProject
       dataset_ext_ids:               package.package_states.map(&:ds_external_reference).compact,
       activities:                    map_activities(package.activities, package.states),
       rules:                         map_rules(package.rules),
-      include_main_orgunit:          package.include_main_orgunit
+      include_main_orgunit:          package.include_main_orgunit,
+      loop_over_combo:               category_combo
     )
   end
 
@@ -84,13 +89,16 @@ class MapProjectToOrbfProject
         formula = '#{' + activity_state.external_reference + "}"
         ext_id = "inlined-" + ext_id
       end
+      category_combo_ext_id = data_elements_by_id[activity_state.external_reference] ? data_elements_by_id[activity_state.external_reference].category_combo["id"] : nil
+
       Orbf::RulesEngine::ActivityState.with(
-        state:   activity_state.state.code,
-        name:    activity_state.name,
-        formula: formula,
-        kind:    kind,
-        ext_id:  ext_id,
-        origin:  activity_state.origin
+        state:                 activity_state.state.code,
+        name:                  activity_state.name,
+        formula:               formula,
+        kind:                  kind,
+        ext_id:                ext_id,
+        origin:                activity_state.origin,
+        category_combo_ext_id: category_combo_ext_id
       )
     end
   end

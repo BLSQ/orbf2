@@ -25,7 +25,7 @@ RSpec.describe MapProjectToOrbfProject do
       external_reference: "package_dhis2_out"
     )
 
-    orbf_project = MapProjectToOrbfProject.new(project, []).map
+    orbf_project = MapProjectToOrbfProject.new(project, [], [], []).map
     expect(orbf_project).to be_a(Orbf::RulesEngine::Project)
     expect(orbf_project.default_combos_ext_ids).to eq(
       default_attribute_option_combo_ext_id: "aoc_reference",
@@ -73,7 +73,7 @@ RSpec.describe MapProjectToOrbfProject do
       activity:           package.activities[1]
     )
 
-    orbf_project = MapProjectToOrbfProject.new(project, []).map
+    orbf_project = MapProjectToOrbfProject.new(project, [], [], []).map
     orbf_formula = orbf_project.packages.last.zone_activity_rules.first.formulas.first
     expect(orbf_formula.send(:activity_mappings)).to eq(
       activity1.code => "act1",

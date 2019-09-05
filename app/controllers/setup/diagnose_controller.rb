@@ -97,7 +97,7 @@ class Setup::DiagnoseController < PrivateController
   def project
     @project ||= MapProjectToOrbfProject.new(
       current_project,
-      data_compound.indicators
+      data_compound
     ).map
   end
 end
