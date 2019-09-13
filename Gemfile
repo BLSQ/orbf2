@@ -58,7 +58,7 @@ gem "webpacker", "~> 4.0.1"
 
 # Flexible authentication solution for Rails with Warden
 # [devise](https://github.com/plataformatec/devise)
-gem "devise", "~> 4.6.2"
+gem "devise", "~> 4.7.1"
 
 ## API related
 
