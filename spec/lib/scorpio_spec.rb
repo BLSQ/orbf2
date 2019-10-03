@@ -14,4 +14,34 @@ RSpec.describe Scorpio do
       ENV.delete('ORBF_STAGING')
     end
   end
+
+  describe '.is_developer?' do
+    it 'returns true when in dev environment' do
+      expect(Scorpio).to receive(:is_dev?) { true }
+
+      expect(Scorpio.is_developer?(nil)).to eq(true)
+    end
+
+    it 'returns false if no user supplied' do
+      expect(Scorpio).to receive(:is_dev?) { false }
+
+      expect(Scorpio.is_developer?(nil)).to eq(false)
+    end
+
+    it 'returns true in production if user in env variable' do
+      expect(Scorpio).to receive(:is_dev?) { false }
+
+      ENV['DEV_USER_IDS'] = "1,2,3"
+      fake_user = Struct.new(:id).new(3)
+      expect(Scorpio.is_developer?(fake_user)).to eq(true)
+    end
+
+    it 'returns false in production if user not in env variable' do
+      expect(Scorpio).to receive(:is_dev?) { false }
+
+      ENV['DEV_USER_IDS'] = "1,2,3"
+      fake_user = Struct.new(:id).new(5)
+      expect(Scorpio.is_developer?(fake_user)).to eq(false)
+    end
+  end
 end
