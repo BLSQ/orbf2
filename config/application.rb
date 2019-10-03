@@ -42,5 +42,6 @@ module Scorpio
     # These are defined in `/lib/*.rb
     require "scorpio"
     require "parallel_dhis2"
+    require "can_access_developer_tools_constraint"
   end
 end

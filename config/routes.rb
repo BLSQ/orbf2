@@ -2,24 +2,12 @@ require "sidekiq/web"
 require "sidekiq/throttled/web"
 
 Rails.application.routes.draw do
-  if ENV["ADMIN_PASSWORD"]
-    Sidekiq::Web.use Rack::Auth::Basic do |username, password|
-      username == "admin" && password == ENV["ADMIN_PASSWORD"]
-    end
+  constraints CanAccessDeveloperToolsConstraint do
+    mount Sidekiq::Web => "/sidekiq"
+    mount Flipper::UI.app(Flipper) => '/flipper'
+    Sidekiq::Throttled::Web.enhance_queues_tab!
   end
-  Sidekiq::Throttled::Web.enhance_queues_tab!
-  mount Sidekiq::Web => "/sidekiq"
 
-  if ENV["ADMIN_PASSWORD"]
-    flipper_app = Flipper::UI.app(Flipper) do |builder|
-      builder.use Rack::Auth::Basic do |username, password|
-        username == "admin" && password == ENV["ADMIN_PASSWORD"]
-      end
-    end
-  else
-    flipper_app = Flipper::UI.app(Flipper)
-  end
-  mount flipper_app => '/flipper'
   mount RailsAdmin::Engine => "/admin", as: "rails_admin"
 
   devise_for :users
