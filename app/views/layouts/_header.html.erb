@@ -1,4 +1,11 @@
-<div class="nav navbar navbar-default navbar-fixed-top">
+<%
+navbar_css_classes = %w(nav navbar navbar-default navbar-fixed-top)
+if true_user && current_user != true_user
+  navbar_css_classes << "navbar--impersonate"
+end
+%>
+
+<div class="<%= navbar_css_classes.join(" ")%>">
   <div class="container">
     <div class="navbar-header">
       <%= link_to root_path, class: "navbar-brand" do %>
@@ -19,6 +26,13 @@
       <div class="navbar-header">
         <%= link_to "Documentation", setup_project_rules_path(@current_project), class: "navbar-brand" %>
       </div>
+      <% if true_user && current_user != true_user %>
+        <div class="navbar-header">
+          <span class="navbar__impersonate__label label label-danger">
+            You are impersonating. <%= link_to "Stop it", stop_impersonating_users_path, method: :post %>
+          </span>
+        </div>
+      <%  end %>
     <% end%>
 
     <div class="collapse navbar-collapse">
