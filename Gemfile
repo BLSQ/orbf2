@@ -60,6 +60,10 @@ gem "webpacker", "~> 4.0.1"
 # [devise](https://github.com/plataformatec/devise)
 gem "devise", "~> 4.7.1"
 
+# Log in as another user in Rails
+# [pretender](https://github.com/ankane/pretender)
+gem "pretender", "~> 0.3.4"
+
 ## API related
 
 gem "aws-sdk-s3", "~> 1.30.1"

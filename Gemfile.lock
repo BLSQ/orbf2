@@ -280,6 +280,8 @@ GEM
       ast (~> 2.4.0)
     path_expander (1.0.3)
     pg (0.21.0)
+    pretender (0.3.4)
+      actionpack (>= 4.2)
     pronto (0.9.5)
       gitlab (~> 4.0, >= 4.0.0)
       httparty (>= 0.13.7)
@@ -563,6 +565,7 @@ DEPENDENCIES
   paper_trail (~> 10.1.0)
   paper_trail-association_tracking (~> 1.0.0)
   pg (~> 0.18)
+  pretender (~> 0.3.4)
   pronto
   pronto-flay
   pronto-rubocop
