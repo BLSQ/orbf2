@@ -5,6 +5,12 @@
     <%= csrf_meta_tags %>
 
     <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <% if log_rocket_token = ENV["LOG_ROCKET_TOKEN"] %>
+      <script src="https://cdn.lr-ingest.io/LogRocket.min.js" crossorigin="anonymous"></script>
+      <script>
+       const token = "<%= log_rocket_token %>";
+       window.LogRocket && window.LogRocket.init(token);</script>
+    <% end %>
     <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
   </head>
 
