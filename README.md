@@ -61,6 +61,10 @@ You can access any element in the application using the admin interface at
 
 http://127.0.0.1:3000/admin
 
+## Optional
+
+If you set an ENV variable for `LOG_ROCKET_TOKEN`, a [logrocket](https://logrocket.com) session will be started. (Currently only enabled in production)
+
 # Tests
 
 Run the tests after any change:
