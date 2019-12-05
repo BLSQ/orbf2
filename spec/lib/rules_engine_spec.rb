@@ -40,6 +40,13 @@ RSpec.describe "Rules Engine" do
         expect(solution["formula"]).to eq(2.0)
       end
 
+      it ".floor (#{name})" do
+        solution = calculator.solve(
+          "formula" => "floor(4.152654)",
+        )
+        expect(solution["formula"]).to eq(4.0)
+      end
+
     end
   end
 end
