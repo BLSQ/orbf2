@@ -4,7 +4,7 @@ import { sortCollator } from "../../lib/formatters";
 import TableRow from "./table_row";
 
 const Table = function(props) {
-  const invoice = props.invoice;
+  const { invoice } = props;
   const headers = [];
 
   invoice.activity_items.forEach(activity_item => {

@@ -22,7 +22,7 @@ class Loader extends React.Component {
   };
 
   async componentDidMount() {
-    const url = this.props.url;
+    const { url } = this.props;
     this.timer = setInterval(() => this.apiFetch(url), 1000);
   }
 

@@ -4,7 +4,7 @@ import humanize from "string-humanize";
 const InvoiceHeader = function(props) {
   const name = props.invoice.code;
   const formatted_date = props.invoice.period;
-  const code = props.invoice.code;
+  const { code } = props.invoice;
   return (
     <div
       className="invoice-container"

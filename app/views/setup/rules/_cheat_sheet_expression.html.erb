@@ -26,7 +26,35 @@
     ],
     "ROUND" => [
       "ROUND(value(, decimals))",
-      "Rounds to nearest integer, when <code>decimals</code supplied, round to decimals after the comma)"
+      "Rounds to nearest integer, when <code>decimals</code> supplied, round to decimals after the comma)"
+    ],
+    "TRUNC" => [
+      "TRUNC(value(, decimals))",
+<<-EXPL
+Truncs to nearest integer, when <code>decimals</code> supplied, Truncs to decimals after the comma.",
+TRUNC(1.23456)    => 1.0
+TRUNC(-1.23456)   => 1.0
+TRUNC(1.23456, 2) => 1.23
+      EXPL
+    ],
+    "CEILING" => [
+      "CEILING(value(, significance))",
+<<-EXPL
+Returns number rounded up, away from zero, to the nearest multiple of significance.  <code>significance</code> : the multiple to which you want to round."
+CEILING(1.23456)      => 2.0
+CEILING(-1.23456)     => 1.0
+CEILING(12.23456, 10) => 20
+EXPL
+    ],
+    "FLOOR" => [
+      "FLOOR(value(, significance))",
+      <<-EXPL
+Rounds number down, toward zero, to the nearest multiple of significance. <code>significance</code> : the multiple to which you want to round.
+FLOOR(1.23456)    => 1.0
+FLOOR(-1.23456)    => -2.0
+FLOOR(12.23456, 10) => 10
+EXPL
+
     ],
     "ABS" => [
       "ABS(value)",
