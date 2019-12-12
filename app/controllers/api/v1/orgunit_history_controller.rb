@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-module Api
-  class OrgunitHistoryController < Api::ApplicationController
+module Api::V1
+  class OrgunitHistoryController < ApplicationController
     rescue_from ActionController::ParameterMissing, with: :bad_request
     rescue_from ArgumentError, with: :bad_request
 

@@ -43,5 +43,6 @@ module Scorpio
     require "scorpio"
     require "parallel_dhis2"
     require "can_access_developer_tools_constraint"
+    require "api_constraints"
   end
 end

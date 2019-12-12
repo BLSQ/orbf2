@@ -1,4 +1,4 @@
-module Api
+module Api::V1
   class ApplicationController < ::ActionController::Base
     before_action :set_permissive_cors_headers
 

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-module Api
-  class InvoicingJobsController < Api::ApplicationController
+module Api::V1
+  class InvoicingJobsController < ApplicationController
     rescue_from ActionController::ParameterMissing, with: :bad_request
     rescue_from ArgumentError, with: :bad_request
 

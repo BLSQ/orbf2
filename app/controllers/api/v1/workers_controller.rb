@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-module Api
-  class WorkersController < Api::ApplicationController
+module Api::V1
+  class WorkersController < ApplicationController
     def index
       if (request.headers["X-Token"] || params[:token]) != ENV.fetch("MONITORING_TOKEN")
         render json: { message: "unauthorized" }, status: :unauthorized

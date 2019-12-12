@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Api::SimulationsController, type: :controller do
+RSpec.describe Api::V1::SimulationsController, type: :controller do
   let(:program) { create :program }
   let(:project_anchor) { create :project_anchor, token: token, program: program }
   let(:token) { "123456789" }

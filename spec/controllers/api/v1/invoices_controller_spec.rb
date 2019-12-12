@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe Api::InvoicesController, type: :controller do
+RSpec.describe Api::V1::InvoicesController, type: :controller do
   describe "When post create" do
     let(:program) { create :program }
     let(:project_anchor) { create :project_anchor, token: token, program: program }

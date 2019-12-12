@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-module Api
-  class InvoicesController < Api::ApplicationController
+module Api::V1
+  class InvoicesController < ApplicationController
     def create
       project_anchor = current_project_anchor
       pe = Periods.from_dhis2_period(params[:pe])
