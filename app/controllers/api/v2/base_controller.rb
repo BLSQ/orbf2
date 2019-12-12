@@ -2,6 +2,15 @@ module Api::V2
   class BaseController < ActionController::API
     before_action :set_permissive_cors_headers
 
+    rescue_from ActiveRecord::RecordNotFound do |exception|
+      render status: :not_found, json: { errors: [
+                                           {
+                                             status: "404",
+                                             message: "Not Found"
+                                           }
+                                         ]}
+    end
+
     private
 
     def bad_request(e)
@@ -12,8 +21,7 @@ module Api::V2
                                                detail: e.message,
                                                source: e.backtrace.join("\n")
                                              }
-                                           ]
-                                         }
+                                           ]}
     end
 
     def current_project_anchor

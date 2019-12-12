@@ -36,6 +36,9 @@ Rails.application.routes.draw do
             constraints: { method: "OPTIONS" },
             via:         [:options]
     end
+    scope module: :v2, constraints: ApiConstraints.new(version: 1) do
+      resources :org_units, only: [:index]
+    end
   end
 
   devise_scope :user do
