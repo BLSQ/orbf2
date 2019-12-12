@@ -13,15 +13,14 @@ module Api::V2
 
     private
 
-    def bad_request(e)
-      Rails.logger.warn([e.message, e.backtrace.join("\n")].join("\n"))
-      render status: :bad_request, json: { errors: [
-                                             {
-                                               status: :bad_request,
-                                               detail: e.message,
-                                               source: e.backtrace.join("\n")
-                                             }
-                                           ]}
+    def bad_request(message, source = nil)
+      Rails.logger.warn([message, Array.wrap(source).join("\n")].join("\n"))
+      error_data =                           {
+        status: :bad_request,
+        detail: message,
+      }
+      error_data.merge!(source: source) if source
+      render status: :bad_request, json: { errors: [error_data] }
     end
 
     def current_project_anchor
