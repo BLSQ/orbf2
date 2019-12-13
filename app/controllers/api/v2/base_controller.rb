@@ -1,17 +1,34 @@
 module Api::V2
+  class ApiError < StandardError; end
+  class UnauthorizedAccess < ApiError; end
+
   class BaseController < ActionController::API
     before_action :set_permissive_cors_headers
+    before_action :check_token!
 
     rescue_from ActiveRecord::RecordNotFound do |exception|
-      render status: :not_found, json: { errors: [
-                                           {
-                                             status: "404",
-                                             message: "Not Found"
-                                           }
-                                         ]}
+      error = { status: "404", message: "Not Found" }
+
+      render status: :not_found, json: { errors: [error] }
     end
 
+    rescue_from UnauthorizedAccess do |exception|
+      error = { status: "401", message: "Unauthorized" }
+
+      render status: :unauthorized, json: { errors: [error] }
+    end
     private
+
+    def check_token!
+      if token = request.headers["X-Token"] || params[:token]
+        @current_project_anchor ||= ProjectAnchor.find_by!(token: token)
+      else
+        raise UnauthorizedAccess, "Unauthorized"
+      end
+
+    rescue ActiveRecord::RecordNotFound
+      raise UnauthorizedAccess, "Unauthorized"
+    end
 
     def bad_request(message, source = nil)
       Rails.logger.warn([message, Array.wrap(source).join("\n")].join("\n"))
@@ -24,8 +41,10 @@ module Api::V2
     end
 
     def current_project_anchor
-      token = request.headers["X-Token"] || params.fetch(:token)
-      @current_project_anchor || ProjectAnchor.find_by!(token: token)
+      return @current_project_anchor if @current_project_anchor
+
+      check_token!
+      @current_project_anchor
     end
 
     ALL = "*".freeze
