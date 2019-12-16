@@ -39,6 +39,7 @@ Rails.application.routes.draw do
     scope module: :v2, constraints: ApiConstraints.new(version: 2) do
       resource :project, only: [:show]
       resources :org_units, only: [:index]
+      resources :sets, only: [:index, :show]
       resources :simulations, only: [:index, :show]
       get :simulation, to: "simulations#query_based_show"
     end
