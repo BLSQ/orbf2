@@ -9,6 +9,10 @@ class V2::PackageSerializer
   attributes :loop_over_combo_ext_id
   attributes :data_element_group_ext_ref
 
+  has_many :topic_formulas do |package|
+    package.activity_rule.formulas
+  end
+
   has_many :topics do |package|
     package.activities
   end
