@@ -2,8 +2,8 @@ require "rails_helper"
 
 DEFAULT_ACCEPT="application/vnd.api+json;version=2"
 
-RSpec.describe "DeveloperConstraints", type: :request do
-  let(:url) { "/api/simulations" }
+RSpec.describe "Api V2", type: :request do
+  let(:url) { "/api/project" }
 
   it "raises 404 when no accept header set" do
     expect {
