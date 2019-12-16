@@ -1,4 +1,4 @@
-class OrgUnitSerializer
+class V2::OrgUnitSerializer
   include FastJsonapi::ObjectSerializer
   set_key_transform :camel_lower
 

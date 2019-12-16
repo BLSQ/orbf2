@@ -16,7 +16,6 @@ RSpec.describe Api::V2::ProjectsController, type: :controller do
       request.headers["X-Token"] = project_anchor.token
       get(:show, params: {})
       resp = JSON.parse(response.body)
-      binding.pry
       expect(resp["data"]["id"]).to eq(project.id.to_s)
     end
   end

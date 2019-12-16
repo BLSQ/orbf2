@@ -12,10 +12,14 @@ module Api::V2
         results = search_results("", "organisation_units", limit: MAX_LIMIT)
       end
 
-      render json: OrgUnitSerializer.new(results).serialized_json
+      render json: serializer_class.new(results).serialized_json
     end
 
     private
+
+    def serializer_class
+      ::V2::OrgUnitSerializer
+    end
 
     def find_results(id, kind)
       Autocomplete::Dhis2.new(current_project_anchor)

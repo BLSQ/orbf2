@@ -57,4 +57,12 @@ RSpec.describe Api::V2::SimulationsController, type: :controller do
       expect(resp["data"]["id"]).to eq(simulation_job.id.to_s)
     end
   end
+
+  describe "#create" do
+    describe 'required params' do
+      it 'errors when missing orgUnit' do
+
+      end
+    end
+  end
 end

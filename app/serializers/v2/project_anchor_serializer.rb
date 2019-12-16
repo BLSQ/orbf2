@@ -1,4 +1,4 @@
-class ProjectAnchorSerializer
+class V2::ProjectAnchorSerializer
   include FastJsonapi::ObjectSerializer
   set_key_transform :camel_lower
   set_type :project

@@ -4,7 +4,13 @@
 module Api::V2
   class ProjectsController < BaseController
     def show
-      render json: ProjectAnchorSerializer.new(current_project_anchor).serialized_json
+      render json: serializer_class.new(current_project_anchor).serialized_json
+    end
+
+    private
+
+    def serializer_class
+      ::V2::ProjectAnchorSerializer
     end
   end
 end

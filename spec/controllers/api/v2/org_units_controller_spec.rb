@@ -59,7 +59,6 @@ RSpec.describe Api::V2::OrgUnitsController, type: :controller do
     it "returns everything without query parameters" do
       get :index, params: { token: token }
       resp = JSON.parse(response.body)
-      binding.pry
       expect(resp["data"].length).to be > 10
     end
   end
