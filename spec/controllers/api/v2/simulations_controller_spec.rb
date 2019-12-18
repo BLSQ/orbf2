@@ -39,8 +39,17 @@ RSpec.describe Api::V2::SimulationsController, type: :controller do
   end
 
   describe "#query_based_show" do
+    include_context "basic_context"
+
+    let(:project) {
+      project = full_project
+      project.project_anchor.update_attributes(token: token)
+      project.save!
+      project
+    }
+
     it 'errors on invalid params' do
-      token = project_anchor.token
+      token = project.project_anchor.token
       get(:query_based_show, params: { token: token })
 
       expect(response.status).to eq(400)
@@ -49,20 +58,45 @@ RSpec.describe Api::V2::SimulationsController, type: :controller do
     end
 
     it 'shows the matching one' do
+      token = project.project_anchor.token
       org_ref = "abc123"
       period = "2019Q1"
-      simulation_job = project_anchor.invoicing_simulation_jobs.create(orgunit_ref: org_ref, dhis2_period: period)
+      allow(InvoiceSimulationWorker).to receive(:perform_async)
+      simulation_job = project.project_anchor.invoicing_simulation_jobs.create(orgunit_ref: org_ref, dhis2_period: period)
       get(:query_based_show, params: { token: token, orgUnit: org_ref, periods: period })
       resp = JSON.parse(response.body)
       expect(resp["data"]["id"]).to eq(simulation_job.id.to_s)
     end
-  end
 
-  describe "#create" do
-    describe 'required params' do
-      it 'errors when missing orgUnit' do
-
-      end
+    it 'creates a new one when not existing yet' do
+      token = project.project_anchor.token
+      org_ref = "abc123"
+      period = "2019Q4"
+      allow(InvoiceSimulationWorker).to receive(:perform_async)
+      get(:query_based_show, params: { token: token, orgUnit: org_ref, periods: period })
+      resp = JSON.parse(response.body)
+      job = project.project_anchor.invoicing_simulation_jobs.first
+      expect(resp["data"]["id"]).to eq(job.id.to_s)
+      expect(resp["meta"]["was_enqueued"]).to eq(true)
     end
+
+    it 'enqueues a new job for a new one' do
+      token = project.project_anchor.token
+      org_ref = "abc123"
+      period = "2019Q4"
+      expected = [
+        "abc123",
+        "2019Q4",
+        project.id,
+        nil,
+        project.engine_version,
+        nil,
+        nil
+      ]
+      expect(InvoiceSimulationWorker).to receive(:perform_async).with(*expected)
+      get(:query_based_show, params: { token: token, orgUnit: org_ref, periods: period })
+      expect(response.status).to eq(200)
+    end
+
   end
 end

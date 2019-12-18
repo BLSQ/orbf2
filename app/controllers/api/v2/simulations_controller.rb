@@ -26,56 +26,40 @@ module Api::V2
     #
     def query_based_show
       project_anchor = current_project_anchor
+      project = project_anchor.project
       if valid_query_params?(params)
         org_unit = params[:orgUnit]
         period = params[:periods].split(",").first
-
+        invoicing_request = InvoicingRequest.new(
+          project:        project,
+          entity:         org_unit,
+          year:           period.split("Q")[0],
+          quarter:        period.split("Q")[1],
+          engine_version: project.engine_version
+        )
         job = project_anchor.invoicing_simulation_jobs.where(
           dhis2_period: period,
           orgunit_ref: org_unit
-        ).first
-        render json: serializer_class.new(job).serialized_json
+        ).first_or_create!(
+          dhis2_period: period,
+          orgunit_ref: org_unit
+        )
+        should_enqueue, reason = enqueue_simulation_job(job, params[:force])
+        if should_enqueue
+          # Ensure status of job back is enqueued
+          job.enqueued!
+          args = invoicing_request.to_h.merge(simulate_draft: params[:simulate_draft])
+          InvoiceSimulationWorker.perform_async(*args.values)
+        end
+        options = {}
+        options[:meta] = {
+          was_enqueued: should_enqueue,
+          reason_for_not_enqueing: reason
+        }
+        render json: serializer_class.new(job, options).serialized_json
       else
         return bad_request("Missing required parameters: orgUnit and periods")
       end
-    end
-
-    def create
-      invoicing_request = InvoicingRequest.new(
-        entity:         simulation_params.fetch(:orgUnit),
-        year:           simulation_params.fetch(:year),
-        quarter:        simulation_params.fetch(:quarter),
-        mock_values:    simulation_params[:mock_values],
-        engine_version: simulation_params[:engine_version],
-        with_details:   simulation_params[:with_details],
-      )
-      job = project.project_anchor.invoicing_simulation_jobs.where(
-        dhis2_period: invoicing_request.period,
-        orgunit_ref:  invoicing_request.entity
-      ).first_or_create(
-        dhis2_period: invoicing_request.period,
-        orgunit_ref:  invoicing_request.entity
-      )
-      should_enqueue, reason = enqueue_simulation_job(job, params[:force])
-
-      if should_enqueue
-        # Ensure status of job back is enqueued
-        job.enqueued!
-        args = invoicing_request.to_h.merge(simulate_draft: params[:simulate_draft])
-        InvoiceSimulationWorker.perform_async(*args.values)
-      end
-      options = {
-        was_enqueued: should_enqueue,
-        reason_for_not_enqueing: reason
-      }
-      render json: serializer_class.new(job).serialized_json
-    rescue KeyError => e
-      missing = %w(orgUnit year quarter).inject([]) do |r, w|
-        value = simulation_params[w.to_sym]
-        r << word unless value.present?
-        r
-      end
-      return bad_request("Missing these required parameters: #{missing.join(", ")}")
     end
 
     private
@@ -106,7 +90,7 @@ module Api::V2
       return true if job.id_previously_changed?
       return [false, "This job is still processing"] if job.alive?
 
-      last_change = PaperTrail::Version.where(project_id: current_project).maximum("created_at")
+      last_change = PaperTrail::Version.where(project_id: current_project_anchor.project).maximum("created_at")
       if job.processed_after?(time_stamp: last_change) && force != "strong"
         [false, "This job was recently processed: #{job.processed_at}, you can force a regeneration by checking the checkbox"]
       else
