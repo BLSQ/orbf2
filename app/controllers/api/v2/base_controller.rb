@@ -17,6 +17,11 @@ module Api::V2
 
       render status: :unauthorized, json: { errors: [error] }
     end
+
+    def options
+      render json: {}
+    end
+
     private
 
     def check_token!
