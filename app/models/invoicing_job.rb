@@ -139,6 +139,11 @@ class InvoicingJob < ApplicationRecord
     end
   end
 
+  def org_unit_name
+    autocompleter = Autocomplete::Dhis2.new(project_anchor)
+    autocompleter.find(orgunit_ref, kind: "organisation_units").first&.display_name
+  end
+
   private
 
   def fill_duration(start_time, end_time)
