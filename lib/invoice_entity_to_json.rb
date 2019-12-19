@@ -23,8 +23,8 @@ class InvoiceEntityToJson
     serializable_hash[:invoices] = @invoicing_request.invoices.map do |invoice|
       invoice_hash(invoice)
     end
-    serializable_hash[:dhis2_export_values] = @dhis2_export_values,
-                                              serializable_hash[:dhis2_input_values] = @dhis2_input_values
+    serializable_hash[:dhis2_export_values] = @dhis2_export_values
+    serializable_hash[:dhis2_input_values] = @dhis2_input_values
     serializable_hash
   end
   alias to_hash serializable_hash
