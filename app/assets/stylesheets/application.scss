@@ -119,3 +119,15 @@ body.private {
     padding-top: 250px;
   }
 }
+
+.navbar--impersonate {
+  background-color: #fafc56;
+}
+.navbar__impersonate__label {
+  // top bar has min-height of 50, let's copy that here.
+  line-height: 50px;
+}
+
+.navbar__impersonate__label a {
+  color: #fafc56;
+}
