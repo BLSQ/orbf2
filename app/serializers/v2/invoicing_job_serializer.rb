@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class V2::InvoicingJobSerializer
   include FastJsonapi::ObjectSerializer
   set_key_transform :camel_lower
@@ -10,5 +12,4 @@ class V2::InvoicingJobSerializer
 
   attribute :is_alive, &:alive?
   attribute :result_url, &:result_url
-
 end

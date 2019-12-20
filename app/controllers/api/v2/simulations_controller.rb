@@ -2,7 +2,6 @@
 
 module Api::V2
   class SimulationsController < BaseController
-
     # Get a list of all simulations
     def index
       project_anchor = current_project_anchor
@@ -39,10 +38,10 @@ module Api::V2
         )
         job = project_anchor.invoicing_simulation_jobs.where(
           dhis2_period: period,
-          orgunit_ref: org_unit
+          orgunit_ref:  org_unit
         ).first_or_create!(
           dhis2_period: period,
-          orgunit_ref: org_unit
+          orgunit_ref:  org_unit
         )
         should_enqueue, reason = enqueue_simulation_job(job, params[:force])
         if should_enqueue
@@ -53,7 +52,7 @@ module Api::V2
         end
         options = {}
         options[:meta] = {
-          was_enqueued: should_enqueue,
+          was_enqueued:            should_enqueue,
           reason_for_not_enqueing: reason
         }
         render json: serializer_class.new(job, options).serialized_json
@@ -70,19 +69,19 @@ module Api::V2
 
     def simulation_params
       params.require(:data)
-        .permit(:type,
-                attributes: [
-                  :orgUnit,
-                  :year,
-                  :quarter,
-                  :mock_values,
-                  :engine_version,
-                  :with_details
-                ])
+            .permit(:type,
+                    attributes: %i[
+                      orgUnit
+                      year
+                      quarter
+                      mock_values
+                      engine_version
+                      with_details
+                    ])
     end
 
     def valid_query_params?(query_params)
-      !!(params[:orgUnit] && params[:periods])
+      !!(query_params[:orgUnit] && query_params[:periods])
     end
 
     def enqueue_simulation_job(job, force)

@@ -1,31 +1,35 @@
-module Api::V1
-  class ApplicationController < ::ActionController::Base
-    before_action :set_permissive_cors_headers
+# frozen_string_literal: true
 
-    def options
-      render json: {}
-    end
+module Api
+  module V1
+    class ApplicationController < ::ActionController::Base
+      before_action :set_permissive_cors_headers
 
-    private
+      def options
+        render json: {}
+      end
 
-    def bad_request(e)
-      Rails.logger.warn([e.message, e.backtrace.join("\n")].join("\n"))
-      render status: :bad_request, json: { status: "KO", message: e.message }
-    end
+      private
 
-    def current_project_anchor
-      token = request.headers["X-Token"] || params.fetch(:token)
-      @current_project_anchor || ProjectAnchor.find_by!(token: token)
-    end
+      def bad_request(error)
+        Rails.logger.warn([error.message, error.backtrace.join("\n")].join("\n"))
+        render status: :bad_request, json: { status: "KO", message: error.message }
+      end
 
-    ALL = "*".freeze
-    ALLOW_HEADERS = "Origin, X-Requested-With, Content-Type, Accept, Authorization, X-token".freeze
+      def current_project_anchor
+        token = request.headers["X-Token"] || params.fetch(:token)
+        @current_project_anchor || ProjectAnchor.find_by!(token: token)
+      end
 
-    def set_permissive_cors_headers
-      headers["Access-Control-Allow-Origin"] = ALL
-      headers["Access-Control-Allow-Methods"] = "POST, PUT, DELETE, GET, PATCH, OPTIONS"
-      headers["Access-Control-Request-Method"] = ALL
-      headers["Access-Control-Allow-Headers"] = ALLOW_HEADERS
+      ALL = "*"
+      ALLOW_HEADERS = "Origin, X-Requested-With, Content-Type, Accept, Authorization, X-token"
+
+      def set_permissive_cors_headers
+        headers["Access-Control-Allow-Origin"] = ALL
+        headers["Access-Control-Allow-Methods"] = "POST, PUT, DELETE, GET, PATCH, OPTIONS"
+        headers["Access-Control-Request-Method"] = ALL
+        headers["Access-Control-Allow-Headers"] = ALLOW_HEADERS
+      end
     end
   end
 end
