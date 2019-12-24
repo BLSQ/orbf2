@@ -178,6 +178,7 @@ class Project < ApplicationRecord
   def self.for_date(date)
     where(status: "published")
       .where("projects.publish_date <= ?", date)
+      .where("projects.publish_end_date is null OR projects.publish_end_date >= ?", date)
       .order("projects.publish_date desc")
       .limit(1)
       .first

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_09_05_065547) do
+ActiveRecord::Schema.define(version: 2019_12_24_083227) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -287,6 +287,7 @@ ActiveRecord::Schema.define(version: 2019_09_05_065547) do
     t.string "qualifier"
     t.string "default_coc_reference"
     t.string "default_aoc_reference"
+    t.datetime "publish_end_date"
     t.index ["project_anchor_id"], name: "index_projects_on_project_anchor_id"
   end
 
