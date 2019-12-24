@@ -28,4 +28,11 @@ class PrivateController < ApplicationController
     flash[:failure] = "Sorry this project has been published you can't edit it anymore"
     redirect_to setup_project_path(params[:project_id])
   end
+
+  # Override the paper_trail user because we sometimes can be
+  # impersonating someone else, if that's the case, the user who is
+  # impersonating shall be logged.
+  def user_for_paper_trail
+    true_user || current_user
+  end
 end

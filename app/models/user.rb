@@ -49,6 +49,15 @@ class User < ApplicationRecord
     "User##{id} - #{email}"
   end
 
+  def impersonate_label
+    project = program&.project_anchor&.project
+    if project
+      [id, email, project.name, project.id].join(" - ")
+    else
+      [id, email, "No project assigned"].join(" - ")
+    end
+  end
+
   def flipper_id
     "User:#{id}"
   end

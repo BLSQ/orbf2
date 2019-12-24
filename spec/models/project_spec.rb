@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: projects
@@ -74,6 +76,51 @@ RSpec.describe Project, type: :model do
         status:  :ko,
         message: "401 Unauthorized"
       )
+    end
+  end
+  describe "#publishing and for_date" do
+    let(:project_anchor) {
+      project_anchor = program.build_project_anchor
+      project_anchor.save!
+      project_anchor
+    }
+    let!(:project_v1) {
+      create(:project, project_anchor: project_anchor, status: "published",
+                                publish_date: DateTime.new(2012, 1, 1, 0, 0, 0),
+                                publish_end_date: DateTime.new(2012, 12, 31, 23, 59, 59))
+    }
+    let!(:project_v2) {
+      create(:project, project_anchor: project_anchor, status: "published",
+                                publish_date: DateTime.new(2013, 1, 1, 0, 0, 0),
+                                publish_end_date: DateTime.new(2014, 12, 31, 23, 59, 59))
+    }
+    let!(:project_draft) { create(:project, project_anchor: project_anchor, status: "draft") }
+
+    def print(project, period)
+      if project
+        puts [period, " => ", project.id, project.publish_date, project.publish_end_date].map(&:to_s).join("\t")
+      else
+        puts period+"   => nil"
+      end
+    end
+
+    def expect_project(period, expected_project)
+      period_end_date = Periods.from_dhis2_period(period).end_date
+      project = Project.for_date(period_end_date)
+      print(project, period)
+      expect(project).to eq(expected_project)
+    end
+
+    it "locates the correct project for a date" do
+      expect_project("2012Q1", project_v1)
+      expect_project("2012Q2", project_v1)
+      expect_project("2012Q3", project_v1)
+      expect_project("2012Q4", project_v1)
+      expect_project("2013Q1", project_v2)
+      expect_project("2013Q2", project_v2)
+      expect_project("2014Q3", project_v2)
+      expect_project("2014Q4", project_v2)
+      expect_project("2015Q1", nil)
     end
   end
 end

@@ -15,7 +15,7 @@ gem "dhis2", github: "BLSQ/dhis2", branch: "legacy-v2"
 gem "paper_trail", "~> 10.1.0"
 gem "paper_trail-association_tracking", "~> 1.0.0"
 gem "pg", "~> 0.18"
-gem "puma", "~> 3.0"
+gem "puma", "~> 3.12"
 gem "rack", ">= 2.0.6"
 gem "rails", "~> 5.2", "< 5.3"
 
@@ -59,6 +59,10 @@ gem "webpacker", "~> 4.0.1"
 # Flexible authentication solution for Rails with Warden
 # [devise](https://github.com/plataformatec/devise)
 gem "devise", "~> 4.7.1"
+
+# Log in as another user in Rails
+# [pretender](https://github.com/ankane/pretender)
+gem "pretender", "~> 0.3.4"
 
 ## API related
 
@@ -111,7 +115,7 @@ group :development, :test do
 
   gem "capybara", "~> 3.12.0"
   gem "json-diff", "~> 0.4.1"
-  gem "rubyzip", "~> 1.2.2"
+  gem "rubyzip", "~> 1.3.0"
   gem "selenium-webdriver", "~> 3.142.3"
 end
 
