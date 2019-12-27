@@ -64,6 +64,7 @@ describe ProjectFactory do
 
   it "should publish and create a draft with a copy of all the records linked to project with correct project_id" do
     project = full_project
+    with_activities_and_formula_mappings(project)
     project.payment_rules.first.datasets.create!(frequency: "monthly", external_reference: "demodataset")
 
     new_draft = project.publish(Date.today.to_date)
@@ -75,6 +76,10 @@ describe ProjectFactory do
       expect(counters[project.id]).to eq(counters[new_draft.id])
       expect(counters[project.id]).to be >= 0
     end
+
+    old_activity_ids = project.activities.map(&:id)
+    formula_mappings_with_bad_activities = new_draft.packages.flat_map{|p| p.activity_rule.formulas.flat_map(&:formula_mappings)}.select {|fm| old_activity_ids.include?(fm.activity_id) }
+    expect(formula_mappings_with_bad_activities).to(eq([]))
   end
 
   it "dump_rules for debug purpose" do

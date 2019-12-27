@@ -219,7 +219,7 @@ class Project < ApplicationRecord
             package_states:        [:state],
             rules:                 [
               :decision_tables,
-              formulas: [:formula_mappings]
+              formulas: { formula_mappings:[:activity] }
             ],
             activity_packages:     [:activity]
           },
@@ -227,7 +227,7 @@ class Project < ApplicationRecord
             package_payment_rules: [:package],
             rule:                  [
               :decision_tables,
-              formulas: [:formula_mappings]
+              formulas: { formula_mappings:[:activity] }            
             ],
             datasets:              []
           }
