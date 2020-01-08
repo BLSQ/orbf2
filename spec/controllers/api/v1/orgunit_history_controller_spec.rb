@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 require "rails_helper"
-require_relative "../../workers/dhis2_snapshot_fixture"
+require_relative "../../../workers/dhis2_snapshot_fixture"
 
-RSpec.describe Api::OrgunitHistoryController, type: :controller do
+RSpec.describe Api::V1::OrgunitHistoryController, type: :controller do
   include Dhis2SnapshotFixture
   include_context "basic_context"
 

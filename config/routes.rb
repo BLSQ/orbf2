@@ -20,20 +20,35 @@ Rails.application.routes.draw do
   root "home#index"
 
   namespace :api do
-    resources :invoices, only: [:create]
-    resources :invoicing_jobs, only: [:index, :create]
-    resources :simulations, only: [:show]
-    resources :workers, only:[:index]
-    resources :orgunit_history, only: [:index] do
-      collection do
-        post :apply
+    scope module: :v1, constraints: ApiConstraints.new(default: true) do
+      resources :invoices, only: [:create]
+      resources :invoicing_jobs, only: [:index, :create]
+      resources :simulations, only: [:show]
+      resources :workers, only:[:index]
+      resources :orgunit_history, only: [:index] do
+        collection do
+          post :apply
+        end
       end
+      match "*path",
+            controller:  "application",
+            action:      "options",
+            constraints: { method: "OPTIONS" },
+            via:         [:options]
     end
-    match "*path",
-          controller:  "application",
-          action:      "options",
-          constraints: { method: "OPTIONS" },
-          via:         [:options]
+    scope module: :v2, constraints: ApiConstraints.new(version: 2) do
+      resource :project, only: [:show]
+      resources :org_units, only: [:index]
+      resources :sets, only: [:index, :show]
+      resources :simulations, only: [:index, :show]
+      get :simulation, to: "simulations#query_based_show"
+
+      match "*path",
+            controller:  "api/v2/base_controller",
+            action:      "options",
+            constraints: { method: "OPTIONS" },
+            via:         [:options]
+    end
   end
 
   devise_scope :user do

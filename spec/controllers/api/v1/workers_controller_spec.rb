@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe Api::WorkersController, type: :controller do
+RSpec.describe Api::V1::WorkersController, type: :controller do
   let(:token) { "123456789" }
 
   describe "#show" do
