@@ -42,7 +42,7 @@ Rails.application.routes.draw do
       resources :sets, only: [:index, :show]
       resources :simulations, only: [:index, :show]
       get :simulation, to: "simulations#query_based_show"
-      resources :topics, only: [:index, :show]
+
       match "*path",
             controller:  "api/v2/base_controller",
             action:      "options",
