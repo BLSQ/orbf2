@@ -159,9 +159,17 @@ class Package < ApplicationRecord
   end
 
   def org_unit_group_sets
-    pyr = Pyramid.from(project)
-    (groupsets_ext_refs || []).map do |ref|
-      pry.org_unit_group_set(ref)
+    completer = Autocomplete::Dhis2.new(project.project_anchor)
+    (groupsets_ext_refs || []).inject([]) do |result, ref|
+      data = {id: ref}
+      search_results = completer.find(ref, kind: "organisation_unit_group_sets")
+      item = search_results.first
+      if item
+        data.merge!(type: "organisation_unit_group_set",
+                    display_name: item.display_name)
+      end
+      result << data
+      result
     end
   end
 
