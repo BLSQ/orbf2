@@ -5,7 +5,7 @@ module Api::V2
     # Get a list of all simulations
     def index
       project_anchor = current_project_anchor
-      jobs = project_anchor.invoicing_simulation_jobs
+      jobs = project_anchor.invoicing_simulation_jobs.order(updated_at: :desc)
 
       render json: serializer_class.new(jobs).serialized_json
     end
