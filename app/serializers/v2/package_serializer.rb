@@ -12,13 +12,13 @@ class V2::PackageSerializer
   attributes :loop_over_combo_ext_id
   attributes :data_element_group_ext_ref
 
-  has_many :org_unit_groups, serializer: V2::DhisValueItemSerializer do |package|
+  has_many :org_unit_groups, serializer: V2::OrgUnitGroupSerializer do |package|
     package.main_entity_groups.map do |group|
       Struct.new(:id, :type, :value, :display_name).new(group.organisation_unit_group_ext_ref, "organisation_unit_group", group.organisation_unit_group_ext_ref, group.name)
     end
   end
 
-  has_many :org_unit_group_sets, serializer: V2::DhisValueItemSerializer do |package|
+  has_many :org_unit_group_sets, serializer: V2::OrgUnitGroupSetSerializer do |package|
     package.org_unit_group_sets
   end
 

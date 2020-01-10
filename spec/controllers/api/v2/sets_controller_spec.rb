@@ -58,7 +58,7 @@ RSpec.describe Api::V2::SetsController, type: :controller do
       request.headers["X-Token"] = project_with_packages.project_anchor.token
       get(:index, params: {})
       resp = JSON.parse(response.body)
-binding.pry
+
       expect(resp["data"].length).to be > 0
       expect(resp["data"].length).to eq(project_with_packages.packages.length)
     end
