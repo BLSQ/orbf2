@@ -5,8 +5,10 @@ module Api
     class SetsController < BaseController
       def index
         packages = current_project_anchor.project.packages
+        options = {}
+        options[:include] = [:topics, :inputs, :org_unit_groups, :org_unit_group_sets]
 
-        render json: serializer_class.new(packages).serialized_json
+        render json: serializer_class.new(packages, options).serialized_json
       end
 
       def show

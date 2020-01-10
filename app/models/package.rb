@@ -1,3 +1,4 @@
+# coding: utf-8
 # frozen_string_literal: true
 # == Schema Information
 #
@@ -19,7 +20,6 @@
 #  stable_id                  :uuid             not null
 #
 # Indexes
-#
 #  index_packages_on_project_id  (project_id)
 #
 # Foreign Keys
@@ -156,6 +156,13 @@ class Package < ApplicationRecord
 
   def target_entity_groups
     package_entity_groups.select(&:target?)
+  end
+
+  def org_unit_group_sets
+    pyr = Pyramid.from(project)
+    (groupsets_ext_refs || []).map do |ref|
+      pry.org_unit_group_set(ref)
+    end
   end
 
   def missing_activity_states
