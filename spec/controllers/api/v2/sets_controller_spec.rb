@@ -61,6 +61,7 @@ RSpec.describe Api::V2::SetsController, type: :controller do
 
       expect(resp["data"].length).to be > 0
       expect(resp["data"].length).to eq(project_with_packages.packages.length)
+      record_json("sets.json", resp)
     end
   end
 
@@ -82,6 +83,7 @@ RSpec.describe Api::V2::SetsController, type: :controller do
       get(:show, params: {id: package.id})
       resp = JSON.parse(response.body)
       expect(resp["data"]["id"]).to eq(package.id.to_s)
+      record_json("set.json", resp)
     end
   end
 end

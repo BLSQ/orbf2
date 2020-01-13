@@ -102,3 +102,15 @@ end
 def fixture_content(type, name)
   File.read(File.join("spec", "fixtures", type.to_s, name))
 end
+
+def record_json(filename, json_hash)
+  return unless ENV["RECORD_TO_JSON"]
+
+  dir = FileUtils.mkdir_p(File.join(Rails.root, "tmp", "mock_data_for_manager"))
+  path = File.join(dir, filename)
+
+  puts "-> Updating #{path}"
+  File.open(path, "w") do |f|
+    f.write JSON.pretty_generate(json_hash)
+  end
+end

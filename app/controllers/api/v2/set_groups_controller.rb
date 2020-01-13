@@ -16,7 +16,7 @@ module Api
         options = {}
         options[:include] = [:formulas]
 
-        render json: serializer_class.new(payment_rule).serialized_json
+        render json: serializer_class.new(payment_rule, options).serialized_json
       end
 
       private

@@ -42,6 +42,7 @@ RSpec.describe Api::V2::SetGroupsController, type: :controller do
       resp = JSON.parse(response.body)
       expect(resp["data"].length).to be > 0
       expect(resp["data"].length).to eq(project_with_packages.payment_rules.length)
+      record_json("set_groups.json", resp)
     end
   end
 
@@ -63,6 +64,7 @@ RSpec.describe Api::V2::SetGroupsController, type: :controller do
       get(:show, params: {id: payment_rule.id})
       resp = JSON.parse(response.body)
       expect(resp["data"]["id"]).to eq(payment_rule.id.to_s)
+      record_json("set_group.json", resp)
     end
   end
 

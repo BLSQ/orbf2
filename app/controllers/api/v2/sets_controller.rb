@@ -16,7 +16,7 @@ module Api
         options = {}
         options[:include] = [:topics, :inputs, :org_unit_groups, :org_unit_group_sets]
 
-        render json: serializer_class.new(package).serialized_json
+        render json: serializer_class.new(package, options).serialized_json
       end
 
       private
