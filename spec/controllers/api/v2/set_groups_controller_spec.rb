@@ -40,9 +40,30 @@ RSpec.describe Api::V2::SetGroupsController, type: :controller do
       request.headers["X-Token"] = project_with_packages.project_anchor.token
       get(:index, params: {})
       resp = JSON.parse(response.body)
-      debugger;
       expect(resp["data"].length).to be > 0
-      expect(resp["data"].length).to eq(project_with_packages.packages.length)
+      expect(resp["data"].length).to eq(project_with_packages.payment_rules.length)
     end
   end
+
+  describe '#show' do
+    include_context "basic_context"
+
+    it 'returns not found for non existing set group' do
+      request.headers["Accept"] = "application/vnd.api+json;version=2"
+      request.headers["X-Token"] = project_without_packages.project_anchor.token
+      get(:show, params: {id: 'abdc123'})
+      resp = JSON.parse(response.body)
+      expect(response.status).to eq(404)
+    end
+
+    it 'returns set data for existing set group' do
+      request.headers["Accept"] = "application/vnd.api+json;version=2"
+      request.headers["X-Token"] = project_with_packages.project_anchor.token
+      payment_rule = project_with_packages.payment_rules.first
+      get(:show, params: {id: payment_rule.id})
+      resp = JSON.parse(response.body)
+      expect(resp["data"]["id"]).to eq(payment_rule.id.to_s)
+    end
+  end
+
 end

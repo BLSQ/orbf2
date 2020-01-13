@@ -4,7 +4,7 @@ module Api
   module V2
     class SetGroupsController < BaseController
       def index
-        payment_rules = current_project_anchor.project.payment_rules
+        payment_rules = project.payment_rules
         options = {}
         options[:include] = [:formulas]
 
@@ -12,12 +12,18 @@ module Api
       end
 
       def show
-        package = current_project_anchor.project.packages.find(params[:id])
+        payment_rule = project.payment_rules.find(params[:id])
+        options = {}
+        options[:include] = [:formulas]
 
-        render json: serializer_class.new(package).serialized_json
+        render json: serializer_class.new(payment_rule).serialized_json
       end
 
       private
+
+      def project
+        current_project_anchor.project
+      end
 
       def serializer_class
         ::V2::PaymentRuleSerializer
