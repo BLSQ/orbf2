@@ -8,7 +8,7 @@ def stub_dhis2_orgunits_fetch(project)
     )
 end
 
-def stub_dhis2_snapshot
+def stub_dhis2_snapshot(project)
   stub_dhis2_system_info_success(project.dhis2_url)
   Dhis2SnapshotWorker.new.perform(project.project_anchor_id, filter: ["organisation_units"])
 end
@@ -33,7 +33,7 @@ RSpec.describe Api::V2::OrgUnitsController, type: :controller do
 
     before do
       stub_dhis2_orgunits_fetch(project)
-      stub_dhis2_snapshot
+      stub_dhis2_snapshot(project)
     end
 
     it "returns matching orgunits based on term" do
