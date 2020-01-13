@@ -63,4 +63,25 @@ RSpec.describe Api::V2::SetsController, type: :controller do
       expect(resp["data"].length).to eq(project_with_packages.packages.length)
     end
   end
+
+  describe '#show' do
+    include_context "basic_context"
+
+    it 'returns not found for non existing set' do
+      request.headers["Accept"] = "application/vnd.api+json;version=2"
+      request.headers["X-Token"] = project_without_packages.project_anchor.token
+      get(:show, params: {id: 'abdc123'})
+      resp = JSON.parse(response.body)
+      expect(response.status).to eq(404)
+    end
+
+    it 'returns set data for existing set' do
+      request.headers["Accept"] = "application/vnd.api+json;version=2"
+      request.headers["X-Token"] = project_with_packages.project_anchor.token
+      package = project_with_packages.packages.first
+      get(:show, params: {id: package.id})
+      resp = JSON.parse(response.body)
+      expect(resp["data"]["id"]).to eq(package.id.to_s)
+    end
+  end
 end

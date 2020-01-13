@@ -13,6 +13,8 @@ module Api
 
       def show
         package = current_project_anchor.project.packages.find(params[:id])
+        options = {}
+        options[:include] = [:topics, :inputs, :org_unit_groups, :org_unit_group_sets]
 
         render json: serializer_class.new(package).serialized_json
       end
