@@ -1,10 +1,14 @@
 class V2::PaymentRuleSerializer < V2::BaseSerializer
-  set_type :set_group
+  set_type :compound
 
   attributes :name do |payment_rule|
     payment_rule.rule.name
   end
   attributes :frequency
+
+  has_many :sets do |payment_rule|
+    payment_rule.packages
+  end
 
   has_many :formulas do |payment_rule|
     payment_rule.rule.formulas
