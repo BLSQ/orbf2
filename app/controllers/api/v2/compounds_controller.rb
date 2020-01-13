@@ -2,7 +2,7 @@
 
 module Api
   module V2
-    class SetGroupsController < BaseController
+    class CompoundsController < BaseController
       def index
         payment_rules = project.payment_rules
         options = {}

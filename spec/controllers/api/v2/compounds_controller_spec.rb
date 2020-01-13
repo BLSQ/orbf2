@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Api::V2::SetGroupsController, type: :controller do
+RSpec.describe Api::V2::CompoundsController, type: :controller do
   let(:program) { create :program }
   let(:token) { "123456789" }
 
@@ -42,14 +42,14 @@ RSpec.describe Api::V2::SetGroupsController, type: :controller do
       resp = JSON.parse(response.body)
       expect(resp["data"].length).to be > 0
       expect(resp["data"].length).to eq(project_with_packages.payment_rules.length)
-      record_json("set_groups.json", resp)
+      record_json("compounds.json", resp)
     end
   end
 
   describe '#show' do
     include_context "basic_context"
 
-    it 'returns not found for non existing set group' do
+    it 'returns not found for non existing compound' do
       request.headers["Accept"] = "application/vnd.api+json;version=2"
       request.headers["X-Token"] = project_without_packages.project_anchor.token
       get(:show, params: {id: 'abdc123'})
@@ -57,14 +57,14 @@ RSpec.describe Api::V2::SetGroupsController, type: :controller do
       expect(response.status).to eq(404)
     end
 
-    it 'returns set data for existing set group' do
+    it 'returns set data for existing compound' do
       request.headers["Accept"] = "application/vnd.api+json;version=2"
       request.headers["X-Token"] = project_with_packages.project_anchor.token
       payment_rule = project_with_packages.payment_rules.first
       get(:show, params: {id: payment_rule.id})
       resp = JSON.parse(response.body)
       expect(resp["data"]["id"]).to eq(payment_rule.id.to_s)
-      record_json("set_group.json", resp)
+      record_json("compound.json", resp)
     end
   end
 
