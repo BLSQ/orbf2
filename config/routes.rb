@@ -40,6 +40,7 @@ Rails.application.routes.draw do
       resource :project, only: [:show]
       resources :org_units, only: [:index]
       resources :sets, only: [:index, :show]
+      resources :set_groups, only: [:index, :show]
       resources :simulations, only: [:index, :show]
       get :simulation, to: "simulations#query_based_show"
 
