@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
-class V2::PackageSerializer
-  include FastJsonapi::ObjectSerializer
+class V2::PackageSerializer < V2::BaseSerializer
   set_type :set
 
   attributes :name
@@ -14,7 +13,7 @@ class V2::PackageSerializer
 
   has_many :org_unit_groups, serializer: V2::OrgUnitGroupSerializer do |package|
     package.main_entity_groups.map do |group|
-      Struct.new(:id, :type, :value, :display_name).new(group.organisation_unit_group_ext_ref, "organisation_unit_group", group.organisation_unit_group_ext_ref, group.name)
+      Struct.new(:id, :value, :display_name).new(group.organisation_unit_group_ext_ref, group.organisation_unit_group_ext_ref, group.name)
     end
   end
 

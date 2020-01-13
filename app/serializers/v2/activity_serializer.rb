@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
-class V2::ActivitySerializer
-  include FastJsonapi::ObjectSerializer
+class V2::ActivitySerializer < V2::BaseSerializer
   set_type :topic
 
   attributes :code
