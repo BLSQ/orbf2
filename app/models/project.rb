@@ -15,6 +15,7 @@
 #  name                  :string           not null
 #  password              :string
 #  publish_date          :datetime
+#  publish_end_date      :datetime
 #  qualifier             :string
 #  status                :string           default("draft"), not null
 #  user                  :string
@@ -87,6 +88,14 @@ class Project < ApplicationRecord
 
   def cycle_yearly?
     cycle == "yearly"
+  end
+
+  def calendar
+    @calendar ||= if calendar_name == "ethiopian"
+                    Orbf::RulesEngine::EthiopianCalendar.new
+                  else
+                    Orbf::RulesEngine::GregorianCalendar.new
+                  end
   end
 
   def state(code)

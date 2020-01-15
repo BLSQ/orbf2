@@ -10,7 +10,6 @@ module Invoicing
       invoices = print_invoices.select do |invoice|
         selected_periods.include?(invoice.period) && non_empty?(invoice)
       end
-
       invoicing_request.invoices = invoices.sort_by(&:period)
     end
 
@@ -31,7 +30,7 @@ module Invoicing
 
     def selected_periods
       @selected_periods ||= [
-        invoicing_request.year_quarter.months.map(&:to_dhis2),
+        invoicing_request.project.calendar.periods(invoicing_request.year_quarter.to_dhis2, "monthly"),
         invoicing_request.year_quarter.to_dhis2
       ].flatten.to_set
     end

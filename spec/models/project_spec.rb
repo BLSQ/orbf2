@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: projects
@@ -15,6 +14,7 @@
 #  name                  :string           not null
 #  password              :string
 #  publish_date          :datetime
+#  publish_end_date      :datetime
 #  qualifier             :string
 #  status                :string           default("draft"), not null
 #  user                  :string

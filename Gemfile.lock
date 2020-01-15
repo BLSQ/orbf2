@@ -7,14 +7,20 @@ GIT
       rest-client
 
 GIT
-  remote: https://github.com/BLSQ/hesabu.git
-  revision: 3d8c033f081af8b5625d6621438eaf4c4230e97c
+  remote: https://github.com/uswitch/rest-client-logger.git
+  revision: 30347f419b6a3a397560fe3947a90956aec28a50
+  specs:
+    rest-client-logger (0.1.0)
+      railties (>= 3.1)
+      rest-client (>= 1.6)
+
+PATH
+  remote: ../hesabu
   specs:
     hesabu (0.1.14)
 
-GIT
-  remote: https://github.com/BLSQ/orbf-rules_engine.git
-  revision: bd7cd94f7253402a4b3de856a8b4d78383db1193
+PATH
+  remote: ../orbf-rules_engine
   specs:
     orbf-rules_engine (0.1.0)
       activesupport
@@ -23,14 +29,6 @@ GIT
       descriptive_statistics
       dhis2 (= 2.3.8)
       hesabu
-
-GIT
-  remote: https://github.com/uswitch/rest-client-logger.git
-  revision: 30347f419b6a3a397560fe3947a90956aec28a50
-  specs:
-    rest-client-logger (0.1.0)
-      railties (>= 3.1)
-      rest-client (>= 1.6)
 
 GEM
   remote: https://rubygems.org/
