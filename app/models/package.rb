@@ -1,5 +1,5 @@
-# coding: utf-8
 # frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: packages
@@ -158,18 +158,30 @@ class Package < ApplicationRecord
     package_entity_groups.select(&:target?)
   end
 
+  # A org_unit that can be used in the simulation, to get data for
+  # this package. This is a expensive call, that will probably be not
+  # needed anymore when the simulation ouput gets splitted into many
+  # parts.
+  #
+  # TODO: Refactor away the expensiveness
+  def simulation_org_unit
+    org_unit_group = main_entity_groups.first&.organisation_unit_group_ext_ref
+    return nil unless org_unit_group
+
+    Pyramid.from(project).org_units_in_group(org_unit_group).first
+  end
+
   def org_unit_group_sets
     completer = Autocomplete::Dhis2.new(project.project_anchor)
-    (groupsets_ext_refs || []).inject([]) do |result, ref|
-      data = {id: ref}
+    (groupsets_ext_refs || []).each_with_object([]) do |ref, result|
+      data = { id: ref }
       search_results = completer.find(ref, kind: "organisation_unit_group_sets")
       item = search_results.first
       if item
-        data.merge!(type: "organisation_unit_group_set",
+        data.merge!(type:         "organisation_unit_group_set",
                     display_name: item.display_name)
       end
       result << data
-      result
     end
   end
 
@@ -198,6 +210,7 @@ class Package < ApplicationRecord
     status = dhis2.data_element_groups.create(deg)
     created_deg = dhis2.data_element_groups.find_by(name: name)
     raise "data element group not created #{name} : #{deg} : #{status.inspect}" unless created_deg
+
     created_deg
   rescue RestClient::Exception => e
     raise "Failed to create data element group #{deg} #{e.message} with #{project.dhis2_url}"

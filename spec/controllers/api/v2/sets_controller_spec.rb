@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 
 def stub_dhis2_orgunits_fetch(project)
@@ -29,7 +31,7 @@ RSpec.describe Api::V2::SetsController, type: :controller do
 
   let(:project_with_packages) do
     project = full_project
-    project.project_anchor.update_attributes(token: token)
+    project.project_anchor.update(token: token)
     project.save!
     user.program = program
     user.save!
@@ -41,7 +43,7 @@ RSpec.describe Api::V2::SetsController, type: :controller do
     include_context "basic_context"
     include WebmockDhis2Helpers
 
-    it 'returns empty array for project without packages' do
+    it "returns empty array for project without packages" do
       request.headers["Accept"] = "application/vnd.api+json;version=2"
       request.headers["X-Token"] = project_without_packages.project_anchor.token
       get(:index, params: {})
@@ -49,7 +51,7 @@ RSpec.describe Api::V2::SetsController, type: :controller do
       expect(resp["data"]).to eq([])
     end
 
-    it 'returns all packages for project with packages' do
+    it "returns all packages for project with packages" do
       stub_all_pyramid(project_with_packages)
       stub_dhis2_all_orgunits_groups(project_with_packages)
       stub_dhis2_orgunits_fetch(project_with_packages)
@@ -65,22 +67,24 @@ RSpec.describe Api::V2::SetsController, type: :controller do
     end
   end
 
-  describe '#show' do
+  describe "#show" do
     include_context "basic_context"
+    include WebmockDhis2Helpers
 
-    it 'returns not found for non existing set' do
+    it "returns not found for non existing set" do
       request.headers["Accept"] = "application/vnd.api+json;version=2"
       request.headers["X-Token"] = project_without_packages.project_anchor.token
-      get(:show, params: {id: 'abdc123'})
+      get(:show, params: { id: "abdc123" })
       resp = JSON.parse(response.body)
       expect(response.status).to eq(404)
     end
 
-    it 'returns set data for existing set' do
+    it "returns set data for existing set" do
+      stub_all_pyramid(project_with_packages)
       request.headers["Accept"] = "application/vnd.api+json;version=2"
       request.headers["X-Token"] = project_with_packages.project_anchor.token
       package = project_with_packages.packages.first
-      get(:show, params: {id: package.id})
+      get(:show, params: { id: package.id })
       resp = JSON.parse(response.body)
       expect(resp["data"]["id"]).to eq(package.id.to_s)
       record_json("set.json", resp)

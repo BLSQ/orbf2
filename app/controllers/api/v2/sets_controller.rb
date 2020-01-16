@@ -6,15 +6,17 @@ module Api
       def index
         packages = current_project_anchor.project.packages
         options = {}
-        options[:include] = [:topics, :inputs, :org_unit_groups, :org_unit_group_sets]
+        options[:include] = %i[topics inputs org_unit_groups org_unit_group_sets]
 
         render json: serializer_class.new(packages, options).serialized_json
       end
 
       def show
         package = current_project_anchor.project.packages.find(params[:id])
-        options = {}
-        options[:include] = [:topics, :inputs, :org_unit_groups, :org_unit_group_sets]
+        options = {
+          params: { with_sim_org_unit: true }
+        }
+        options[:include] = %i[topics inputs org_unit_groups org_unit_group_sets]
 
         render json: serializer_class.new(package, options).serialized_json
       end

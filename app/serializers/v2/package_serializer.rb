@@ -11,6 +11,10 @@ class V2::PackageSerializer < V2::BaseSerializer
   attributes :loop_over_combo_ext_id
   attributes :data_element_group_ext_ref
 
+  belongs_to :simulation_org_unit,
+             serializer: V2::OrgUnitSerializer,
+             if:         proc { |_record, params| (params || {}).fetch(:with_sim_org_unit, false) }, &:simulation_org_unit
+
   has_many :org_unit_groups, serializer: V2::OrgUnitGroupSerializer do |package|
     package.main_entity_groups.map do |group|
       Struct.new(:id, :value, :display_name).new(group.organisation_unit_group_ext_ref, group.organisation_unit_group_ext_ref, group.name)
