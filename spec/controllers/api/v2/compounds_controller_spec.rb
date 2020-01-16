@@ -55,7 +55,7 @@ RSpec.describe Api::V2::CompoundsController, type: :controller do
       request.headers["Accept"] = "application/vnd.api+json;version=2"
       request.headers["X-Token"] = project_without_packages.project_anchor.token
       get(:show, params: { id: "abdc123" })
-      resp = JSON.parse(response.body)
+      _resp = JSON.parse(response.body)
       expect(response.status).to eq(404)
     end
 
