@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 
 def stub_dhis2_orgunits_fetch(project)
@@ -12,7 +14,6 @@ def stub_dhis2_snapshot(project)
   stub_dhis2_system_info_success(project.dhis2_url)
   Dhis2SnapshotWorker.new.perform(project.project_anchor_id, filter: ["organisation_units"])
 end
-
 
 RSpec.describe Api::V2::OrgUnitsController, type: :controller do
   let(:program) { create :program }
@@ -39,14 +40,14 @@ RSpec.describe Api::V2::OrgUnitsController, type: :controller do
     it "returns matching orgunits based on term" do
       get :index, params: { term: "arab", token: token }
       resp = JSON.parse(response.body)
-      names = resp["data"].map {|h| h["attributes"]["displayName"]}
+      names = resp["data"].map { |h| h["attributes"]["displayName"] }
       expect(names).to eq(["Afro Arab Clinic", "Arab Clinic"])
     end
 
     it "returns matching orgunis based on id" do
       get :index, params: { id: "cDw53Ej8rju", token: token }
       resp = JSON.parse(response.body)
-      names = resp["data"].map {|h| h["attributes"]["displayName"]}
+      names = resp["data"].map { |h| h["attributes"]["displayName"] }
       expect(names).to eq(["Afro Arab Clinic"])
     end
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class V2::PaymentRuleSerializer < V2::BaseSerializer
   set_type :compound
 

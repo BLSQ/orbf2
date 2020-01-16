@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 
 RSpec.describe Api::V2::CompoundsController, type: :controller do
@@ -16,7 +18,7 @@ RSpec.describe Api::V2::CompoundsController, type: :controller do
 
   let(:project_with_packages) do
     project = full_project
-    project.project_anchor.update_attributes(token: token)
+    project.project_anchor.update(token: token)
     project.save!
     user.program = program
     user.save!
@@ -27,7 +29,7 @@ RSpec.describe Api::V2::CompoundsController, type: :controller do
   describe "#index" do
     include_context "basic_context"
 
-    it 'returns empty array for project without payment rules' do
+    it "returns empty array for project without payment rules" do
       request.headers["Accept"] = "application/vnd.api+json;version=2"
       request.headers["X-Token"] = project_without_packages.project_anchor.token
       get(:index, params: {})
@@ -35,7 +37,7 @@ RSpec.describe Api::V2::CompoundsController, type: :controller do
       expect(resp["data"]).to eq([])
     end
 
-    it 'returns all payment rules for project with payment rules' do
+    it "returns all payment rules for project with payment rules" do
       request.headers["Accept"] = "application/vnd.api+json;version=2"
       request.headers["X-Token"] = project_with_packages.project_anchor.token
       get(:index, params: {})
@@ -46,26 +48,25 @@ RSpec.describe Api::V2::CompoundsController, type: :controller do
     end
   end
 
-  describe '#show' do
+  describe "#show" do
     include_context "basic_context"
 
-    it 'returns not found for non existing compound' do
+    it "returns not found for non existing compound" do
       request.headers["Accept"] = "application/vnd.api+json;version=2"
       request.headers["X-Token"] = project_without_packages.project_anchor.token
-      get(:show, params: {id: 'abdc123'})
+      get(:show, params: { id: "abdc123" })
       resp = JSON.parse(response.body)
       expect(response.status).to eq(404)
     end
 
-    it 'returns set data for existing compound' do
+    it "returns set data for existing compound" do
       request.headers["Accept"] = "application/vnd.api+json;version=2"
       request.headers["X-Token"] = project_with_packages.project_anchor.token
       payment_rule = project_with_packages.payment_rules.first
-      get(:show, params: {id: payment_rule.id})
+      get(:show, params: { id: payment_rule.id })
       resp = JSON.parse(response.body)
       expect(resp["data"]["id"]).to eq(payment_rule.id.to_s)
       record_json("compound.json", resp)
     end
   end
-
 end

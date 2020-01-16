@@ -1,4 +1,6 @@
-require 'rails_helper'
+# frozen_string_literal: true
+
+require "rails_helper"
 
 RSpec.describe Api::V2::SimulationsController, type: :controller do
   let(:program) { create :program }
@@ -8,10 +10,10 @@ RSpec.describe Api::V2::SimulationsController, type: :controller do
   let(:period) { "2016Q1" }
 
   describe "#index" do
-    it 'returns all simulations for project anchor' do
+    it "returns all simulations for project anchor" do
       (1..3).each do |i|
         project_anchor.invoicing_simulation_jobs.create(
-          orgunit_ref: orgunitid + "_#{i}",
+          orgunit_ref:  orgunitid + "_#{i}",
           dhis2_period: period
         )
       end
@@ -58,12 +60,12 @@ RSpec.describe Api::V2::SimulationsController, type: :controller do
 
     let(:project) {
       project = full_project
-      project.project_anchor.update_attributes(token: token)
+      project.project_anchor.update(token: token)
       project.save!
       project
     }
 
-    it 'errors on invalid params' do
+    it "errors on invalid params" do
       token = project.project_anchor.token
       get(:query_based_show, params: { token: token })
 
@@ -72,7 +74,7 @@ RSpec.describe Api::V2::SimulationsController, type: :controller do
       expect(resp["errors"].first["detail"]).to include("Missing")
     end
 
-    it 'shows the matching one' do
+    it "shows the matching one" do
       token = project.project_anchor.token
       org_ref = "abc123"
       period = "2019Q1"
@@ -83,7 +85,7 @@ RSpec.describe Api::V2::SimulationsController, type: :controller do
       expect(resp["data"]["id"]).to eq(simulation_job.id.to_s)
     end
 
-    it 'creates a new one when not existing yet' do
+    it "creates a new one when not existing yet" do
       token = project.project_anchor.token
       org_ref = "abc123"
       period = "2019Q4"
@@ -95,7 +97,7 @@ RSpec.describe Api::V2::SimulationsController, type: :controller do
       expect(resp["meta"]["was_enqueued"]).to eq(true)
     end
 
-    it 'enqueues a new job for a new one' do
+    it "enqueues a new job for a new one" do
       token = project.project_anchor.token
       org_ref = "abc123"
       period = "2019Q4"
@@ -112,6 +114,5 @@ RSpec.describe Api::V2::SimulationsController, type: :controller do
       get(:query_based_show, params: { token: token, orgUnit: org_ref, periods: period })
       expect(response.status).to eq(200)
     end
-
   end
 end
