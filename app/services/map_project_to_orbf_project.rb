@@ -18,7 +18,8 @@ class MapProjectToOrbfProject
       dhis2_params:                          project.dhis_configuration,
       engine_version:                        @engine_version,
       default_category_combo_ext_id:         project.default_coc_reference,
-      default_attribute_option_combo_ext_id: project.default_aoc_reference
+      default_attribute_option_combo_ext_id: project.default_aoc_reference,
+      calendar:                              project.calendar
     )
   end
 

@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: projects
@@ -7,6 +6,7 @@
 #  id                    :integer          not null, primary key
 #  boolean               :boolean          default(FALSE)
 #  bypass_ssl            :boolean          default(FALSE)
+#  calendar_name         :string           default("gregorian"), not null
 #  cycle                 :string           default("quarterly"), not null
 #  default_aoc_reference :string
 #  default_coc_reference :string
@@ -15,6 +15,7 @@
 #  name                  :string           not null
 #  password              :string
 #  publish_date          :datetime
+#  publish_end_date      :datetime
 #  qualifier             :string
 #  status                :string           default("draft"), not null
 #  user                  :string

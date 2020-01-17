@@ -1,0 +1,77 @@
+#!/bin/env bash
+#
+# This script can be used to capture data to store in the
+# `hesabu-manager`[0]
+#
+# The idea is that you run a server locally and then run this script,
+# so that the JSON gets stored and managed ever so slightly so that we
+# don't need to make external requests to S3.
+#
+# [0] https://github.com/BLSQ/hesabu-manager/tree/develop/mock-server/data
+
+if (( $# < 1 )); then
+    echo "You need to supply a project token"
+    exit 1
+fi
+
+PROJECT_TOKEN=$1
+OUTPUT_DIR="tmp/mock_data_for_manager"
+
+rm -rf ${OUTPUT_DIR}
+mkdir -p ${OUTPUT_DIR}
+
+echo "  -> Simulations"
+curl -sS -n -X GET "http://localhost:3000/api/simulations" \
+     -H "X-Token: ${PROJECT_TOKEN}" \
+     -H "Content-Type: application/json" \
+     -H "Accept: application/vnd.api+json;version=2" | jq '.' > ${OUTPUT_DIR}/simulations.json
+
+for identifier in $(cat simulations.json| jq '.data[0:15][] | .id|tonumber')
+do
+    echo "    => ${identifier}"
+    curl -sS -n -X GET "http://localhost:3000/api/simulations/${identifier}" \
+         -H "X-Token: ${PROJECT_TOKEN}" \
+         -H "Content-Type: application/json" \
+         -H "Accept: application/vnd.api+json;version=2"  | jq '.' > ${OUTPUT_DIR}/simulation_${identifier}.json
+
+    s3_url=$(cat tmp/mock_data_for_manager/simulation_${identifier}.json | jq -r '.data.attributes.resultUrl')
+    cat ${OUTPUT_DIR}/simulation_${identifier}.json | jq --arg URL "http://localhost:4567/s3/results/${identifier}.json" '.data.attributes.resultUrl = $URL' > ${OUTPUT_DIR}/tmp.json
+    mv ${OUTPUT_DIR}/tmp.json ${OUTPUT_DIR}/simulation_${identifier}.json
+    curl -sS --compressed $s3_url > ${OUTPUT_DIR}/sim_s3_${identifier}.json
+done
+
+echo "  -> Sets"
+curl -sS -n -X GET "http://localhost:3000/api/sets" \
+     -H "X-Token: ${PROJECT_TOKEN}" \
+     -H "Content-Type: application/json" \
+     -H "Accept: application/vnd.api+json;version=2" | jq '.' > ${OUTPUT_DIR}/sets.json
+
+for identifier in $(cat sets.json| jq '.data[0:10][] | .id|tonumber')
+do
+    echo "    => ${identifier}"
+    curl -sS -n -X GET "http://localhost:3000/api/sets/${identifier}" \
+         -H "X-Token: ${PROJECT_TOKEN}" \
+         -H "Content-Type: application/json" \
+         -H "Accept: application/vnd.api+json;version=2" | jq '.' > ${OUTPUT_DIR}/set_${identifier}.json
+done
+
+echo "  -> Compounds"
+curl -sS -n -X GET "http://localhost:3000/api/compounds" \
+     -H "X-Token: ${PROJECT_TOKEN}" \
+     -H "Content-Type: application/json" \
+     -H "Accept: application/vnd.api+json;version=2" | jq '.' > ${OUTPUT_DIR}/compounds.json
+
+for identifier in $(cat compounds.json| jq '.data[0:10][] | .id|tonumber')
+do
+    echo "    => ${identifier}"
+    curl -sS -n -X GET "http://localhost:3000/api/compounds/${identifier}" \
+         -H "X-Token: ${PROJECT_TOKEN}" \
+         -H "Content-Type: application/json" \
+         -H "Accept: application/vnd.api+json;version=2"  | jq '.' > ${OUTPUT_DIR}/compound_${identifier}.json
+done
+
+echo "  -> Project"
+curl -sS -n -X GET "http://localhost:3000/api/project" \
+     -H "X-Token: ${PROJECT_TOKEN}" \
+     -H "Content-Type: application/json" \
+     -H "Accept: application/vnd.api+json;version=2"  | jq '.' > ${OUTPUT_DIR}/project.json

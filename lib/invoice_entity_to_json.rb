@@ -23,8 +23,8 @@ class InvoiceEntityToJson
     serializable_hash[:invoices] = @invoicing_request.invoices.map do |invoice|
       invoice_hash(invoice)
     end
-    serializable_hash[:dhis2_export_values] = @dhis2_export_values,
-                                              serializable_hash[:dhis2_input_values] = @dhis2_input_values
+    serializable_hash[:dhis2_export_values] = @dhis2_export_values
+    serializable_hash[:dhis2_input_values] = @dhis2_input_values
     serializable_hash
   end
   alias to_hash serializable_hash
@@ -64,42 +64,44 @@ class InvoiceEntityToJson
   end
 
   def activity_item_hash(activity_item)
-    {
-      activity: {
-        code: activity_item.activity.activity_code,
-        name: activity_item.activity.name
-      },
-      cells:    activity_item.variables.map(&:state).uniq.each_with_object({}) do |code, formulas|
-        orbf_var = activity_item.variable(code)
-        next unless orbf_var
+    cells = activity_item.variables.map(&:state).uniq.each_with_object({}) do |code, cells|
+      orbf_var = activity_item.variable(code)
+      next unless orbf_var
 
-        key = orbf_var.formula&.code || orbf_var.state
-        next unless activity_item.solution[key]
+      key = orbf_var.formula&.code || orbf_var.state
+      next unless activity_item.solution[key]
 
-        activity_state = indexed_project.lookup_activity_state(orbf_var)
-        cell = {
-          key:                     orbf_var.key,
-          instantiated_expression: orbf_var.expression,
-          not_exported:            activity_item.not_exported?(key),
-          solution:                activity_item.solution[key]&.to_s,
-          substituted:             activity_item.substitued[key],
-          is_input:                is_input(activity_item, key),
-          is_output:               is_output(activity_item, key)
+      activity_state = indexed_project.lookup_activity_state(orbf_var)
+      cell = {
+        key:                     orbf_var.key,
+        value:                   activity_item.solution[key]&.to_s,
+        solution:                activity_item.solution[key]&.to_s,
+        instantiated_expression: orbf_var.expression,
+        not_exported:            activity_item.not_exported?(key),
+        substituted:             activity_item.substitued[key],
+        is_input:                is_input(activity_item, key),
+        is_output:               is_output(activity_item, key)
+      }
+      if activity_state
+        cell[:state] = {
+          ext_id: activity_state.ext_id,
+          kind:   activity_state.kind,
+          name:   (@data_compound.data_element(activity_state.ext_id) || @data_compound.indicator(activity_state.ext_id))&.name
         }
-        if activity_state
-          cell[:state] = {
-            ext_id: activity_state.ext_id,
-            kind:   activity_state.kind,
-            name:   (@data_compound.data_element(activity_state.ext_id) || @data_compound.indicator(activity_state.ext_id))&.name
-          }
-        end
-        if orbf_var.formula
-          cell[:expression] = orbf_var.formula.expression
-          cell[:dhis2_data_element] = orbf_var.dhis2_data_element
-        end
-        formulas[key] = cell
       end
-    }
+      if orbf_var.formula
+        cell[:expression] = orbf_var.formula.expression
+        cell[:dhis2_data_element] = orbf_var.dhis2_data_element
+      end
+      cells[key] = cell
+    end
+
+    {
+      meta: {
+        key: activity_item.activity.activity_code,
+        value: activity_item.activity.name
+      }
+    }.merge(cells)
   end
 
   def total_item_hash(total_item)

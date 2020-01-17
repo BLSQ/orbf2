@@ -17,7 +17,7 @@ namespace :db do
         t.datetime "updated_at",        null: false
         t.index ["project_anchor_id"], name: "index_dhis2_logs_on_project_anchor_id", using: :btree
       end
-      create_table "dhis2_snapshots", id: :serial, force: :cascade do |t|
+      ActiveRecord::Base.connection.create_table "dhis2_snapshots", id: :serial, force: :cascade do |t|
         t.string "kind", null: false
         t.jsonb "content", null: false
         t.integer "project_anchor_id"

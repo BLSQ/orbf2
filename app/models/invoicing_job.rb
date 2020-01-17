@@ -98,7 +98,10 @@ class InvoicingJob < ApplicationRecord
   end
 
   def processed_after?(time_stamp: 10.minutes.ago)
-    processed? && processed_at > time_stamp
+    return errored_at > time_stamp if errored?
+    return processed_at > time_stamp if processed?
+
+    false
   end
 
   def alive?
@@ -110,7 +113,7 @@ class InvoicingJob < ApplicationRecord
   end
 
   def result_url
-    result&.service_url if result.attached?
+    result&.service_url(content_type: "application/json") if result.attached?
   end
 
   def mark_as_processed(start_time, end_time)
@@ -134,6 +137,11 @@ class InvoicingJob < ApplicationRecord
       self.last_error = "#{err&.class&.name}: #{err&.message}"
       save!
     end
+  end
+
+  def org_unit_name
+    autocompleter = Autocomplete::Dhis2.new(project_anchor)
+    autocompleter.find(orgunit_ref, kind: "organisation_units").first&.display_name
   end
 
   private

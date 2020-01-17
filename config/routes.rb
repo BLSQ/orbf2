@@ -1,10 +1,13 @@
+# frozen_string_literal: true
+# rubocop:disable Metrics/BlockLength
+
 require "sidekiq/web"
 require "sidekiq/throttled/web"
 
 Rails.application.routes.draw do
   constraints CanAccessDeveloperToolsConstraint do
     mount Sidekiq::Web => "/sidekiq"
-    mount Flipper::UI.app(Flipper) => '/flipper'
+    mount Flipper::UI.app(Flipper) => "/flipper"
     Sidekiq::Throttled::Web.enhance_queues_tab!
 
     resources :users, only: [:index] do
@@ -20,20 +23,36 @@ Rails.application.routes.draw do
   root "home#index"
 
   namespace :api do
-    resources :invoices, only: [:create]
-    resources :invoicing_jobs, only: [:index, :create]
-    resources :simulations, only: [:show]
-    resources :workers, only:[:index]
-    resources :orgunit_history, only: [:index] do
-      collection do
-        post :apply
+    scope module: :v1, constraints: ApiConstraints.new(default: true) do
+      resources :invoices, only: [:create]
+      resources :invoicing_jobs, only: %i[index create]
+      resources :simulations, only: [:show]
+      resources :workers, only: [:index]
+      resources :orgunit_history, only: [:index] do
+        collection do
+          post :apply
+        end
       end
+      match "*path",
+            controller:  "application",
+            action:      "options",
+            constraints: { method: "OPTIONS" },
+            via:         [:options]
     end
-    match "*path",
-          controller:  "application",
-          action:      "options",
-          constraints: { method: "OPTIONS" },
-          via:         [:options]
+    scope module: :v2, constraints: ApiConstraints.new(version: 2) do
+      resource :project, only: [:show]
+      resources :org_units, only: [:index]
+      resources :sets, only: %i[index show]
+      resources :compounds, only: %i[index show]
+      resources :simulations, only: %i[index show]
+      get :simulation, to: "simulations#query_based_show"
+
+      match "*path",
+            controller:  "api/v2/base_controller",
+            action:      "options",
+            constraints: { method: "OPTIONS" },
+            via:         [:options]
+    end
   end
 
   devise_scope :user do
@@ -41,9 +60,7 @@ Rails.application.routes.draw do
     namespace :setup do
       get "/projects/", to: "setup#index", as: "project_anchor"
       get "/projects/:project_id", to: "setup#index", as: "project"
-      if Scorpio.is_dev?
-        resources :seeds, only: [:index]
-      end
+      resources :seeds, only: [:index] if Scorpio.is_dev?
       resources :projects, only: %i[create update] do
         resources :metadatas, only: %i[index update]
         resources :snapshots, only: [:create]
@@ -64,7 +81,7 @@ Rails.application.routes.draw do
         resources :jobs, only: [:index]
         resources :publish_drafts, only: [:create]
         resource :main_entity_group, only: %i[create update]
-        resources :diagnose, only: [:index, :show]
+        resources :diagnose, only: %i[index show]
         resources :packages, only: %i[new create update edit] do
           resources :rules, only: %i[new create update edit]
         end
@@ -86,3 +103,4 @@ Rails.application.routes.draw do
     end
   end
 end
+# rubocop:enable Metrics/BlockLength
