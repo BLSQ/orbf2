@@ -34,17 +34,6 @@ module Api
                            .sort_by(&:display_name)
       end
 
-      def render_sol_items(items, type = nil)
-        @items = items.compact.map do |item|
-          {
-            type:  "option",
-            value: type.nil? ? item.id : item.display_name,
-            id:    item.id,
-            label: item.display_name
-          }
-        end
-        render json: @items
-      end
     end
   end
 end

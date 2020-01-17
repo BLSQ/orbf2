@@ -1,10 +1,6 @@
 # frozen_string_literal: true
 
-class V2::ProjectAnchorSerializer
-  include FastJsonapi::ObjectSerializer
-  set_key_transform :camel_lower
-  set_type :project
-
+class V2::ProjectAnchorSerializer < V2::BaseSerializer
   attribute :dhis2_url do |project_anchor|
     project_anchor.project&.dhis2_url
   end

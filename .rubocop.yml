@@ -1,8 +1,12 @@
 require: rubocop-rails
 AllCops:
+  # The serializers go wrong with relationships, rubocop interprets
+  # them a `has_many` from ActiveRecord and autocorrects it to a
+  # proc. Which is not how the JSONApi serializer works
   TargetRubyVersion: 2.3
   Exclude:
     - db/schema.rb
+    - app/serializers/**/*
 Rails:
   Enabled: true
 AlignHash:

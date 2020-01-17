@@ -2,20 +2,7 @@
 
 require "rails_helper"
 
-def stub_dhis2_orgunits_fetch(project)
-  stub_request(:get, "#{project.dhis2_url}/api/organisationUnits?fields=:all&pageSize=5000")
-    .to_return(
-      status: 200,
-      body:   fixture_content(:dhis2, "all_organisation_units_with_groups.json")
-    )
-end
-
-def stub_dhis2_snapshot(project)
-  stub_dhis2_system_info_success(project.dhis2_url)
-  Dhis2SnapshotWorker.new.perform(project.project_anchor_id, filter: ["organisation_units"])
-end
-
-RSpec.describe Api::V2::SetsController, type: :controller do
+RSpec.describe Api::V2::CompoundsController, type: :controller do
   let(:program) { create :program }
   let(:token) { "123456789" }
 
@@ -41,9 +28,8 @@ RSpec.describe Api::V2::SetsController, type: :controller do
 
   describe "#index" do
     include_context "basic_context"
-    include WebmockDhis2Helpers
 
-    it "returns empty array for project without packages" do
+    it "returns empty array for project without payment rules" do
       request.headers["Accept"] = "application/vnd.api+json;version=2"
       request.headers["X-Token"] = project_without_packages.project_anchor.token
       get(:index, params: {})
@@ -51,27 +37,21 @@ RSpec.describe Api::V2::SetsController, type: :controller do
       expect(resp["data"]).to eq([])
     end
 
-    it "returns all packages for project with packages" do
-      stub_all_pyramid(project_with_packages)
-      stub_dhis2_all_orgunits_groups(project_with_packages)
-      stub_dhis2_orgunits_fetch(project_with_packages)
-      stub_dhis2_snapshot(project_with_packages)
+    it "returns all payment rules for project with payment rules" do
       request.headers["Accept"] = "application/vnd.api+json;version=2"
       request.headers["X-Token"] = project_with_packages.project_anchor.token
       get(:index, params: {})
       resp = JSON.parse(response.body)
-
       expect(resp["data"].length).to be > 0
-      expect(resp["data"].length).to eq(project_with_packages.packages.length)
-      record_json("sets.json", resp)
+      expect(resp["data"].length).to eq(project_with_packages.payment_rules.length)
+      record_json("compounds.json", resp)
     end
   end
 
   describe "#show" do
     include_context "basic_context"
-    include WebmockDhis2Helpers
 
-    it "returns not found for non existing set" do
+    it "returns not found for non existing compound" do
       request.headers["Accept"] = "application/vnd.api+json;version=2"
       request.headers["X-Token"] = project_without_packages.project_anchor.token
       get(:show, params: { id: "abdc123" })
@@ -79,15 +59,14 @@ RSpec.describe Api::V2::SetsController, type: :controller do
       expect(response.status).to eq(404)
     end
 
-    it "returns set data for existing set" do
-      stub_all_pyramid(project_with_packages)
+    it "returns set data for existing compound" do
       request.headers["Accept"] = "application/vnd.api+json;version=2"
       request.headers["X-Token"] = project_with_packages.project_anchor.token
-      package = project_with_packages.packages.first
-      get(:show, params: { id: package.id })
+      payment_rule = project_with_packages.payment_rules.first
+      get(:show, params: { id: payment_rule.id })
       resp = JSON.parse(response.body)
-      expect(resp["data"]["id"]).to eq(package.id.to_s)
-      record_json("set.json", resp)
+      expect(resp["data"]["id"]).to eq(payment_rule.id.to_s)
+      record_json("compound.json", resp)
     end
   end
 end
