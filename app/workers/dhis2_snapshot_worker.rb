@@ -16,6 +16,9 @@ class Dhis2SnapshotWorker
     @disable_tracking = disable_tracking
     project_anchor = ProjectAnchor.find(project_anchor_id)
 
+    now = project_anchor.projects.first.calendar.from_iso(now.to_date)
+    puts "Snapshoting for #{project_anchor.projects.first.name} : #{now}"
+
     project = project_anchor.projects.for_date(now) || project_anchor.latest_draft
 
     Dhis2Snapshot::KINDS.each do |kind|

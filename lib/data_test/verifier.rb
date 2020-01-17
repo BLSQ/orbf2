@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require "fileutils"
 
 module DataTest
@@ -39,16 +40,21 @@ module DataTest
       invoice_entity = Invoicing::InvoiceEntity.new(nil, invoicing_request, options)
       invoice_entity.instance_variable_set(:@pyramid, read_artefact("pyramid", "yml"))
       invoice_entity.instance_variable_set(:@datacompound, read_artefact("data-compound", "yml"))
-      invoice_entity.instance_variable_set(:@orbf_project, read_artefact("project", "yml"))
+      invoice_entity.instance_variable_set(:@orbf_project, read_orbf_project())
       invoice_entity.call
       solver = invoice_entity.fetch_and_solve.solver
       capture_results(solver, invoice_entity.fetch_and_solve.exported_values)
     end
 
+    def read_orbf_project
+      orbf_project = read_artefact("project", "yml")
+      orbf_project.packages.each { |p| p.project = orbf_project }
+      orbf_project.payment_rules.each { |p| p.project = orbf_project }
+      orbf_project
+    end
+
     def ensure_directory_exists
-      unless File.exist? RESULTS_DIR
-        FileUtils.mkdir_p RESULTS_DIR
-      end
+      FileUtils.mkdir_p RESULTS_DIR unless File.exist? RESULTS_DIR
     end
 
     def path_for_result(name, extension)
