@@ -113,7 +113,7 @@ class InvoicingJob < ApplicationRecord
   end
 
   def result_url
-    result&.service_url if result.attached?
+    result&.service_url(content_type: "application/json") if result.attached?
   end
 
   def mark_as_processed(start_time, end_time)
