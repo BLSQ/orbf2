@@ -6,6 +6,7 @@
 #  id                    :integer          not null, primary key
 #  boolean               :boolean          default(FALSE)
 #  bypass_ssl            :boolean          default(FALSE)
+#  calendar_name         :string           default("gregorian"), not null
 #  cycle                 :string           default("quarterly"), not null
 #  default_aoc_reference :string
 #  default_coc_reference :string
