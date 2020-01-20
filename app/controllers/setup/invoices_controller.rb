@@ -9,8 +9,8 @@ class Setup::InvoicesController < PrivateController
     project = current_project(project_scope: :fully_loaded) if params["calculate"]
     @invoicing_request = InvoicingRequest.new(
       project:        current_project,
-      year:           params[:year] || Date.today.to_date.year,
-      quarter:        params[:quarter] || (Date.today.to_date.month / 4) + 1,
+      year:           params[:year] || current_quarter.split("Q")[0],
+      quarter:        params[:quarter] || current_quarter.split("Q")[1],
       entity:         params[:entity],
       with_details:   params[:with_details] || false,
       engine_version: current_project.engine_version
@@ -67,6 +67,10 @@ class Setup::InvoicesController < PrivateController
   end
 
   private
+
+  def current_quarter
+    current_project.calendar.periods(current_project.calendar.from_iso(Date.today).strftime("%Y%m"),"quarterly").last
+  end
 
   def render_invoice(project, invoicing_request)
     if params[:push_to_dhis2] && invoicing_request.entity
