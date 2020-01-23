@@ -1,4 +1,4 @@
-#!/bin/env bash
+#! /usr/bin/env bash
 #
 # This script can be used to capture data to store in the
 # `hesabu-manager`[0]
@@ -26,7 +26,7 @@ curl -sS -n -X GET "http://localhost:3000/api/simulations" \
      -H "Content-Type: application/json" \
      -H "Accept: application/vnd.api+json;version=2" | jq '.' > ${OUTPUT_DIR}/simulations.json
 
-for identifier in $(cat simulations.json| jq '.data[0:15][] | .id|tonumber')
+for identifier in $(cat ${OUTPUT_DIR}/simulations.json| jq '.data[0:15][] | .id|tonumber')
 do
     echo "    => ${identifier}"
     curl -sS -n -X GET "http://localhost:3000/api/simulations/${identifier}" \
@@ -34,7 +34,7 @@ do
          -H "Content-Type: application/json" \
          -H "Accept: application/vnd.api+json;version=2"  | jq '.' > ${OUTPUT_DIR}/simulation_${identifier}.json
 
-    s3_url=$(cat tmp/mock_data_for_manager/simulation_${identifier}.json | jq -r '.data.attributes.resultUrl')
+    s3_url=$(cat ${OUTPUT_DIR}/simulation_${identifier}.json | jq -r '.data.attributes.resultUrl')
     cat ${OUTPUT_DIR}/simulation_${identifier}.json | jq --arg URL "http://localhost:4567/s3/results/${identifier}.json" '.data.attributes.resultUrl = $URL' > ${OUTPUT_DIR}/tmp.json
     mv ${OUTPUT_DIR}/tmp.json ${OUTPUT_DIR}/simulation_${identifier}.json
     curl -sS --compressed $s3_url > ${OUTPUT_DIR}/sim_s3_${identifier}.json
@@ -46,7 +46,7 @@ curl -sS -n -X GET "http://localhost:3000/api/sets" \
      -H "Content-Type: application/json" \
      -H "Accept: application/vnd.api+json;version=2" | jq '.' > ${OUTPUT_DIR}/sets.json
 
-for identifier in $(cat sets.json| jq '.data[0:10][] | .id|tonumber')
+for identifier in $(cat ${OUTPUT_DIR}/sets.json| jq '.data[0:10][] | .id|tonumber')
 do
     echo "    => ${identifier}"
     curl -sS -n -X GET "http://localhost:3000/api/sets/${identifier}" \
@@ -61,7 +61,7 @@ curl -sS -n -X GET "http://localhost:3000/api/compounds" \
      -H "Content-Type: application/json" \
      -H "Accept: application/vnd.api+json;version=2" | jq '.' > ${OUTPUT_DIR}/compounds.json
 
-for identifier in $(cat compounds.json| jq '.data[0:10][] | .id|tonumber')
+for identifier in $(cat ${OUTPUT_DIR}/compounds.json| jq '.data[0:10][] | .id|tonumber')
 do
     echo "    => ${identifier}"
     curl -sS -n -X GET "http://localhost:3000/api/compounds/${identifier}" \
