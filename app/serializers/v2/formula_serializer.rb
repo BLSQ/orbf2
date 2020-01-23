@@ -12,4 +12,6 @@ class V2::FormulaSerializer < V2::BaseSerializer
   attributes :short_name
   attributes :created_at
   attributes :updated_at
+
+  has_many :formula_mappings
 end
