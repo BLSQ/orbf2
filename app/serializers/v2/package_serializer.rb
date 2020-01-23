@@ -38,7 +38,7 @@ class V2::PackageSerializer < V2::BaseSerializer
   end
 
   has_many :topic_formulas do |package|
-    package.activity_rule.formulas
+    package.activity_rule&.formulas
   end
 
   has_many :topics, serializer: V2::ActivitySerializer do |package|
