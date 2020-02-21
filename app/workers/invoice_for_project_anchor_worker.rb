@@ -35,5 +35,13 @@ class InvoiceForProjectAnchorWorker
       invoice_entity = Invoicing::InvoiceEntity.new(project_anchor, request, options)
       invoice_entity.call
     end
+
+  rescue Hesabu::Error => e
+    if e.message =~ /In equation/
+    # The job won't magically heal itself, since the equation
+    # can't compute. This way we keep our queue clean.
+    else
+      fail e
+    end
   end
 end
