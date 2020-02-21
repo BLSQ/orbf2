@@ -323,6 +323,23 @@ RSpec.describe InvoiceForProjectAnchorWorker do
     end
   end
 
+  describe "retry logic" do
+    it "doesn't fail if equation fails" do
+      expect(InvoicingJob).to receive(:execute) { raise Hesabu::Error.new("In equation and so on")}
+      expect {
+        worker.perform(project.project_anchor.id, 2015, 1, ["Rp268JB6Ne4"])
+      }.to_not raise_error
+
+    end
+
+    it 'fails if hesabu error other than equation fails' do
+      expect(InvoicingJob).to receive(:execute) { raise Hesabu::Error.new("Some error in Hesabu")}
+
+      expect {
+        worker.perform(project.project_anchor.id, 2015, 1, ["Rp268JB6Ne4"])
+      }.to raise_error(Hesabu::Error, "Some error in Hesabu")
+    end
+  end
   def stub_dhis2_values_yearly(values, start_date)
     stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&endDate=2015-12-31&orgUnit=vRC0stJ5y9Q&startDate=#{start_date}")
       .to_return(status: 200, body: values)
