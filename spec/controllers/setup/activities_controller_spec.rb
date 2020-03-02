@@ -161,17 +161,17 @@ RSpec.describe Setup::ActivitiesController, type: :controller do
       end
 
       def stub_data_compound
-        stub_request(:get, "http://play.dhis2.org/demo/api/dataElements?fields=:all&pageSize=5000")
+        stub_request(:get, "http://play.dhis2.org/demo/api/dataElements?fields=:all&pageSize=#{Dhis2SnapshotWorker::PAGE_SIZE}")
           .to_return(status: 200, body: {
             dataElements: [{
               id:   "deid",
               name: "de name from dhis2"
             }]
           }.to_json)
-        stub_request(:get, "http://play.dhis2.org/demo/api/dataElementGroups?fields=:all&pageSize=5000").to_return(status: 200, body: {
+        stub_request(:get, "http://play.dhis2.org/demo/api/dataElementGroups?fields=:all&pageSize=#{Dhis2SnapshotWorker::PAGE_SIZE}").to_return(status: 200, body: {
           dataElementGroups: []
         }.to_json)
-        stub_request(:get, "http://play.dhis2.org/demo/api/indicators?fields=:all&pageSize=5000").to_return(status: 200, body: {
+        stub_request(:get, "http://play.dhis2.org/demo/api/indicators?fields=:all&pageSize=#{Dhis2SnapshotWorker::PAGE_SIZE}").to_return(status: 200, body: {
           indicators: [{
             id:   "indicatorid",
             name: "indicator name from dhis2"

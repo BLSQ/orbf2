@@ -67,7 +67,7 @@ RSpec.describe Dhis2SnapshotWorker do
 
   describe "active regions" do
     FIELDS = "?fields=:all,!coordinates,!ancestors,!access,!attributeValues,"\
-                "!users,!dataSets,!userGroupAccesses,!dimensionItemType,!externalAccess"
+                "!users,!geometry,!dataSets,!userGroupAccesses,!dimensionItemType,!externalAccess"
     let(:target_group_id) { "targetgroupid" }
     let(:pager) {
       {
@@ -122,7 +122,7 @@ RSpec.describe Dhis2SnapshotWorker do
       stub_request(:get, "http://play.dhis2.org/demo/api/organisationUnits" +
                           FIELDS +
                           "&filter=path:like:/ImspTQPwCqd/" + id +
-                          "&pageSize=5000")
+                          "&pageSize=#{Dhis2SnapshotWorker::PAGE_SIZE}")
         .to_return(
           status: 200,
           body:   JSON.pretty_generate(
@@ -137,7 +137,7 @@ RSpec.describe Dhis2SnapshotWorker do
     def stub_country
       stub_request(:get, "http://play.dhis2.org/demo/api/organisationUnits" +
                           FIELDS +
-                          "&filter=path:eq:/ImspTQPwCqd&pageSize=5000")
+                          "&filter=path:eq:/ImspTQPwCqd&pageSize=#{Dhis2SnapshotWorker::PAGE_SIZE}")
         .to_return(
           status: 200,
           body:   JSON.pretty_generate(

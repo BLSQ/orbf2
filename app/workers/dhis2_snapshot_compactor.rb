@@ -4,7 +4,7 @@
 
 class Dhis2SnapshotCompactor
   CLEANUP_INFOS = {
-    "organisation_units" => %w[client coordinates access attribute_values users data_sets user_group_accesses],
+    "organisation_units" => %w[client coordinates geometry access attribute_values users data_sets user_group_accesses],
     "data_elements"      => %w[access client user user_group_accesses]
   }.freeze
 

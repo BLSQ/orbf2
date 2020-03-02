@@ -3,7 +3,7 @@
 require "rails_helper"
 
 def stub_dhis2_orgunits_fetch(project)
-  stub_request(:get, "#{project.dhis2_url}/api/organisationUnits?fields=:all&pageSize=5000")
+  stub_request(:get, "#{project.dhis2_url}/api/organisationUnits?fields=:all&pageSize=#{Dhis2SnapshotWorker::PAGE_SIZE}")
     .to_return(
       status: 200,
       body:   fixture_content(:dhis2, "all_organisation_units_with_groups.json")

@@ -1,4 +1,5 @@
 require "rails_helper"
+require_relative "../../workers/dhis2_snapshot_fixture"
 
 RSpec.describe Setup::AutocompleteController, type: :controller do
   include WebmockDhis2Helpers
@@ -21,6 +22,8 @@ RSpec.describe Setup::AutocompleteController, type: :controller do
     user.reload
     project
   end
+
+
 
   describe "When authenticated #data_ements" do
     include_context "basic_context"
@@ -63,6 +66,7 @@ RSpec.describe Setup::AutocompleteController, type: :controller do
       stub_dhis2_system_info_success(project.dhis2_url)
       Dhis2SnapshotWorker.new.perform(project.project_anchor_id, filter: ["data_elements"])
     end
+
   end
 
   describe "When authenticated #indicators" do
@@ -89,7 +93,6 @@ RSpec.describe Setup::AutocompleteController, type: :controller do
 
     it "should return matching orgunits" do
       stub_dhis2_all_orgunits(project)
-
       stub_dhis2_snapshot
       get :organisation_units, params: { project_id: project.id, term: "arab" }
       expect(assigns(:items).map { |i| i[:label] }.uniq).to eq(
@@ -103,7 +106,7 @@ RSpec.describe Setup::AutocompleteController, type: :controller do
     end
 
     def stub_dhis2_all_orgunits(project)
-      stub_request(:get, "#{project.dhis2_url}/api/organisationUnits?fields=:all&pageSize=5000")
+      stub_request(:get, "#{project.dhis2_url}/api/organisationUnits?fields=:all&pageSize=#{Dhis2SnapshotWorker::PAGE_SIZE}")
         .to_return(
           status: 200,
           body:   fixture_content(:dhis2, "all_organisation_units_with_groups.json")
@@ -114,6 +117,7 @@ RSpec.describe Setup::AutocompleteController, type: :controller do
   describe "When authenticated #orgunitgroup" do
     include_context "basic_context"
     include WebmockDhis2Helpers
+    include Dhis2SnapshotFixture
 
     before(:each) do
       sign_in user
@@ -128,13 +132,12 @@ RSpec.describe Setup::AutocompleteController, type: :controller do
     end
 
     it "should autocomplete by sibling_id" do
+      stub_snapshots(project)
+
       project.create_entity_group(name: "Public Facilities", external_reference: "f25dqv3Y7Z0")
 
-      stub_all_pyramid(project)
-
       get :organisation_unit_group, params: { project_id: project.id, siblings: "true" }
-
-      expect(response.body).to eq('[{"type":"option","value":"RXL3lPSK8oG","id":"RXL3lPSK8oG","label":"Clinic"},{"type":"option","value":"oRVt7g429ZO","id":"oRVt7g429ZO","label":"Public facilities"},{"type":"option","value":"tDZVQ1WtwpA","id":"tDZVQ1WtwpA","label":"Hospital"},{"type":"option","value":"EYbopBOJWsW","id":"EYbopBOJWsW","label":"MCHP"},{"type":"option","value":"uYxK4wmcPqA","id":"uYxK4wmcPqA","label":"CHP"},{"type":"option","value":"CXw2yu5fodb","id":"CXw2yu5fodb","label":"CHC"},{"type":"option","value":"gzcv65VyaGq","id":"gzcv65VyaGq","label":"Chiefdom"},{"type":"option","value":"w1Atoz18PCL","id":"w1Atoz18PCL","label":"District"},{"type":"option","value":"J40PpdN4Wkk","id":"J40PpdN4Wkk","label":"Northern Area"},{"type":"option","value":"jqBqIXoXpfy","id":"jqBqIXoXpfy","label":"Southern Area"},{"type":"option","value":"b0EsAxm8Nge","id":"b0EsAxm8Nge","label":"Western Area"},{"type":"option","value":"nlX2VoouN63","id":"nlX2VoouN63","label":"Eastern Area"}]')
+      expect(response.body).to eq('[{"type":"option","value":"CXw2yu5fodb","id":"CXw2yu5fodb","label":"CHC"},{"type":"option","value":"uYxK4wmcPqA","id":"uYxK4wmcPqA","label":"CHP"},{"type":"option","value":"gzcv65VyaGq","id":"gzcv65VyaGq","label":"Chiefdom"},{"type":"option","value":"RXL3lPSK8oG","id":"RXL3lPSK8oG","label":"Clinic"},{"type":"option","value":"RpbiCJpIYEj","id":"RpbiCJpIYEj","label":"Country"},{"type":"option","value":"w1Atoz18PCL","id":"w1Atoz18PCL","label":"District"},{"type":"option","value":"nlX2VoouN63","id":"nlX2VoouN63","label":"Eastern Area"},{"type":"option","value":"tDZVQ1WtwpA","id":"tDZVQ1WtwpA","label":"Hospital"},{"type":"option","value":"EYbopBOJWsW","id":"EYbopBOJWsW","label":"MCHP"},{"type":"option","value":"w0gFTTmsUcF","id":"w0gFTTmsUcF","label":"Mission"},{"type":"option","value":"PVLOW4bCshG","id":"PVLOW4bCshG","label":"NGO"},{"type":"option","value":"J40PpdN4Wkk","id":"J40PpdN4Wkk","label":"Northern Area"},{"type":"option","value":"MAs88nJc9nL","id":"MAs88nJc9nL","label":"Private Clinic"},{"type":"option","value":"oRVt7g429ZO","id":"oRVt7g429ZO","label":"Public facilities"},{"type":"option","value":"GGghZsfu7qV","id":"GGghZsfu7qV","label":"Rural"},{"type":"option","value":"jqBqIXoXpfy","id":"jqBqIXoXpfy","label":"Southern Area"},{"type":"option","value":"f25dqv3Y7Z0","id":"f25dqv3Y7Z0","label":"Urban"},{"type":"option","value":"b0EsAxm8Nge","id":"b0EsAxm8Nge","label":"Western Area"}]')
     end
 
     it "should autocomplete org unit groups by name" do

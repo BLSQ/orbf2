@@ -284,7 +284,7 @@ class Project < ApplicationRecord
       user:                user,
       password:            password,
       no_ssl_verification: bypass_ssl,
-      debug:               false
+      debug:               true
     }
   end
 

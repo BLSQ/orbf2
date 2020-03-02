@@ -28,18 +28,22 @@ module Dhis2SnapshotFixture
       .to_return(status: 200, body: fixture_content(:dhis2, "data_element_groups.json"))
   end
 
-  def stub_indicators(_project)
-    stub_request(:get, "http://play.dhis2.org/demo/api/indicators?fields=:all&pageSize=#{Dhis2SnapshotWorker::PAGE_SIZE}")
+  def stub_indicators(project)
+    stub_request(:get, "#{project.dhis2_url}/api/indicators?fields=:all&pageSize=#{Dhis2SnapshotWorker::PAGE_SIZE}")
       .to_return(status: 200, body: fixture_content(:dhis2, "indicators.json"))
   end
 
-  def stub_organisation_unit_group_sets(_project)
-    stub_request(:get, "http://play.dhis2.org/demo/api/organisationUnitGroupSets?fields=:all&pageSize=#{Dhis2SnapshotWorker::PAGE_SIZE}")
+  def stub_organisation_unit_group_sets(project)
+    stub_request(:get, "#{project.dhis2_url}/api/organisationUnitGroupSets?fields=:all&pageSize=#{Dhis2SnapshotWorker::PAGE_SIZE}")
       .to_return(status: 200, body: fixture_content(:dhis2, "organisation_unit_group_sets.json"))
   end
 
-  def stub_category_combos(_project)
-    stub_request(:get, "http://play.dhis2.org/demo/api/categoryCombos?fields=id,name,code,categoryOptionCombos[id,name,code]&pageSize=5000").to_return(status: 200, body: fixture_content(:dhis2, "category_combos.json"))
+  def stub_category_combos(project)
+    stub_request(:get, "#{project.dhis2_url}/api/categoryCombos?fields=id,name,code,categoryOptionCombos[id,name,code]&pageSize=#{Dhis2SnapshotWorker::PAGE_SIZE}").to_return(status: 200, body: fixture_content(:dhis2, "category_combos.json"))
+  end
+
+  def stub_all_snapshots(project, month = "201803")
+    stub_snapshots(project, month)
   end
 
   def stub_snapshots(project, month = "201803")
