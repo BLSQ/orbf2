@@ -2,7 +2,7 @@
 #
 # Table name: activities
 #
-#  id         :integer          not null, primary key
+#  id         :bigint(8)        not null, primary key
 #  code       :string
 #  name       :string           not null
 #  short_name :string

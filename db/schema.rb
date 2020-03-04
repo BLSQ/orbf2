@@ -38,7 +38,7 @@ ActiveRecord::Schema.define(version: 2020_01_15_140940) do
     t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
   end
 
-  create_table "activities", id: :serial, force: :cascade do |t|
+  create_table "activities", force: :cascade do |t|
     t.string "name", null: false
     t.integer "project_id", null: false
     t.uuid "stable_id", default: -> { "uuid_generate_v4()" }, null: false
@@ -51,7 +51,7 @@ ActiveRecord::Schema.define(version: 2020_01_15_140940) do
     t.index ["project_id"], name: "index_activities_on_project_id"
   end
 
-  create_table "activity_packages", id: :serial, force: :cascade do |t|
+  create_table "activity_packages", force: :cascade do |t|
     t.integer "activity_id", null: false
     t.integer "package_id", null: false
     t.uuid "stable_id", default: -> { "uuid_generate_v4()" }, null: false
@@ -62,7 +62,7 @@ ActiveRecord::Schema.define(version: 2020_01_15_140940) do
     t.index ["package_id"], name: "index_activity_packages_on_package_id"
   end
 
-  create_table "activity_states", id: :serial, force: :cascade do |t|
+  create_table "activity_states", force: :cascade do |t|
     t.string "external_reference"
     t.string "name", null: false
     t.integer "state_id", null: false
@@ -78,13 +78,13 @@ ActiveRecord::Schema.define(version: 2020_01_15_140940) do
     t.index ["state_id"], name: "index_activity_states_on_state_id"
   end
 
-  create_table "decision_tables", id: :serial, force: :cascade do |t|
+  create_table "decision_tables", force: :cascade do |t|
     t.integer "rule_id"
     t.text "content"
     t.index ["rule_id"], name: "index_decision_tables_on_rule_id"
   end
 
-  create_table "dhis2_logs", id: :serial, force: :cascade do |t|
+  create_table "dhis2_logs", force: :cascade do |t|
     t.jsonb "sent"
     t.jsonb "status"
     t.integer "project_anchor_id"
@@ -93,7 +93,7 @@ ActiveRecord::Schema.define(version: 2020_01_15_140940) do
     t.index ["project_anchor_id"], name: "index_dhis2_logs_on_project_anchor_id"
   end
 
-  create_table "dhis2_snapshot_changes", id: :serial, force: :cascade do |t|
+  create_table "dhis2_snapshot_changes", force: :cascade do |t|
     t.string "dhis2_id", null: false
     t.integer "dhis2_snapshot_id"
     t.jsonb "values_before"
@@ -104,7 +104,7 @@ ActiveRecord::Schema.define(version: 2020_01_15_140940) do
     t.index ["dhis2_snapshot_id"], name: "index_dhis2_snapshot_changes_on_dhis2_snapshot_id"
   end
 
-  create_table "dhis2_snapshots", id: :serial, force: :cascade do |t|
+  create_table "dhis2_snapshots", force: :cascade do |t|
     t.string "kind", null: false
     t.jsonb "content", null: false
     t.integer "project_anchor_id"
@@ -117,7 +117,7 @@ ActiveRecord::Schema.define(version: 2020_01_15_140940) do
     t.index ["project_anchor_id"], name: "index_dhis2_snapshots_on_project_anchor_id"
   end
 
-  create_table "entity_groups", id: :serial, force: :cascade do |t|
+  create_table "entity_groups", force: :cascade do |t|
     t.string "name"
     t.string "external_reference"
     t.integer "project_id"
@@ -143,7 +143,7 @@ ActiveRecord::Schema.define(version: 2020_01_15_140940) do
     t.index ["feature_key", "key", "value"], name: "index_flipper_gates_on_feature_key_and_key_and_value", unique: true
   end
 
-  create_table "formula_mappings", id: :serial, force: :cascade do |t|
+  create_table "formula_mappings", force: :cascade do |t|
     t.integer "formula_id", null: false
     t.integer "activity_id"
     t.string "external_reference", null: false
@@ -152,7 +152,7 @@ ActiveRecord::Schema.define(version: 2020_01_15_140940) do
     t.index ["formula_id"], name: "index_formula_mappings_on_formula_id"
   end
 
-  create_table "formulas", id: :serial, force: :cascade do |t|
+  create_table "formulas", force: :cascade do |t|
     t.string "code", null: false
     t.string "description", null: false
     t.text "expression", null: false
@@ -165,7 +165,7 @@ ActiveRecord::Schema.define(version: 2020_01_15_140940) do
     t.index ["rule_id"], name: "index_formulas_on_rule_id"
   end
 
-  create_table "invoicing_jobs", id: :serial, force: :cascade do |t|
+  create_table "invoicing_jobs", force: :cascade do |t|
     t.integer "project_anchor_id", null: false
     t.string "orgunit_ref", null: false
     t.string "dhis2_period", null: false
@@ -183,7 +183,7 @@ ActiveRecord::Schema.define(version: 2020_01_15_140940) do
     t.index ["project_anchor_id"], name: "index_invoicing_jobs_on_project_anchor_id"
   end
 
-  create_table "package_entity_groups", id: :serial, force: :cascade do |t|
+  create_table "package_entity_groups", force: :cascade do |t|
     t.string "name"
     t.integer "package_id"
     t.string "organisation_unit_group_ext_ref"
@@ -193,7 +193,7 @@ ActiveRecord::Schema.define(version: 2020_01_15_140940) do
     t.index ["package_id"], name: "index_package_entity_groups_on_package_id"
   end
 
-  create_table "package_payment_rules", id: :serial, force: :cascade do |t|
+  create_table "package_payment_rules", force: :cascade do |t|
     t.integer "package_id", null: false
     t.integer "payment_rule_id", null: false
     t.datetime "created_at", null: false
@@ -202,7 +202,7 @@ ActiveRecord::Schema.define(version: 2020_01_15_140940) do
     t.index ["payment_rule_id"], name: "index_package_payment_rules_on_payment_rule_id"
   end
 
-  create_table "package_states", id: :serial, force: :cascade do |t|
+  create_table "package_states", force: :cascade do |t|
     t.integer "package_id"
     t.integer "state_id"
     t.datetime "created_at", null: false
@@ -216,7 +216,7 @@ ActiveRecord::Schema.define(version: 2020_01_15_140940) do
     t.index ["state_id"], name: "index_package_states_on_state_id"
   end
 
-  create_table "packages", id: :serial, force: :cascade do |t|
+  create_table "packages", force: :cascade do |t|
     t.string "name", null: false
     t.string "data_element_group_ext_ref", null: false
     t.string "frequency", null: false
@@ -233,7 +233,7 @@ ActiveRecord::Schema.define(version: 2020_01_15_140940) do
     t.index ["project_id"], name: "index_packages_on_project_id"
   end
 
-  create_table "payment_rule_datasets", id: :serial, force: :cascade do |t|
+  create_table "payment_rule_datasets", force: :cascade do |t|
     t.integer "payment_rule_id"
     t.string "frequency"
     t.string "external_reference"
@@ -246,7 +246,7 @@ ActiveRecord::Schema.define(version: 2020_01_15_140940) do
     t.index ["payment_rule_id"], name: "index_payment_rule_datasets_on_payment_rule_id"
   end
 
-  create_table "payment_rules", id: :serial, force: :cascade do |t|
+  create_table "payment_rules", force: :cascade do |t|
     t.integer "project_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -254,14 +254,14 @@ ActiveRecord::Schema.define(version: 2020_01_15_140940) do
     t.index ["project_id"], name: "index_payment_rules_on_project_id"
   end
 
-  create_table "programs", id: :serial, force: :cascade do |t|
+  create_table "programs", force: :cascade do |t|
     t.string "code", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["code"], name: "index_programs_on_code", unique: true
   end
 
-  create_table "project_anchors", id: :serial, force: :cascade do |t|
+  create_table "project_anchors", force: :cascade do |t|
     t.integer "program_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -269,7 +269,7 @@ ActiveRecord::Schema.define(version: 2020_01_15_140940) do
     t.index ["program_id"], name: "index_project_anchors_on_program_id"
   end
 
-  create_table "projects", id: :serial, force: :cascade do |t|
+  create_table "projects", force: :cascade do |t|
     t.string "name", null: false
     t.string "dhis2_url", null: false
     t.string "user"
@@ -292,7 +292,7 @@ ActiveRecord::Schema.define(version: 2020_01_15_140940) do
     t.index ["project_anchor_id"], name: "index_projects_on_project_anchor_id"
   end
 
-  create_table "rules", id: :serial, force: :cascade do |t|
+  create_table "rules", force: :cascade do |t|
     t.string "name", null: false
     t.string "kind", null: false
     t.integer "package_id"
@@ -304,7 +304,7 @@ ActiveRecord::Schema.define(version: 2020_01_15_140940) do
     t.index ["payment_rule_id"], name: "index_rules_on_payment_rule_id"
   end
 
-  create_table "states", id: :serial, force: :cascade do |t|
+  create_table "states", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -314,7 +314,7 @@ ActiveRecord::Schema.define(version: 2020_01_15_140940) do
     t.index ["project_id"], name: "index_states_on_project_id"
   end
 
-  create_table "users", id: :serial, force: :cascade do |t|
+  create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.string "reset_password_token"
@@ -333,7 +333,7 @@ ActiveRecord::Schema.define(version: 2020_01_15_140940) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
-  create_table "version_associations", id: :serial, force: :cascade do |t|
+  create_table "version_associations", force: :cascade do |t|
     t.integer "version_id"
     t.string "foreign_key_name", null: false
     t.integer "foreign_key_id"
@@ -341,7 +341,7 @@ ActiveRecord::Schema.define(version: 2020_01_15_140940) do
     t.index ["version_id"], name: "index_version_associations_on_version_id"
   end
 
-  create_table "versions", id: :serial, force: :cascade do |t|
+  create_table "versions", force: :cascade do |t|
     t.string "item_type", null: false
     t.integer "item_id", null: false
     t.string "event", null: false
