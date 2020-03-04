@@ -24,7 +24,13 @@ class V2::PackageSerializer < V2::BaseSerializer
   end
 
   has_many :org_unit_group_sets, serializer: V2::OrgUnitGroupSetSerializer do |package|
-    package.org_unit_group_sets
+    package.org_unit_group_sets.map do |group_set_data|
+      Struct.new(:id, :value, :display_name).new(
+        group_set_data[:id],
+        group_set_data[:id],
+        group_set_data[:display_name]
+      )
+    end
   end
 
   has_many :inputs, serializer: V2::StateSerializer do |package|
@@ -32,7 +38,7 @@ class V2::PackageSerializer < V2::BaseSerializer
   end
 
   has_many :topic_formulas do |package|
-    package.activity_rule.formulas
+    package.activity_rule&.formulas
   end
 
   has_many :topics, serializer: V2::ActivitySerializer do |package|

@@ -17,7 +17,7 @@ module Api
           params: { with_sim_org_unit: true }
         }
         options[:include] = %i[topics inputs org_unit_groups org_unit_group_sets]
-
+        options[:include] = %i[topics topics.input_mappings inputs org_unit_groups org_unit_group_sets]
         render json: serializer_class.new(package, options).serialized_json
       end
 
