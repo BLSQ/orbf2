@@ -5,7 +5,7 @@ class Dhis2SnapshotWorker
   include Sidekiq::Throttled::Worker
   sidekiq_options retry: 5
 
-  PAGE_SIZE = 5000
+  PAGE_SIZE = 1000
 
   sidekiq_throttle(
     concurrency: { limit: 1 },
@@ -67,12 +67,12 @@ class Dhis2SnapshotWorker
 
   ORGANISATION_UNITS_FIELDS = [
     ":all",
-    "!coordinates", "!ancestors", "!access", "!attributeValues", "!users",
+    "!coordinates", "!ancestors", "!access", "!attributeValues", "!users", "!geometry",
     "!dataSets", "!userGroupAccesses", "!dimensionItemType", "!externalAccess"
   ].join(",")
 
   def fetch_data(project, kind)
-    fetcher(project, kind).fetch_data(project, kind)
+    fetcher(project, kind).fetch_data(project, kind, page_size: PAGE_SIZE)
   end
 
   def fetcher(project, kind)

@@ -6,11 +6,11 @@ module Fetchers
       @fetcher = GenericSnapshotFetcher.new(fields: fields)
     end
 
-    def fetch_data(project, kind)
+    def fetch_data(project, kind, params)
       raise "OrganisationUnitsSnapshotFetcher works only on organisation_units" unless kind == :organisation_units
       filters = build_filters(project)
       filters.each_with_object([]) do |filter, data|
-        data.push(*fetcher.fetch_data(project, kind, filter: filter))
+        data.push(*fetcher.fetch_data(project, kind, {filter: filter}.merge(params)))
       end
     end
 
