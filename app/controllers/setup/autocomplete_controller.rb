@@ -5,7 +5,7 @@ class Setup::AutocompleteController < PrivateController
     if params.key?(:term)
       organisation_unit_group_by_term_on_sol
     elsif params.key?(:siblings)
-      results = search_results(nil, "organisation_unit_groups")
+      results = search_results(nil, "organisation_unit_groups", limit: 20_000)
       render_sol_items(results, nil)
     else
       render_sol_items([])
