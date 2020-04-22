@@ -4,7 +4,7 @@ namespace :duplicate_jobs do
   desc "clear duplicated enqueued jobs"
   task clear: :environment do
     jobs = {}
-    Sidekiq::Queue.all.each_with_object([]) do |queue, _array|
+    Sidekiq::Queue.all.each do |queue|
       queue.each do |job|
         key = "#{job.klass} #{job.args}"
         jobs[key] ||= []
