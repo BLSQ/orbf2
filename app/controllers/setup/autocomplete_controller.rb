@@ -12,6 +12,58 @@ class Setup::AutocompleteController < PrivateController
     end
   end
 
+  def data_elements_with_cocs
+    if params[:id]
+      raise "not ye"
+      expires_in 3.minutes
+      results = find_results(params[:id], "data_elements")
+      render_sol_items(results, params[:id])
+    elsif params[:term]
+      fields = [
+        :id,
+        :display_name,
+        :code,
+        :category_combo__id
+      ]
+      term = params[:term]
+      kind = "data_elements"
+      autocompleter = Autocomplete::Dhis2.new(current_project.project_anchor)
+      data_elements = autocompleter
+                        .search(term, kind: kind, limit: 20, fields: fields)
+                        .sort_by(&:display_name)
+      category_combo_ids = data_elements.map(&:category_combo__id).uniq
+      category_combo_by_id = autocompleter
+                               .find(category_combo_ids, kind: "category_combos", fields: [
+                                         :id,
+                                         :display_name,
+                                         :category_option_combos
+                                       ])
+                               .index_by(&:id)
+
+      results = data_elements.each_with_object([]) do |element, result|
+        combo = category_combo_by_id[element.category_combo__id]
+
+        # Avoid the default Category Combos (some DHIS use default, some use (default))
+        # This is a guess
+        if combo.display_name == "default" || combo.display_name == "(default)"
+          result << element
+        else
+          combo.category_option_combos.each do |coc_hash|
+            result << Struct.new(:id, :display_name).new(
+              [element.id, coc_hash["id"]].join("."),
+              [element.display_name, coc_hash["name"]].join(" - ")
+            )
+          end
+        end
+      end
+
+      render_sol_items(results, params[:term])
+    else
+      results = search_results(nil, "data_elements", limit: 20_000)
+      render_sol_items(results, nil)
+    end
+  end
+
   def data_elements
     if params[:id]
       expires_in 3.minutes

@@ -95,6 +95,7 @@ Rails.application.routes.draw do
             get :organisation_unit_group
             get :organisation_unit_group_sets
             get :data_elements
+            get :data_elements_with_cocs
             get :indicators
             get :category_combos
           end
