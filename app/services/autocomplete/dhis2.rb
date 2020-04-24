@@ -18,15 +18,28 @@ module Autocomplete
 
     # Skip default
     def search(name, kind: "data_elements", limit: 20, fields: [:id, :display_name, :code])
-      Dhis2Snapshot.from(
-        Dhis2Snapshot.select("jsonb_array_elements(content) as element").from(
-          Dhis2Snapshot.where(id: Dhis2Snapshot.where(kind: kind).select("max(id)").where(project_anchor_id: @project_anchor))
-        )).where("element->'table'->>'display_name' ILIKE ?", "%#{name}%").limit(limit).pluck(
-        "element->'table'->>'id'::text",
-        "element->'table'->>'display_name'",
-        "element->'table'->>'code'",
-        "element->'table'->>'category_option_combos'"
-      ).map do |id, display_name, code,  _category_option_combos|
+      to_pluck = fields.map do |key|
+        "element->'table'->>'#{key}'"
+      end
+
+      # SELECT  "dhis2_snapshots".* FROM (
+      #   SELECT jsonb_array_elements(content) as element FROM (
+      #     SELECT "dhis2_snapshots".* FROM "dhis2_snapshots"
+      #     WHERE "dhis2_snapshots"."id" IN (
+      #       SELECT max(id) FROM "dhis2_snapshots"
+      #       WHERE "dhis2_snapshots"."kind" = 'data_elements' AND "dhis2_snapshots"."project_anchor_id" = 1
+      #     )) subquery) subquery
+      # WHERE (element->'table'->>'display_name' ILIKE '%%')
+      # LIMIT 20000
+
+      # Get the id of the latest snapshot for the correct project_anchor and kind
+      max_id_rel = Dhis2Snapshot.where(kind: kind).where(project_anchor_id: @project_anchor).select("max(id)")
+      unnest_elements_rel = Dhis2Snapshot.select("jsonb_array_elements(content) as element").from(Dhis2Snapshot.where(id: max_id_rel))
+
+      Dhis2Snapshot.from(unnest_elements_rel).
+        where("element->'table'->>'display_name' ILIKE ?", "%#{name}%").
+        limit(limit).
+        pluck(*to_pluck).map do |id, display_name, code,  _category_option_combos|
         Result.new(id: id, code: code, display_name: display_name, category_combo: nil)
       end
     end
