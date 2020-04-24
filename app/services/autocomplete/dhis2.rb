@@ -2,11 +2,12 @@
 
 module Autocomplete
   class Result
-    attr_reader :id, :code, :display_name
-    def initialize(id:, code:, display_name:)
+    attr_reader :id, :code, :display_name, :category_combo
+    def initialize(id:, code:, display_name:, category_combo: nil)
       @id = id
       @code = code
       @display_name = display_name
+      @category_combo = category_combo
     end
   end
 
@@ -15,13 +16,19 @@ module Autocomplete
       @project_anchor = project_anchor
     end
 
-    def search(name, kind: "data_elements", limit: 20)
-      Dhis2Snapshot.connection.select_all(
-        ActiveRecord::Base.send(
-          :sanitize_sql_array,
-          [SEARCH_QUERY, kind, @project_anchor.id, "%#{name}%", limit]
-        )
-      ).to_hash.map { |e| Result.new(id: e["id"], code: e["code"], display_name: e["display_name"]) }
+    # Skip default
+    def search(name, kind: "data_elements", limit: 20, fields: [:id, :display_name, :code])
+      Dhis2Snapshot.from(
+        Dhis2Snapshot.select("jsonb_array_elements(content) as element").from(
+          Dhis2Snapshot.where(id: Dhis2Snapshot.where(kind: kind).select("max(id)").where(project_anchor_id: @project_anchor))
+        )).where("element->'table'->>'display_name' ILIKE ?", "%#{name}%").limit(limit).pluck(
+        "element->'table'->>'id'::text",
+        "element->'table'->>'display_name'",
+        "element->'table'->>'code'",
+        "element->'table'->>'category_option_combos'"
+      ).map do |id, display_name, code,  _category_option_combos|
+        Result.new(id: id, code: code, display_name: display_name, category_combo: nil)
+      end
     end
 
     def find(id, kind: "data_elements")
@@ -49,23 +56,5 @@ module Autocomplete
          as elements
       ) as dataelements
        where id = ?"
-
-    SEARCH_QUERY = "select * from (
-      select
-        (element->'table'->>'id')::text as id ,
-            (element->'table'->>'display_name')::text as display_name,
-           (element->'table'->>'code')::text as code
-        from (
-             select jsonb_array_elements(content) as element
-             from dhis2_snapshots
-             where
-             id=(
-                SELECT max(id) FROM dhis2_snapshots
-                WHERE kind= ? AND project_anchor_id = ?)
-             )
-         as elements
-      ) as dataelements
-       where display_name ilike ?
-      limit ?"
   end
 end
