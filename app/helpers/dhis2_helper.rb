@@ -17,7 +17,11 @@ module Dhis2Helper
   end
 
   def link_to_data_element(project, dhis2_id)
-    link_to_dhis2_maintenance(project, "dataElementSection/dataElement", dhis2_id)
+    # This could be a combined dhis2_id, like a data_element separated
+    # with a `.`, so always try to split and get the first one before
+    # a dot.
+    data_element_ext_ref = (dhis2_id || "").split(".").first
+    link_to_dhis2_maintenance(project, "dataElementSection/dataElement", data_element_ext_ref)
   end
 
   def link_to_indicator(project, dhis2_id)
