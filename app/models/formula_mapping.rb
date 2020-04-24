@@ -54,6 +54,20 @@ class FormulaMapping < ApplicationRecord
     Dhis2Name.new(dhis2_name)
   end
 
+  def data_element_ext_ref
+    external_reference.split(".").first
+  end
+
+  def coc_ext_ref
+    return nil unless has_coc_in_reference?
+
+    external_reference.split(".").last
+  end
+
+  def has_coc_in_reference?
+    external_reference.split(".").size > 1
+  end
+
   def substitutions_for_others
     {
       state_short_name: formula.code.humanize,

@@ -28,6 +28,12 @@ module Dhis2Helper
     link_to_dhis2_maintenance(project, "indicatorSection/indicator", dhis2_id)
   end
 
+  def link_to_coc(project, dhis2_id)
+    return content_tag(:span, "dhis2_id was not set", class: "text-danger") unless dhis2_id
+
+    link_to_dhis2_maintenance(project, "categorySection/categoryOptionCombo", dhis2_id)
+  end
+
   def link_to_dhis2_maintenance(project, section, dhis2_id, name = nil)
     url = "#{project.dhis2_url}/dhis-web-maintenance/"\
             "#/edit/#{section}/#{dhis2_id}"
