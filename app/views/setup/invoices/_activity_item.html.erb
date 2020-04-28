@@ -29,6 +29,7 @@
                   <%if variable.dhis2_data_element %>
                     <li><%= link_to_data_element(@current_project,variable.dhis2_data_element) %></li>
                     <li><%= @data_compound.data_element(variable.dhis2_data_element)&.name%>
+                    <li>Category combo : <%= variable.dhis2_coc || "default"%></li>
                   <%elsif activity_state%>
                     <li>Mapping : <%= activity_state.ext_id%> - <%= activity_state.kind%> - <%= (@data_compound.data_element(activity_state.ext_id) || @data_compound.indicator(activity_state.ext_id))&.name%>
                     <%if activity_state.data_element?%>

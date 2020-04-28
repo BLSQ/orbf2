@@ -12,24 +12,56 @@ class Setup::AutocompleteController < PrivateController
     end
   end
 
+  DE_COC_FIELDS = [
+    :id,
+    :display_name,
+    :code,
+    :category_combo__id
+  ]
+
   def data_elements_with_cocs
     if params[:id]
-      raise "not ye"
-      expires_in 3.minutes
-      results = find_results(params[:id], "data_elements")
-      render_sol_items(results, params[:id])
+      #raise "not ye"
+      #expires_in 3.minutes
+      if (!params[:id].include?("."))
+        expires_in 3.minutes
+        results = find_results(params[:id], "data_elements")
+        render_sol_items(results, params[:id])
+      else
+        datalement_id = params[:id].split(".")[0]
+        coc_id = params[:id].split(".")[1]
+        autocompleter = Autocomplete::Dhis2.new(current_project.project_anchor)
+        data_elements = autocompleter.find(datalement_id, kind: "data_elements", fields: DE_COC_FIELDS)
+        category_combo_by_id =autocompleter.find(data_elements.map(&:category_combo__id), kind: "category_combos", fields: [
+                  :id,
+                  :display_name,
+                  :category_option_combos
+                ]).index_by(&:id)
+          results = data_elements.each_with_object([]) do |element, result|
+            combo = category_combo_by_id[element.category_combo__id]
+
+            if combo.display_name == "default" || combo.display_name == "(default)"
+              result << element
+            else
+              combo.category_option_combos.each do |coc_hash|
+                if coc_hash["id"] == coc_id
+                  result << Struct.new(:id, :display_name).new(
+                    [element.id, coc_hash["id"]].join("."),
+                    [element.display_name, coc_hash["name"]].join(" - ")
+                  )
+                end
+              end
+            end
+          end
+          render_sol_items(results, params[:id])
+      end
     elsif params[:term]
-      fields = [
-        :id,
-        :display_name,
-        :code,
-        :category_combo__id
-      ]
+
       term = params[:term]
       kind = "data_elements"
       autocompleter = Autocomplete::Dhis2.new(current_project.project_anchor)
       data_elements = autocompleter
-                        .search(term, kind: kind, limit: 20, fields: fields)
+                        .search(term, kind: kind, limit: 40, fields: DE_COC_FIELDS)
                         .sort_by(&:display_name)
       category_combo_ids = data_elements.map(&:category_combo__id).uniq
       category_combo_by_id = autocompleter
@@ -57,7 +89,7 @@ class Setup::AutocompleteController < PrivateController
         end
       end
 
-      render_sol_items(results, params[:term])
+      render_sol_items(results.sort_by(&:display_name), params[:term])
     else
       results = search_results(nil, "data_elements", limit: 20_000)
       render_sol_items(results, nil)
