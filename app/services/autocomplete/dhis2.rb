@@ -16,12 +16,12 @@ module Autocomplete
     #     )) subquery) subquery
     # WHERE (element->'table'->>'display_name' ILIKE '%%')
     # LIMIT 20000
-    def search(name, kind: "data_elements", limit: 20, fields: [:id, :display_name, :code])
+    def search(name, kind: "data_elements", limit: 20, fields: %i[id display_name code])
       unnest_elements_rel = unnested_elements_query(kind: kind)
 
-      query = Dhis2Snapshot.from(unnest_elements_rel).
-        where("element->'table'->>'display_name' ILIKE ?", "%#{name}%").
-        limit(limit)
+      query = Dhis2Snapshot.from(unnest_elements_rel)
+                           .where("element->'table'->>'display_name' ILIKE ?", "%#{name}%")
+                           .limit(limit)
 
       query_to_results(query, fields)
     end
@@ -36,13 +36,13 @@ module Autocomplete
     #     )) subquery) subquery
     # WHERE (element->'table'->>'id' IN ('unknownid'))
     # LIMIT 20
-    def find(id, kind: "data_elements", fields: [:id, :display_name, :code])
+    def find(id, kind: "data_elements", fields: %i[id display_name code])
       unnest_elements_rel = unnested_elements_query(kind: kind)
 
       limit = 20
-      query = Dhis2Snapshot.from(unnest_elements_rel).
-        where("element->'table'->>'id' IN (?)", Array.wrap(id)).
-        limit(limit)
+      query = Dhis2Snapshot.from(unnest_elements_rel)
+                           .where("element->'table'->>'id' IN (?)", Array.wrap(id))
+                           .limit(limit)
 
       query_to_results(query, fields)
     end
@@ -54,12 +54,12 @@ module Autocomplete
     def data_elements_with_category_combos(data_elements, limit_to_coc_with_id: nil)
       category_combo_ids = data_elements.map(&:category_combo__id).uniq
       category_combo_by_id = find(category_combo_ids,
-                                  kind: "category_combos",
-                                  fields: [
-                                    :id,
-                                    :display_name,
-                                    :category_option_combos]
-                                 ).index_by(&:id)
+                                  kind:   "category_combos",
+                                  fields: %i[
+                                    id
+                                    display_name
+                                    category_option_combos
+                                  ]).index_by(&:id)
 
       combo_klazz = Struct.new(:id, :display_name)
       results = data_elements.each_with_object([]) do |element, result|
@@ -71,12 +71,12 @@ module Autocomplete
           result << element
         else
           combo.category_option_combos.each do |coc_hash|
-            if limit_to_coc_with_id.nil? || (coc_hash["id"] == limit_to_coc_with_id)
-              result << combo_klazz.new(
-                [element.id, coc_hash["id"]].join("."),
-                [element.display_name, coc_hash["name"]].join(" - ")
-              )
-            end
+            next unless limit_to_coc_with_id.nil? || (coc_hash["id"] == limit_to_coc_with_id)
+
+            result << combo_klazz.new(
+              [element.id, coc_hash["id"]].join("."),
+              [element.display_name, coc_hash["name"]].join(" - ")
+            )
           end
         end
       end
@@ -93,7 +93,7 @@ module Autocomplete
     def query_to_results(query, fields)
       to_pluck = fields.map do |key|
         parts = key.to_s.split("__")
-        k = parts.map{|part| "'#{part}'"}.join("->")
+        k = parts.map { |part| "'#{part}'" }.join("->")
         Arel.sql("element->'table'->#{k}")
       end
       result_klazz = Struct.new(*fields)
