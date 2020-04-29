@@ -20,3 +20,12 @@ describe "locales" do
     end
   end
 end
+
+describe "ruby version" do
+  it "Gemfile and .ruby_version match" do
+    ruby_version = File.read(".ruby-version").strip
+    gemfile_ruby_version = File.readlines("Gemfile").grep(/^ruby/).first.gsub("ruby ", "").gsub('"', '').strip
+
+    assert ruby_version == gemfile_ruby_version, ".ruby-version (#{ruby_version}) needs to have the same version as Gemfile (#{gemfile_ruby_version})"
+  end
+end
