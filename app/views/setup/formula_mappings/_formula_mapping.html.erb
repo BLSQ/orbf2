@@ -11,7 +11,7 @@
   <%= hidden_field_tag "formula_mappings[][external_reference]", formula_mapping.external_reference, id: formula_mappings_external_reference_id %>
   <%= text_field_tag formula_mappings_external_reference_id,
                      formula_mapping.external_reference ,
-                     data: { autocomplete: data_elements_setup_project_autocomplete_index_path(project) ,
+                     data: { autocomplete: data_elements_with_cocs_setup_project_autocomplete_index_path(project) ,
                              id_element: "##{formula_mappings_external_reference_id}" },
                      class: "form-control autocomplete-data-element",
                      placeholder: "Type some letters to start searching...",

@@ -23,9 +23,12 @@
             <li><%= total_item.value %></li>
             <li><%= total_item.formula.code %></li>
             <li><%= total_item.formula.expression %></li>
-            <% if total_item.formula.dhis2_mapping %>
-              <li><%= link_to_data_element(@current_project, total_item.formula.dhis2_mapping) %></li>
-              <li><%= @data_compound.data_element(total_item.formula.dhis2_mapping)&.name%> </li>
+            <% if total_item.formula.dhis2_mapping_de %>
+              <li><%= link_to_data_element(@current_project, total_item.formula.dhis2_mapping_de) %></li>
+              <li><%= @data_compound.data_element(total_item.formula.dhis2_mapping_de)&.name%> </li>
+              <% if total_item.formula.dhis2_mapping_coc %>
+              <li> Category combo <%= total_item.formula.dhis2_mapping_coc %></li>
+              <%end%>
             <%end%>
             <li><%= link_to("Formula mappings", new_setup_project_formula_mapping_path(mode: :create, formula_code: total_item.formula.code)) %></li>
             </ul>

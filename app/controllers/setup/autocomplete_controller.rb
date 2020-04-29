@@ -12,6 +12,44 @@ class Setup::AutocompleteController < PrivateController
     end
   end
 
+  DE_COC_FIELDS = %i[
+    id
+    display_name
+    code
+    category_combo__id
+  ].freeze
+
+  def data_elements_with_cocs
+    if params[:id]
+      if !params[:id].include?(".")
+        expires_in 3.minutes
+        results = find_results(params[:id], "data_elements")
+        render_sol_items(results, params[:id])
+      else
+        datalement_id = params[:id].split(".")[0]
+        coc_id = params[:id].split(".")[1]
+        autocompleter = Autocomplete::Dhis2.new(current_project.project_anchor)
+        data_elements = autocompleter.find(datalement_id, kind: "data_elements", fields: DE_COC_FIELDS)
+        results = autocompleter.data_elements_with_category_combos(data_elements, limit_to_coc_with_id: coc_id)
+
+        render_sol_items(results, params[:id])
+      end
+    elsif params[:term]
+      term = params[:term]
+      kind = "data_elements"
+      autocompleter = Autocomplete::Dhis2.new(current_project.project_anchor)
+      data_elements = autocompleter
+                      .search(term, kind: kind, limit: 40, fields: DE_COC_FIELDS)
+                      .sort_by(&:display_name)
+      results = autocompleter.data_elements_with_category_combos(data_elements)
+
+      render_sol_items(results.sort_by(&:display_name), params[:term])
+    else
+      results = search_results(nil, "data_elements", limit: 20_000)
+      render_sol_items(results, nil)
+    end
+  end
+
   def data_elements
     if params[:id]
       expires_in 3.minutes
@@ -70,7 +108,7 @@ class Setup::AutocompleteController < PrivateController
 
     org_unit_groups = pyr.org_unit_groups.map do |oug|
       ou_total = pyr.org_units_in_group(oug.id).size
-      sample_ous = pyr.org_units_in_group(oug.id).to_a.shuffle.slice(0, 5).map(&:display_name)
+      sample_ous = pyr.org_units_in_group(oug.id).to_a.sample(5).map(&:display_name)
       {
         type:  "option",
         value: oug.id,

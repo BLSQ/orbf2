@@ -23,8 +23,6 @@ RSpec.describe Setup::AutocompleteController, type: :controller do
     project
   end
 
-
-
   describe "When authenticated #data_ements" do
     include_context "basic_context"
     include WebmockDhis2Helpers
@@ -59,6 +57,53 @@ RSpec.describe Setup::AutocompleteController, type: :controller do
     it "should return for a single element if existing id" do
       stub_dhis2_snapshot
       get :data_elements, params: { project_id: project.id, id: "FTRrcoaog83" }
+      expect(assigns(:items).map { |i| i[:label] }).to eq ["Accute Flaccid Paralysis (Deaths < 5 yrs)"]
+    end
+
+    def stub_dhis2_snapshot
+      stub_dhis2_system_info_success(project.dhis2_url)
+      Dhis2SnapshotWorker.new.perform(project.project_anchor_id, filter: ["data_elements"])
+    end
+
+  end
+
+  describe "When authenticated #data_elements_with_cocs" do
+    # This is currently mostly a copy of the #data_elements spec, but
+    # the coc one should match that if no coc is set for those
+    # data_elements.
+    include_context "basic_context"
+    include WebmockDhis2Helpers
+
+    before(:each) do
+      sign_in user
+      stub_all_data_compound(project)
+    end
+
+    it "should return all data_ements" do
+      get :data_elements_with_cocs, params: { project_id: project.id }
+    end
+
+    it "should return for including name" do
+      stub_dhis2_snapshot
+      get :data_elements_with_cocs, params: { project_id: project.id, term: "flaccid" }
+      expect(assigns(:items).map { |i| i[:label] }.uniq).to eq(
+        [
+          "Accute Flaccid Paralysis (Deaths < 5 yrs)",
+          "Acute Flaccid Paralysis (AFP) follow-up",
+          "Acute Flaccid Paralysis (AFP) new",
+          "Acute Flaccid Paralysis (AFP) referrals"
+        ]
+      )
+    end
+
+    it "should return empty array if non existing id" do
+      get :data_elements_with_cocs, params: { project_id: project.id, id: "unknownid" }
+      expect(response.body).to eq "[]"
+    end
+
+    it "should return for a single element if existing id" do
+      stub_dhis2_snapshot
+      get :data_elements_with_cocs, params: { project_id: project.id, id: "FTRrcoaog83" }
       expect(assigns(:items).map { |i| i[:label] }).to eq ["Accute Flaccid Paralysis (Deaths < 5 yrs)"]
     end
 

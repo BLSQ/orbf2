@@ -26,5 +26,12 @@ RSpec.describe Dhis2Helper, type: :helper do
     )
   end
 
+  it "links to dhis2 cocs" do
+    expect(helper.link_to_coc(project, "dsid")).to eq(
+      '<a target="_blank" class="external" '\
+        'href="https://sample.org/dhis2/dhis-web-maintenance/#/edit/categorySection/categoryOptionCombo/dsid">dsid</a>'
+    )
+  end
+
 
 end

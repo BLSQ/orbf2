@@ -13,8 +13,17 @@
             <br>&nbsp;&nbsp;<i><%=formula.description%></i></td>
         <td ><pre style="white-space: pre-wrap;word-wrap: break-word;"><%= formula.expression%></pre>
 
-        <%if formula.formula_mappings.size == 1%>
-          <small>Mapped to data element <%= link_to_data_element(@current_project, formula.formula_mappings.first.external_reference) %></small>
+          <%if formula.formula_mappings.size == 1%>
+            <% mapping = formula.formula_mappings.first %>
+            <% if mapping.has_coc_in_reference? %>
+              <small>
+                Mapped to data element <%= link_to_data_element(@current_project, mapping.data_element_ext_ref) %> and to Category Option Combo: <%= link_to_coc(@current_project, mapping.coc_ext_ref) %>
+              </small>
+            <% else %>
+              <small>
+                Mapped to data element <%= link_to_data_element(@current_project, mapping.data_element_ext_ref) %>
+              </small>
+            <% end %>
         <%end%>
         </td>
       </tr>
