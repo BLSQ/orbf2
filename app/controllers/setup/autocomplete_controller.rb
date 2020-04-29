@@ -21,8 +21,6 @@ class Setup::AutocompleteController < PrivateController
 
   def data_elements_with_cocs
     if params[:id]
-      #raise "not ye"
-      #expires_in 3.minutes
       if (!params[:id].include?("."))
         expires_in 3.minutes
         results = find_results(params[:id], "data_elements")
