@@ -67,7 +67,7 @@ module Autocomplete
 
         # Avoid the default Category Combos (some DHIS use default, some use (default))
         # This is a guess
-        if combo.display_name == "default" || combo.display_name == "(default)"
+        if !combo || (combo.display_name == "default" || combo.display_name == "(default)")
           result << element
         else
           combo.category_option_combos.each do |coc_hash|
