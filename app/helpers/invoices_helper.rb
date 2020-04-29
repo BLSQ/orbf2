@@ -2,7 +2,7 @@
 
 module InvoicesHelper
   def invoice_output_input_class(total_item)
-    total_item.formula.dhis2_mapping ? "formula-output" : nil
+    total_item.formula.dhis2_mapping_de ? "formula-output" : nil
   end
 
   def invoice_output_input_act_class(activity_item, code)

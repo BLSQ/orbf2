@@ -112,7 +112,7 @@ class InvoiceEntityToJson
       instantiated_expression: total_item.explanations[2],
       solution:                total_item.value&.to_s,
       substituted:             total_item.explanations[1],
-      is_output:               total_item.formula.dhis2_mapping
+      is_output:               total_item.formula.dhis2_mapping_de
     }
   end
 

@@ -39,10 +39,12 @@ RSpec.describe MapProjectToOrbfProject do
     expect(orbf_formula_with_frequency.frequency).to eq("yearly")
     expect(orbf_formula_with_frequency.code).to eq(formula_with_frequency.code)
     expect(orbf_formula_with_frequency.expression).to eq(formula_with_frequency.expression)
-    expect(orbf_formula_with_frequency.dhis2_mapping(activity.code)).to eq("dhis2_out")
+    expect(orbf_formula_with_frequency.dhis2_mapping_de(activity.code)).to eq("dhis2_out")
+    expect(orbf_formula_with_frequency.dhis2_mapping_coc(activity.code)).to eq(nil)
 
     orbf_package_formula = orbf_project.packages.last.package_rules.first.formulas.last
-    expect(orbf_package_formula.dhis2_mapping).to eq("package_dhis2_out")
+    expect(orbf_package_formula.dhis2_mapping_de).to eq("package_dhis2_out")
+    expect(orbf_package_formula.dhis2_mapping_coc).to eq(nil)
 
     expect(orbf_project.packages.last.include_main_orgunit?).to eq(false)
     # dump with yaml to support circular references
