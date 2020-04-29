@@ -15,11 +15,12 @@ if [ -f "Brewfile" ] && [ "$(uname -s)" = "Darwin" ]; then
 fi
 
 echo "==> Checking ruby version..."
-if [[ $(ruby -v) =~ 2.5.1 ]]; then
+current_ruby=`grep '^ruby' Gemfile | tr -cd '[[:digit:]].'`
+if [[ $(ruby -v) =~ $current_ruby ]]; then
     true
 else
     cat <<"RUBY"
-You need to install ruby 2.5.1
+You need to install ruby ${current_ruby}
 
 I'd strongly suggest to use 'chruby' or 'rbenv' to manage rubies and make your
 development easier. I have a personal favor for 'chruby' so I'll explain that
@@ -27,9 +28,9 @@ one.
 
       1. Install 'chruby' as described here: https://github.com/postmodern/chruby
       2. Install 'ruby-install' https://github.com/postmodern/ruby-install#readme
-      3. ruby-install ruby 2.5.1
+      3. ruby-install ruby ${current_ruby}
       4. In a new shell navigat to this folder and do 'chruby 2.5.1'
-      5. 'ruby -v' should now output ruby-2.5.1
+      5. 'ruby -v' should now output ruby-${current_ruby}
 
 'rbenv' https://github.com/rbenv/rbenv has its own ruby installer etc, but chruby
 does less and does it better.
