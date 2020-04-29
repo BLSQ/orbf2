@@ -30,62 +30,18 @@ class Setup::AutocompleteController < PrivateController
         coc_id = params[:id].split(".")[1]
         autocompleter = Autocomplete::Dhis2.new(current_project.project_anchor)
         data_elements = autocompleter.find(datalement_id, kind: "data_elements", fields: DE_COC_FIELDS)
-        category_combo_by_id =autocompleter.find(data_elements.map(&:category_combo__id), kind: "category_combos", fields: [
-                  :id,
-                  :display_name,
-                  :category_option_combos
-                ]).index_by(&:id)
-          results = data_elements.each_with_object([]) do |element, result|
-            combo = category_combo_by_id[element.category_combo__id]
+        results = autocompleter.data_elements_with_category_combos(data_elements, limit_to_coc_with_id: coc_id)
 
-            if combo.display_name == "default" || combo.display_name == "(default)"
-              result << element
-            else
-              combo.category_option_combos.each do |coc_hash|
-                if coc_hash["id"] == coc_id
-                  result << Struct.new(:id, :display_name).new(
-                    [element.id, coc_hash["id"]].join("."),
-                    [element.display_name, coc_hash["name"]].join(" - ")
-                  )
-                end
-              end
-            end
-          end
-          render_sol_items(results, params[:id])
+        render_sol_items(results, params[:id])
       end
     elsif params[:term]
-
       term = params[:term]
       kind = "data_elements"
       autocompleter = Autocomplete::Dhis2.new(current_project.project_anchor)
       data_elements = autocompleter
                         .search(term, kind: kind, limit: 40, fields: DE_COC_FIELDS)
                         .sort_by(&:display_name)
-      category_combo_ids = data_elements.map(&:category_combo__id).uniq
-      category_combo_by_id = autocompleter
-                               .find(category_combo_ids, kind: "category_combos", fields: [
-                                         :id,
-                                         :display_name,
-                                         :category_option_combos
-                                       ])
-                               .index_by(&:id)
-
-      results = data_elements.each_with_object([]) do |element, result|
-        combo = category_combo_by_id[element.category_combo__id]
-
-        # Avoid the default Category Combos (some DHIS use default, some use (default))
-        # This is a guess
-        if combo.display_name == "default" || combo.display_name == "(default)"
-          result << element
-        else
-          combo.category_option_combos.each do |coc_hash|
-            result << Struct.new(:id, :display_name).new(
-              [element.id, coc_hash["id"]].join("."),
-              [element.display_name, coc_hash["name"]].join(" - ")
-            )
-          end
-        end
-      end
+      results = autocompleter.data_elements_with_category_combos(data_elements)
 
       render_sol_items(results.sort_by(&:display_name), params[:term])
     else

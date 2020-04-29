@@ -47,8 +47,49 @@ module Autocomplete
       query_to_results(query, fields)
     end
 
+    # Takes an array of `data_elements` (with `DE_COC_FIELDS`) and
+    # decorates them with the matching category combos.
+    #
+    # Returns an array of Struct.new(:id, :display_name)
+    def data_elements_with_category_combos(data_elements, limit_to_coc_with_id: nil)
+      category_combo_ids = data_elements.map(&:category_combo__id).uniq
+      category_combo_by_id = find(category_combo_ids,
+                                  kind: "category_combos",
+                                  fields: [
+                                    :id,
+                                    :display_name,
+                                    :category_option_combos]
+                                 ).index_by(&:id)
+
+      combo_klazz = Struct.new(:id, :display_name)
+      results = data_elements.each_with_object([]) do |element, result|
+        combo = category_combo_by_id[element.category_combo__id]
+
+        # Avoid the default Category Combos (some DHIS use default, some use (default))
+        # This is a guess
+        if combo.display_name == "default" || combo.display_name == "(default)"
+          result << element
+        else
+          combo.category_option_combos.each do |coc_hash|
+            if limit_to_coc_with_id.nil? || (coc_hash["id"] == limit_to_coc_with_id)
+              result << combo_klazz.new(
+                [element.id, coc_hash["id"]].join("."),
+                [element.display_name, coc_hash["name"]].join(" - ")
+              )
+            end
+          end
+        end
+      end
+    end
+
     private
 
+    # Will execute the query and map it to a Struct where each of the
+    # fields is an attribute.
+    #
+    # Note: that in order to execute this, this expectes the fields to
+    # be in `element->'table', so you can't access normal
+    # Dhis2Snapshot values.
     def query_to_results(query, fields)
       to_pluck = fields.map do |key|
         parts = key.to_s.split("__")
