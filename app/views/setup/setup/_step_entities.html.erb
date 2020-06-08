@@ -1,33 +1,86 @@
+<div id="entities_edit">
 <% if step.model%>
 <%= simple_form_for(step.model,  url: setup_project_main_entity_group_path(project), method: :post) do |f| %>
-<div class="row">
-    <div class="col-md-6">
-        <div class="form-group">
-            <label class="control-label">Target group</label>
 
-            <%= f.input_field :external_reference,
-                              id: "main_target_group_selector",
-                              class: "form-control sol-powered",
-                              data: {
-                                selected: "[#{step.model.external_reference}]",
-                                placeholder:"Lookup the main target group here...",
-                                selection:"main_target_group_selection",
-                                url:organisation_unit_group_setup_project_autocomplete_index_path(project, term:'')
-                              } %>
-
-
-
-
-
-        </div>
-    </div>
-    <div class="col-md-6" id="main_target_group_selection"></div>
+<div >
+   <div class="form-group">
+       <label for="kind">Choose how entities contracts are defined</label>
+       <%= f.select(:kind, EntityGroup::Kinds::OPTIONS , {  },
+                         class: "form-control") %>
+      <p class="help-block">
+      Either using organisation unit groups and dhis2 snapshots or use the a dhis2 program to store contract's informations.
+      <p>
+   </div>
 </div>
-<%= f.input :limit_snaphot_to_active_regions,
-            hint: "To limit memory usage and speed up invoicing, "\
-            "take only the level_2 and their children if at least one of the children belongs to target group. "\
-            "Eg : 40.000 organisation units but only 2 regions actually"\
-            " in the target groups and so only need 3000 of them." %>
+<div id="group_based">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="control-label">Target group</label>
+
+                <%= f.input_field :external_reference,
+                                id: "main_target_group_selector",
+                                class: "form-control sol-powered",
+                                data: {
+                                    selected: "[#{step.model.external_reference}]",
+                                    placeholder:"Lookup the main target group here...",
+                                    selection:"main_target_group_selection",
+                                    url:organisation_unit_group_setup_project_autocomplete_index_path(project, term:'')
+                                } %>
+
+            </div>
+        </div>
+        <div class="col-md-6" id="main_target_group_selection"></div>
+    </div>
+    <div >
+    <%= f.input :limit_snaphot_to_active_regions,
+                hint: "To limit memory usage and speed up invoicing, "\
+                "take only the level_2 and their children if at least one of the children belongs to target group. "\
+                "Eg : 40.000 organisation units but only 2 regions actually"\
+                " in the target groups and so only need 3000 of them." %>
+    </div>
+</div>
+<div id="contract_program_based">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="control-label">Contract program</label>
+
+                <%= f.input_field :program_reference,
+                                id: "program_reference_selector",
+                                class: "form-control sol-powered",
+                                data: {
+                                    selected: "[#{step.model.program_reference}]",
+                                    placeholder:"Lookup the contract program here...",
+                                    selection:"program_reference_selection",
+                                    url:programs_setup_project_autocomplete_index_path(project, term:'')
+                                } %>
+
+            </div>
+        </div>
+        <div class="col-md-6" id="program_reference_selection"></div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="control-label">Contract SQL View</label>
+
+                <%= f.input_field :all_event_sql_view_reference,
+                                id: "all_event_sql_view_reference_selector",
+                                class: "form-control sol-powered",
+                                data: {
+                                    selected: "[#{step.model.all_event_sql_view_reference}]",
+                                    placeholder:"Lookup the dhis2 sql view to find events here...",
+                                    selection:"all_event_sql_view_reference_selection",
+                                    url:sql_views_setup_project_autocomplete_index_path(project, term:'')
+                                } %>
+
+            </div>
+        </div>
+        <div class="col-md-6" id="all_event_sql_view_reference_selection"></div>
+    </div>
+</div>
 <%= f.button :submit, class: "btn btn-success" %>
 <% end %>
 <% end %>
+</div>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_04_135000) do
+ActiveRecord::Schema.define(version: 2020_06_08_065708) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -124,6 +124,9 @@ ActiveRecord::Schema.define(version: 2020_03_04_135000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "limit_snaphot_to_active_regions", default: false, null: false
+    t.string "kind", default: "group_based"
+    t.string "program_reference"
+    t.string "all_event_sql_view_reference"
     t.index ["project_id"], name: "index_entity_groups_on_project_id"
   end
 

@@ -74,10 +74,12 @@ class Project < ApplicationRecord
   }
 
   def contract_settings
-    {
-      program_id: "TwcqxaLn11C",
-      all_event_sql_view_id: "QNKOsX4EGEk"
-    }
+    if entity_group.contract_program_based?
+      {
+        program_id: entity_group.program_reference,
+        all_event_sql_view_id: entity_group.all_event_sql_view_reference
+      }
+    end
   end
 
   # see PaperTrailed meta

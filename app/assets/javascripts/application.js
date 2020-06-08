@@ -130,6 +130,20 @@ $(document).ready(function() {
     $(".shortened-rules-container").toggle();
     $(".full-rules-container").toggle();
   });
+
+  function toggleEntityGroupSections(target)  {
+    if (target.selectedOptions[0] && target.selectedOptions[0].value=="contract_program_based") {
+      $("#contract_program_based").show()
+      $("#group_based").hide();
+    } else {
+      $("#contract_program_based").hide()
+      $("#group_based").show();
+    }
+  }
+  $("#entity_group_kind").on("change", function(event){
+    toggleEntityGroupSections(event.target)
+  });
+  toggleEntityGroupSections($("#entity_group_kind")[0])
 });
 
 
