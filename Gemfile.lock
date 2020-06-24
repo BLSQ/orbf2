@@ -305,7 +305,7 @@ GEM
       pry (>= 0.10.4)
     public_suffix (3.0.3)
     puma (3.12.4)
-    rack (2.0.8)
+    rack (2.1.4)
     rack-mini-profiler (1.0.1)
       rack (>= 1.2.0)
     rack-pjax (1.0.0)
