@@ -18,7 +18,7 @@ class SynchroniseGroupsWorker
     return unless project.entity_group.program_reference.presence
 
     unless project.entity_group.group_synchronisation_enabled
-      puts "SynchroniseGroupsWorker skipped : group_synchronisation_enabled is not enabled"
+      puts "SynchroniseGroupsWorker skipped : #{project.id} - #{project.name} group_synchronisation_enabled is not enabled"
       return
     end
 
