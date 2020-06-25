@@ -14,7 +14,6 @@ sudo: false
 language: ruby
 cache: bundler
 before_install:
-  - gem uninstall bundler
   - gem install bundler -v 2.0.2
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
