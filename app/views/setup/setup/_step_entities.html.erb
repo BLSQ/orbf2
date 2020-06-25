@@ -79,6 +79,17 @@
         </div>
         <div class="col-md-6" id="all_event_sql_view_reference_selection"></div>
     </div>
+    <div class="row">
+      <div class="col-md-6">
+        <%= f.input :group_synchronisation_enabled, label: "Synchronise the groups based on the contract for the 'current' invoice period",
+         hint: "Don't enable this until you have correctly setuped the groups and the contracts are validated. Specially if it's a migration from a 'group' based to a 'contract' based project." %>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <%= f.input :contract_delay_in_months, hint: "The 'current' invoice period is defined based on current date minus this delay in months. Note the groups will be used by dhis2 (think pivot table) and our other products that don't support contracts but not the hesabu engine." %>
+      </div>
+    </div>
 </div>
 <%= f.button :submit, class: "btn btn-success" %>
 <% end %>

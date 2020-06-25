@@ -41,7 +41,9 @@ class Setup::MainEntityGroupsController < PrivateController
       :external_reference,
       :limit_snaphot_to_active_regions,
       :program_reference,
-      :all_event_sql_view_reference
+      :all_event_sql_view_reference,
+      :group_synchronisation_enabled,
+      :contract_delay_in_months
     )
   end
 end

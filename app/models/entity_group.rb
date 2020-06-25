@@ -4,7 +4,9 @@
 #
 #  id                              :bigint(8)        not null, primary key
 #  all_event_sql_view_reference    :string
+#  contract_delay_in_months        :integer          default(1)
 #  external_reference              :string
+#  group_synchronisation_enabled   :boolean          default(FALSE), not null
 #  kind                            :string           default("group_based")
 #  limit_snaphot_to_active_regions :boolean          default(FALSE), not null
 #  name                            :string

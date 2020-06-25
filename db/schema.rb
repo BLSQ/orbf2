@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_06_08_065708) do
+ActiveRecord::Schema.define(version: 2020_06_24_112533) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -127,6 +127,8 @@ ActiveRecord::Schema.define(version: 2020_06_08_065708) do
     t.string "kind", default: "group_based"
     t.string "program_reference"
     t.string "all_event_sql_view_reference"
+    t.boolean "group_synchronisation_enabled", default: false, null: false
+    t.integer "contract_delay_in_months", default: 1
     t.index ["project_id"], name: "index_entity_groups_on_project_id"
   end
 
