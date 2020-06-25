@@ -131,7 +131,9 @@ class Setup::InvoicesController < PrivateController
 
     @org_unit_summaries = Invoicing::EntitySignalitic.new(
       @pyramid,
-      invoicing_request.entity
+      invoicing_request.entity,
+      @invoice_entity.fetch_and_solve.contract_service,
+      invoicing_request.period
     ).call
 
     add_contract_warning_if_non_contracted(invoicing_request, project)

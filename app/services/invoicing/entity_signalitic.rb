@@ -2,10 +2,10 @@
 
 module Invoicing
   class EntitySignalitic
-    def initialize(pyramid, org_unit_id)
+    def initialize(pyramid, org_unit_id, contract_service, period)
       @pyramid = pyramid
       @org_unit_id = org_unit_id
-      @org_unit = build_org_unit_with_facts
+      @org_unit = build_org_unit_with_facts(contract_service, period)
     end
 
     def call
@@ -47,11 +47,11 @@ module Invoicing
       pyramid.groups(org_unit.group_ext_ids)
     end
 
-    def build_org_unit_with_facts
+    def build_org_unit_with_facts(contract_service, period)
       raw_org_unit = pyramid.org_unit(org_unit_id)
       Orbf::RulesEngine::OrgUnitWithFacts.new(
         orgunit: raw_org_unit,
-        facts:   Orbf::RulesEngine::OrgunitFacts.new(raw_org_unit, pyramid).to_facts
+        facts:   Orbf::RulesEngine::OrgunitFacts.new(org_unit:raw_org_unit, pyramid: pyramid, contract_service:contract_service, invoicing_period: period).to_facts
       )
     end
   end

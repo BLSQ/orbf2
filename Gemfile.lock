@@ -14,7 +14,7 @@ GIT
 
 GIT
   remote: https://github.com/BLSQ/orbf-rules_engine.git
-  revision: 1f12dffe1a18f494a593fa25aeb34b370631ba79
+  revision: 45c06080456fe83524e24dafe37dadc0f5159a69
   branch: contracts-support
   specs:
     orbf-rules_engine (0.1.0)
