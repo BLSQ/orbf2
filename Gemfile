@@ -116,7 +116,7 @@ group :development, :test do
   gem "capybara", "~> 3.12.0"
   gem "json-diff", "~> 0.4.1"
   gem "rubyzip", "~> 1.3.0"
-  gem "selenium-webdriver", "~> 3.142.3"
+  gem "selenium-webdriver"
 end
 
 group :development do
