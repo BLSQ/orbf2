@@ -3,7 +3,7 @@ env:
     - GIT_COMMITTED_AT=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then git log -1 --pretty=format:%ct; else git log -1 --skip 1 --pretty=format:%ct; fi)
     - RAILS_ENV=test
 addons:
-  postgresql: "9.6"
+  postgresql: "11.7"
   chrome: stable
   apt:
     packages:
@@ -14,13 +14,19 @@ sudo: false
 language: ruby
 cache: bundler
 before_install:
-  - gem install bundler -v 2.0.2
+  - gem install bundler -v 2.1.4
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - cp config/database-travis.yml config/database.yml
   - psql -c 'create database orbf2_test;' -U postgres
-  - ln --symbolic /usr/lib/chromium-browser/chromedriver "${HOME}/bin/chromedriver"
+  - version=$(curl -s https://chromedriver.storage.googleapis.com/LATEST_RELEASE)
+  - wget -N https://chromedriver.storage.googleapis.com/$version/chromedriver_linux64.zip -P ~/
+  - unzip ~/chromedriver_linux64.zip -d ~/
+  - rm ~/chromedriver_linux64.zip
+  - sudo mv -f ~/chromedriver /usr/local/share/
+  - sudo chmod +x /usr/local/share/chromedriver
+  - sudo ln -s /usr/local/share/chromedriver /usr/local/bin/chromedriver
 script:
   - echo "O HAI"
   - script/cibuild
