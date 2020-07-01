@@ -37,8 +37,13 @@ class Setup::MainEntityGroupsController < PrivateController
   def entity_group_params
     params.require(:entity_group).permit(
       :name,
+      :kind,
       :external_reference,
-      :limit_snaphot_to_active_regions
+      :limit_snaphot_to_active_regions,
+      :program_reference,
+      :all_event_sql_view_reference,
+      :group_synchronisation_enabled,
+      :contract_delay_in_months
     )
   end
 end

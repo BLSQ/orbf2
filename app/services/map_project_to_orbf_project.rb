@@ -19,7 +19,8 @@ class MapProjectToOrbfProject
       engine_version:                        @engine_version,
       default_category_combo_ext_id:         project.default_coc_reference,
       default_attribute_option_combo_ext_id: project.default_aoc_reference,
-      calendar:                              project.calendar
+      calendar:                              project.calendar,
+      contract_settings:                     project.contract_settings
     )
   end
 

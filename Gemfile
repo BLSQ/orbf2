@@ -89,7 +89,7 @@ else
   # We're using both of them against the latest master. We should set
   # them to versions when they become more stable
   gem "hesabu", github: "BLSQ/hesabu"
-  gem "orbf-rules_engine", github: "BLSQ/orbf-rules_engine"
+  gem "orbf-rules_engine", github: "BLSQ/orbf-rules_engine", branch: "master"
 end
 # Like a modern code version of the mythical beast with 100 serpent hea...
 # [typhoeus](https://github.com/typhoeus/typhoeus)
@@ -113,10 +113,10 @@ group :development, :test do
   gem "ruby-prof"
   gem "shoulda-matchers", require: false
 
-  gem "capybara", "~> 3.12.0"
+  gem "capybara"
   gem "json-diff", "~> 0.4.1"
   gem "rubyzip", "~> 1.3.0"
-  gem "selenium-webdriver", "~> 3.142.3"
+  gem "selenium-webdriver"
 end
 
 group :development do

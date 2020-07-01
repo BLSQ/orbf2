@@ -98,6 +98,8 @@ Rails.application.routes.draw do
             get :data_elements_with_cocs
             get :indicators
             get :category_combos
+            get :programs
+            get :sql_views
           end
         end
       end

@@ -14,14 +14,20 @@ sudo: false
 language: ruby
 cache: bundler
 before_install:
-  - gem uninstall bundler
-  - gem install bundler -v 2.0.2
+  - gem install bundler -v 2.1.4
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - cp config/database-travis.yml config/database.yml
   - psql -c 'create database orbf2_test;' -U postgres
-  - ln --symbolic /usr/lib/chromium-browser/chromedriver "${HOME}/bin/chromedriver"
+  - version=$(curl -s https://chromedriver.storage.googleapis.com/LATEST_RELEASE)
+  - google-chrome --version
+  - wget -N https://chromedriver.storage.googleapis.com/$version/chromedriver_linux64.zip -P ~/
+  - unzip ~/chromedriver_linux64.zip -d ~/
+  - rm ~/chromedriver_linux64.zip
+  - sudo mv -f ~/chromedriver /usr/local/share/
+  - sudo chmod +x /usr/local/share/chromedriver
+  - sudo ln -s /usr/local/share/chromedriver /usr/local/bin/chromedriver
 script:
   - echo "O HAI"
   - script/cibuild

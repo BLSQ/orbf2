@@ -90,6 +90,17 @@ class Setup::AutocompleteController < PrivateController
     render_sol_items(results, params[:term])
   end
 
+  def programs
+    expires_in 5.minutes
+    render_sol_items(current_project.dhis2_connection.programs.list(filter:"registration:eq:false"), params[:term].presence )
+  end
+
+  def sql_views
+    expires_in 5.minutes
+    sql_views = current_project.dhis2_connection.get("sqlViews")["sql_views"].map {|s| OpenStruct.new(s)}
+    render_sol_items(sql_views, params[:term].presence )
+  end
+
   private
 
   def search_results(term, kind, limit: 20)

@@ -73,6 +73,15 @@ class Project < ApplicationRecord
     message: "%{value} is not a valid see #{ENGINE_VERSIONS.join(',')}"
   }
 
+  def contract_settings
+    if entity_group.contract_program_based?
+      {
+        program_id: entity_group.program_reference,
+        all_event_sql_view_id: entity_group.all_event_sql_view_reference
+      }
+    end
+  end
+
   # see PaperTrailed meta
   def project_id
     id
