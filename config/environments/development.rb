@@ -68,7 +68,7 @@ Rails.application.configure do
   ::Rack::MiniProfiler.profile_method(Orbf::RulesEngine::Dhis2ValuesPrinter, :print)
   ::Rack::MiniProfiler.profile_method(Orbf::RulesEngine::Solver, :solve!)
   ::Rack::MiniProfiler.profile_method(Orbf::RulesEngine::FetchAndSolve, :call)
-  ::Rack::MiniProfiler.profile_method(Orbf::RulesEngine::OrgunitsResolver, :call)
+  ::Rack::MiniProfiler.profile_method(Orbf::RulesEngine::GroupOrgunitsResolver, :call)
   ::Rack::MiniProfiler.profile_method(Orbf::RulesEngine::ResolveArguments, :call)
   ::Rack::MiniProfiler.profile_singleton_method(Orbf::RulesEngine::ActivityVariablesBuilder, :to_variables)
   #::Rack::MiniProfiler.profile_singleton_method(Orbf::RulesEngine::PeriodIterator, :periods)
