@@ -17,7 +17,9 @@
           <%if variable%>
             <%if variable.formula %>
             <% activity_lookup = indexed_project.lookup_package_rule(activity_item, header) %>
+            <%if activity_lookup %>
               <h3><%= link_to(variable.state, edit_setup_project_package_rule_path(activity_lookup.project, activity_lookup.package, activity_lookup.rule, anchor: "formula_#{variable.state}"), target: "_blank") %></h3>
+              <%end%>
             <% else %>
               <h3><%= variable.state %></h3>
             <%end%>
@@ -65,7 +67,8 @@
     <div class="popper-content hide">
 
       <li><%= link_to("Formula mappings", new_setup_project_formula_mapping_path(mode: :create, activity_code: activity_item.activity.activity_code)) %></li>
-      <li><%= link_to("Edit activity", edit_setup_project_activity_path(@current_project, @current_project.activities.find {|a| a.code == activity_item.activity.activity_code}) )%></li>
+      <% activity = @current_project.activities.find {|a| a.code == activity_item.activity.activity_code}%>
+      <li><%= activity ? link_to("Edit activity", edit_setup_project_activity_path(@current_project, activity) ) : ""%></li>
     </div>
   </td>
 </tr>
