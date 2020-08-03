@@ -30,6 +30,9 @@
 
 class InvoicingJob < ApplicationRecord
   belongs_to :project_anchor, inverse_of: :invoicing_jobs
+
+  has_many :dhis2_logs, dependent: :destroy
+
   has_one_attached :result
 
   validates :dhis2_period, presence: true

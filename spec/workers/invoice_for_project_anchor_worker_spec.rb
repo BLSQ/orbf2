@@ -57,14 +57,29 @@ RSpec.describe InvoiceForProjectAnchorWorker do
   end
 
   it "should perform for subset of contracted_entities" do
+
+    invoicing_job = project.project_anchor.invoicing_jobs.find_or_initialize_by(
+      project_anchor_id: project.project_anchor.id,
+      dhis2_period:      "2015Q1",
+      orgunit_ref:       ORG_UNIT_ID
+    )
+
+    invoicing_job.update(
+      status:          "enqueued",
+      sidekiq_job_ref: "job_id"
+    )
+
     stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&orgUnit=vRC0stJ5y9Q&period=2015Q1")
       .to_return(status: 200, body: "", headers: {})
 
     export_request = stub_export_values("invoice_zero_new.json")
-
+    worker.instance_variable_set(:@jid,"fakeJid123")
     worker.perform(project.project_anchor.id, 2015, 1, [ORG_UNIT_ID])
 
     expect(export_request).to have_been_made.once
+
+    expect(Dhis2Log.last.invoicing_job_id).to eq(invoicing_job.id)
+    expect(Dhis2Log.last.sidekiq_job_ref).to eq("fakeJid123")
   end
 
   it "should perform for packages and payments quarterly" do
@@ -125,6 +140,7 @@ RSpec.describe InvoiceForProjectAnchorWorker do
     worker.perform(project.project_anchor.id, 2015, 1, [ORG_UNIT_ID])
     expect(value_request).to have_been_made.once
     expect(export_request).to have_been_made.once
+
   end
 
   it "should perform for sub contracted entities pattern" do
