@@ -25,7 +25,7 @@
 class Dhis2Log < ApplicationRecord
   belongs_to :project_anchor
 
-  belongs_to :invoicing_job, inverse_of: :dhis2_logs
+  belongs_to :invoicing_job, inverse_of: :dhis2_logs, optional: true
 
   def orgunit_ids
     sent.map { |data_value| data_value["orgUnit"] }.uniq

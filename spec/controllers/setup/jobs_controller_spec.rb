@@ -45,7 +45,7 @@ RSpec.describe Setup::JobsController, type: :controller do
       end
 
       it "display jobs" do
-        full_project.project_anchor.dhis2_logs.create(dhis2_log_attributes)
+        full_project.project_anchor.dhis2_logs.create!(dhis2_log_attributes)
 
         InvoiceForProjectAnchorWorker.perform_async(full_project.project_anchor_id, 2016, 1, ["selected_org_unit_id"])
         get :index, params: { project_id: full_project.id }
