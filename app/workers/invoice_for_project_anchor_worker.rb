@@ -36,6 +36,8 @@ class InvoiceForProjectAnchorWorker
       invoice_entity.call
     end
 
+  rescue Invoicing::PublishingError => e
+    puts "job failed #{e.message} : #{project_anchor}, #{year}Q#{quarter} #{selected_org_unit_ids}"
   rescue Hesabu::Error => e
     if e.message =~ /In equation/
     # The job won't magically heal itself, since the equation

@@ -76,8 +76,14 @@ module Invoicing
 
       Rails.logger.info @dhis2_export_values.to_json
       Rails.logger.info status.raw_status.to_json
-      project.project_anchor.dhis2_logs.create(sent: @dhis2_export_values, status: status.raw_status)
+      project.project_anchor.dhis2_logs.create(
+        sent: @dhis2_export_values,
+        status: status.raw_status
+      )
+      ConflictsHandler.new.raise_if_blocking_conflicts?(status)
     end
+
+
 
     def parallel_publish_to_dhis2
       url = project.dhis2_connection.instance_variable_get(:@base_url)
