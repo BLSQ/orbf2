@@ -82,7 +82,7 @@ module Invoicing
         invoicing_job_id: options.invoicing_job_id,
         sidekiq_job_ref:  options.sidekiq_job_ref
       )
-      ConflictsHandler.new.raise_if_blocking_conflicts?(status)
+      ConflictsHandler.new(status).raise_if_blocking_conflicts?
     end
 
     def parallel_publish_to_dhis2

@@ -3,6 +3,8 @@
 require "rails_helper"
 
 describe Invoicing::ConflictsHandler do
+  let(:subject) { Invoicing::ConflictsHandler.new({}) }
+
   blocking_conflicts = [
     # dhis2 stricter "à la liberia"
     { "value" => "Category option combo is required but is not specified", "object" => "2279" },
