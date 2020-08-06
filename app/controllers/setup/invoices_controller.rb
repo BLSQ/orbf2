@@ -74,11 +74,26 @@ class Setup::InvoicesController < PrivateController
 
   def render_invoice(project, invoicing_request)
     if params[:push_to_dhis2] && invoicing_request.entity
-      InvoiceForProjectAnchorWorker.perform_async(
+
+      dhis2_period = invoicing_request.year_quarter.to_dhis2
+
+      invoicing_job = project.project_anchor.invoicing_jobs.find_or_initialize_by(
+        project_anchor_id: project.project_anchor.id,
+        dhis2_period:      dhis2_period,
+        orgunit_ref:       invoicing_request.entity
+      )
+
+      job_id = InvoiceForProjectAnchorWorker.perform_async(
         project.project_anchor_id,
         invoicing_request.year,
         invoicing_request.quarter,
         [invoicing_request.entity]
+      )
+
+      invoicing_job.update(
+        user_ref:        nil,
+        status:          "enqueued",
+        sidekiq_job_ref: job_id
       )
       flash[:alert] = "Worker scheduled for #{invoicing_request.entity} : #{invoicing_request.year_quarter.to_dhis2}"
       render(:new)

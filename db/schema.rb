@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_06_24_112533) do
+ActiveRecord::Schema.define(version: 2020_08_03_115137) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -90,6 +90,9 @@ ActiveRecord::Schema.define(version: 2020_06_24_112533) do
     t.integer "project_anchor_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "invoicing_job_id"
+    t.string "sidekiq_job_ref"
+    t.index ["invoicing_job_id"], name: "index_dhis2_logs_on_invoicing_job_id"
     t.index ["project_anchor_id"], name: "index_dhis2_logs_on_project_anchor_id"
   end
 
@@ -371,6 +374,7 @@ ActiveRecord::Schema.define(version: 2020_06_24_112533) do
   add_foreign_key "activity_states", "activities"
   add_foreign_key "activity_states", "states"
   add_foreign_key "decision_tables", "rules"
+  add_foreign_key "dhis2_logs", "invoicing_jobs"
   add_foreign_key "dhis2_logs", "project_anchors"
   add_foreign_key "dhis2_snapshot_changes", "dhis2_snapshots"
   add_foreign_key "dhis2_snapshots", "project_anchors"
