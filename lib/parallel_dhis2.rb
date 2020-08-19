@@ -187,7 +187,7 @@ class ParallelDhis2
   # Mostly here as a sanity check if the client starts misbehaving,
   # will issue a single request and return the response, which will
   # have `body` and `code` and `return_code`, which helps debugging.
-  def get(url = "/api/system/status")
+  def get(url = "/api/system/info")
     url = File.join(@client.url, url)
     request = Typhoeus::Request.new(url,
                                     method:         :get,
