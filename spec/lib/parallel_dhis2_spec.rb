@@ -246,10 +246,18 @@ RSpec.describe ParallelDhis2 do
       expect(client.post_headers).to eq("Accept" => "json", "Content-Type" => "application/json")
     end
 
-    it "#user" do
-      client = described_class.new(dhis2_client)
-      expect(client.user).to eq("admin")
+    describe "#user" do
+      it "handles normal ones" do
+        client = described_class.new(dhis2_client)
+        expect(client.user).to eq("admin")
+      end
+
+      it "handles with html entities or spaces in it" do
+        client = described_class.new(dhis2_client(user: "Someone BLSQ"))
+        expect(client.user).to eq("Someone BLSQ")
+      end
     end
+
 
     describe "#password" do
       it "handles normal ones" do

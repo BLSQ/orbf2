@@ -122,7 +122,7 @@ class ParallelDhis2
     end
 
     def user
-      base_uri.user
+      CGI.unescape(base_uri.user)
     end
 
     def password
@@ -182,6 +182,20 @@ class ParallelDhis2
 
   def prepare_payload(payload)
     Dhis2::Case.deep_change(payload, :camelize).to_json
+  end
+
+  # Mostly here as a sanity check if the client starts misbehaving,
+  # will issue a single request and return the response, which will
+  # have `body` and `code` and `return_code`, which helps debugging.
+  def get(url = "/api/system/status")
+    url = File.join(@client.url, url)
+    request = Typhoeus::Request.new(url,
+                                    method: :get,
+                                    headers: @client.post_headers,
+                                    ssl_verifypeer: @client.ssl_verify_peer?,
+                                    userpwd: [@client.user, @client.password].join(":"))
+    request.run
+    request.response
   end
 
   def build_post_request(url, payload)
