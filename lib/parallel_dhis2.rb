@@ -190,10 +190,10 @@ class ParallelDhis2
   def get(url = "/api/system/status")
     url = File.join(@client.url, url)
     request = Typhoeus::Request.new(url,
-                                    method: :get,
-                                    headers: @client.post_headers,
+                                    method:         :get,
+                                    headers:        @client.post_headers,
                                     ssl_verifypeer: @client.ssl_verify_peer?,
-                                    userpwd: [@client.user, @client.password].join(":"))
+                                    userpwd:        [@client.user, @client.password].join(":"))
     request.run
     request.response
   end
