@@ -10,7 +10,10 @@ class InvoiceForProjectAnchorWorker
 
   sidekiq_throttle(
     concurrency: { limit: ENV.fetch("SDKQ_MAX_CONCURRENT_INVOICE", 3).to_i },
-    key_suffix:  ->(project_anchor_id, _year, _quarter, _selected_org_unit_ids = nil, _options = {}) { project_anchor_id }
+    key_suffix:  ->(project_anchor_id, _year, _quarter, _selected_org_unit_ids = nil, _options = {}) {
+      per_process_id = ENV.fetch("HEROKU_DYNO_ID", $PROCESS_ID)
+      [project_anchor_id, per_process_id].join("-")
+    }
   )
 
   def perform(project_anchor_id, year, quarter, selected_org_unit_ids = nil, options = {})
