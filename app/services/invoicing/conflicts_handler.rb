@@ -53,6 +53,10 @@ module Invoicing
     end
 
     def raise_if_blocking_conflicts?
+      if status.raw_status["status"] == "ERROR"
+        raise PublishingError, status.raw_status["description"]
+      end
+
       return unless status.raw_status["conflicts"]
 
       blocking_conflicts = status.raw_status["conflicts"].select { |c| blocking_conflict?(c) }
