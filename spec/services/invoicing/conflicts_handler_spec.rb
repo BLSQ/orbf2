@@ -44,4 +44,20 @@ describe Invoicing::ConflictsHandler do
   it "assume blocking conflict when unknown" do
     expect(subject.blocking_conflict?("value"=> "we are doomed, this is a new error")).to eq(true)
   end
+
+  describe "should handle status ERROR" do
+    let(:raw_status) do
+      JSON.parse(fixture_content(:dhis2, "import_error.json"))
+    end
+
+    let(:dhis2_status) do
+      Dhis2::Status.new(raw_status)
+    end
+    it "raise an error on status error" do
+      expect { Invoicing::ConflictsHandler.new(dhis2_status).raise_if_blocking_conflicts? }.to raise_error(
+        Invoicing::PublishingError,
+        "The import process failed: Failed to create statement && Import process completed successfully [parallel]"
+      )
+    end
+  end
 end
