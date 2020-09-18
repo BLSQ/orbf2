@@ -8,13 +8,13 @@ GIT
 
 GIT
   remote: https://github.com/BLSQ/hesabu.git
-  revision: 66b5e85447f2e1216e074d95e40945e5a2b852f5
+  revision: c46f76ed53b7b71909b59d4933efb39d20e6c68b
   specs:
     hesabu (0.1.14)
 
 GIT
   remote: https://github.com/BLSQ/orbf-rules_engine.git
-  revision: abdd49aeb77904be79d4aec03a978db58d613d6c
+  revision: 7b5b1984899867d751e344e18dc7cc7a62739343
   branch: master
   specs:
     orbf-rules_engine (0.1.0)

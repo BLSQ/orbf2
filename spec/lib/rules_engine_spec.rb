@@ -47,6 +47,13 @@ RSpec.describe "Rules Engine" do
         expect(solution["formula"]).to eq(4.0)
       end
 
+      it ".cal_days_in_month (#{name})" do
+        solution = calculator.solve(
+          "formula" => "cal_days_in_month(2020,2)",
+        )
+        expect(solution["formula"]).to eq(29)
+      end
+
     end
   end
 end
