@@ -306,6 +306,7 @@ RSpec.describe Rule, kind: :model do
        claimed_level_5
        claimed_level_5_quarterly
        difference_percentage
+       year
        month_of_quarter
        month_of_year
        quantity
@@ -688,6 +689,7 @@ RSpec.describe Rule, kind: :model do
        month_of_quarter
        month_of_year
        quarter_of_year
+       year
       ]
       expect(activity_rule.available_variables).to match_array(expected)
     end
