@@ -20,6 +20,8 @@ module RuleTypes
 
     def to_fake_facts(states)
       facts = states.map { |state| [state.code.to_sym, "10"] }.to_h
+
+      facts[:year] = 2016
       facts[:month_of_year] = 6
       facts[:quarter_of_year] = 2
       facts[:month_of_quarter] = 3

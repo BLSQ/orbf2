@@ -20,6 +20,7 @@ module RuleTypes
       var_names.push(*formulas.map(&:code))
       var_names.push(*Analytics::Locations::LevelScope.new.facts(package))
       var_names.push(*available_variables_for_values.map { |code| "%{#{code}}" })
+      var_names.push("year")
       var_names.push("quarter_of_year")
       var_names.push("month_of_year")
       var_names.push("month_of_quarter")
