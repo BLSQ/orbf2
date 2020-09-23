@@ -28,7 +28,7 @@ RSpec.describe Api::V2::ProjectsController, type: :controller do
       get(:show, params: {})
       resp = JSON.parse(response.body)
 
-      expect(resp["data"]["attributes"]["periods"]).to_not be_empty
+      expect(resp["data"]["attributes"]["periods"]).to include("2016Q1")
     end
   end
 end

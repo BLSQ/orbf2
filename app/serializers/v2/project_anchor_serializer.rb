@@ -4,11 +4,15 @@ class V2::ProjectAnchorSerializer < V2::BaseSerializer
   attribute :dhis2_url do |project_anchor|
     project_anchor.project&.dhis2_url
   end
-  attribute :periods do |_project_anchor|
-    %w[2016Q1 2016Q2 2016Q3 2016Q4
-       2017Q1 2017Q2 2017Q3 2017Q4
-       2018Q1 2018Q2 2018Q3 2018Q4
-       2019Q1 2019Q2 2019Q3 2019Q4]
+  attribute :periods do |project_anchor|
+    project = project_anchor.project
+    if project
+      start_year = 2016
+      end_year = project.calendar.from_iso(DateTime.now).year + 1
+      (start_year..end_year).flat_map {|year| project.calendar.periods(year.to_s,"quarterly")}
+    else
+      []
+    end
   end
   attribute :created_at
   attribute :updated_at
