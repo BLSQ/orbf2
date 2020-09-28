@@ -41,14 +41,19 @@ namespace :ui do
     puts message
   end
 
+  def log_error(message)
+    puts "\e[31mERROR\e[0m #{message}"
+  end
+
   def setup_token(project_anchor)
     unless project_anchor.token
       log_info "INFO skipping no token for #{project_anchor.project.name} (project_anchor_id : #{project_anchor.id})"
       return
     end
-    log_info "*** setup of token for #{project_anchor.project.name} (project_anchor_id : #{project_anchor.id})"
     config = { url: "https://orbf2.bluesquare.org", token: project_anchor.token }
-    dhis2 = project_anchor.project.dhis2_connection
+    project = project_anchor.project
+    dhis2 = Dhis2::Client.new(project.dhis_configuration.merge(timeout: 20))
+    log_info "*** setup of token for #{project_anchor.project.name} (project_anchor_id : #{project_anchor.id}, #{project.dhis2_url})"
     begin
       current_config = dhis2.get("dataStore/hesabu/hesabu") rescue nil
       resp = if current_config
@@ -57,7 +62,7 @@ namespace :ui do
                dhis2.post("dataStore/hesabu/hesabu", config)
              end
     rescue StandardError => error
-      puts "ERROR #{error&.response&.body} : #{error}"
+      log_error "#{error&.response&.body} : #{error}"
     end
     log_info resp
   end
@@ -73,11 +78,15 @@ namespace :ui do
     dhis2_url = project.dhis2_url
     dhis2_user = project.user
     dhis2_password = project.password
-    puts "deploying to #{dhis2_url}"
-    push_app = system("curl -s -H 'Accept: application/json' -X POST -u '#{dhis2_user}:#{dhis2_password}' --compressed -F file=@#{TARGET_FILE_NAME} #{dhis2_url}/api/apps --write-out '%{http_code}' --output /dev/null | grep [^403] | grep [^504] > /dev/null")
+    log_info "*** deploying for #{project_anchor.project.name} (project_anchor_id : #{project_anchor.id}, #{project.dhis2_url})"
+    deploy_command = "curl --connect-timeout 20 -s -H 'Accept: application/json' -X POST -u '#{dhis2_user}:#{dhis2_password}' --compressed -F file=@#{TARGET_FILE_NAME} #{dhis2_url}/api/apps --write-out '%{http_code}' --output /dev/null | grep [^403] | grep [^504] | grep [^000] > /dev/null"
+    push_app = system(deploy_command)
     update_app_ref = system("curl -s -X PUT -u '#{dhis2_user}:#{dhis2_password}' -H 'Accept: application/json' #{dhis2_url}/api/apps") if push_app
-    puts "deployed"
-
+    if push_app
+      log_info "deployed"
+    else
+      log_error "not deployed"
+    end
   end
 
   def s3
