@@ -107,7 +107,7 @@ class ParallelDhis2
 
     def data_set_complete
       # Practically always false
-      rolled_up["data_set_complete"].compact.uniq.first
+      (rolled_up["data_set_complete"] || []).compact.uniq.first
     end
   end
 

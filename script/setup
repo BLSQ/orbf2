@@ -13,7 +13,7 @@ if [ -f "config/database.yml" ] ; then
     true
 else
     echo "==> Generating config/database.yml"
-    cp config/database-template.yml.example config/database.yml
+    cp config/database-template.yml config/database.yml
 fi
 
 if [ -f "config/application.yml" ] ; then

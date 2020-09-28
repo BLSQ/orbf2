@@ -159,6 +159,18 @@ RSpec.describe ParallelDhis2 do
         it(:import_options) { expect(rolled_up["import_options"].count).to eq(5) }
         it(:data_set_complete) { expect(rolled_up["data_set_complete"]).to eq(false) }
       end
+
+      describe "without data_set_complete" do
+        subject(:failed_response_without_dataset_complete) {
+          response = fake_response(status:       "ERROR",
+                        description:  "The import process failed: Failed to update object",
+                        import_count: { "deleted": 0, "ignored": 0, "updated": 0, "imported": 0 })
+          response.delete("data_set_complete")
+          response
+        }
+        subject(:rolled_up) { described_class.new([failed_response_without_dataset_complete]).call }
+        it(:data_set_complete) { expect(rolled_up["data_set_complete"]).to be_nil }
+      end
     end
 
     describe "#status" do
