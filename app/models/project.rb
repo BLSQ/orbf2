@@ -171,8 +171,6 @@ class Project < ApplicationRecord
   end
 
   def self.fully_loaded
-
-
     includes(
       packages:      PACKAGE_INCLUDES,
       activities:    {
