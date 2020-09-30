@@ -33,10 +33,16 @@ module Api
         %i[
           topics.input_mappings
           topic_formulas
+          topic_formulas.formula_mappings
+          topic_formulas.formula_mappings.external_ref
           set_formulas
+          set_formulas.formula_mappings
           zone_topic_formulas
+          zone_topic_formulas.formula_mappings
           zone_formulas
+          zone_formulas.formula_mappings
           multi_entities_formulas
+          multi_entities_formulas.formula_mappings
         ]
       end
 

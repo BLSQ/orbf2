@@ -14,6 +14,12 @@ class V2::FormulaMappingSerializer < V2::BaseSerializer
   set_type :formula_mapping
 
   attributes :kind
+  attributes :topic_id do |fm|
+    fm.activity_id
+  end
+  attributes :external_reference do |fm|
+    fm.external_reference
+  end
 
   belongs_to :external_ref, serializer: V2::DhisValueItemSerializer do |mapping|
     ExternalReference.new(id: mapping.external_reference,
