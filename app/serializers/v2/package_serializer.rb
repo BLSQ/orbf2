@@ -53,6 +53,10 @@ class V2::PackageSerializer < V2::BaseSerializer
     package.zone_rule&.formulas
   end
 
+  has_many :multi_entities_formulas, serializer: V2::FormulaSerializer, record_type: :formula  do |package|
+    package.multi_entities_rule&.formulas
+  end
+
   has_many :topics, serializer: V2::ActivitySerializer do |package|
     package.activities
   end

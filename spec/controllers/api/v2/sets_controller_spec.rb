@@ -88,7 +88,7 @@ RSpec.describe Api::V2::SetsController, type: :controller do
       resp = JSON.parse(response.body)
       expect(resp["data"]["id"]).to eq(package.id.to_s)
       # various formulas have the formula type
-      %w[topicFormulas setFormulas zoneTopicFormulas zoneFormulas].each do |formula_type|
+      %w[topicFormulas setFormulas zoneTopicFormulas zoneFormulas multiEntitiesFormulas].each do |formula_type|
         types = resp["data"]["relationships"][formula_type]["data"].map { |f| f["type"] }.uniq
         if types.any?
           expect(types).to eq(["formula"])

@@ -36,6 +36,7 @@ module Api
           set_formulas
           zone_topic_formulas
           zone_formulas
+          multi_entities_formulas
         ]
       end
 
