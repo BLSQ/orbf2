@@ -15,7 +15,7 @@ class V2::FormulaMappingSerializer < V2::BaseSerializer
 
   attributes :kind
   attributes :topic_id do |fm|
-    fm.activity_id
+    fm.activity_id ? fm.activity_id.to_s : nil
   end
   attributes :external_reference do |fm|
     fm.external_reference
