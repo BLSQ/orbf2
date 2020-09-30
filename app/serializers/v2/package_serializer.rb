@@ -37,8 +37,20 @@ class V2::PackageSerializer < V2::BaseSerializer
     package.states
   end
 
-  has_many :topic_formulas do |package|
+  has_many :topic_formulas, serializer: V2::FormulaSerializer, record_type: :formula  do |package|
     package.activity_rule&.formulas
+  end
+
+  has_many :set_formulas, serializer: V2::FormulaSerializer, record_type: :formula  do |package|
+    package.package_rule&.formulas
+  end
+
+  has_many :zone_topic_formulas, serializer: V2::FormulaSerializer, record_type: :formula  do |package|
+    package.zone_activity_rule&.formulas
+  end
+
+  has_many :zone_formulas, serializer: V2::FormulaSerializer, record_type: :formula  do |package|
+    package.zone_rule&.formulas
   end
 
   has_many :topics, serializer: V2::ActivitySerializer do |package|
