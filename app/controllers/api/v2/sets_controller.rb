@@ -3,7 +3,6 @@
 module Api
   module V2
     class SetsController < BaseController
-
       def index
         packages = current_project_anchor.project.packages
         options = {}
@@ -30,20 +29,17 @@ module Api
       end
 
       def detailed_relationships
-        %i[
-          topics.input_mappings
-          topic_formulas
-          topic_formulas.formula_mappings
-          topic_formulas.formula_mappings.external_ref
-          set_formulas
-          set_formulas.formula_mappings
-          zone_topic_formulas
-          zone_topic_formulas.formula_mappings
-          zone_formulas
-          zone_formulas.formula_mappings
-          multi_entities_formulas
-          multi_entities_formulas.formula_mappings
-        ]
+        %i[topics.input_mappings] + detailed_formulas_relationships
+      end
+
+      def detailed_formulas_relationships
+        %w[topic_formulas set_formulas zone_topic_formulas multi_entities_formulas].flat_map do |formulas|
+          [
+            formulas,
+            "#{formulas}.formula_mappings",
+            "#{formulas}.formula_mappings.external_ref"
+          ].map(&:to_sym)
+        end
       end
 
       def serializer_class

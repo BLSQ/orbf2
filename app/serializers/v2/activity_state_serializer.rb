@@ -18,6 +18,7 @@ class V2::ActivityStateSerializer < V2::BaseSerializer
   attributes :origin
   attributes :stable_id
   attributes :kind
+  attributes :external_reference
 
   belongs_to :external_ref, serializer: V2::DhisValueItemSerializer do |activity_state|
     ExternalReference.new(id: activity_state.external_reference,
