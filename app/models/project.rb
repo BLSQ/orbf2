@@ -73,6 +73,34 @@ class Project < ApplicationRecord
     message: "%{value} is not a valid see #{ENGINE_VERSIONS.join(',')}"
   }
 
+  PACKAGE_INCLUDES = {
+    activities:            {
+      activity_states: [:state]
+    },
+    activity_packages:     {
+      activity: {
+        activity_states: [:state]
+      }
+    },
+    package_entity_groups: {
+
+    },
+    states:                {
+    },
+    package_states:        {
+      state: []
+    },
+    rules:                 {
+      decision_tables: [],
+      formulas:        {
+        rule:             [:formulas],
+        formula_mappings: [:activity]
+      },
+      payment_rule:    {}
+    }
+  }
+
+
   def contract_settings
     if entity_group.contract_program_based?
       {
@@ -143,44 +171,17 @@ class Project < ApplicationRecord
   end
 
   def self.fully_loaded
-    package_includes = {
-      activities:            {
-        activity_states: [:state]
-      },
-      activity_packages:     {
-        activity: {
-          activity_states: [:state]
-        }
-      },
-      package_entity_groups: {
-
-      },
-      states:                {
-      },
-      package_states:        {
-        state: []
-      },
-      rules:                 {
-        decision_tables: [],
-        formulas:        {
-          rule:             [:formulas],
-          formula_mappings: [:activity]
-        },
-        payment_rule:    {}
-      }
-    }
-
     includes(
-      packages:      package_includes,
+      packages:      PACKAGE_INCLUDES,
       activities:    {
         activity_states:   [:state],
-        activity_packages: { package: package_includes }
+        activity_packages: { package: PACKAGE_INCLUDES }
       },
       payment_rules: {
         package_payment_rules: {
-          package: package_includes
+          package: PACKAGE_INCLUDES
         },
-        packages:              package_includes,
+        packages:              PACKAGE_INCLUDES,
         rule:                  {
           decision_tables: [],
           formulas:        {

@@ -13,5 +13,5 @@ class V2::FormulaSerializer < V2::BaseSerializer
   attributes :created_at
   attributes :updated_at
 
-  has_many :formula_mappings
+  has_many :formula_mappings, serializer: V2::FormulaMappingSerializer, record_type: :formulaMapping
 end
