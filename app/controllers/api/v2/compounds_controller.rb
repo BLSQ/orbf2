@@ -14,7 +14,10 @@ module Api
       def show
         payment_rule = project.payment_rules.find(params[:id])
         options = {}
-        options[:include] = [:formulas]
+        options[:include] = %i[
+          formulas
+          formulas.formula_mappings
+        ]
 
         render json: serializer_class.new(payment_rule, options).serialized_json
       end
