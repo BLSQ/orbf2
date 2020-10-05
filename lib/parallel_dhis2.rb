@@ -175,7 +175,7 @@ class ParallelDhis2
     def post_headers
       headers = @client.send(:headers, "post", {})
       headers.delete(:params)
-      headers["Accept"] = headers.delete(:accept).to_s
+      headers["Accept"] = "application/#{headers.delete(:accept).to_s}"
       headers["Content-Type"] = "application/#{headers.delete(:content_type)}"
       headers
     end
