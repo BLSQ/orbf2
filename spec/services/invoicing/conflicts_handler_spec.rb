@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "rails_helper"
+require "invoicing/errors"
 
 describe Invoicing::ConflictsHandler do
   let(:subject) { Invoicing::ConflictsHandler.new({}) }
@@ -43,6 +44,19 @@ describe Invoicing::ConflictsHandler do
 
   it "assume blocking conflict when unknown" do
     expect(subject.blocking_conflict?("value"=> "we are doomed, this is a new error")).to eq(true)
+  end
+
+  it "raises error when blocking conflict found" do
+    raw_status = {
+      "status" => "_It's complicated_",
+      "conflicts" => [
+        blocking_conflicts.first
+      ]
+    }
+    status = Dhis2::Status.new(raw_status)
+    expect {
+      Invoicing::ConflictsHandler.new(status).raise_if_blocking_conflicts?
+    }.to raise_error(Invoicing::BlockingConflictsError)
   end
 
   describe "should handle status ERROR" do
