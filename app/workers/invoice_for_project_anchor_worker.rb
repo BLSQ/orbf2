@@ -41,6 +41,14 @@ class InvoiceForProjectAnchorWorker
       invoice_entity = Invoicing::InvoiceEntity.new(project_anchor, request, options)
       invoice_entity.call
     end
+  rescue Invoicing::BlockingConflictsError => e
+    puts "job failed #{e.message} : #{project_anchor}, #{year}Q#{quarter} #{selected_org_unit_ids}"
+  rescue Invoicing::RequestFailed => e
+    # While publishing to DHIS we encountered a an error with they way
+    # DHIS handled this request. Not a HTTP error, but DHIS returned
+    # something unusual. So, let this one fail and have sidekiq retry
+    # it again.
+    raise e
   rescue Invoicing::PublishingError => e
     puts "job failed #{e.message} : #{project_anchor}, #{year}Q#{quarter} #{selected_org_unit_ids}"
   rescue Hesabu::Error => e

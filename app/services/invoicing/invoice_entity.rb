@@ -83,6 +83,8 @@ module Invoicing
         sidekiq_job_ref:  options.sidekiq_job_ref
       )
       ConflictsHandler.new(status).raise_if_blocking_conflicts?
+    rescue ParallelDhis2::InvalidJSON => e
+      raise Invoicing::RequestFailed, e
     end
 
     def parallel_publish_to_dhis2
