@@ -98,6 +98,14 @@ RSpec.describe ParallelDhis2 do
       }.to raise_error ParallelDhis2::HttpException
     end
 
+    it "raises on invalid JSON" do
+      stub_request(:any, expected_url).to_return(status: 200, body: "<html>I am not JSON</html>")
+      all_values = [{ value: 1234 }]
+      expect {
+        client.post_data_value_sets(all_values)
+      }.to raise_error ParallelDhis2::InvalidJSON
+    end
+
     it "returns a Dhis2::Status" do
       payload = fake_response(
         status:       "SUCCESS",

@@ -26,6 +26,7 @@ class ParallelDhis2
   class HttpError < StandardError; end
   class TimedOut < HttpError; end
   class HttpException < HttpError; end
+  class InvalidJSON < HttpError; end
 
   # Amount of items to include in a single request
   SEND_VALUES_PER = 1000
@@ -253,6 +254,8 @@ class ParallelDhis2
       Dhis2::Case.deep_change(parsed_response, :underscore)
     end
     parsed.compact
+  rescue JSON::ParserError => e
+    raise InvalidJSON, e
   end
 
   def check_for_errors!(responses)
