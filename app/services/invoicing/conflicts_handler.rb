@@ -62,7 +62,7 @@ module Invoicing
       blocking_conflicts = status.raw_status["conflicts"].select { |c| blocking_conflict?(c) }
       if blocking_conflicts.any?
         messages = blocking_conflicts.map { |conflict| conflict["value"] }.uniq
-        raise BlockingConflictsError,, messages.join(", ")
+        raise BlockingConflictsError, messages.join(", ")
       end
     end
   end

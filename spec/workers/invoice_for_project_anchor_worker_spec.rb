@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "rails_helper"
+require "invoicing/errors"
 
 require_relative "./project_fixture"
 RSpec.describe InvoiceForProjectAnchorWorker do
@@ -354,6 +355,32 @@ RSpec.describe InvoiceForProjectAnchorWorker do
       expect {
         worker.perform(project.project_anchor.id, 2015, 1, ["Rp268JB6Ne4"])
       }.to raise_error(Hesabu::Error, "Some error in Hesabu")
+    end
+
+    it "doesn't retry on blocking conflicts" do
+      expect(InvoicingJob).to receive(:execute) { raise Invoicing::BlockingConflictsError.new("I'm conflicted")}
+
+      expect {
+        worker.perform(project.project_anchor.id, 2015, 1, ["Rp268JB6Ne4"])
+      }.to_not raise_error(Hesabu::Error, "Some error in Hesabu")
+    end
+
+    it "retries on some requests failed" do
+      message = "My JSON didn't parse"
+      expect(InvoicingJob).to receive(:execute) { raise Invoicing::RequestFailed.new(message)}
+
+      expect {
+        worker.perform(project.project_anchor.id, 2015, 1, ["Rp268JB6Ne4"])
+      }.to raise_error(Invoicing::RequestFailed, message)
+    end
+
+    it 'does not retry when status was "ERROR"' do
+      message = "My status was ERROR"
+      expect(InvoicingJob).to receive(:execute) { raise Invoicing::PublishingError.new(message)}
+
+      expect {
+        worker.perform(project.project_anchor.id, 2015, 1, ["Rp268JB6Ne4"])
+      }.to_not raise_error(Invoicing::PublishingError, message)
     end
   end
   def stub_dhis2_values_yearly(values, start_date)
