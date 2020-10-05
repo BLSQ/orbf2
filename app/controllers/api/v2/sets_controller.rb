@@ -33,9 +33,9 @@ module Api
       end
 
       def detailed_formulas_relationships
-        %w[topic_formulas set_formulas zone_topic_formulas multi_entities_formulas].flat_map do |formulas|
+        %w[topic_formulas set_formulas zone_topic_formulas zone_formulas multi_entities_formulas].flat_map do |formulas|
           [
-            formulas,
+            "#{formulas}",
             "#{formulas}.formula_mappings",
             "#{formulas}.formula_mappings.external_ref"
           ].map(&:to_sym)
