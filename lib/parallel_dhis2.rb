@@ -6,7 +6,12 @@ class ParallelDhis2
   # `typhoeus` gem, which handles all the parallelization without us
   # having to worry about it.
   #
-  #      client = Dhis2::Client.new(dhis_configuration)
+  # client = Dhis2::Client.new(url:                 "https://play.dhis2.org/2.34.1",
+  #                            user:                "admin",
+  #                            password:            "district",
+  #                            no_ssl_verification: false,
+  #                            debug:               true
+  #                           )
   #      parallel_dhis2 = ParallelDhis2.new(client)
   #      parallel_dhis2.post_data_value_sets(array_of_data_values)
   #
