@@ -16,6 +16,7 @@
 #  publish_date          :datetime
 #  publish_end_date      :datetime
 #  qualifier             :string
+#  read_through_deg      :boolean          default(TRUE), not null
 #  status                :string           default("draft"), not null
 #  user                  :string
 #  created_at            :datetime         not null

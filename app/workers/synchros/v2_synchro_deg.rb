@@ -6,7 +6,7 @@ class Synchros::V2SynchroDeg
     @indicators ||= package.project.dhis2_connection.indicators.list(fields: "id,name,numerator", page_size: 50_000)
 
     data_element_ids = data_element_ids_used_for(package)
-    next if data_element_ids.empty?
+    return if data_element_ids.empty?
 
     Rails.logger.info "dataelements : #{data_element_ids}"
     created_deg = create_data_element_group(package, data_element_ids)
@@ -28,8 +28,8 @@ class Synchros::V2SynchroDeg
   def create_data_element_group(package, data_element_ids)
     created_deg = nil
     begin
-      deg_code = "HESABU-#{package.name}"[0..49]
-      deg_name = "HESABU - #{package.name}"
+      deg_code = "ORBF-#{package.name}"[0..49]
+      deg_name = "ORBF - #{package.name}"
       deg = [
         { name:          deg_name,
           short_name:    deg_code,
@@ -45,6 +45,7 @@ class Synchros::V2SynchroDeg
       puts "**************************************** #{deg_id}"
       if deg_id
         created_deg = dhis2.data_element_groups.find(deg_id)
+        #TODO Something wrong here it's not a rails model ?
         created_deg.update(deg.first)
       else
         status = dhis2.data_element_groups.create(deg)
@@ -60,7 +61,7 @@ class Synchros::V2SynchroDeg
 
       return created_deg
     end
-end
+  end
 
   def indicators_data_element_references(indicators, activity_states)
     indicator_references = Set.new(activity_states.select(&:kind_indicator?).select(&:origin_data_value_sets?).map(&:external_reference))
