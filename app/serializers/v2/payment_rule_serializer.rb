@@ -8,7 +8,7 @@ class V2::PaymentRuleSerializer < V2::BaseSerializer
   end
   attributes :frequency
 
-  has_many :sets do |payment_rule|
+  has_many :sets, serializer: V2::PackageSerializer, record_type: "set" do |payment_rule|
     payment_rule.packages
   end
 

@@ -66,6 +66,8 @@ RSpec.describe Api::V2::CompoundsController, type: :controller do
       get(:show, params: { id: payment_rule.id })
       resp = JSON.parse(response.body)
       expect(resp["data"]["id"]).to eq(payment_rule.id.to_s)
+      expect(resp["data"]["relationships"]["sets"]["data"].uniq.length).to eq(2)
+      expect(resp["included"].select { |r|  r["type"]=="set"}.length).to eq(2)
       record_json("compound.json", resp)
     end
   end
