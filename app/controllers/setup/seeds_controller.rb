@@ -29,7 +29,9 @@ class Setup::SeedsController < PrivateController
   end
 
   def dhis2_url
-    if params[:local]
+    if params[:version]
+      "https://play.dhis2.org/#{params[:version]}"
+    elsif params[:local]
       "http://127.0.0.1:8085/"
     else
       resolve_play_demo_url

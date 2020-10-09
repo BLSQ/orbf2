@@ -291,7 +291,7 @@ class Project < ApplicationRecord
 
   def dhis_configuration
     {
-      url:                 dhis2_url,
+      url:                 dhis2_url.chomp("/"),
       user:                user,
       password:            password,
       no_ssl_verification: bypass_ssl,
