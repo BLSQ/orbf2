@@ -6,7 +6,7 @@ module Api
       def index
         payment_rules = project.payment_rules
         options = {}
-        options[:include] = [:formulas]
+        options[:include] = default_relationships
 
         render json: serializer_class.new(payment_rules, options).serialized_json
       end
@@ -14,15 +14,22 @@ module Api
       def show
         payment_rule = project.payment_rules.find(params[:id])
         options = {}
-        options[:include] = %i[
-          formulas
-          formulas.formula_mappings
-        ]
+        options[:include] = default_relationships + detailed_relationships
 
         render json: serializer_class.new(payment_rule, options).serialized_json
       end
 
       private
+
+      def default_relationships
+        %i[formulas sets]
+      end
+
+      def detailed_relationships
+        %i[
+          formulas.formula_mappings
+        ]
+      end
 
       def project
         current_project_anchor.project
