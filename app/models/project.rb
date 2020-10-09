@@ -17,6 +17,7 @@
 #  publish_date          :datetime
 #  publish_end_date      :datetime
 #  qualifier             :string
+#  read_through_deg      :boolean          default(TRUE), not null
 #  status                :string           default("draft"), not null
 #  user                  :string
 #  created_at            :datetime         not null
@@ -290,7 +291,7 @@ class Project < ApplicationRecord
 
   def dhis_configuration
     {
-      url:                 dhis2_url,
+      url:                 dhis2_url.chomp("/"),
       user:                user,
       password:            password,
       no_ssl_verification: bypass_ssl,

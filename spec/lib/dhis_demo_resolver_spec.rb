@@ -11,6 +11,6 @@ RSpec.describe DhisDemoResolver, type: :model do
         status: 302, headers: { location: "https://play.dhis2.org/2.32.0/" })
     stub_request(:get, "https://play.dhis2.org/2.32.0/").to_return(
         status: 302, headers: { location: "https://play.dhis2.org/2.32.0/dhis-web-commons-about/redirect.action" })
-    expect(DhisDemoResolver.new.call).to eq("https://play.dhis2.org/2.32.0/")
+    expect(DhisDemoResolver.new.call).to eq("https://play.dhis2.org/2.32.0")
   end
 end

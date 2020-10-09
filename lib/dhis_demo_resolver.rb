@@ -16,6 +16,14 @@ class DhisDemoResolver
   end
 
   def call(location = @url)
+    resolved_url = resolve(location)
+    # ensure not ending slash might break api calls or web urls if url is not normalized
+    resolved_url.chomp("/")
+  end
+
+  private
+
+  def resolve(location = @url)
     res = Net::HTTP.get_response(URI(location))
     case res
     when Net::HTTPSuccess then

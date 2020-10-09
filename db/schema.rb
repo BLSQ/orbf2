@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_08_03_115137) do
+ActiveRecord::Schema.define(version: 2020_10_07_065734) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -238,6 +238,7 @@ ActiveRecord::Schema.define(version: 2020_08_03_115137) do
     t.boolean "include_main_orgunit", default: false, null: false
     t.string "description"
     t.string "loop_over_combo_ext_id"
+    t.string "deg_external_reference"
     t.index ["project_id"], name: "index_packages_on_project_id"
   end
 
@@ -297,6 +298,7 @@ ActiveRecord::Schema.define(version: 2020_08_03_115137) do
     t.string "default_aoc_reference"
     t.datetime "publish_end_date"
     t.string "calendar_name", default: "gregorian", null: false
+    t.boolean "read_through_deg", default: true, null: false
     t.index ["project_anchor_id"], name: "index_projects_on_project_anchor_id"
   end
 

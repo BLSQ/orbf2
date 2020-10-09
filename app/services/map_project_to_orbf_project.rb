@@ -20,7 +20,8 @@ class MapProjectToOrbfProject
       default_category_combo_ext_id:         project.default_coc_reference,
       default_attribute_option_combo_ext_id: project.default_aoc_reference,
       calendar:                              project.calendar,
-      contract_settings:                     project.contract_settings
+      contract_settings:                     project.contract_settings,
+      read_through_deg:                      project.read_through_deg
     )
   end
 
@@ -57,6 +58,7 @@ class MapProjectToOrbfProject
       groupset_ext_id:               package.ogs_reference,
       matching_groupset_ext_ids:     package.groupsets_ext_refs,
       dataset_ext_ids:               package.package_states.map(&:ds_external_reference).compact,
+      deg_ext_id:                    package.deg_external_reference,
       activities:                    map_activities(package.activities, package.states),
       rules:                         map_rules(package.rules),
       include_main_orgunit:          package.include_main_orgunit,

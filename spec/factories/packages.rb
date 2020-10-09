@@ -4,6 +4,7 @@
 #
 #  id                         :bigint(8)        not null, primary key
 #  data_element_group_ext_ref :string           not null
+#  deg_external_reference     :string
 #  description                :string
 #  frequency                  :string           not null
 #  groupsets_ext_refs         :string           default([]), is an Array
