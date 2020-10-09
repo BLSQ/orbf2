@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Synchros::V2SynchroDeg
+class Synchros::V2::DataElementGroups
   def synchronize(package)
     Rails.logger.info "********** Synchronizing #{package.name} (#{package.id}) - activities #{package.activities.size}"
     @indicators ||= package.project.dhis2_connection.indicators.list(fields: "id,name,numerator", page_size: 50_000)
@@ -10,7 +10,7 @@ class Synchros::V2SynchroDeg
 
     Rails.logger.info "dataelements : #{data_element_ids}"
     created_deg = create_data_element_group(package, data_element_ids)
-    Rails.logger.info "created #{created_deg}"
+    Rails.logger.info "created/updated #{created_deg}"
     package.update!(deg_external_reference: created_deg.id) if created_deg
 
     package
@@ -31,13 +31,15 @@ class Synchros::V2SynchroDeg
       deg_code = "ORBF-#{package.name}"[0..49]
       deg_name = "ORBF - #{package.name}"
       deg = [
-        { name:          deg_name,
+        {
+          name:          deg_name,
           short_name:    deg_code,
           code:          deg_code,
           display_name:  deg_name,
           data_elements: data_element_ids.map do |data_element_id|
             { id: data_element_id }
-          end }
+          end
+        }
       ]
       dhis2 = package.project.dhis2_connection
       status = nil
@@ -45,8 +47,6 @@ class Synchros::V2SynchroDeg
       puts "**************************************** #{deg_id}"
       if deg_id
         created_deg = dhis2.data_element_groups.find(deg_id)
-        #TODO Something wrong here it's not a rails model ?
-        created_deg.update(deg.first)
       else
         status = dhis2.data_element_groups.create(deg)
       end

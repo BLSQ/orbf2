@@ -15,7 +15,7 @@ class SynchroniseDegDsWorker
     project_anchor = ProjectAnchor.find(project_anchor_id)
     project = project_anchor.latest_draft || project_anchor.projects.for_date(now)
 
-    strategy = project.read_through_deg ? Synchros::V2SynchroDeg.new : Synchros::V1SynchroDeg.new
+    strategy = project.read_through_deg ? Synchros::V2::DataElementGroups.new : Synchros::V1::DataElementGroups.new
 
     project.packages.each do |package|
       strategy.synchronize(package)

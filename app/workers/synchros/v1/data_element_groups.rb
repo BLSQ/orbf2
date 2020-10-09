@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Synchros::V1SynchroDeg
+class Synchros::V1::DataElementGroups
   def synchronize(package)
     Rails.logger.info "********** Synchronizing #{package.name} (#{package.id}) - activities #{package.activities.size}"
     @indicators ||= package.project.dhis2_connection.indicators.list(fields: ":all", page_size: 50_000)
@@ -57,8 +57,6 @@ class Synchros::V1SynchroDeg
       puts "**************************************** #{deg_id}"
       if deg_id
         created_deg = dhis2.data_element_groups.find(deg_id)
-        #TODO Something wrong here it's not a rails model ?
-        created_deg.update_attributes(deg.first) # rubocop:disable Rails/ActiveRecordAliases
       else
         status = dhis2.data_element_groups.create(deg)
       end
@@ -156,4 +154,4 @@ class Synchros::V1SynchroDeg
     Rails.logger.info "Adding indicator's data elements #{indicator_references.to_a} => #{dataelement_references}"
     dataelement_references
   end
-  end
+end
