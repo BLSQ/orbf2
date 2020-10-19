@@ -27,6 +27,7 @@ module Descriptor
         target_org_unit_group_ids: package_description.target_org_unit_group_ids,
         groupset_ext_id:           package.ogs_reference,
         matching_groupset_ids:     package.groupsets_ext_refs,
+        deg_ext_id:                package.deg_external_reference,
         activity_formulas:         activity_formulas_descriptors(package),
         formulas:                  formulas_descriptors(package.package_rule)
       }

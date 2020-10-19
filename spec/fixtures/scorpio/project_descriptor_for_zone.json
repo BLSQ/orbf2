@@ -31,6 +31,7 @@
           "target_org_unit_group_ids": [],
           "groupset_ext_id": null,
           "matching_groupset_ids": [],
+          "deg_ext_id": null,
           "activity_formulas": {
             "difference_percentage": {
               "short_name": "Pourcentage difference entre déclaré & vérifié",
@@ -102,6 +103,7 @@
           "target_org_unit_group_ids": [],
           "groupset_ext_id": null,
           "matching_groupset_ids": [],
+          "deg_ext_id": null,
           "activity_formulas": {
             "attributed_points": {
               "short_name": "Attrib. Points",
@@ -186,6 +188,7 @@
           "target_org_unit_group_ids": [],
           "groupset_ext_id": null,
           "matching_groupset_ids": [],
+          "deg_ext_id": null,
           "activity_formulas": {
             "difference_percentage": {
               "short_name": "Pourcentage difference entre déclaré & vérifié",
@@ -235,6 +238,7 @@
           "target_org_unit_group_ids": [],
           "groupset_ext_id": null,
           "matching_groupset_ids": [],
+          "deg_ext_id": null,
           "activity_formulas": {
             "attributed_points": {
               "short_name": "Attrib. Points",
