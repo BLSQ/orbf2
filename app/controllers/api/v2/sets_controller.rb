@@ -33,11 +33,12 @@ module Api
       end
 
       def detailed_formulas_relationships
-        %w[topic_formulas set_formulas zone_topic_formulas zone_formulas multi_entities_formulas].flat_map do |formulas|
+        %w[topic set zone_topic zone multi_entities].flat_map do |scope|
           [
-            "#{formulas}",
-            "#{formulas}.formula_mappings",
-            "#{formulas}.formula_mappings.external_ref"
+            "#{scope}_decision_tables",
+            "#{scope}_formulas",
+            "#{scope}_formulas.formula_mappings",
+            "#{scope}_formulas.formula_mappings.external_ref"
           ].map(&:to_sym)
         end
       end

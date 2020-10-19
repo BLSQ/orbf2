@@ -57,6 +57,26 @@ class V2::PackageSerializer < V2::BaseSerializer
     package.multi_entities_rule&.formulas
   end
 
+  has_many :topic_decision_tables, serializer: V2::DecisionTableSerializer, record_type: :decisionTable do |package|
+    package.activity_rule&.decision_tables
+  end
+
+  has_many :set_decision_tables, serializer: V2::DecisionTableSerializer, record_type: :decisionTable do |package|
+    package.package_rule&.decision_tables
+  end
+
+  has_many :zone_topic_decision_tables, serializer: V2::DecisionTableSerializer, record_type: :decisionTable do |package|
+    package.zone_activity_rule&.decision_tables
+  end
+
+  has_many :zone_decision_tables, serializer: V2::DecisionTableSerializer, record_type: :decisionTable do |package|
+    package.zone_rule&.decision_tables
+  end
+
+  has_many :multi_entities_decision_tables, serializer: V2::DecisionTableSerializer, record_type: :decisionTable do |package|
+    package.multi_entities_rule&.decision_tables
+  end
+
   has_many :topics, serializer: V2::ActivitySerializer do |package|
     package.activities
   end
