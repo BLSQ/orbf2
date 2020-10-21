@@ -20,7 +20,7 @@ module Rules
       if variable_name.end_with?("_current_quarter_values")
         length = 3
       else
-        matched_window = variable_name.match(/.last_(?<length>\d)_(month|quarter)s_window_values/)
+        matched_window = variable_name.match(/.last_(?<length>\d+)_(month|quarter)s_window_values/)
         length = Integer(matched_window[:length]) if matched_window
       end
       (1..length).map(&:to_s).join(" , ")

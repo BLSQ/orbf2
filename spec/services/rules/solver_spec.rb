@@ -37,6 +37,13 @@ RSpec.describe Rules::ValuesMocker, type: :services do
            )).to eq "SUM(4,6) /SUM(1 , 2 , 3 , 4 , 5 , 6 , 7) * 100.0"
   end
 
+  it "substitute %{last_xx_months_window_values} (double digits) with a correct size equations" do
+    expect(Rules::ValuesMocker.mock_values(
+             "SUM(4,6) /SUM(%{demo_last_15_months_window_values}) * 100.0",
+             ["demo_last_15_months_window_values"]
+           )).to eq "SUM(4,6) /SUM(1 , 2 , 3 , 4 , 5 , 6 , 7 , 8 , 9 , 10 , 11 , 12 , 13 , 14 , 15) * 100.0"
+  end
+
   it "substitute %{_current_quarter_values} with a correct size equations" do
     expect(Rules::ValuesMocker.mock_values(
              "SUM(4,6) / SUM(%{demo_current_quarter_values}) * 100.0",
