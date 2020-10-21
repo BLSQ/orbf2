@@ -19,7 +19,7 @@ RSpec.describe Api::V2::ProjectsController, type: :controller do
       get(:show, params: {})
       resp = JSON.parse(response.body)
 
-      expect(resp["data"]["id"]).to eq(project.project_anchor.id.to_s)
+      expect(resp["data"]["id"]).to eq(project.id.to_s)
     end
 
     it "returns periods" do
