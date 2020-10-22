@@ -33,7 +33,7 @@ class V2::PackageSerializer < V2::BaseSerializer
     end
   end
 
-  has_many :inputs, serializer: V2::StateSerializer do |package|
+  has_many :inputs, serializer: V2::StateSerializer, record_type: :input do |package|
     package.states
   end
 
