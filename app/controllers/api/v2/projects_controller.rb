@@ -6,7 +6,7 @@ module Api
       def show
         options = {}
         project = nil
-        if params[:fields] == ":all"
+        if params[:profile] == "full"
           options[:include] = default_relationships
           project = current_project_anchor.projects.fully_loaded.find(current_project_anchor.project.id)
         else
