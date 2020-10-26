@@ -108,6 +108,7 @@ class InvoiceEntityToJson
 
   def total_item_hash(total_item)
     {
+      key:                     total_item.key,
       formula:                 total_item.formula.code,
       not_exported:            total_item.not_exported,
       expression:              total_item.explanations[0],
