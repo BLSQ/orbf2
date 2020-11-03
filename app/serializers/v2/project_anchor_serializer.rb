@@ -27,7 +27,7 @@ class V2::ProjectAnchorSerializer < V2::BaseSerializer
     project&.project_anchor&.program&.code
   end
 
-  has_many :inputs do |project|
+  has_many :inputs, serializer: V2::StateSerializer, record_type: "input"  do |project|
     project&.states
   end
 
