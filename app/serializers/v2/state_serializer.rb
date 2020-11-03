@@ -5,4 +5,5 @@ class V2::StateSerializer < V2::BaseSerializer
 
   attributes :name
   attributes :short_name
+  attributes :code
 end

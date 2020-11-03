@@ -19,12 +19,15 @@ module Api
 
       def default_relationships
         %i[
+          inputs
           compounds
           sets
           sets.topics
+          sets.topics.input
           sets.org_unit_groups
           sets.org_unit_group_sets
           sets.topics.input_mappings
+          sets.topics.input_mappings.input
           compounds.formulas
           compounds.sets
           compounds.formulas.formula_mappings
