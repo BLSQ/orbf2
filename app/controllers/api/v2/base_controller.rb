@@ -21,6 +21,11 @@ module Api
         render status: :unauthorized, json: { errors: [error] }
       end
 
+      rescue_from ActiveRecord::RecordInvalid do |exception|
+        error = { status: "409", message: exception.message, details: exception.record.errors.messages}
+        render status: :bad_request, json: { errors: [error] }
+      end
+
       def options
         render json: {}
       end

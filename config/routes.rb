@@ -45,6 +45,8 @@ Rails.application.routes.draw do
       resources :sets, only: %i[index show]
       resources :compounds, only: %i[index show]
       resources :simulations, only: %i[index show]
+      resources :topics, only: %i[create update]
+
       get :simulation, to: "simulations#query_based_show"
 
       match "*path",
