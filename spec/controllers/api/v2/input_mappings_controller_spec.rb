@@ -30,7 +30,7 @@ RSpec.describe Api::V2::InputMappingsController, type: :controller do
         }
       }
     }
-    it "create a input" do
+    it "create a input mapping" do
       post(:create, params: payload)
 
       resp = JSON.parse(response.body)
@@ -49,7 +49,7 @@ RSpec.describe Api::V2::InputMappingsController, type: :controller do
       expect(attributes["formula"]).to be_nil
     end
 
-    it "create a topic handles validation errors" do
+    it "create a input mapping handles validation errors" do
       post(:create,
            params: payload)
 
