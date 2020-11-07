@@ -3,14 +3,22 @@
 module Api::V2
   class TopicsController < BaseController
     def create
+      topic = current_project.activities.create!(topic_attributes)
+      # make stable id visible
+      topic.reload
+      render json: serializer_class.new(topic).serialized_json
+    end
 
-      item = current_project_anchor.project.activities.create!(topic_attributes)
-
-      item.reload
-      render json: serializer_class.new(item).serialized_json
+    def index
+      topics = current_project.activities
+      render json: serializer_class.new(topics).serialized_json
     end
 
     private
+
+    def current_project
+      current_project_anchor.project
+    end
 
     def serializer_class
       ::V2::ActivitySerializer
@@ -27,10 +35,11 @@ module Api::V2
     end
 
     def topic_attributes
+      att = topic_params[:attributes]
       {
-        name:       topic_params[:attributes][:name],
-        short_name: topic_params[:attributes][:shortName],
-        code:       topic_params[:attributes][:code]
+        name:       att[:name],
+        short_name: att[:shortName],
+        code:       att[:code]
       }
     end
   end
