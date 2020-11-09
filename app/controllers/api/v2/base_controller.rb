@@ -36,6 +36,13 @@ module Api
 
       private
 
+      def check_whodunnit!
+        dhis2_user_id = request.headers["X-Dhis2UserId"] || params[:dhis2UserId]
+        raise UnauthorizedAccess unless dhis2_user_id
+
+        PaperTrail.request.whodunnit = dhis2_user_id
+      end
+
       def check_token!
         token = request.headers["X-Token"] || params[:token]
         if token

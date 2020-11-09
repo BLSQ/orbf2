@@ -11,6 +11,7 @@ RSpec.describe Api::V2::TopicsController, type: :controller do
   def authenticated
     request.headers["Accept"] = "application/vnd.api+json;version=2"
     request.headers["X-Token"] = project.project_anchor.token
+    request.headers["X-Dhis2UserId"] = "aze123sdf"
   end
 
   describe "#create" do

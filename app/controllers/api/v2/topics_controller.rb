@@ -2,6 +2,8 @@
 
 module Api::V2
   class TopicsController < BaseController
+    before_action :check_whodunnit!, only: %i[create update delete]
+
     def create
       topic = current_project.activities.create!(topic_attributes)
       # make stable id visible

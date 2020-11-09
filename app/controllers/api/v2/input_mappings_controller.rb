@@ -2,6 +2,8 @@
 
 module Api::V2
   class InputMappingsController < BaseController
+    before_action :check_whodunnit!, only: %i[create update delete]
+
     def create
       activity = current_activity
       state_code = input_params[:attributes][:code]
