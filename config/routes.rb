@@ -39,12 +39,16 @@ Rails.application.routes.draw do
             constraints: { method: "OPTIONS" },
             via:         [:options]
     end
-    scope module: :v2, constraints: ApiConstraints.new(version: 2) do
+    scope module: :v2 , constraints: ApiConstraints.new(version: 2)do
       resource :project, only: [:show]
       resources :org_units, only: [:index]
       resources :sets, only: %i[index show]
       resources :compounds, only: %i[index show]
       resources :simulations, only: %i[index show]
+      resources :topics, only: %i[index create update] do
+        resources :input_mappings, only: %i[index create update]
+      end
+
       get :simulation, to: "simulations#query_based_show"
 
       match "*path",

@@ -21,11 +21,27 @@ module Api
         render status: :unauthorized, json: { errors: [error] }
       end
 
+      rescue_from ActiveRecord::RecordInvalid do |exception|
+        error = {
+          status:  "400",
+          message: exception.message,
+          details: exception.record.errors.messages
+        }
+        render status: :bad_request, json: { errors: [error] }
+      end
+
       def options
         render json: {}
       end
 
       private
+
+      def check_whodunnit!
+        dhis2_user_id = request.headers["X-Dhis2UserId"] || params[:dhis2UserId]
+        raise UnauthorizedAccess unless dhis2_user_id
+
+        PaperTrail.request.whodunnit = dhis2_user_id
+      end
 
       def check_token!
         token = request.headers["X-Token"] || params[:token]
