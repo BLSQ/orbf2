@@ -10,10 +10,14 @@ RSpec.describe Api::V2::InputMappingsController, type: :controller do
   let(:activity) { create :activity, project: project, name: "Topic 1", code: "topic_01" }
   let(:state) { create :state, project: project, name: "declared" }
 
+  def authenticated
+    request.headers["Accept"] = "application/vnd.api+json;version=2"
+    request.headers["X-Token"] = project.project_anchor.token
+  end
+
   describe "#create" do
     before do
-      request.headers["Accept"] = "application/vnd.api+json;version=2"
-      request.headers["X-Token"] = project.project_anchor.token
+      authenticated
     end
     let(:payload) {
       {
@@ -61,6 +65,60 @@ RSpec.describe Api::V2::InputMappingsController, type: :controller do
           { "details" => { "state_id"=>["has already been taken"] },
             "message" => "Validation failed: State has already been taken",
             "status"  => "400" }
+        ]
+      )
+    end
+  end
+
+  describe "#update" do
+    before do
+      authenticated
+    end
+
+    let(:payload) {
+      {
+        topic_id: activity.id,
+        id:       activit_state.id,
+        data:     {
+          attributes: {
+            code:              state.code,
+            formula:           nil,
+            name:              "sample",
+            origin:            "dataValueSets",
+            kind:              "data_element",
+            externalReference: "dhis2id"
+          }
+        }
+      }
+    }
+
+    let(:activit_state) {
+      activity.activity_states.create!(
+        name:               "sample",
+        origin:             "analytics",
+        kind:               "data_element",
+        external_reference: "dhis2id",
+        state_id:           state.id
+      )
+    }
+
+    it "update an input mapping" do
+      put(:update, params: payload)
+      resp = JSON.parse(response.body)
+      expect(resp["data"]["attributes"]["origin"]).to eq("dataValueSets")
+    end
+
+    it "update handle validation errors" do
+      payload[:data][:attributes][:origin] = "badOrigin"
+      put(:update, params: payload)
+      resp = JSON.parse(response.body)
+      expect(resp).to eq(
+        "errors" => [
+          {
+            "status"  => "400",
+            "message" => "Validation failed: Origin badOrigin is not a valid see dataValueSets,analytics",
+            "details" => { "origin" => ["badOrigin is not a valid see dataValueSets,analytics"] }
+          }
         ]
       )
     end

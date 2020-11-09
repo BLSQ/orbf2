@@ -22,6 +22,20 @@ module Api::V2
       render json: serializer_class.new(inputs, include: default_relationships).serialized_json
     end
 
+    def update
+      activity_state = current_activity.activity_states.find(params[:id])
+      state_code = input_params[:attributes][:code]
+      state = if state_code
+                # ease client work allowing to pass the state code
+                activity_state.activity.project.state(state_code)
+              else
+                activity_state.state
+              end
+      activity_state.update!(input_attributes.merge(state_id: state.id))
+
+      render json: serializer_class.new(activity_state, include: default_relationships).serialized_json
+    end
+
     private
 
     def default_relationships
