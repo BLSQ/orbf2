@@ -9,10 +9,9 @@ module Api::V2
       render json: serializer_class.new(topic).serialized_json
     end
 
-
     def update
       topic = current_project.activities.find(params[:id])
-      topic.update_attributes!(topic_attributes)
+      topic.update!(topic_attributes)
 
       render json: serializer_class.new(topic).serialized_json
     end

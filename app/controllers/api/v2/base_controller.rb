@@ -22,7 +22,11 @@ module Api
       end
 
       rescue_from ActiveRecord::RecordInvalid do |exception|
-        error = { status: "400", message: exception.message, details: exception.record.errors.messages}
+        error = {
+          status:  "400",
+          message: exception.message,
+          details: exception.record.errors.messages
+        }
         render status: :bad_request, json: { errors: [error] }
       end
 

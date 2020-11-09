@@ -14,7 +14,7 @@ module Api::V2
       activity_state = activity.activity_states.create!(input_attributes.merge(state_id: state.id))
       # make stable id visible
       activity_state.reload
-      render json: serializer_class.new(activity_state, include: default_relationships).serialized_json
+      render_activity_state(activity_state)
     end
 
     def index
@@ -33,10 +33,19 @@ module Api::V2
               end
       activity_state.update!(input_attributes.merge(state_id: state.id))
 
-      render json: serializer_class.new(activity_state, include: default_relationships).serialized_json
+      render_activity_state(activity_state)
     end
 
     private
+
+    def render_activity_state(activity_state)
+      render(
+        json: serializer_class.new(
+          activity_state,
+          include: default_relationships
+        ).serialized_json
+      )
+    end
 
     def default_relationships
       %i[input external_ref]
