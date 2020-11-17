@@ -27,6 +27,21 @@
 #  fk_rails_...  (state_id => states.id)
 #
 
+class ActivityStateValidator
+  def self.validate(activity_state)
+    if activity_state.kind_data_element_coc? && activity_state.external_reference.presence
+      if !activity_state.external_reference.include?(".")
+        activity_state.errors[:external_reference] << "should contains a dot like DATAELEMENTID.COCID"
+      end
+    end
+    if (activity_state.kind_indicator? || activity_state.kind_data_element?)  && activity_state.external_reference.presence
+      if activity_state.external_reference.include?(".")
+        activity_state.errors[:external_reference] << "should NOT contains a dot like DATAELEMENTID.COCID"
+      end
+    end
+  end
+end
+
 class ActivityState < ApplicationRecord
   include PaperTrailed
   delegate :project_id, to: :activity
@@ -36,8 +51,14 @@ class ActivityState < ApplicationRecord
   belongs_to :state
 
   validates :state, presence: { message: "Select a state or remove this activity from the list" }
-  validates :external_reference, presence: true, if: :kind_data_element?
+  validates :external_reference, presence: true, if: :dhis2_related?
   validates :name, presence: true
+
+  validates :formula, presence: true, if: :kind_formula?
+
+  validate do |activity_state|
+    ActivityStateValidator.validate(activity_state)
+  end
 
   validates :state_id, uniqueness: { scope: [:activity_id] }
 
@@ -101,6 +122,10 @@ class ActivityState < ApplicationRecord
 
   def data_element_related?
     kind_data_element? || kind_data_element_coc?
+  end
+
+  def dhis2_related?
+    data_element_related? || kind_indicator?
   end
 
   def data_element_id
