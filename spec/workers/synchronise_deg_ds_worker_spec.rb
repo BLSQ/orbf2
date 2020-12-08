@@ -135,6 +135,12 @@ RSpec.describe SynchroniseDegDsWorker do
         .to_return(status: 200, body: JSON.generate("dataElementGroups": [existing_data_element_group]))
     end
 
+    def stub_update_data_element_group
+      stub_request(:put, "http://play.dhis2.org/demo/api/dataElementGroups/dhis2DEGID").with(
+        body: "{\"name\":\"ORBF - Quantity PMA\",\"shortName\":\"ORBF-Quantity PMA\",\"code\":\"ORBF-Quantity PMA\",\"dataElements\":[{\"id\":\"cl-ext-2\"},{\"id\":\"tarif-ext-2\"},{\"id\":\"tarif-ext-1\"},{\"id\":\"clext1\"}],\"id\":\"dhis2DEGID\",\"displayName\":\"ORBF - Quantity PMA\"}")
+      .to_return(status: 200, body: "", headers: {})
+    end
+
     it "should create" do
       # minimize the number of stub to first package
       project.payment_rules.destroy_all
@@ -145,6 +151,7 @@ RSpec.describe SynchroniseDegDsWorker do
       stub_indicators
       stub_data_element_group_creation
       stub_data_element_group_get
+      stub_update_data_element_group
 
       SynchroniseDegDsWorker.new.perform(project.project_anchor.id)
 

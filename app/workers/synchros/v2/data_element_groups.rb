@@ -30,7 +30,7 @@ class Synchros::V2::DataElementGroups < Synchros::Base
     begin
       deg_code = "ORBF-#{package.name}"[0..49]
       deg_name = "ORBF - #{package.name}"
-      deg = [
+      deg =
         {
           name:          deg_name,
           short_name:    deg_code,
@@ -40,7 +40,7 @@ class Synchros::V2::DataElementGroups < Synchros::Base
             { id: data_element_id }
           end
         }
-      ]
+
       dhis2 = package.project.dhis2_connection
       status = nil
       deg_id = package.deg_external_reference
@@ -48,10 +48,15 @@ class Synchros::V2::DataElementGroups < Synchros::Base
       if deg_id
         created_deg = dhis2.data_element_groups.find(deg_id)
       else
-        status = dhis2.data_element_groups.create(deg)
+        status = dhis2.data_element_groups.create([deg])
+        created_deg = dhis2.data_element_groups.find_by(name: deg_name)
       end
-      created_deg = dhis2.data_element_groups.find_by(name: deg_name)
+
       raise "data element group not created #{deg_name} : #{deg} : #{status.inspect}" unless created_deg
+
+      created_deg.name = deg[:name]
+      created_deg.data_elements = deg[:data_elements]
+      created_deg.update
 
       created_deg
     rescue RestClient::Exception => e
