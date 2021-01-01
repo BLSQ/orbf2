@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # rubocop:disable Metrics/BlockLength
 
 require "sidekiq/web"
@@ -39,9 +40,10 @@ Rails.application.routes.draw do
             constraints: { method: "OPTIONS" },
             via:         [:options]
     end
-    scope module: :v2 , constraints: ApiConstraints.new(version: 2)do
+    scope module: :v2, constraints: ApiConstraints.new(version: 2) do
       resource :project, only: [:show]
       resources :org_units, only: [:index]
+      resources :formula_mappings
       resources :sets, only: %i[index show]
       resources :compounds, only: %i[index show]
       resources :simulations, only: %i[index show]

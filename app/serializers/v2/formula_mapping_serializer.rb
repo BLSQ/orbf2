@@ -14,6 +14,11 @@ class V2::FormulaMappingSerializer < V2::BaseSerializer
   set_type :formula_mapping
 
   attributes :kind
+
+  attributes :formula_id do |fm|
+    fm.formula_id.to_s
+  end
+
   attributes :topic_id do |fm|
     fm.activity_id ? fm.activity_id.to_s : nil
   end
