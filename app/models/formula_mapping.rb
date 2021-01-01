@@ -36,7 +36,7 @@ class FormulaMapping < ApplicationRecord
   belongs_to :formula, inverse_of: :formula_mappings
   belongs_to :activity, optional: true
 
-  validates :activity_id, presence: true, if: -> { [Rule::RULE_TYPE_ACTIVITY, Rule::RULE_TYPE_ZONE_ACTIVITY].include?(kind) }
+  validates :activity, presence: true, if: -> { [Rule::RULE_TYPE_ACTIVITY, Rule::RULE_TYPE_ZONE_ACTIVITY].include?(kind) }
 
   def project
     formula.rule.project
