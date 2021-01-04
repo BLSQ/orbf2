@@ -43,6 +43,7 @@ Rails.application.routes.draw do
     scope module: :v2, constraints: ApiConstraints.new(version: 2) do
       resource :project, only: [:show]
       resources :org_units, only: [:index]
+      resources :de_cocs, only: [:index]
       resources :formula_mappings
       resources :sets, only: %i[index show]
       resources :compounds, only: %i[index show]

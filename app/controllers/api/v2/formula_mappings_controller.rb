@@ -4,7 +4,7 @@ module Api::V2
   class FormulaMappingsController < BaseController
     before_action :check_whodunnit!, only: %i[create update delete]
 
-    def create
+    def create      
       formula = current_formula
 
       formula_mapping = formula.formula_mappings.create!(formula_mapping_attributes.merge(kind: current_formula.rule.kind))
@@ -29,6 +29,7 @@ module Api::V2
     def destroy
       formula_mapping = current_mapping
       formula_mapping.destroy!
+      render json: serializer_class.new(formula_mapping).serialized_json
     end
 
     private

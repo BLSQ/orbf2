@@ -14,7 +14,7 @@ class V2::PackageSerializer < V2::BaseSerializer
   belongs_to :simulation_org_unit,
              serializer: V2::OrgUnitSerializer,
              if:         proc { |_record, params| (params || {}).fetch(:with_sim_org_unit, false) } do |package|
-    package.simulation_org_unit
+    nil;#package.simulation_org_unit
   end
 
   has_many :org_unit_groups, serializer: V2::OrgUnitGroupSerializer do |package|
