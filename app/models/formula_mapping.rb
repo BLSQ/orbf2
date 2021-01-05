@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: formula_mappings
@@ -33,6 +35,8 @@ class FormulaMapping < ApplicationRecord
   validates :external_reference, presence: true
   belongs_to :formula, inverse_of: :formula_mappings
   belongs_to :activity, optional: true
+
+  validates :activity, presence: true, if: -> { [Rule::RULE_TYPE_ACTIVITY, Rule::RULE_TYPE_ZONE_ACTIVITY].include?(kind) }
 
   def project
     formula.rule.project

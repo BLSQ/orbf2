@@ -22,7 +22,7 @@ module Api
       end
 
       ALL = "*"
-      ALLOW_HEADERS = "Origin, X-Requested-With, Content-Type, Accept, Authorization, X-token"
+      ALLOW_HEADERS = "Origin, X-Requested-With, Content-Type, Accept, Authorization, X-token, X-Dhis2UserId"
 
       def set_permissive_cors_headers
         headers["Access-Control-Allow-Origin"] = ALL
