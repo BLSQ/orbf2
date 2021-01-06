@@ -84,6 +84,15 @@ Or you can use this button to get up and running immediately:
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
+## Deploying the dhis2 app 'hesabu manager'
+
+A dhis2 app called [hesabu-manager](https://github.com/BLSQ/hesabu-manager/) is available but not yet on par with the web application.
+
+```
+heroku run rake ui:setup_all -a yourappname
+heroku run rake ui:deploy_all -a yourappname
+```
+
 ## Restoring a testing or production Environment
 
 get a fresh copy using Heroku
