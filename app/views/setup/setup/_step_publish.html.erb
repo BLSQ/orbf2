@@ -13,7 +13,8 @@
               <th>Id</th>
               <th>Parent Id</th>
               <th>Status</th>
-              <th>Publish date</th>
+              <th>Publish Start Date</th>
+              <th>Publish End Date</th>
           </tr>
       </thead>
       <body>
@@ -24,6 +25,7 @@
           <td><%= link_to "#{project.original_id}", setup_project_path(project.original_id) if project.original_id%></td>
           <td><%= project.status %></td>
           <td><%= project.publish_date %></td>
+          <td><%= project.publish_end_date %></td>
         </tr>
         <%end%>
       </body>
