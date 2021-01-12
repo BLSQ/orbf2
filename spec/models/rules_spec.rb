@@ -294,6 +294,7 @@ RSpec.describe Rule, kind: :model do
        %{verified_previous_year_values}
        amount
        claimed
+       claimed_quarterly
        claimed_is_null
        claimed_level_1
        claimed_level_1_quarterly
@@ -312,6 +313,7 @@ RSpec.describe Rule, kind: :model do
        quantity
        quarter_of_year
        tarif
+       tarif_quarterly
        tarif_is_null
        tarif_level_1
        tarif_level_1_quarterly
@@ -324,6 +326,7 @@ RSpec.describe Rule, kind: :model do
        tarif_level_5
        tarif_level_5_quarterly
        verified
+       verified_quarterly
        verified_is_null
        verified_level_1
        verified_level_1_quarterly
@@ -673,6 +676,7 @@ RSpec.describe Rule, kind: :model do
        %{claimed_last_4_quarters_window_values}
        attributed_points
        claimed
+       claimed_quarterly
        claimed_is_null
        claimed_level_1
        claimed_level_1_quarterly
