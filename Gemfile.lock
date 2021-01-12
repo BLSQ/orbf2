@@ -14,8 +14,8 @@ GIT
 
 GIT
   remote: https://github.com/BLSQ/orbf-rules_engine.git
-  revision: ae4ac4c5af3c650f9a7b8e491bb5e94f11fb95e6
-  branch: allow-to-force-quarterly-value-lookup
+  revision: 7c63ca6aab9121d8992c5acf4a542c58a96fe939
+  branch: master
   specs:
     orbf-rules_engine (0.1.0)
       activesupport
