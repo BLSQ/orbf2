@@ -14,8 +14,8 @@ GIT
 
 GIT
   remote: https://github.com/BLSQ/orbf-rules_engine.git
-  revision: eb5bcce16a1725de965cd4e766593c7acfa36732
-  branch: master
+  revision: ae4ac4c5af3c650f9a7b8e491bb5e94f11fb95e6
+  branch: allow-to-force-quarterly-value-lookup
   specs:
     orbf-rules_engine (0.1.0)
       activesupport
@@ -611,4 +611,4 @@ RUBY VERSION
    ruby 2.5.8p224
 
 BUNDLED WITH
-   2.1.4
+   2.2.3
