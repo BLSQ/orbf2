@@ -4,6 +4,9 @@ module Descriptor
   class ProjectDescriptorFactory
     def project_descriptor(project)
       {
+        status:        project.status,
+        start_date:    project.publish_date,
+        end_date:      project.publish_end_date,
         payment_rules: payment_rule_descriptors(project),
         entity_group:  {
           id:   project.entity_group.external_reference,
