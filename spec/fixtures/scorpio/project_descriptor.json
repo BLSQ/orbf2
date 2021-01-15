@@ -1,4 +1,7 @@
 {
+  "start_date": null,
+  "end_date": null,
+  "status": "draft",
   "payment_rules": {
     "payment_rule_pma": {
       "name": "Payment rule pma",
