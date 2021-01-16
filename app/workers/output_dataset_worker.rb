@@ -106,11 +106,13 @@ class OutputDatasetWorker
   end
 
   def add_de_ids_newer(dhis2_dataset, de_ids)
-    data_elements = dhis2_dataset.data_set_elements
+    data_set_elements = dhis2_dataset.data_set_elements
     de_ids.each do |id_to_add|
-      next if data_elements.any? { |de| de["data_element"] == { "id" => id_to_add } }
-
-      data_elements.push("data_element" => { "id" => id_to_add })
+      next if data_set_elements.any? { |de| de["data_element"] == { "id" => id_to_add } }
+      
+      dse = { "data_element" => { "id" => id_to_add }}
+      dse["data_set"] = { "id" => dhis2_dataset.id } if dhis2_dataset.id
+      data_set_elements.push(dse)
     end
   end
 
