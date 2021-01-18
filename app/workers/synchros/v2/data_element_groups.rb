@@ -28,8 +28,8 @@ class Synchros::V2::DataElementGroups < Synchros::Base
   def create_data_element_group(package, data_element_ids)
     created_deg = nil
     begin
-      deg_code = "ORBF-#{package.name}"[0..49]
-      deg_name = "ORBF - #{package.name}"
+      deg_code = "hesabu-#{package.id}"
+      deg_name = "ORBF - #{package.id} - #{package.name}"
       deg =
         {
           name:          deg_name,
@@ -44,12 +44,11 @@ class Synchros::V2::DataElementGroups < Synchros::Base
       dhis2 = package.project.dhis2_connection
       status = nil
       deg_id = package.deg_external_reference
+      created_deg= dhis2.data_element_groups.find_by(code: deg_code)      
       puts "**************************************** #{deg_id}"
-      if deg_id
-        created_deg = dhis2.data_element_groups.find(deg_id)
-      else
+      unless created_deg
         status = dhis2.data_element_groups.create([deg])
-        created_deg = dhis2.data_element_groups.find_by(name: deg_name)
+        created_deg = dhis2.data_element_groups.find_by(code: deg_code)
       end
 
       raise "data element group not created #{deg_name} : #{deg} : #{status.inspect}" unless created_deg
