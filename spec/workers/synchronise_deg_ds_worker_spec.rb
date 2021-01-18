@@ -103,16 +103,15 @@ RSpec.describe SynchroniseDegDsWorker do
     let(:project) { full_project }
 
     let(:expected_data_element_group) do
-      { "name":         "ORBF - Quantity PMA",
-        "shortName":    "ORBF-Quantity PMA",
-        "code":         "ORBF-Quantity PMA",
+      { "name":         "ORBF - #{project.packages.first.id} - Quantity PMA",
+        "shortName":    "hesabu-" + project.packages.first.id.to_s,
+        "code":         "hesabu-" + project.packages.first.id.to_s,
         "dataElements": [
           { "id": "cl-ext-2" },
           { "id": "tarif-ext-2" },
           { "id": "tarif-ext-1" },
           { "id": "clext1" }
-        ]
-      }
+        ] }
     end
 
     let(:existing_data_element_group) do
@@ -130,15 +129,44 @@ RSpec.describe SynchroniseDegDsWorker do
         ).to_return(status: 200, body: "")
     end
 
-    def stub_data_element_group_get
-      stub_request(:get, "http://play.dhis2.org/demo/api/dataElementGroups?fields=:all&filter=name:eq:ORBF%20-%20Quantity%20PMA")
-        .to_return(status: 200, body: JSON.generate("dataElementGroups": [existing_data_element_group]))
-    end
 
     def stub_update_data_element_group
       stub_request(:put, "http://play.dhis2.org/demo/api/dataElementGroups/dhis2DEGID").with(
-        body: "{\"name\":\"ORBF - Quantity PMA\",\"shortName\":\"ORBF-Quantity PMA\",\"code\":\"ORBF-Quantity PMA\",\"dataElements\":[{\"id\":\"cl-ext-2\"},{\"id\":\"tarif-ext-2\"},{\"id\":\"tarif-ext-1\"},{\"id\":\"clext1\"}],\"id\":\"dhis2DEGID\",\"displayName\":\"ORBF - Quantity PMA\"}")
-      .to_return(status: 200, body: "", headers: {})
+        body: "{\"name\":\"ORBF - " + project.packages.first.id.to_s + " - Quantity PMA\",\"shortName\":\"hesabu-" + project.packages.first.id.to_s + "\",\"code\":\"hesabu-" + project.packages.first.id.to_s + "\",\"dataElements\":[{\"id\":\"cl-ext-2\"},{\"id\":\"tarif-ext-2\"},{\"id\":\"tarif-ext-1\"},{\"id\":\"clext1\"}],\"id\":\"dhis2DEGID\",\"displayName\":\"ORBF - "+project.packages.first.id.to_s+" - Quantity PMA\"}"
+      ).to_return(status: 200, body: "", headers: {})
+    end
+
+    def stub_data_element_group_find_by_code
+      stub_request(:get, "http://play.dhis2.org/demo/api/dataElementGroups?fields=:all&filter=code:eq:hesabu-" + project.packages.first.id.to_s)
+        .to_return(status: 200, body: JSON.generate(dataElementGroups: [existing_data_element_group]), headers: {})
+    end
+
+    def stub_data_element_group_find_by_code_empty_then_found
+
+      stub_request(:get, "http://play.dhis2.org/demo/api/dataElementGroups?fields=:all&filter=code:eq:hesabu-" + project.packages.first.id.to_s)
+        .to_return(status: 200, body: JSON.generate(dataElementGroups: []), headers: {}).then
+        .to_return(status: 200, body: JSON.generate(dataElementGroups: [existing_data_element_group]), headers: {}).then
+        .to_return(status: 200, body: JSON.generate(dataElementGroups: [existing_data_element_group]), headers: {}).then
+        .to_return(status: 200, body: JSON.generate(dataElementGroups: [existing_data_element_group]), headers: {})
+    end
+
+    it "should update" do
+      # minimize the number of stub to first package
+      project.payment_rules.destroy_all
+      project.packages[1..-1].map(&:destroy)
+      # make sure to have at least one indicator
+      project.packages.first.activities.first.activity_states.first.update(kind: "indicator", external_reference: "indicator-dhis-id")
+
+      stub_indicators
+
+      stub_update_data_element_group
+
+      stub_data_element_group_find_by_code
+
+      SynchroniseDegDsWorker.new.perform(project.project_anchor.id)
+
+      project.reload # to make sure the package is reloaded
+      expect(project.packages.first.deg_external_reference).to eq("dhis2DEGID")
     end
 
     it "should create" do
@@ -149,10 +177,10 @@ RSpec.describe SynchroniseDegDsWorker do
       project.packages.first.activities.first.activity_states.first.update(kind: "indicator", external_reference: "indicator-dhis-id")
 
       stub_indicators
-      stub_data_element_group_creation
-      stub_data_element_group_get
-      stub_update_data_element_group
 
+      stub_update_data_element_group
+      stub_data_element_group_creation
+      stub_data_element_group_find_by_code_empty_then_found
       SynchroniseDegDsWorker.new.perform(project.project_anchor.id)
 
       project.reload # to make sure the package is reloaded

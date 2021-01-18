@@ -25,17 +25,20 @@ class OutputDatasetWorker
 
     Datasets::BuildDatasets.new(legacy_project).call
 
-    @payment_rule = legacy_project.payment_rule_for_code(payment_rule_code)
+    @payment_rule = legacy_project.payment_rule_for_code(payment_rule_code)    
+    @dataset_code = "hesabu-outputs-" + payment_rule.id.to_s + "-" + frequency
+    @dataset_name = "ORBF - "+@payment_rule.rule.name+" (#{@payment_rule.id}) - #{frequency.capitalize}"
+
     dataset = payment_rule.dataset(frequency)
     begin
-      dhis2_dataset = load_dhis2_dataset(dataset)
+      dhis2_dataset = load_dhis2_dataset(payment_rule, frequency, dataset)
       if modes.include?("create") || dhis2_dataset.nil?
         if dhis2_dataset
           Rails.logger.warn("not creating the dataset seem "\
             "to already exist : #{dataset.external_reference}")
           return
         end
-        dhis2_dataset = create_dataset(dataset)
+        dhis2_dataset = create_dataset(dataset, frequency)
       end
 
       update(dhis2_dataset, dataset, modes)
@@ -52,10 +55,10 @@ class OutputDatasetWorker
 
   attr_reader :legacy_project, :payment_rule
 
-  def load_dhis2_dataset(dataset)
+  def load_dhis2_dataset(payment_rule, frequency, dataset)
     return nil if dataset.external_reference.blank?
 
-    dhis2_connection.data_sets.find(dataset.external_reference)
+    dhis2_connection.data_sets.find_by(code: @dataset_code)
   rescue RestClient::NotFound
     nil
   end
@@ -64,11 +67,14 @@ class OutputDatasetWorker
     @dhis2_connection ||= payment_rule.project.dhis2_connection
   end
 
-  def create_dataset(dataset)
+  def create_dataset(dataset, frequency)
     dataset_hash = Datasets::ToDhis2Datasets.new(dataset).call
+    dataset_hash[:code] = @dataset_code
+    dataset_hash[:name] = @dataset_name
+    dataset_hash[:short_name] = @dataset_code
     dhis2_status = dhis2_connection.data_sets.create(dataset_hash)
     Rails.logger.info dhis2_status.to_json
-    dhis2_dataset = dhis2_connection.data_sets.find_by(name: dataset_hash[:name])
+    dhis2_dataset = dhis2_connection.data_sets.find_by(code: dataset_hash[:code])
     dataset.external_reference = dhis2_dataset.id
     dataset.save!
     update(dhis2_dataset, dataset, MODES)
@@ -109,8 +115,8 @@ class OutputDatasetWorker
     data_set_elements = dhis2_dataset.data_set_elements
     de_ids.each do |id_to_add|
       next if data_set_elements.any? { |de| de["data_element"] == { "id" => id_to_add } }
-      
-      dse = { "data_element" => { "id" => id_to_add }}
+
+      dse = { "data_element" => { "id" => id_to_add } }
       dse["data_set"] = { "id" => dhis2_dataset.id } if dhis2_dataset.id
       data_set_elements.push(dse)
     end
@@ -119,7 +125,7 @@ class OutputDatasetWorker
   def add_de_ids_legacy(dhis2_dataset, de_ids)
     data_elements = dhis2_dataset.data_elements
     de_ids.each do |id_to_add|
-      next if data_elements.any? { |de| de["id"] == id_to_add  }
+      next if data_elements.any? { |de| de["id"] == id_to_add }
 
       data_elements.push("id" => id_to_add)
     end
