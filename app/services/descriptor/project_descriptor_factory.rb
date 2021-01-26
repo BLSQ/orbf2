@@ -32,6 +32,7 @@ module Descriptor
         matching_groupset_ids:     package.groupsets_ext_refs,
         deg_ext_id:                package.deg_external_reference,
         activity_formulas:         activity_formulas_descriptors(package),
+        activity_decision_tables:  activity_decision_tables_descriptors(package),
         formulas:                  formulas_descriptors(package.package_rule)
       }
       if package.zone_kind?
@@ -79,6 +80,16 @@ module Descriptor
 
     def zone_activity_formulas_descriptors(package)
       RuleDescription.new(package.zone_activity_rule).activity_formulas_descriptors
+    end
+
+    def activity_decision_tables_descriptors(package)
+      package.activity_rule.decision_tables.map do |decision_table|
+        {
+          in_headers:  decision_table.in_headers,
+          out_headers: decision_table.out_headers,
+          content:     decision_table.content
+        }
+      end
     end
   end
 end
