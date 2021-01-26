@@ -1,13 +1,12 @@
 {
+  "status": "draft",
   "start_date": null,
   "end_date": null,
-  "status": "draft",
   "payment_rules": {
     "payment_rule_pma": {
       "name": "Payment rule pma",
       "frequency": "quarterly",
-      "formulas": {
-      },
+      "formulas": {},
       "packages": {
         "quantity_pma": {
           "name": "Quantity PMA",
@@ -29,22 +28,14 @@
               "tarif": "tarif-ext-2"
             }
           ],
-          "data_set_ids": [
-
-          ],
-          "data_element_group_ids": [
-
-          ],
+          "data_set_ids": [],
+          "data_element_group_ids": [],
           "main_org_unit_group_ids": [
             "RXL3lPSK8oG"
           ],
-          "target_org_unit_group_ids": [
-
-          ],
+          "target_org_unit_group_ids": [],
           "groupset_ext_id": null,
-          "matching_groupset_ids": [
-
-          ],
+          "matching_groupset_ids": [],
           "deg_ext_id": null,
           "activity_formulas": {
             "difference_percentage": {
@@ -69,8 +60,18 @@
               "exportable_formula_code": null
             }
           },
-          "formulas": {
-          }
+          "activity_decision_tables": [
+            {
+              "in_headers": [
+                "level_3"
+              ],
+              "out_headers": [
+                "equity_bonus"
+              ],
+              "content": "ignore:level_2,ignore:level_2_name,in:level_3,ignore:level_3_name,out:equity_bonus\nsYUYlnVx1xh,Adamaoua,GMC5DCK8AZT,NGAOUNDERE RURAL,29\nsYUYlnVx1xh,Adamaoua,nLmXJF0dRvQ,Ngaoundéré Urbain,28\nxdxTFCAsoWc,EST,FIlyPgAPt8k,ABONG MBANG,25\nxdxTFCAsoWc,EST,CCQ2yJyFQAS,BATOURI,34\nxdxTFCAsoWc,EST,tE03W4q27te,BERTOUA,23\nxdxTFCAsoWc,EST,UeEzrOGGfWr,BETARE OYA,41\nxdxTFCAsoWc,EST,fLGSn6852xo,DOUME,27\nxdxTFCAsoWc,EST,at6UHUQatSo,bb,12\nxdxTFCAsoWc,EST,U6Kr7Gtpidn,bb2,12\nxdxTFCAsoWc,EST,U6Kr7Gtpidn,bb2,12\n"
+            }
+          ],
+          "formulas": {}
         },
         "quality": {
           "name": "Quality",
@@ -90,23 +91,15 @@
               "claimed": "cl-ext-2"
             }
           ],
-          "data_set_ids": [
-
-          ],
-          "data_element_group_ids": [
-
-          ],
+          "data_set_ids": [],
+          "data_element_group_ids": [],
           "main_org_unit_group_ids": [
             "RXL3lPSK8oG",
             "tDZVQ1WtwpA"
           ],
-          "target_org_unit_group_ids": [
-
-          ],
+          "target_org_unit_group_ids": [],
           "groupset_ext_id": null,
-          "matching_groupset_ids": [
-
-          ],
+          "matching_groupset_ids": [],
           "deg_ext_id": null,
           "activity_formulas": {
             "attributed_points": {
@@ -131,6 +124,7 @@
               "exportable_formula_code": null
             }
           },
+          "activity_decision_tables": [],
           "formulas": {
             "attributed_points": {
               "short_name": "Quality score",
@@ -169,8 +163,7 @@
     "payment_rule_pca": {
       "name": "Payment rule pca",
       "frequency": "quarterly",
-      "formulas": {
-      },
+      "formulas": {},
       "packages": {
         "quantity_pca": {
           "name": "Quantity PCA",
@@ -192,22 +185,14 @@
               "tarif": "tarif-ext-2"
             }
           ],
-          "data_set_ids": [
-
-          ],
-          "data_element_group_ids": [
-
-          ],
+          "data_set_ids": [],
+          "data_element_group_ids": [],
           "main_org_unit_group_ids": [
             "tDZVQ1WtwpA"
           ],
-          "target_org_unit_group_ids": [
-
-          ],
+          "target_org_unit_group_ids": [],
           "groupset_ext_id": null,
-          "matching_groupset_ids": [
-
-          ],
+          "matching_groupset_ids": [],
           "deg_ext_id": null,
           "activity_formulas": {
             "difference_percentage": {
@@ -232,8 +217,8 @@
               "exportable_formula_code": null
             }
           },
-          "formulas": {
-          }
+          "activity_decision_tables": [],
+          "formulas": {}
         },
         "quality": {
           "name": "Quality",
@@ -253,23 +238,15 @@
               "claimed": "cl-ext-2"
             }
           ],
-          "data_set_ids": [
-
-          ],
-          "data_element_group_ids": [
-
-          ],
+          "data_set_ids": [],
+          "data_element_group_ids": [],
           "main_org_unit_group_ids": [
             "RXL3lPSK8oG",
             "tDZVQ1WtwpA"
           ],
-          "target_org_unit_group_ids": [
-
-          ],
+          "target_org_unit_group_ids": [],
           "groupset_ext_id": null,
-          "matching_groupset_ids": [
-
-          ],
+          "matching_groupset_ids": [],
           "deg_ext_id": null,
           "activity_formulas": {
             "attributed_points": {
@@ -294,6 +271,7 @@
               "exportable_formula_code": null
             }
           },
+          "activity_decision_tables": [],
           "formulas": {
             "attributed_points": {
               "short_name": "Quality score",
@@ -322,9 +300,7 @@
           }
         }
       },
-      "output_data_sets": [
-
-      ]
+      "output_data_sets": []
     }
   },
   "entity_group": {
