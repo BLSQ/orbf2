@@ -2,4 +2,5 @@ test:
   adapter: postgresql
   encoding: unicode
   database: orbf2_test
-  username: postgres
+  username: orbf-test-user
+  password: orbf2-test

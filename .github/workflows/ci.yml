@@ -1,0 +1,70 @@
+name: CI Joe
+env:
+  POSTGRES_USER: orbf-test-user
+  POSTGRES_PASSWORD: orbf-test-password
+  POSTGRES_DB: orbf2-test
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:latest
+        ports: ["5432:5432"]
+        env:
+          POSTGRES_USER: ${{ env.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ env.POSTGRES_DB }}
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Ruby (uses .ruby-version)
+      uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+    - name: Install postgres client
+      run: sudo apt-get install libpq-dev
+    - name: script/setup
+      run: |
+        echo "Ghetto script is ghetto"
+        curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+        chmod +x ./cc-test-reporter
+        cp config/database-travis.yml config/database.yml
+        version=$(curl -s https://chromedriver.storage.googleapis.com/LATEST_RELEASE)
+        wget -N https://chromedriver.storage.googleapis.com/$version/chromedriver_linux64.zip -P ~/
+        unzip ~/chromedriver_linux64.zip -d ~/
+        rm ~/chromedriver_linux64.zip
+        sudo mv -f ~/chromedriver /usr/local/share/
+        sudo chmod +x /usr/local/share/chromedriver
+        sudo ln -s /usr/local/share/chromedriver /usr/local/bin/chromedriver
+      env:
+        DB_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+        REDIS_URL: redis://localhost:6379/0
+    - name: script/cibuild
+      run: |
+        script/cibuild
+      env:
+        REDIS_URL: redis://localhost:6379/0
+        DB_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+    - name: Upload coverage results
+      uses: actions/upload-artifact@v2
+      if: always()
+      with:
+        name: coverage-report
+        path: coverage
