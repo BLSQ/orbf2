@@ -42,17 +42,7 @@ jobs:
       run: sudo apt-get install libpq-dev
     - name: script/setup
       run: |
-        echo "Ghetto script is ghetto"
-        curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-        chmod +x ./cc-test-reporter
-        cp config/database-travis.yml config/database.yml
-        version=$(curl -s https://chromedriver.storage.googleapis.com/LATEST_RELEASE)
-        wget -N https://chromedriver.storage.googleapis.com/$version/chromedriver_linux64.zip -P ~/
-        unzip ~/chromedriver_linux64.zip -d ~/
-        rm ~/chromedriver_linux64.zip
-        sudo mv -f ~/chromedriver /usr/local/share/
-        sudo chmod +x /usr/local/share/chromedriver
-        sudo ln -s /usr/local/share/chromedriver /usr/local/bin/chromedriver
+        script/setup
       env:
         DB_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
         REDIS_URL: redis://localhost:6379/0
