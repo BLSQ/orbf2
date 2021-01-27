@@ -25,6 +25,7 @@ fi
 
 if [ -z "${CI+x}" ]; then
     # Do nothing, not on CI
+    true
 else
     cp config/database-travis.yml config/database.yml
     # We're on CI
