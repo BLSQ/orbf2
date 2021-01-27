@@ -52,8 +52,6 @@ else
     fi
 fi
 
-
-fi
 echo "==> Setting up DB…"
 # reset database to a fresh state.
 bin/rake db:reset db:create
