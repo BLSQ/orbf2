@@ -1,8 +1,8 @@
 name: CI Joe
 env:
-  POSTGRES_USER: orbf-test-user
-  POSTGRES_PASSWORD: orbf-test-password
-  POSTGRES_DB: orbf2-test
+  POSTGRES_USER: hesabu-test-user
+  POSTGRES_PASSWORD: hesabu-test-password
+  POSTGRES_DB: hesabu-test
 
 on:
   - push
@@ -45,13 +45,17 @@ jobs:
         script/setup
       env:
         DB_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+        DB_NAME: ${{ env.POSTGRES_DB }}
+        DB_USER: ${{ env.POSTGRES_USER }}
         REDIS_URL: redis://localhost:6379/0
     - name: script/cibuild
       run: |
         script/cibuild
       env:
-        REDIS_URL: redis://localhost:6379/0
         DB_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+        DB_NAME: ${{ env.POSTGRES_DB }}
+        DB_USER: ${{ env.POSTGRES_USER }}
+        REDIS_URL: redis://localhost:6379/0
     - name: Upload coverage results
       uses: actions/upload-artifact@v2
       if: always()
