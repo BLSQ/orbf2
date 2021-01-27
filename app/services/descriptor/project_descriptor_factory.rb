@@ -83,6 +83,7 @@ module Descriptor
     end
 
     def activity_decision_tables_descriptors(package)
+      return [] unless package.activity_rule
       package.activity_rule.decision_tables.map do |decision_table|
         {
           in_headers:  decision_table.in_headers,
