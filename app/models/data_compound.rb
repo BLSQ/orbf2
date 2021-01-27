@@ -17,7 +17,8 @@ class DataCompound
   end
 
   def self.from(project)
-    data_compound = project.project_anchor.data_compound_for(Time.now.utc)
+    date = project.calendar.from_iso(Time.now.utc.to_date)
+    data_compound = project.project_anchor.nearest_data_compound_for(date)
     return data_compound if data_compound
     dhis2 = project.dhis2_connection
     data_elements = dhis2.data_elements.list(fields: ":all", page_size: Dhis2SnapshotWorker::PAGE_SIZE)
