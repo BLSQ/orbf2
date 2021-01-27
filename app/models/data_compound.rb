@@ -17,7 +17,7 @@ class DataCompound
   end
 
   def self.from(project)
-    date = project.calendar.from_iso(Time.now.utc.to_date)
+    date = Time.now.utc.to_date
     data_compound = project.project_anchor.nearest_data_compound_for(date)
     return data_compound if data_compound
     dhis2 = project.dhis2_connection
