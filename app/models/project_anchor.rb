@@ -39,6 +39,7 @@ class ProjectAnchor < ApplicationRecord
     projects.where(status: "draft").fully_loaded.last
   end
 
+
   def nearest_pyramid_snapshot_for(date)
     kinds = %i[organisation_units organisation_unit_groups organisation_unit_group_sets]
     pyramid_snapshots = dhis2_snapshots.select("id, year, month, kind").where(kind: kinds)
@@ -64,6 +65,29 @@ class ProjectAnchor < ApplicationRecord
     new_pyramid(final_snapshots)
   end
 
+  def latest_data_compound() 
+    kinds = %i[data_elements data_element_groups indicators category_combos]
+    pyramid_snapshots = dhis2_snapshots.select("id, year, month, kind").where(kind: kinds)
+
+    candidates = pyramid_snapshots.sort_by { |snap| [snap.kind, [snap.year, snap.month].join("-")] }
+
+    data_elements = latest_candidates(candidates.select(&:kind_data_elements?))
+    data_element_groups = latest_candidates(candidates.select(&:kind_data_element_groups?))
+    indicators = latest_candidates(candidates.select(&:kind_indicators?))
+    category_combos = latest_candidates(candidates.select(&:kind_category_combos?))
+
+    return nil unless data_elements || data_element_groups || indicators
+
+    Rails.logger.info "for using snapshots #{data_elements.year} #{data_elements.month} and #{data_element_groups.year} #{data_element_groups.month} and #{indicators.year} #{indicators.month}"
+    data_elements = dhis2_snapshots.find(data_elements.id) if data_elements
+    data_element_groups = dhis2_snapshots.find(data_element_groups.id) if data_element_groups
+    indicators = dhis2_snapshots.find(indicators.id) if indicators
+    category_combos = dhis2_snapshots.find(category_combos.id) if category_combos
+
+    new_data_compound(data_elements, data_element_groups, indicators, category_combos)
+  end
+
+
   def nearest_data_compound_for(date)
     kinds = %i[data_elements data_element_groups indicators category_combos]
     pyramid_snapshots = dhis2_snapshots.select("id, year, month, kind").where(kind: kinds)
@@ -84,6 +108,13 @@ class ProjectAnchor < ApplicationRecord
     category_combos = dhis2_snapshots.find(category_combos.id) if category_combos
 
     new_data_compound(data_elements, data_element_groups, indicators, category_combos)
+  end
+  
+
+  def latest_candidates(snapshots)
+  
+    sorted = snapshots.sort_by { |snap| [snap.kind, [snap.year, snap.month.to_s.ljust(2,"0")].join("-")] }
+    sorted[-1]
   end
 
   def nearest(snapshots, date)
@@ -173,3 +204,4 @@ class ProjectAnchor < ApplicationRecord
     token
   end
 end
+
