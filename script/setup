@@ -37,7 +37,7 @@ else
         chmod +x ./cc-test-reporter
     fi
 
-    if [ -f "/usr/local/bin/chromedriver"]; then
+    if [ -f "/usr/local/bin/chromedriver" ]; then
         echo "==> Using cached chromedriver"
     else
         echo "==> Fetching chromedriver"
@@ -49,6 +49,9 @@ else
         sudo chmod +x /usr/local/share/chromedriver
         sudo ln -s /usr/local/share/chromedriver /usr/local/bin/chromedriver
     fi
+    export RAILS_ENV="test"
+    export RACK_ENV="test"
+    export CI="CIJOE"
 fi
 
 echo "==> Setting up DB…"
