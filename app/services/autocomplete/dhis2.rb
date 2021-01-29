@@ -105,7 +105,7 @@ module Autocomplete
 
     def unnested_elements_query(kind:)
       # Get the id of the latest snapshot for the correct project_anchor and kind
-      max_id_rel = Dhis2Snapshot.where(kind: kind).where(project_anchor_id: @project_anchor).select("id").order(["year","month"]).limit(1)
+      max_id_rel = Dhis2Snapshot.where(kind: kind).where(project_anchor_id: @project_anchor).select("id").order("year desc, month desc").limit(1)
       Dhis2Snapshot.select("jsonb_array_elements(content) as element").from(Dhis2Snapshot.where(id: max_id_rel))
     end
   end
