@@ -40,14 +40,6 @@ jobs:
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
     - name: Install postgres client
       run: sudo apt-get install libpq-dev
-    - name: script/setup
-      run: |
-        script/setup
-      env:
-        DB_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
-        DB_NAME: ${{ env.POSTGRES_DB }}
-        DB_USER: ${{ env.POSTGRES_USER }}
-        REDIS_URL: redis://localhost:6379/0
     - name: script/cibuild
       run: |
         script/cibuild
