@@ -56,6 +56,10 @@ jobs:
         DB_NAME: ${{ env.POSTGRES_DB }}
         DB_USER: ${{ env.POSTGRES_USER }}
         REDIS_URL: redis://localhost:6379/0
+        DATA_TEST_S3_BUCKET: ${{ secrets.DATA_TEST_S3_BUCKET }}
+        DATA_TEST_S3_REGION: ${{ secrets.DATA_TEST_S3_REGION }}
+        FETCHER_S3_ACCESS_KEY: ${{ secrets.FETCHER_S3_ACCESS_KEY }}
+        FETCHER_S3_ACCESS_KEY: ${{ secrets.FETCHER_S3_KEY }}
     - name: Upload coverage results
       uses: actions/upload-artifact@v2
       if: always()
