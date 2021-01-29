@@ -44,12 +44,12 @@ jobs:
       uses: actions/cache@v2
       with:
         path: "/usr/local/share/chromedriver"
-        key: ${{ runner.os }}-${{ hashFiles('/usr/local/share/chromedriver') }}
+        key: chromedriver-${{ runner.os }}-${{ hashFiles('/usr/local/share/chromedriver') }}
     - name: Cache clode climate reporter
       uses: actions/cache@v2
       with:
         path: "cc-test-reporter"
-        key: ${{ runner.os }}-${{ hashFiles('./cc-test-reporter') }}
+        key: cc-${{ runner.os }}-${{ hashFiles('./cc-test-reporter') }}
     - name: script/cibuild
       run: |
         script/cibuild
