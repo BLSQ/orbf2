@@ -40,6 +40,16 @@ jobs:
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
     - name: Install postgres client
       run: sudo apt-get install libpq-dev
+    - name: Cache chromedriver
+      uses: actions/cache@v2
+      with:
+        path: "/usr/local/share/chromedriver"
+        key: ${{ runner.os }}-${{ hashFiles('/usr/local/share/chromedriver') }}
+    - name: Cache clode climate reporter
+      uses: actions/cache@v2
+      with:
+        path: "cc-test-reporter"
+        key: ${{ runner.os }}-${{ hashFiles('./cc-test-reporter') }}
     - name: script/cibuild
       run: |
         script/cibuild

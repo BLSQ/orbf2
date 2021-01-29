@@ -28,8 +28,9 @@ if [ -z "${CI+x}" ]; then
     true
 else
     # We're on CI
-    if [ -f "./cc-test-reporter"]; then
+    if [ -f "./cc-test-reporter" ]; then
         echo "==> Using cached test reporter"
+        chmod +x ./cc-test-reporter
     else
         echo "==> Fetching test reporter"
         curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
@@ -39,6 +40,8 @@ else
 
     if [ -f "/usr/local/bin/chromedriver" ]; then
         echo "==> Using cached chromedriver"
+        sudo chmod +x /usr/local/share/chromedriver
+        sudo ln -s /usr/local/share/chromedriver /usr/local/bin/chromedriver
     else
         echo "==> Fetching chromedriver"
         version=$(curl -s https://chromedriver.storage.googleapis.com/LATEST_RELEASE)
