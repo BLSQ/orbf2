@@ -6,7 +6,32 @@
     "payment_rule_pma": {
       "name": "Payment rule pma",
       "frequency": "quarterly",
-      "formulas": {},
+      "formulas": {
+        "quality_bonus_percentage_value": {
+          "short_name": "Quality bonus percentage",
+          "description": "Quality bonus percentage",
+          "expression": "IF(quality_technical_score_value > 50, (0.35 * quality_technical_score_value) + (0.30 * 10.0), 0.0)",
+          "frequency": "quarterly",
+          "exportable_formula_code": null,
+          "de_id": null
+        },
+        "quality_bonus_value": {
+          "short_name": "Bonus qualité",
+          "description": "Bonus qualité",
+          "expression": "quantity_total_pma * quality_bonus_percentage_value",
+          "frequency": "quarterly",
+          "exportable_formula_code": null,
+          "de_id": null
+        },
+        "quarterly_payment": {
+          "short_name": "Quarterly Payment",
+          "description": "Quarterly Payment",
+          "expression": "quantity_total_pma + quality_bonus_value",
+          "frequency": "quarterly",
+          "exportable_formula_code": null,
+          "de_id": null
+        }
+      },
       "packages": {
         "quantity_pma": {
           "name": "Quantity PMA",
@@ -71,7 +96,16 @@
               "content": "ignore:level_2,ignore:level_2_name,in:level_3,ignore:level_3_name,out:equity_bonus\nsYUYlnVx1xh,Adamaoua,GMC5DCK8AZT,NGAOUNDERE RURAL,29\nsYUYlnVx1xh,Adamaoua,nLmXJF0dRvQ,Ngaoundéré Urbain,28\nxdxTFCAsoWc,EST,FIlyPgAPt8k,ABONG MBANG,25\nxdxTFCAsoWc,EST,CCQ2yJyFQAS,BATOURI,34\nxdxTFCAsoWc,EST,tE03W4q27te,BERTOUA,23\nxdxTFCAsoWc,EST,UeEzrOGGfWr,BETARE OYA,41\nxdxTFCAsoWc,EST,fLGSn6852xo,DOUME,27\nxdxTFCAsoWc,EST,at6UHUQatSo,bb,12\nxdxTFCAsoWc,EST,U6Kr7Gtpidn,bb2,12\nxdxTFCAsoWc,EST,U6Kr7Gtpidn,bb2,12\n"
             }
           ],
-          "formulas": {},
+          "formulas": {
+            "quantity_total_pma": {
+              "short_name": "Amount PBF",
+              "description": "Amount PBF",
+              "expression": "SUM(%{amount_values})",
+              "frequency": "monthly",
+              "exportable_formula_code": null,
+              "de_id": null
+            }
+          },
           "zone_activities": [
             {
               "name": "Vaccination",
@@ -180,7 +214,32 @@
     "payment_rule_pca": {
       "name": "Payment rule pca",
       "frequency": "quarterly",
-      "formulas": {},
+      "formulas": {
+        "quality_bonus_percentage_value": {
+          "short_name": "Quality bonus percentage",
+          "description": "Quality bonus percentage",
+          "expression": "IF(quality_technical_score_value > 50, (0.35 * quality_technical_score_value) + (0.30 * 10.0), 0.0)",
+          "frequency": "quarterly",
+          "exportable_formula_code": null,
+          "de_id": null
+        },
+        "quality_bonus_value": {
+          "short_name": "Bonus qualité",
+          "description": "Bonus qualité",
+          "expression": "quantity_total_pca * quality_bonus_percentage_value",
+          "frequency": "quarterly",
+          "exportable_formula_code": null,
+          "de_id": null
+        },
+        "quarterly_payment": {
+          "short_name": "Quarterly Payment",
+          "description": "Quarterly Payment",
+          "expression": "quantity_total_pca + quality_bonus_value",
+          "frequency": "quarterly",
+          "exportable_formula_code": null,
+          "de_id": null
+        }
+      },
       "packages": {
         "quantity_pca": {
           "name": "Quantity PCA",
@@ -235,7 +294,16 @@
             }
           },
           "activity_decision_tables": [],
-          "formulas": {}
+          "formulas": {
+            "quantity_total_pca": {
+              "short_name": "Amount PBF",
+              "description": "Amount PBF",
+              "expression": "SUM(%{amount_values})",
+              "frequency": "monthly",
+              "exportable_formula_code": null,
+              "de_id": null
+            }
+          }
         },
         "quality": {
           "name": "Quality",
