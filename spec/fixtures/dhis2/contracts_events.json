@@ -1,0 +1,118 @@
+{
+    "pager": {
+      "page": 1,
+      "pageCount": 1698,
+      "total": 3396,
+      "pageSize": 2
+    },
+    "listGrid": {
+      "metaData": {
+        
+      },
+      "headerWidth": 6,
+      "subtitle": "all program events",
+      "width": 6,
+      "title": "all program events",
+      "height": 2,
+      "headers": [
+        {
+          "hidden": false,
+          "meta": false,
+          "name": "event id",
+          "column": "event_id",
+          "type": "java.lang.String"
+        },
+        {
+          "hidden": false,
+          "meta": false,
+          "name": "data values",
+          "column": "data_values",
+          "type": "java.lang.String"
+        },
+        {
+          "hidden": false,
+          "meta": false,
+          "name": "orgunitid",
+          "column": "org_unit_id",
+          "type": "java.lang.String"
+        },
+        {
+          "hidden": false,
+          "meta": false,
+          "name": "orgunitname",
+          "column": "org_unit_name",
+          "type": "java.lang.String"
+        },
+        {
+          "hidden": false,
+          "meta": false,
+          "name": "program_id",
+          "column": "program_id",
+          "type": "java.lang.String"
+        },
+        {
+          "hidden": false,
+          "meta": false,
+          "name": "program_stage_id",
+          "column": "program_stage_id",
+          "type": "java.lang.String"
+        },
+        {
+          "hidden": false,
+          "meta": false,
+          "name": "event date",
+          "column": "event_date",
+          "type": "java.lang.String"
+        },
+        {
+          "hidden": false,
+          "meta": false,
+          "name": "org unit path",
+          "column": "org_unit_path",
+          "type": "java.lang.String"
+        }
+      ],
+      "rows": [
+        [
+          "OgVbqGV2WMH",
+          "{\"LvHWK2BkIJT\": {\"value\": \"2018-06-01\"}, \"vqE7cqNXVYK\": {\"value\": \"2021-12-31\"}, \"xti2FJDgX0U\": {\"value\": \"GROUP_CSI_1_CODE\"}, \"extra2FJDgX0U\":{\"value\":\"GROUP_RURAL_CODE\" }}",
+          "1",
+          "CSI A",
+          "TwcqxaLn11C",
+          "gHPyjsmOXHy"
+        ],
+        [
+          "zIU4tW3NRER",
+          "{\"LvHWK2BkIJT\": {\"value\": \"2018-06-01\" }, \"vqE7cqNXVYK\": {\"value\": \"2021-12-31\" }, \"xti2FJDgX0U\": {\"value\": \"GROUP_CSI_2_CODE\" }, \"extra2FJDgX0U\":{\"value\":\"GROUP_URBAN_CODE\" }}",
+          "2",
+          "CSI B",
+          "TwcqxaLn11C",
+          "gHPyjsmOXHy"
+        ],
+        [
+          "zIU4tW3NRER",
+          "{\"LvHWK2BkIJT\": {\"value\": \"2018-06-01\" }, \"vqE7cqNXVYK\": {\"value\": \"2021-12-31\" }, \"xti2FJDgX0U\": {\"value\": \"GROUP_3_CODE\" }}",
+          "3",
+          "Hospital District",
+          "TwcqxaLn11C",
+          "gHPyjsmOXHy"
+        ],
+        [
+          "zIU4tW3NRER",
+          "{\"LvHWK2BkIJT\": {\"value\": \"2018-06-01\"}, \"vqE7cqNXVYK\": {\"value\": \"2021-12-31\"}, \"xti2FJDgX0U\": {\"value\": null}, \"extra2FJDgX0U\": {\"value\": \"GROUP_X_CODE\"}, \"EBDWBYsJvuz\":{\"value\": \"province_id\"}}",
+          "X",
+          "kl Lareme Centre de Santé",
+          "TwcqxaLn11C",
+          "gHPyjsmOXHy"
+        ],
+        [
+          "zIU4tW3NRER",
+          "{\"LvHWK2BkIJT\": {\"value\": \"2018-06-01\"}, \"vqE7cqNXVYK\": {\"value\": \"2021-12-31\"}, \"xti2FJDgX0U\": {\"value\": null}, \"extra2FJDgX0U\": {\"value\": \"GROUP_PROVINCE_CODE\"}, \"EBDWBYsJvuz\":{\"value\": \"province_id\"}}",
+          "province_id",
+          "Province",
+          "TwcqxaLn11C",
+          "gHPyjsmOXHy"
+        ]
+      ]
+    }
+  }

@@ -1,9 +1,11 @@
 # frozen_string_literal: true
 
 require "rails_helper"
+require_relative "../../workers/dhis2_snapshot_fixture"
 
 describe Invoicing::InvoiceEntity do
   include_context "basic_context"
+  include Dhis2SnapshotFixture
 
   describe "use_parallel_publishing" do
     let(:project) { full_project }
@@ -101,6 +103,38 @@ describe Invoicing::InvoiceEntity do
       expect { entity.publish_to_dhis2 }.to change { Dhis2Log.count }.by(1)
       expect(a_request(:post, expected_url)).to have_been_made.times(2)
     end
+  end
 
+  describe "contract based project" do
+    let(:project) { full_project }
+    let(:expected_url) { "http://play.dhis2.org/demo/api/dataValueSets" }
+
+    let(:invoicing_request) {
+      InvoicingRequest.new(
+        entity:         "Rp268JB6Ne4",
+        year:           2020,
+        quarter:        1,
+        engine_version: 3
+      )
+    }
+    let(:entity) {
+      entity = Invoicing::InvoiceEntity.new(project.project_anchor, invoicing_request, nil)
+    }
+
+    it "sends values with feature enabled" do
+      stub_snapshots(project)
+
+      project.entity_group.update(kind: "contract_program_based", program_reference: "contractprogid", all_event_sql_view_reference: "sqlviewid")
+
+      stub1 = stub_request(:get, "http://play.dhis2.org/demo/api/sqlViews/sqlviewid/data.json?paging=false&var=programId:contractprogid").to_return(status: 200, body: fixture_content(:dhis2, "contracts_events.json"))
+      stub2 =stub_request(:get, "http://play.dhis2.org/demo/api/programs/contractprogid?fields=id,name,programStages%5BprogramStageDataElements%5BdataElement%5Bid,name,code,optionSet%5Bid,name,code,options%5Bid,code,name%5D%5D%5D%5D&paging=false").to_return(status: 200, body: fixture_content(:dhis2, "contracts_program.json"))
+
+      # no stub on push expect no dhis2
+
+      expect { entity.call }.to change { Dhis2Log.count }.by(0)
+
+      expect(stub1).to have_been_requested
+      expect(stub2).to have_been_requested
+    end
   end
 end

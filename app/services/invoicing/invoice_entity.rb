@@ -32,6 +32,8 @@ module Invoicing
     def ignore_non_contracted?
       return false unless options.ignore_non_contracted?
 
+      return false if project.entity_group.contract_program_based?
+
       # let it fail later if orgunit not found
       # else check the contracted entity group
       legacy_org_unit = pyramid.org_unit(invoicing_request.entity)
@@ -58,7 +60,7 @@ module Invoicing
             solve_options
           )
           @pyramid = @fetch_and_solve.pyramid
-          @dhis2_export_values = @fetch_and_solve.call
+          @dhis2_export_values = @fetch_and_solve.call      
           @dhis2_input_values = @fetch_and_solve.dhis2_values
           @fetch_and_solve
         end

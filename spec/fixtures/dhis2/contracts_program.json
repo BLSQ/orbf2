@@ -1,0 +1,113 @@
+{
+    "name": "FOSA Contrats",
+    "id": "TwcqxaLn11C",
+    "programStages": [
+      {
+        "programStageDataElements": [
+          {
+            "dataElement": {
+              "code": "contract_start_date",
+              "name": "Début contrat",
+              "id": "LvHWK2BkIJT"
+            }
+          },
+          {
+            "dataElement": {
+              "code": "contract_end_date",
+              "name": "Fin de contrat",
+              "id": "vqE7cqNXVYK"
+            }
+          },
+          {
+            "dataElement": {
+              "code": "contract_type",
+              "name": "Type de contrat",
+              "id": "xti2FJDgX0U",
+              "optionSet": {
+                "code": "contractType",
+                "name": "Type de contrat",
+                "id": "fNxAMIQkeHX",
+                "options": [
+                  {
+                    "name": "CSI TYPE I",
+                    "code": "GROUP_CSI_1_CODE",
+                    "id": "LrrQLoDvL0G"
+                  },
+                  {
+                    "name": "CSI TYPE II",
+                    "code": "GROUP_CSI_2_CODE",
+                    "id": "VmmHpOtfEN7"
+                  },
+                  {
+                    "name": "HD",
+                    "code": "GROUP_HD_CODE",
+                    "id": "VmmHpOtfEN8"
+                  },
+                  {
+                    "name": "Province Administration",
+                    "code": "GROUP_PROVINCE_CODE",
+                    "id": "VmmHpOtfEN9"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "dataElement": {
+              "code": "contract_location",
+              "name": "Location",
+              "id": "extra2FJDgX0U",
+              "optionSet": {
+                "code": "contract_type",
+                "name": "Type de contrat",
+                "id": "fNxAMIQkeHX",
+                "options": [
+                  {
+                    "name": "Rural",
+                    "code": "GROUP_RURAL_CODE",
+                    "id": "XrrQLoDvL0X"
+                  },
+                  {
+                    "name": "Urban",
+                    "code": "GROUP_URBAN_CODE",
+                    "id": "XrrQLoDvL0X"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "dataElement": {
+              "code": "contract_purshasing_agency",
+              "name": "Purchasing Agency",
+              "id": "extra3Fagency",
+              "optionSet": {
+                "code": "contract_type",
+                "name": "Type de contrat",
+                "id": "fNxAMIQkeHX",
+                "options": [
+                  {
+                    "name": "Agency 1",
+                    "code": "GROUP_PURCHASE_1_CODE",
+                    "id": "XrrQLoDvL0X"
+                  },
+                  {
+                    "name": "Agency 2",
+                    "code": "GROUP_PURCHASE_2_CODE",
+                    "id": "XrrQLoDvL0X"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "dataElement": {
+              "code": "contract_main_orgunit",
+              "name": "Contract main orgunit",
+              "id": "EBDWBYsJvuz"
+            }
+          }
+        ]
+      }
+    ]
+  }
