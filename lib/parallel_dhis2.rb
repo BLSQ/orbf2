@@ -178,6 +178,11 @@ class ParallelDhis2
   # dhis2_client - An instance of `Dhis2::Client`
   def initialize(dhis2_client)
     @client = ClientWrapper.new(dhis2_client)
+    @cookie_jar = Tempfile.new
+  end
+
+  def cookie_file_path
+    @cookie_jar.path
   end
 
   def prepare_payload(payload)
@@ -193,6 +198,8 @@ class ParallelDhis2
                                     method:         :get,
                                     headers:        @client.post_headers,
                                     ssl_verifypeer: @client.ssl_verify_peer?,
+                                    cookiefile:     cookie_file_path, # read from
+                                    cookiejar:      cookie_file_path, # write to
                                     userpwd:        [@client.user, @client.password].join(":"))
     request.run
     request.response
@@ -206,6 +213,8 @@ class ParallelDhis2
                           body:           body,
                           timeout:        @client.time_out_settings,
                           ssl_verifypeer: @client.ssl_verify_peer?,
+                          cookiefile:     cookie_file_path, # read from
+                          cookiejar:      cookie_file_path, # write to
                           userpwd:        [@client.user, @client.password].join(":"))
   end
 
