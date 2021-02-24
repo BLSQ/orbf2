@@ -23,6 +23,17 @@ class ParallelDhis2
   # exceptions will be raised, these are not the same ones that the
   # `Dhis2::Client` is raising (they would raise `RestClient`
   # exceptions, while here we're using our own namespace).
+  #
+  # Cookies!
+  #
+  # If the internal `Dhis2::Client` already obtained a JSESSION_ID, we
+  # will reuse it by fetching it out of its cookie jar. The parallel
+  # publisher will also run with cookies writing/gathering enabled, so
+  # if we have already found a cookie we will use it. If not the first
+  # request will create a new one, and then reuse it in the other
+  # ones.
+  #
+  # The generated cookie will never be written back to the `Dhis2::Client`
   class HttpError < StandardError; end
   class TimedOut < HttpError; end
   class HttpException < HttpError; end
@@ -164,6 +175,10 @@ class ParallelDhis2
       @client.instance_variable_get(:@timeout)
     end
 
+    def cookies
+      @client.class.class_variable_get(:@@cookie_jar)[base_url] || {}
+    end
+
     # Most likely it will return:
     #       {Accept: "json", Content-Type: "application/json"}
     def post_headers
@@ -189,6 +204,14 @@ class ParallelDhis2
     Dhis2::Case.deep_change(payload, :camelize).to_json
   end
 
+  def headers
+    result = @client.post_headers
+    if (session_id = @client.cookies.fetch("JSESSIONID", nil))
+      result["Cookie"] = "JSESSIONID=#{session_id}"
+    end
+    result
+  end
+
   # Mostly here as a sanity check if the client starts misbehaving,
   # will issue a single request and return the response, which will
   # have `body` and `code` and `return_code`, which helps debugging.
@@ -196,7 +219,7 @@ class ParallelDhis2
     url = File.join(@client.url, url)
     request = Typhoeus::Request.new(url,
                                     method:         :get,
-                                    headers:        @client.post_headers,
+                                    headers:        headers,
                                     ssl_verifypeer: @client.ssl_verify_peer?,
                                     cookiefile:     cookie_file_path, # read from
                                     cookiejar:      cookie_file_path, # write to
@@ -209,7 +232,7 @@ class ParallelDhis2
     body = prepare_payload(payload)
     Typhoeus::Request.new(url,
                           method:         :post,
-                          headers:        @client.post_headers,
+                          headers:        headers,
                           body:           body,
                           timeout:        @client.time_out_settings,
                           ssl_verifypeer: @client.ssl_verify_peer?,
