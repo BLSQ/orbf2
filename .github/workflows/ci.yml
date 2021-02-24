@@ -1,0 +1,70 @@
+name: CI Joe
+env:
+  POSTGRES_USER: hesabu-test-user
+  POSTGRES_PASSWORD: hesabu-test-password
+  POSTGRES_DB: hesabu-test
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:latest
+        ports: ["5432:5432"]
+        env:
+          POSTGRES_USER: ${{ env.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ env.POSTGRES_DB }}
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Ruby (uses .ruby-version)
+      uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+    - name: Install postgres client
+      run: sudo apt-get install libpq-dev
+    - name: Cache chromedriver
+      uses: actions/cache@v2
+      with:
+        path: "/usr/local/share/chromedriver"
+        key: chromedriver-${{ runner.os }}-${{ hashFiles('/usr/local/share/chromedriver') }}
+    - name: Cache clode climate reporter
+      uses: actions/cache@v2
+      with:
+        path: "cc-test-reporter"
+        key: cc-${{ runner.os }}-${{ hashFiles('./cc-test-reporter') }}
+    - name: script/cibuild
+      run: |
+        script/cibuild
+      env:
+        DB_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+        DB_NAME: ${{ env.POSTGRES_DB }}
+        DB_USER: ${{ env.POSTGRES_USER }}
+        REDIS_URL: redis://localhost:6379/0
+        DATA_TEST_S3_BUCKET: ${{ secrets.DATA_TEST_S3_BUCKET }}
+        DATA_TEST_S3_REGION: ${{ secrets.DATA_TEST_S3_REGION }}
+        FETCHER_S3_ACCESS: ${{ secrets.FETCHER_S3_ACCESS }}
+        FETCHER_S3_KEY: ${{ secrets.FETCHER_S3_KEY }}
+    - name: Upload coverage results
+      uses: actions/upload-artifact@v2
+      if: always()
+      with:
+        name: coverage-report
+        path: coverage

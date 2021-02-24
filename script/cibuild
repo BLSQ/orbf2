@@ -12,10 +12,11 @@ export CI="CIJOE"
 
 hostname
 
-bundle install
-bundle exec rake db:test:prepare
+echo "[cibuild] Running tests ..."
+date "+%H:%M:%S"
 
-yarn install
+# run tests.
+script/test
 
 echo "[cibuild] Check JS properly formatted"
 yarn run format
@@ -24,12 +25,6 @@ git diff --exit-code --quiet || {
     echo "Please run: yarn run format"
     exit 1
 }
-
-echo "[cibuild] Running tests ..."
-date "+%H:%M:%S"
-
-# run tests.
-script/test
 
 echo "[cibuild] Running system tests ..."
 date "+%H:%M:%S"

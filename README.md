@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/BLSQ/orbf2.svg?branch=master)](https://travis-ci.org/BLSQ/orbf2) [![Test Coverage](https://codeclimate.com/github/BLSQ/orbf2/badges/coverage.svg)](https://codeclimate.com/github/BLSQ/orbf2/coverage) [![Code Climate](https://codeclimate.com/github/BLSQ/orbf2/badges/gpa.svg)](https://codeclimate.com/github/BLSQ/orbf2)
+![Build status](https://github.com/BLSQ/orbf2/workflows/CI%20Joe/badge.svg) [![Test Coverage](https://codeclimate.com/github/BLSQ/orbf2/badges/coverage.svg)](https://codeclimate.com/github/BLSQ/orbf2/coverage) [![Code Climate](https://codeclimate.com/github/BLSQ/orbf2/badges/gpa.svg)](https://codeclimate.com/github/BLSQ/orbf2)
 
 # About
 

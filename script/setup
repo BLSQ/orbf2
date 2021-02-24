@@ -23,6 +23,40 @@ else
     cp config/application.template.yml config/application.yml
 fi
 
+if [ -z "${CI+x}" ]; then
+    # Do nothing, not on CI
+    true
+else
+    # We're on CI
+    if [ -f "./cc-test-reporter" ]; then
+        echo "==> Using cached test reporter"
+        chmod +x ./cc-test-reporter
+    else
+        echo "==> Fetching test reporter"
+        curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+        curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+        chmod +x ./cc-test-reporter
+    fi
+
+    if [ -f "/usr/local/bin/chromedriver" ]; then
+        echo "==> Using cached chromedriver"
+        sudo chmod +x /usr/local/share/chromedriver
+        sudo ln -s /usr/local/share/chromedriver /usr/local/bin/chromedriver
+    else
+        echo "==> Fetching chromedriver"
+        version=$(curl -s https://chromedriver.storage.googleapis.com/LATEST_RELEASE)
+        wget -N https://chromedriver.storage.googleapis.com/$version/chromedriver_linux64.zip -P ~/
+        unzip ~/chromedriver_linux64.zip -d ~/
+        rm ~/chromedriver_linux64.zip
+        sudo mv -f ~/chromedriver /usr/local/share/
+        sudo chmod +x /usr/local/share/chromedriver
+        sudo ln -s /usr/local/share/chromedriver /usr/local/bin/chromedriver
+    fi
+    export RAILS_ENV="test"
+    export RACK_ENV="test"
+    export CI="CIJOE"
+fi
+
 echo "==> Setting up DB…"
 # reset database to a fresh state.
 bin/rake db:reset db:create
