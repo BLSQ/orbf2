@@ -39,9 +39,9 @@ RSpec.describe ParallelDhis2 do
     let(:payload) {
       [{ "my_key": 1 }, { "my_other_key": 15 }]
     }
-    let(:client) {
-      described_class.new(dhis2_client(timeout: 1234))
-    }
+    let(:internal_client) { dhis2_client(timeout: 1234) }
+    let(:client) { described_class.new(internal_client) }
+
     let(:request) {
       client.build_post_request("http://something.example", payload)
     }
@@ -59,6 +59,21 @@ RSpec.describe ParallelDhis2 do
 
     it "transforms body" do
       expect(request.encoded_body).to eq(client.prepare_payload(payload))
+    end
+
+    it "sets cookies if there were any found in the dhis2_client" do
+      expected_url = "https://play.dhis2.org/demo/api/system/info"
+      stub_request(:any, expected_url).to_return(
+        body: {"some" => "info"}.to_json,
+        headers: {"set-cookie" => "JSESSIONID=my-token-in-post-request"}
+      )
+      # Prep the cookiejar in the internal client of our client
+      internal_client.get("system/info")
+      request = client.build_post_request("http://something.example", payload)
+
+      expect(request.options[:headers]).to include("Cookie" => "JSESSIONID=my-token-in-post-request")
+
+      internal_client.class.class_variable_set(:@@cookie_jar, {})
     end
   end
 
@@ -298,6 +313,30 @@ RSpec.describe ParallelDhis2 do
       end
       it do
         expect(described_class.new(dhis2_client(debug: false)).debug?).to eq(false)
+      end
+    end
+
+    describe "#cookies" do
+      it "returns empty hash if jar empty" do
+        client = described_class.new(dhis2_client)
+
+        expect(client.cookies).to eq({})
+      end
+
+      it "returns session id if found" do
+        client = described_class.new(dhis2_client)
+        expected_url = "https://play.dhis2.org/demo/api/system/info"
+        stub_request(:any, expected_url).to_return(
+          body: {"some" => "info"}.to_json,
+          headers: {"set-cookie" => "JSESSIONID=session-id-if-found"}
+        )
+
+        # The *internal* client of our client
+        dhis2_client.get("system/info")
+
+        expect(client.cookies).to eq({"JSESSIONID" => "session-id-if-found"})
+
+        dhis2_client.class.class_variable_set(:@@cookie_jar, {})
       end
     end
   end
