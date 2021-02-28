@@ -90,14 +90,14 @@ class ProjectAnchor < ApplicationRecord
 
   def nearest_data_compound_for(date)
     kinds = %i[data_elements data_element_groups indicators category_combos]
-    pyramid_snapshots = dhis2_snapshots.select("id, year, month, kind").where(kind: kinds)
+    pyramid_snapshots = dhis2_snapshots.where(kind: kinds)
 
-    candidates = pyramid_snapshots.sort_by { |snap| [snap.kind, [snap.year, snap.month].join("-")] }
+    # candidates = pyramid_snapshots.sort_by { |snap| [snap.kind, [snap.year, snap.month].join("-")] }
 
-    data_elements = nearest(candidates.select(&:kind_data_elements?), date)
-    data_element_groups = nearest(candidates.select(&:kind_data_element_groups?), date)
-    indicators = nearest(candidates.select(&:kind_indicators?), date)
-    category_combos = nearest(candidates.select(&:kind_category_combos?), date)
+    data_elements = nearest(pyramid_snapshots.data_elements, date)
+    data_element_groups = nearest(pyramid_snapshots.data_element_groups, date)
+    indicators = nearest(pyramid_snapshots.indicators, date)
+    category_combos = nearest(pyramid_snapshots.category_combos, date)
 
     return nil unless data_elements || data_element_groups || indicators
 
@@ -120,17 +120,11 @@ class ProjectAnchor < ApplicationRecord
   def nearest(snapshots, date)
     # there should be a better way
     time = date.to_time
-    past_candidates = snapshots.select { |snapshot| snapshot.snapshoted_at <= date }
-                               .sort_by { |snapshot| time - snapshot.snapshoted_at.to_time }
-
+    past_candidates = snapshots.with_snapshotted_at_lt_eq(date)
     past_candidate = past_candidates.first
     return past_candidate if past_candidate
 
-    futur_candidates = snapshots.select { |snapshot| snapshot.snapshoted_at > date }
-                                .sort_by do |snapshot|
-                                  snapshot.snapshoted_at.to_time - time
-                                end
-
+    futur_candidates = snapshots.with_snapshotted_at_gt(date)
     futur_candidates.first
   end
 

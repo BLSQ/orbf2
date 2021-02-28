@@ -40,6 +40,19 @@ class Dhis2Snapshot < ApplicationRecord
   KINDS.each do |kind|
     scope kind, -> { where(kind: kind) }
   end
+
+  scope :with_snapshotted_at_lt_eq, -> (date) {
+    end_of_month = Arel.sql("(to_date(concat(year, month),'YYYYMM') + interval '1 month' - interval '1 day')")
+    order_by = Arel.sql("'#{date}' - #{end_of_month}")
+    where(end_of_month.lteq(date)).order(order_by.asc)
+  }
+
+  scope :with_snapshotted_at_gt, -> (date) {
+    end_of_month = Arel.sql("(to_date(concat(year, month),'YYYYMM') + interval '1 month' - interval '1 day')")
+    order_by = Arel.sql("#{end_of_month} - '#{date}'")
+    where(end_of_month.gt(date)).order(order_by.asc)
+  }
+
   has_many :dhis2_snapshot_changes, dependent: :destroy
 
   attr_accessor :disable_tracking
