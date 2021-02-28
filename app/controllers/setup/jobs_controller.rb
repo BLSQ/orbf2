@@ -5,7 +5,7 @@ class Setup::JobsController < PrivateController
   class JobsSummary < Struct.new(:scheduled_jobs, :last_jobs); end
 
   def index
-    pyramid = current_project.project_anchor.nearest_pyramid_for(Date.new)
+    pyramid = current_project.project_anchor.nearest_pyramid_for(Time.zone.now)
 
     @jobs = JobsSummary.new(
       Jobs::ScheduledJobsService.new(current_project, pyramid).jobs,
