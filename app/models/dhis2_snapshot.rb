@@ -37,6 +37,9 @@ class Dhis2Snapshot < ApplicationRecord
              indicators
              category_combos].freeze
 
+  KINDS.each do |kind|
+    scope kind, -> { where(kind: kind) }
+  end
   has_many :dhis2_snapshot_changes, dependent: :destroy
 
   attr_accessor :disable_tracking
