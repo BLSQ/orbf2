@@ -63,7 +63,7 @@ gem "pretender", "~> 0.3.4"
 
 ## API related
 
-gem "aws-sdk-s3", "~> 1.30.1"
+gem "aws-sdk-s3", "~> 1.48"
 gem "fast_jsonapi"
 gem "jbuilder", "~> 2.5"
 gem "json", "2.3.0"
