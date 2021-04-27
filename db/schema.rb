@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_07_065734) do
+ActiveRecord::Schema.define(version: 2021_04_23_135626) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -81,6 +81,8 @@ ActiveRecord::Schema.define(version: 2020_10_07_065734) do
   create_table "decision_tables", force: :cascade do |t|
     t.integer "rule_id"
     t.text "content"
+    t.string "start_period"
+    t.string "end_period"
     t.index ["rule_id"], name: "index_decision_tables_on_rule_id"
   end
 
