@@ -86,8 +86,10 @@ module Descriptor
       return [] unless package.activity_rule
       package.activity_rule.decision_tables.map do |decision_table|
         {
+          start_period: decision_table.start_period,
+          end_period: decision_table.end_period,
           in_headers:  decision_table.in_headers,
-          out_headers: decision_table.out_headers,
+          out_headers: decision_table.out_headers,        
           content:     decision_table.content
         }
       end
