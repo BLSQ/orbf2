@@ -55,9 +55,7 @@
           ],
           "data_set_ids": [],
           "data_element_group_ids": [],
-          "main_org_unit_group_ids": [
-            "RXL3lPSK8oG"
-          ],
+          "main_org_unit_group_ids": ["RXL3lPSK8oG"],
           "target_org_unit_group_ids": [],
           "groupset_ext_id": null,
           "matching_groupset_ids": [],
@@ -87,12 +85,10 @@
           },
           "activity_decision_tables": [
             {
-              "in_headers": [
-                "level_3"
-              ],
-              "out_headers": [
-                "equity_bonus"
-              ],
+              "start_period": null,
+              "end_period": null,
+              "in_headers": ["level_3"],
+              "out_headers": ["equity_bonus"],
               "content": "ignore:level_2,ignore:level_2_name,in:level_3,ignore:level_3_name,out:equity_bonus\nsYUYlnVx1xh,Adamaoua,GMC5DCK8AZT,NGAOUNDERE RURAL,29\nsYUYlnVx1xh,Adamaoua,nLmXJF0dRvQ,Ngaoundéré Urbain,28\nxdxTFCAsoWc,EST,FIlyPgAPt8k,ABONG MBANG,25\nxdxTFCAsoWc,EST,CCQ2yJyFQAS,BATOURI,34\nxdxTFCAsoWc,EST,tE03W4q27te,BERTOUA,23\nxdxTFCAsoWc,EST,UeEzrOGGfWr,BETARE OYA,41\nxdxTFCAsoWc,EST,fLGSn6852xo,DOUME,27\nxdxTFCAsoWc,EST,at6UHUQatSo,bb,12\nxdxTFCAsoWc,EST,U6Kr7Gtpidn,bb2,12\nxdxTFCAsoWc,EST,U6Kr7Gtpidn,bb2,12\n"
             }
           ],
@@ -127,10 +123,7 @@
           ],
           "data_set_ids": [],
           "data_element_group_ids": [],
-          "main_org_unit_group_ids": [
-            "RXL3lPSK8oG",
-            "tDZVQ1WtwpA"
-          ],
+          "main_org_unit_group_ids": ["RXL3lPSK8oG", "tDZVQ1WtwpA"],
           "target_org_unit_group_ids": [],
           "groupset_ext_id": null,
           "matching_groupset_ids": [],
@@ -246,9 +239,7 @@
           ],
           "data_set_ids": [],
           "data_element_group_ids": [],
-          "main_org_unit_group_ids": [
-            "tDZVQ1WtwpA"
-          ],
+          "main_org_unit_group_ids": ["tDZVQ1WtwpA"],
           "target_org_unit_group_ids": [],
           "groupset_ext_id": null,
           "matching_groupset_ids": [],
@@ -308,10 +299,7 @@
           ],
           "data_set_ids": [],
           "data_element_group_ids": [],
-          "main_org_unit_group_ids": [
-            "RXL3lPSK8oG",
-            "tDZVQ1WtwpA"
-          ],
+          "main_org_unit_group_ids": ["RXL3lPSK8oG", "tDZVQ1WtwpA"],
           "target_org_unit_group_ids": [],
           "groupset_ext_id": null,
           "matching_groupset_ids": [],
