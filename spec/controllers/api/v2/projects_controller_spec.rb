@@ -42,6 +42,16 @@ RSpec.describe Api::V2::ProjectsController, type: :controller do
       resp = JSON.parse(response.body)
 
       expect(resp["data"]["id"]).to eq(project.id.to_s)
+
+      decision_table = resp["included"].select { |i| i["type"] == "decisionTable" }[0]
+
+      expect(decision_table["attributes"]).to eq(
+        "content"     => "ignore:level_2,ignore:level_2_name,in:level_3,ignore:level_3_name,out:equity_bonus\nsYUYlnVx1xh,Adamaoua,GMC5DCK8AZT,NGAOUNDERE RURAL,29\nsYUYlnVx1xh,Adamaoua,nLmXJF0dRvQ,Ngaoundéré Urbain,28\nxdxTFCAsoWc,EST,FIlyPgAPt8k,ABONG MBANG,25\nxdxTFCAsoWc,EST,CCQ2yJyFQAS,BATOURI,34\nxdxTFCAsoWc,EST,tE03W4q27te,BERTOUA,23\nxdxTFCAsoWc,EST,UeEzrOGGfWr,BETARE OYA,41\nxdxTFCAsoWc,EST,fLGSn6852xo,DOUME,27\nxdxTFCAsoWc,EST,at6UHUQatSo,bb,12\nxdxTFCAsoWc,EST,U6Kr7Gtpidn,bb2,12\nxdxTFCAsoWc,EST,U6Kr7Gtpidn,bb2,12\n",
+        "endPeriod"   => nil,
+        "inHeaders"   => ["level_3"],
+        "outHeaders"  => ["equity_bonus"],
+        "startPeriod" => nil
+      )
     end
   end
 end
