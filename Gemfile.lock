@@ -14,8 +14,8 @@ GIT
 
 GIT
   remote: https://github.com/BLSQ/orbf-rules_engine.git
-  revision: 4a2ef1fabb9d1b288eea6dad5854c5216ba169aa
-  branch: add-periods-to-decision-tables
+  revision: 60f577859c57b412c5025952ffb76885ace6fdb2
+  branch: master
   specs:
     orbf-rules_engine (0.1.0)
       activesupport
