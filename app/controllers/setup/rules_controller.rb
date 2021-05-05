@@ -81,6 +81,6 @@ class Setup::RulesController < PrivateController
           .permit(:name,
                   :kind,
                   formulas_attributes:        Formula::WHITELISTED_FIELDS,
-                  decision_tables_attributes: %i[id content])
+                  decision_tables_attributes: %i[id content start_period end_period])
   end
 end

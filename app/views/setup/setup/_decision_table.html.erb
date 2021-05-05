@@ -1,6 +1,7 @@
 <small>
-Decision table
+Decision table 
 <ul>
+  <li><%= [decision_table.start_period, decision_table.end_period].compact.join(" => ").presence || "no periods"%></li>
   <li>in : <%= decision_table.in_headers.map(&:to_s).map(&:humanize).join(", ")%></li>
   <li>out : <%= decision_table.out_headers.map(&:to_s).map(&:humanize).join(", ") %></li>
 </ul>
