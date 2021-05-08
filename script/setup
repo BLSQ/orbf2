@@ -28,16 +28,6 @@ if [ -z "${CI+x}" ]; then
     true
 else
     # We're on CI
-    if [ -f "./cc-test-reporter" ]; then
-        echo "==> Using cached test reporter"
-        chmod +x ./cc-test-reporter
-    else
-        echo "==> Fetching test reporter"
-        curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-        curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-        chmod +x ./cc-test-reporter
-    fi
-
     if ! command -v chromedriver &> /dev/null; then
         echo "Chromedriver was already found"
         which chromedriver

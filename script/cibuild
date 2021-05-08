@@ -15,13 +15,46 @@ hostname
 echo "[cibuild] Running tests ..."
 date "+%H:%M:%S"
 
+if [ -f "./cc-test-reporter" ]; then
+    echo "==> Using cached test reporter"
+    chmod +x ./cc-test-reporter
+else
+    echo "==> Fetching test reporter"
+    curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+    chmod +x ./cc-test-reporter
+fi
+./cc-test-reporter before-build
+
 # run tests.
 script/test
+status=$?
 
 echo "[cibuild] Running system tests ..."
 date "+%H:%M:%S"
 SKIP_SIMPLECOV=1 bundle exec rails spec:system
+status=$?
 
 echo "[cibuild] Running data tests ..."
 date "+%H:%M:%S"
 SKIP_SIMPLECOV=1 bundle exec rails spec:data_test
+status=$?
+
+if [ -f "./cc-test-reporter" ]; then
+  # https://docs.github.com/en/actions/reference/environment-variables
+  export GIT_COMMIT_SHA="${GITHUB_SHA}"
+  if [ -z "${GITHUB_HEAD_REF+x}" ]; then
+    if [ -z "${GITHUB_REF+x}"]; then
+      echo "Don't know the branch here"
+    else
+      # Strip away the refs/heads/
+      export GIT_BRANCH="${GITHUB_REF/refs\/heads\//}"
+    fi
+  else
+    export GIT_BRANCH="${GITHUB_HEAD_REF}"
+  fi
+
+  echo "${CC_TEST_REPORTER_ID}"
+  ./cc-test-reporter after-build --coverage-input-type simplecov --exit-code $status
+fi
+
+exit $status
