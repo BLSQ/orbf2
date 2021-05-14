@@ -51,11 +51,11 @@ class Setup::ProjectRulesController < PrivateController
     Rails.logger.info project_rule.errors.full_messages
     if project_rule.save
       flash[:notice] = "Rule updated !"
-      render action: "edit"
     else
       project_rule.rule.formulas.build if project_rule.rule.formulas.empty?
-      render action: "edit"
     end
+
+    render action: "edit"
   end
 
   private
