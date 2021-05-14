@@ -14,7 +14,7 @@ GIT
 
 GIT
   remote: https://github.com/BLSQ/orbf-rules_engine.git
-  revision: 60f577859c57b412c5025952ffb76885ace6fdb2
+  revision: 9cb90ed296b85a9da4c29913e6cbbc218b9ee5f2
   branch: master
   specs:
     orbf-rules_engine (0.1.0)
@@ -206,7 +206,7 @@ GEM
     httparty (0.16.3)
       mime-types (~> 3.0)
       multi_xml (>= 0.5.2)
-    i18n (1.8.9)
+    i18n (1.8.10)
       concurrent-ruby (~> 1.0)
     immigrant (0.3.6)
       activerecord (>= 3.0)
