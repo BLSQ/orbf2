@@ -26,7 +26,7 @@
       <details>
         <div>
           <ul>
-            <% User.find_each do |user| %>
+            <% User.includes(program: { project_anchor: :projects }).order(:email).each do |user| %>
               <li><%= link_to user.impersonate_label, impersonate_user_path(user), method: :post %></li>
             <% end %>
           </ul>
