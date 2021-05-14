@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module RuleTypes
   class PaymentRuleType < BaseRuleType
     def initialize(rule)
@@ -11,7 +13,7 @@ module RuleTypes
     def available_variables
       var_names = []
 
-      rules = payment_rule.packages.flat_map(&:rules).select(&:package_kind?)
+      rules = payment_rule.packages.flat_map(&:rules).select(&:package_kind?).reject { |r| r.package.kind == "zone" }
       var_names << rules.flat_map(&:formulas).map(&:code)
       var_names << available_variables_for_values.map { |code| "%{#{code}}" }
 

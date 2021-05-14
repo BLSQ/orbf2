@@ -1,7 +1,7 @@
 <tr>
     <td title="<%= package.package_entity_groups.map{ |entitygroup|  %Q(#{entitygroup.name}) }.join(', ') %> - <%= package.states.map{ |state|  %Q(#{state.name}) }.join(', ') %>">
     <%= package.name %><br><br>
-    <%= package.frequency %><br><br>
+    <%= package.kind %>, <%= package.frequency %><br><br>
     <%= package.package_entity_groups.map(&:name).join(",")%>
     </td>
 
