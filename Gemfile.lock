@@ -14,7 +14,7 @@ GIT
 
 GIT
   remote: https://github.com/BLSQ/orbf-rules_engine.git
-  revision: 9cb90ed296b85a9da4c29913e6cbbc218b9ee5f2
+  revision: 24125e1da17c589791ab3b05aa011a3d64b033ee
   branch: master
   specs:
     orbf-rules_engine (0.1.0)
@@ -132,7 +132,7 @@ GEM
       execjs
     coffee-script-source (1.12.2)
     colorize (0.8.1)
-    concurrent-ruby (1.1.8)
+    concurrent-ruby (1.1.9)
     connection_pool (2.2.2)
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
@@ -201,7 +201,7 @@ GEM
     heroku-deflater (0.6.3)
       rack (>= 1.4.5)
     http-accept (1.7.0)
-    http-cookie (1.0.3)
+    http-cookie (1.0.4)
       domain_name (~> 0.5)
     httparty (0.16.3)
       mime-types (~> 3.0)
