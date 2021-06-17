@@ -36,7 +36,7 @@
 </div>
 
 <% periods = invoicing_request.invoices.map(&:period).uniq.sort%>
-<% orgunits = invoicing_request.invoices.map(&:orgunit_ext_id).uniq.map {|id|  @pyramid.org_unit(id) }.map {|ou| [ou.name, ou.ext_id]}.to_h%>
+<% orgunits = invoicing_request.invoices.map(&:orgunit_ext_id).uniq.map {|id|  @pyramid.org_unit(id) || Orbf::RulesEngine::OrgUnit.new(name: id, ext_id: id, path:"",group_ext_ids:[])}.reject(&:nil?).map {|ou| [ou.name, ou.ext_id]}.to_h%>
 <% if @org_unit_limiter.active? %>
   <% orgunits = orgunits.select { |_name, ext_id| @org_unit_limiter.has_org_unit?(ext_id) } %>
 <% end %>

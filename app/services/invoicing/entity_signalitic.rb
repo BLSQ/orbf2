@@ -40,7 +40,7 @@ module Invoicing
     attr_reader :org_unit_id, :pyramid, :org_unit
 
     def parents
-      org_unit.parent_ext_ids.map { |parent_id| pyramid.org_unit(parent_id) }
+      org_unit.parent_ext_ids.map { |parent_id| pyramid.org_unit(parent_id) }.reject(&:nil?)
     end
 
     def groups
@@ -49,6 +49,10 @@ module Invoicing
 
     def build_org_unit_with_facts(contract_service, period)
       raw_org_unit = pyramid.org_unit(org_unit_id)
+      unless raw_org_unit
+        contract = contract_service.for(org_unit_id, period)
+        raw_org_unit = contract.org_unit if contract
+      end
       Orbf::RulesEngine::OrgUnitWithFacts.new(
         orgunit: raw_org_unit,
         facts:   Orbf::RulesEngine::OrgunitFacts.new(org_unit:raw_org_unit, pyramid: pyramid, contract_service:contract_service, invoicing_period: period).to_facts

@@ -152,14 +152,18 @@ class Setup::InvoicesController < PrivateController
   end
 
   def add_contract_warning_if_non_contracted(invoicing_request, project)
-    return if contracted?(invoicing_request, project)
+    return if contracted?(invoicing_request, project) 
 
+    if (project.entity_group.contract_program_based?) 
+      return 
+    end
     flash[:failure] = non_contracted_orgunit_message(project)
+  
   end
 
   def contracted?(invoicing_request, project)
     org_unit = @pyramid.org_unit(invoicing_request.entity)
-    org_unit.group_ext_ids.include?(project.entity_group.external_reference)
+    org_unit && org_unit.group_ext_ids.include?(project.entity_group.external_reference)
   end
 
   def non_contracted_orgunit_message(project)
