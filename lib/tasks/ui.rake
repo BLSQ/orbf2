@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 namespace :ui do
-
   desc "Setup the token and url for hesabu ui manager for a given project_anchor_id"
   task :setup, [:project_anchor_id] => [:environment] do |_task, args|
     project_anchors = ProjectAnchor.all.where(id: args[:project_anchor_id])
@@ -13,10 +12,13 @@ namespace :ui do
   desc "Setup the token and url for hesabu ui manager for all projects"
   task :setup_all, [:project_anchor_id] => [:environment] do |_task, _args|
     ProjectAnchor.find_each do |project_anchor|
-      setup_token(project_anchor)
+      begin
+        setup_token(project_anchor)
+      rescue StandardError => e
+        puts "FAILED TO SETUP #{project_anchor.id} #{e.message}"
+      end
     end
   end
-
 
   desc "Deploy hesabu ui manager for a given project_anchor_id"
   task :deploy, [:project_anchor_id] => [:environment] do |_task, args|
@@ -31,7 +33,11 @@ namespace :ui do
   task :deploy_all, [:project_anchor_id] => [:environment] do |_task, _args|
     download_latest_build
     ProjectAnchor.find_each do |project_anchor|
-      deploy_dhis2_app(project_anchor)
+      begin
+        deploy_dhis2_app(project_anchor)
+      rescue StandardError => e
+        puts "FAILED TO DEPLOY #{project_anchor.id} #{e.message}"
+      end
     end
   end
 
@@ -55,14 +61,18 @@ namespace :ui do
     dhis2 = Dhis2::Client.new(project.dhis_configuration.merge(timeout: 20))
     log_info "*** setup of token for #{project_anchor.project.name} (project_anchor_id : #{project_anchor.id}, #{project.dhis2_url})"
     begin
-      current_config = dhis2.get("dataStore/hesabu/hesabu") rescue nil
+      current_config = begin
+                         dhis2.get("dataStore/hesabu/hesabu")
+                       rescue StandardError
+                         nil
+                       end
       resp = if current_config
                dhis2.put("dataStore/hesabu/hesabu", config)
              else
                dhis2.post("dataStore/hesabu/hesabu", config)
              end
-    rescue StandardError => error
-      log_error "#{error&.response&.body} : #{error}"
+    rescue StandardError => e
+      log_error "#{e&.response&.body} : #{e}"
     end
     log_info resp
   end
