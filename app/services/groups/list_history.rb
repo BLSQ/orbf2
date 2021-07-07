@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 class Groups::ListHistory
   def initialize(group_params)
@@ -112,8 +113,13 @@ class Groups::ListHistory
     if g.group_sets&.any?
       result[:organisation_unit_group_sets] = g.group_sets.map do |groupset_ref|
         group_set = pyramid.org_unit_group_set(groupset_ref["id"])
-        { id: group_set.id, name: name(group_set) }
-      end
+        if group_set
+          { id: group_set.id, name: name(group_set) }
+        else
+          puts "#{group_params.project.name} : buggy groupset : #{groupset_ref}"
+          nil
+        end
+      end.compact
     end
 
     result
