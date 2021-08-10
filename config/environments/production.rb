@@ -39,7 +39,7 @@ Rails.application.configure do
   # config.action_dispatch.x_sendfile_header = 'X-Accel-Redirect' # for NGINX
 
 
-  config.active_storage.service = :amazon
+  config.active_storage.service = ENV.fetch("RAILS_ACTIVE_STORAGE", 'amazon')
 
   # Mount Action Cable outside main process or domain
   # config.action_cable.mount_path = nil
@@ -47,7 +47,7 @@ Rails.application.configure do
   # config.action_cable.allowed_request_origins = [ 'http://example.com', /http:\/\/example.*/ ]
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  config.force_ssl = true
+  config.force_ssl = ENV["DISABLE_FORCE_SSL"] == "TRUE" ? false : true
 
   # Prepend all log lines with the following tags.
   config.log_tags = [:request_id]
