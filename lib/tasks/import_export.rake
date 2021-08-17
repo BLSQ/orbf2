@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# assuming you have a "production db" we will copy the data of that project in the test db
+# assuming you have we will copy the data of that project in the test db
 #
 # RAILS_ENV=test ./bin/rake db:setup
 # PROJECT_ID=109 bundle exec rake import_export:dump_project
