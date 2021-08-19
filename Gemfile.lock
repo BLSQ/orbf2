@@ -68,6 +68,8 @@ GEM
       activemodel (= 5.2.5)
       activesupport (= 5.2.5)
       arel (>= 9.0)
+    activerecord-nulldb-adapter (0.7.0)
+      activerecord (>= 5.2.0, < 6.3)
     activestorage (5.2.5)
       actionpack (= 5.2.5)
       activerecord (= 5.2.5)
@@ -519,6 +521,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  activerecord-nulldb-adapter
   annotate (~> 2.7.4)
   aws-sdk-s3 (~> 1.48)
   bootsnap (~> 1.3.2)

@@ -38,6 +38,7 @@ module Scorpio
     end
 
     config.active_job.queue_adapter = :sidekiq
+    config.assets.initialize_on_precompile = false
 
     # These are defined in `/lib/*.rb
     require "scorpio"
