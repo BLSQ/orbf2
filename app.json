@@ -30,7 +30,7 @@
       "value": "2"
     },
     "ORBF_STAGING": {
-      "description": "Designates it as a QA environment"
+      "description": "Designates it as a QA environment",
       "value": "true"
     },
     "S3_SIMULATION_ACCESS": {
