@@ -8,13 +8,16 @@
   },
   "env": {
     "ADMIN_PASSWORD": {
-      "description": "Password to log in to Rails Admin"
+      "description": "Password to log in to Rails Admin",
+      "value": "admin-abc123"
     },
     "DEFAULT_USER_EMAIL": {
-      "description": "Email for the created user to log in with"
+      "description": "Email for the created user to log in with",
+      "value": "admin@example.com"
     },
     "DEFAULT_USER_PASSWORD": {
-      "description": "Password for the created user to log in with"
+      "description": "Password for the created user to log in with",
+      "value": "abc123"
     },
     "SIDEKIQ_CONCURRENCY": {
       "value": "2"
@@ -36,10 +39,12 @@
         "required": true
     },
     "S3_SIMULATION_REGION": {
-        "required": true
+      "required": true,
+      "value": "eu-central-1"
     },
     "S3_SIMULATION_BUCKET": {
-        "required": true
+      "required": true,
+      "value": "orbf-simulations-staging"
     }
   },
   "formation": {
