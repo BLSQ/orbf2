@@ -17,5 +17,5 @@ test:
   host: <%= ENV.fetch("DB_HOST", "localhost") %>
 
 production:
-  pool: <%= ENV["DB_POOL"] || ENV['SIDEKIQ_CONCURRENCY'] || ENV['RAILS_MAX_THREADS'] || 5 %>
+  pool: <%= Scorpio.db_pool_size %>
   statement_limit: <%= ENV.fetch("PREPARED_STATEMENT_LIMIT") { 1000 } %>
