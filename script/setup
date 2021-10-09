@@ -24,8 +24,14 @@ else
 fi
 
 if [ -z "${CI+x}" ]; then
-    # Do nothing, not on CI
-    true
+    # Not on CI
+    echo "==> Checking for postgres user"
+    if [[ "`psql postgres -c '\timing false' -tAc "SELECT 1 FROM pg_roles WHERE rolname='hesabu-test-user'"`" =~ "1" ]]; then
+        # User already existed
+        true
+    else
+        createuser --superuser --createdb hesabu-test-user
+    fi
 else
     # We're on CI
     if ! command -v chromedriver &> /dev/null; then

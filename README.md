@@ -37,6 +37,41 @@ with a built-in invoice explainer showing you how was this amount/score calculat
 
 Every change is tracked and you publish your project draft to be used at a given period.
 
+### Database
+
+The database configuration is handled in database.yml.
+
+Rails limits the number of database connections with he `pool` setting. This is the maximum size of the connections your app can have to the database.
+
+A puma worker on 1 dyno will need `RAILS_MAX_THREADS` connections.
+Sidekiq on 1 dyno will need `SIDEKIQ_CONCURRENCY` connections.
+
+Rails maintains its own database connection pool, with a new pool created for each worker process/dyno.
+Threads within a worker/dyno will operate on the same pool.
+
+The current pool is set to `ENV["DB_POOL"] || ENV['SIDEKIQ_CONCURRENCY'] || ENV['MAX_THREADS'] || 5`.
+
+#### Current size
+
+In production, we currently have:
+
+  `SIDEKIQ_CONCURRENCY` => 20
+  `MAX_THREADS`         => 5
+  `WEB_CONCURRENCY`     => 1
+  `DB_POOL`             => 1
+
+This means that we need a `DB_POOL` of:
+
+```
+      [SIDEKIQ_CONCURRENCY, MAX_THREADS*WEB_CONCURRENCY].max
+      => [20, 5*1].max
+      => 20
+```
+
+The current pool size is `20`.
+
+(Run `bundle exec rake config:check_db_pool` to get a live version of this output)
+
 # Contributing
 
 ## Dependencies and config

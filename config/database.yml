@@ -1,0 +1,21 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: 5
+  port: <%= ENV.fetch("DB_PORT", 5432) %>
+  timeout: 5000
+
+development:
+  <<: *default
+  database: scorpio_development
+
+test:
+  <<: *default
+  database: <%= ENV.fetch("DB_NAME", "scorpio_test") %>
+  username: <%= ENV.fetch("DB_USER", "hesabu-test-user") %>
+  password: <%= ENV.fetch("DB_PASSWORD", "hesabu-test-password") %>
+  host: <%= ENV.fetch("DB_HOST", "localhost") %>
+
+production:
+  pool: <%= Scorpio.db_pool_size %>
+  statement_limit: <%= ENV.fetch("PREPARED_STATEMENT_LIMIT") { 1000 } %>
