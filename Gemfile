@@ -15,7 +15,7 @@ gem "dhis2", github: "BLSQ/dhis2", branch: "legacy-v2"
 gem "paper_trail", "~> 10.1.0"
 gem "paper_trail-association_tracking", "~> 1.0.0"
 gem "pg", "~> 0.18"
-gem "puma", "~> 3.12"
+gem "puma", "~> 4.3"
 gem "rack", ">= 2.0.6"
 gem "rails", "~> 5.2", "< 5.3"
 
