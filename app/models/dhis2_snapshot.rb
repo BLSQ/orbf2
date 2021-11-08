@@ -39,6 +39,33 @@ class Dhis2Snapshot < ApplicationRecord
 
   has_many :dhis2_snapshot_changes, dependent: :destroy
 
+  # Generated with:
+  #
+  #       Dhis2Snapshot::KINDS.each do |kind|
+  #         puts "scope :#{kind.to_sym}, -> { where(kind: '#{kind}')}"
+  #       end
+  scope :data_elements, -> { where(kind: 'data_elements')}
+  scope :data_element_groups, -> { where(kind: 'data_element_groups')}
+  scope :organisation_unit_group_sets, -> { where(kind: 'organisation_unit_group_sets')}
+  scope :organisation_unit_groups, -> { where(kind: 'organisation_unit_groups')}
+  scope :organisation_units, -> { where(kind: 'organisation_units')}
+  scope :indicators, -> { where(kind: 'indicators')}
+  scope :category_combos, -> { where(kind: 'category_combos')}
+
+  # If any of the elements inside content match this dhis2_id, the
+  # snapshot will be a match.
+  scope :containing_dhis2_id, -> (id) {
+    part_to_contain = [{table: {id: id}}].to_json
+    where("content @> ?", part_to_contain)
+  }
+
+  # If any of the elements inside content match this display name, the
+  # snapshot will be a match.
+  scope :containing_dhis2_display_name, -> (name) {
+    part_to_contain = [{table: {display_name: name}}].to_json
+    where("content @> ?", part_to_contain)
+  }
+
   attr_accessor :disable_tracking
 
   def kind_organisation_units?
