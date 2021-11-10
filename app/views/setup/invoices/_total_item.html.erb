@@ -30,7 +30,7 @@
               <li> Category combo <%= total_item.formula.dhis2_mapping_coc %></li>
               <%end%>
             <%end%>
-            <li><%= link_to("Formula mappings", new_setup_project_formula_mapping_path(mode: :create, formula_code: total_item.formula.code)) %></li>
+            <li>Formula mappings : <%= link_to("create", new_setup_project_formula_mapping_path(mode: :create, formula_code: total_item.formula.code)) %> or <%= link_to("edit", new_setup_project_formula_mapping_path(formula_code: total_item.formula.code)) %></li>
             </ul>
             <h3>Step by step explanations</h3>
             <% total_item.explanations.each do |explanation|%>
