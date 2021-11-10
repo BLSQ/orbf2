@@ -47,7 +47,7 @@
                     <li><code><%= variable.formula.frequency %></code></li>
                   <% end %>
                   <% if variable.formula %>
-                    <li><%= link_to("Formula mappings", new_setup_project_formula_mapping_path(mode: :create, formula_code: variable.formula.code, activity_code: variable.activity_code )) %></li>
+                    <li>Formula mappings : <%= link_to("create", new_setup_project_formula_mapping_path(mode: :create, formula_code: variable.formula.code, activity_code: variable.activity_code )) %> or <%= link_to("edit", new_setup_project_formula_mapping_path( formula_code: variable.formula.code, activity_code: variable.activity_code )) %></li>
                   <% end %>
 
               </ul>
