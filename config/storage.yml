@@ -14,6 +14,16 @@ amazon:
   region: <%= ENV["S3_SIMULATION_REGION"] %>
   bucket: <%= ENV["S3_SIMULATION_BUCKET"] %>
 
+# for local hosting : https://kevinjalbert.com/rails-activestorage-configuration-for-minio/
+minio:
+  service: S3
+  access_key_id: <%= ENV["S3_SIMULATION_ACCESS"] %>
+  secret_access_key: <%= ENV["S3_SIMULATION_SECRET"] %>
+  region: <%= ENV["S3_SIMULATION_REGION"] %>
+  bucket: <%= ENV["S3_SIMULATION_BUCKET"] %>
+  endpoint: <%= ENV["S3_SIMULATION_ENDPOINT"] %>
+  force_path_style: true
+
 # Remember not to checkin your GCS keyfile to a repository
 # google:
 #   service: GCS
