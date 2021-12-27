@@ -1,0 +1,4 @@
+#!/bin/bash
+FULL_VERSION=$1
+
+docker build -t blsq/hesabu:$FULL_VERSION .

@@ -47,7 +47,9 @@ Rails.application.configure do
   # config.action_cable.allowed_request_origins = [ 'http://example.com', /http:\/\/example.*/ ]
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  config.force_ssl = ENV["DISABLE_FORCE_SSL"] == "TRUE" ? false : true
+  disable_force_ssl = ENV["DISABLE_FORCE_SSL"] == "TRUE"
+  puts "SSL disabled !" if disable_force_ssl
+  config.force_ssl = disable_force_ssl ? false : true
 
   # Prepend all log lines with the following tags.
   config.log_tags = [:request_id]

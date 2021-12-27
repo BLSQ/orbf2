@@ -1,0 +1,31 @@
+
+name: publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      # version tag to use
+      version:
+        description: "version tag to use"
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and publish image
+        run: ./script/release ${{github.event.inputs.version }}
+
