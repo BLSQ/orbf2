@@ -1,18 +1,46 @@
-FROM ruby:2.5.8
-RUN apt-get update -qq && apt-get install -y nodejs postgresql-client
-run mkdir /orbf2
-ADD . /orbf2
-WORKDIR /orbf2
-RUN gem update --system && gem install bundler -i 2.2.3
+FROM ruby:2.5.8-alpine AS build-env
 
-ENV RAILS_ENV production
+ARG RAILS_ROOT=/app
+ARG BUILD_PACKAGES="build-base curl-dev git"
+ARG DEV_PACKAGES="postgresql-dev yaml-dev zlib-dev nodejs yarn"
+ARG RUBY_PACKAGES="tzdata"
+ENV RAILS_ENV=production
+ENV NODE_ENV=production
+ENV BUNDLE_APP_CONFIG="$RAILS_ROOT/.bundle"
 ENV RAILS_SERVE_STATIC_FILES true
 ENV RAILS_LOG_TO_STDOUT true
-# install dependencies and prepare assets for production in one go
-# pass a fake secret key base to let the rake tast run
-RUN bundle config set --local without 'development test' && bundle install && DATABASE_URL=nulldb:://null SECRET_KEY_BASE=1 RAILS_ENV=production bundle exec rake assets:precompile --trace
-# Add a script to be executed every time the container starts.
-EXPOSE 3000
 
-# Start the main process.
+WORKDIR $RAILS_ROOT
+# install packages
+RUN apk update \
+    && apk upgrade \
+    && apk add --update --no-cache $BUILD_PACKAGES $DEV_PACKAGES $RUBY_PACKAGES
+
+COPY Gemfile* ./
+# install rubygem
+COPY Gemfile Gemfile.lock $RAILS_ROOT/
+RUN gem update --system && gem install bundler -i 2.2.3 && bundle config set --local without 'development test' && bundle config set --local path 'vendor/bundle'
+RUN bundle install \
+    && rm -rf vendor/bundle/ruby/2.5.0/cache/*.gem \
+    && find vendor/bundle/ruby/2.5.0/gems/ -name "*.c" -delete \
+    && find vendor/bundle/ruby/2.5.0/gems/ -name "*.o" -delete
+COPY . .
+RUN DATABASE_URL=nulldb:://null SECRET_KEY_BASE=1 RAILS_ENV=production bundle exec rake assets:precompile --trace
+# Remove folders not needed in resulting image
+RUN rm -rf node_modules tmp/cache app/assets vendor/assets spec
+
+
+FROM ruby:2.5.8-alpine
+ARG RAILS_ROOT=/app
+ARG PACKAGES="tzdata postgresql-client nodejs bash curl-dev"
+ENV RAILS_ENV=production
+ENV BUNDLE_APP_CONFIG="$RAILS_ROOT/.bundle"
+RUN gem update --system && gem install bundler -i 2.2.3
+WORKDIR $RAILS_ROOT
+# install packages
+RUN apk update \
+    && apk upgrade \
+    && apk add --update --no-cache $PACKAGES
+COPY --from=build-env $RAILS_ROOT $RAILS_ROOT
+EXPOSE 3000
 CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0"]
