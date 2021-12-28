@@ -15,7 +15,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-
+      - run: |
+          git fetch --prune --unshallow --tags
+          echo exit code $?
+          git tag --list
+          
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v1
