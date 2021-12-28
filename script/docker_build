@@ -13,4 +13,4 @@ echo "version $DESCRIBE =>  VERSION:${VERSION} BUILD:${BUILD} PATCH:${PATCH}"
 VERSION=${VERSION}"."${BUILD}"."${PATCH}
 
 echo "building image with tags :  ${VERSION}    patch ${PATCH} ($DESCRIBE)"
-#docker build -t blsq/hesabu:$VERSION .
+docker build -t blsq/hesabu:$VERSION .
