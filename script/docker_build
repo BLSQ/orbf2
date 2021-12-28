@@ -14,3 +14,6 @@ VERSION=${VERSION}"."${BUILD}"."${PATCH}
 
 echo "building image with tags :  ${VERSION}    patch ${PATCH} ($DESCRIBE)"
 docker build -t blsq/hesabu:$VERSION .
+
+echo "Next step to monitor the size, for the moment let's log it"
+docker images blsq/hesabu
