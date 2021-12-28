@@ -142,4 +142,10 @@ to speed up things you can a copy without the dhis2_logs table
 bundle exec rake db:fetch APP_NAME=yourappname
 ```
 
-note that you need a pg 9.6.1 version
+# Sub modules & related projects
+
+* https://github.com/BLSQ/orbf-rules_engine/ (equations building blocks extracted from this repo)
+* https://github.com/BLSQ/hesabu         (ruby facade of go-hesabu for equation solving)
+* https://github.com/BLSQ/go-hesabu      (golang implementation to speed up invoice calculations)
+* https://github.com/BLSQ/hesabu-manager dhis2 app to replace the rails frontend here
+* https://github.com/BLSQ/blsq-report-components  react components to allow building invoice apps (dhis2 dedicated apps with invoice templates, custom data entries, contracts modules,... )

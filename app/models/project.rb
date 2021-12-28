@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: projects
@@ -99,13 +100,12 @@ class Project < ApplicationRecord
       },
       payment_rule:    {}
     }
-  }
-
+  }.freeze
 
   def contract_settings
     if entity_group.contract_program_based?
       {
-        program_id: entity_group.program_reference,
+        program_id:            entity_group.program_reference,
         all_event_sql_view_id: entity_group.all_event_sql_view_reference
       }
     end
@@ -220,6 +220,33 @@ class Project < ApplicationRecord
     status == "published"
   end
 
+  def self.deep_clone_includes
+    {
+      states:        [],
+      entity_group:  [],
+      activities:    {
+        activity_states: [:state]
+      },
+      packages:      {
+        package_entity_groups: [],
+        package_states:        [:state],
+        rules:                 [
+          :decision_tables,
+          formulas: { formula_mappings: [:activity] }
+        ],
+        activity_packages:     [:activity]
+      },
+      payment_rules: {
+        package_payment_rules: [:package],
+        rule:                  [
+          :decision_tables,
+          formulas: { formula_mappings: [:activity] }
+        ],
+        datasets:              []
+      }
+    }
+  end
+
   def publish(date)
     raise "already published !" unless draft?
 
@@ -228,30 +255,8 @@ class Project < ApplicationRecord
 
     transaction do
       new_project = deep_clone(
-        include: {
-          states:        [],
-          entity_group:  [],
-          activities:    {
-            activity_states: [:state]
-          },
-          packages:      {
-            package_entity_groups: [],
-            package_states:        [:state],
-            rules:                 [
-              :decision_tables,
-              formulas: { formula_mappings: [:activity] }
-            ],
-            activity_packages:     [:activity]
-          },
-          payment_rules: {
-            package_payment_rules: [:package],
-            rule:                  [
-              :decision_tables,
-              formulas: { formula_mappings: [:activity] }
-            ],
-            datasets:              []
-          }
-        }, use_dictionary: true
+        include: Project.deep_clone_includes, 
+        use_dictionary: true
       )
       new_project.original = old_project
 
