@@ -10,21 +10,6 @@ PATCH=`echo $DESCRIBE | awk '{split($0,a,"-"); print a[3]}'`
 
 echo "version $DESCRIBE =>  VERSION:${VERSION} BUILD:${BUILD} PATCH:${PATCH}"
 
-
-if [[ "${DESCRIBE}" =~ ^[A-Fa-f0-9]+$ ]]; then
-    VERSION="0.0.0"
-    BUILD=`git rev-list HEAD --count`
-    PATCH=${DESCRIBE}
-fi
-
-if [ "${BUILD}" = "" ]; then
-    BUILD='0'
-fi
-if [ "${BUILD}" = "" ]; then
-    PATCH='0'
-fi
-
-
 VERSION=${VERSION}"."${BUILD}"."${PATCH}
 
 echo "building image with tags :  ${VERSION}    patch ${PATCH} ($DESCRIBE)"
