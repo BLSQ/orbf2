@@ -1,4 +1,16 @@
 #!/bin/bash
 FULL_VERSION=$1
 
-docker build -t blsq/hesabu:$FULL_VERSION .
+DESCRIBE=`git describe --tags --always`
+echo $DESCRIBE
+# increment the build number (ie 115 to 116)
+VERSION=`echo $DESCRIBE | awk '{split($0,a,"-"); print a[1]}'`
+BUILD=`echo $DESCRIBE | awk '{split($0,a,"-"); print a[2]}'`
+PATCH=`echo $DESCRIBE | awk '{split($0,a,"-"); print a[3]}'`
+
+echo "version $DESCRIBE =>  VERSION:${VERSION} BUILD:${BUILD} PATCH:${PATCH}"
+
+VERSION=${VERSION}"."${BUILD}"."${PATCH}
+
+echo "building image with tags :  ${VERSION}    patch ${PATCH} ($DESCRIBE)"
+docker build -t blsq/hesabu:$VERSION .
