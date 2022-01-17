@@ -42,6 +42,45 @@ classDef js fill:#addadd;
 
 # Orbf2
 
+## Deployment
+
+```mermaid
+graph LR;
+configurator --> ui;
+configurator --> hesabu-manager;
+configurator --> invoice_app;
+enduser  --> invoice_app;
+ui --> rails;
+invoice_app --> api;
+api --> rails;
+hesabu-manager --> api;
+rails --> postgres
+rails --> redis
+redis --> sidekiq
+sidekiq --> simulation
+sidekiq --> invoices
+sidekiq --> other_dhis2_operations
+
+configurator[Configurator <br><br><< user >>]
+enduser[End user <br><br><< user >>]
+```
+
+Postgres is used to store the rules, audit logs,...
+Redis is used by sidekiq to allow background processing
+
+Developement 
+ - we use feature branching so start from the `dev` branch
+ - make PR, self review (check code climate comments) + @pjaspers or @smestach as reviewer
+
+Deployment in our production environment 
+ - we use heroku and its pipeline
+    - `dev` branch => staging
+    - `master` branch => prod
+    - the db have been moved to amazon RDS
+ - some client desire to host their own instance
+    - will be docker based : see github [workflow](https://github.com/BLSQ/orbf2/blob/dev/.github/workflows/publish.yml) and [ops-local-hosting/](https://github.com/BLSQ/ops-local-hosting/)
+
+Ideally we'd like to use the same docker image for our production environment. So either we migrate to docker based deployment on heroku or we move to aws beanstalk.
 
 ## Model
 
@@ -63,6 +102,7 @@ Project --> PaymentRule;
 PaymentRule --> Package;
 
 ```
+
 
 ### Program, ProjectAnchor, Dhis2Snapshot 
 
