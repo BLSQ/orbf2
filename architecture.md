@@ -33,10 +33,10 @@ classDef js fill:#addadd;
 * [hesabu](https://github.com/BLSQ/hesabu): ruby facade of go-hesabu for equation solving. Bundle the golang exec and pipe the equation as json.
 * [go-hesabu](https://github.com/BLSQ/go-hesabu) : golang implementation to speed up invoice calculations
 * [hesabu-manager](https://github.com/BLSQ/hesabu-manager) dhis2 app to replace the rails frontend here
-* [blsq-report-components](https://github.com/BLSQ/blsq-report-components) react components to allow building invoice apps (dhis2 dedicated apps with invoice templates, custom data entries, contracts modules,... )
 * [dhis2](https://github.com/BLSQ/dhis2) a gem handling authentication/serialisation/errors
 * [dhis2_taskr](https://github.com/BLSQ/dhis2-taskr) a dhis2 react app that can be used to automate tasks or cross/specific validations of configurations.
-* invoice_apps are specific dhis2 app for each project and generally not opensourced (holding invoice templates, logos, specific data entry,... ).
+* invoice_apps are specific dhis2 app for each project and generally not opensourced (holding invoice templates, logos, specific data entry,... ) but all relying on blsq-report-components.
+* [blsq-report-components](https://github.com/BLSQ/blsq-report-components) react components to allow building invoice apps (dhis2 dedicated apps with invoice templates, custom data entries, contracts modules,... )
 
 # Orbf2
 
@@ -68,7 +68,7 @@ A program is a tenant that "can't be escaped" by users. The projectanchor is fix
 
 Dhis2Snapshots stores dhis2 api results (organisationUnit, organisationUnitGroups, ...) for versionning and caching/speed improvement. The versionning is a bit too weak, generally pbf projects don't rarely have the correct and on time information. That's how we introduced the concept of lately contracts.
 
-#### Project and its constellation
+### Project and its constellation
 
 The project are the set rules that apply for a given period range (if published, not editable) or the last set rules that apply since last published version (if draft, still editable).
 
