@@ -269,5 +269,23 @@ Sadly :
    - for example : hiding the fact that you can have multiple projects in the same app (the manager's project is a mix orbf2 project anchor and project draft)
    - bundles the renaming in the previous points
 
+# Invoice apps
 
+Invoice apps are dhis2 apps with the specific code the project, only part where we loose the genericity of the product.
 
+Hesabu is good at describing *how to calculate things* but 
+- invoices can become quiet complex and you often want to tweak the layout to fit on a page (Portrait, landscape, reduce the font size,...)
+- same for data entry (access rights might vary, some allow the same people to encode declared and verified data, some only allows to encode verified data,...)
+
+To avoid breaking invoices by just renaming a formula, we have for the moment an intermediate format for the hesabu rules called the project descriptor. 
+A json representation that make it easy to use in the invoice `payment_rules.pma.packages.quality_pma.quality_score` or for each activities display the `declared`, `verified`,`price`,`amount`. This json is bundled in the app.
+
+The invoice depends on the api to trigger invoice and check if the invoice are running/have run.
+
+Invoice apps use [blsq-report-components](https://github.com/BLSQ/blsq-report-components) it has a kind of plugin system 
+- to enable some components (eg contract manager)
+- to contribute some components to specific screen (eg add links to jump to contracts or jump to iaso in the invoice screen)
+- small building blocks
+
+The invoices or data entries are defined based on basic building blocks.
+eg iterate over the package activities and add a cell with the amount
