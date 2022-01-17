@@ -118,7 +118,7 @@ Finally :
 - To be a good citizen of dhis2, for each payment rule a dataset per periodicity can be created by orbf2 (but for the moment you need to maintain it manually by going in the sync datasets screen)
 
 
-## orb-rules_engine
+# orb-rules_engine
 
 This code was extracted from orbf2 
 - to ease the testing : outside any persitence mechanism
@@ -131,7 +131,7 @@ Most models discussed in orbf2 have their "value object" counterpart in the gem.
 
 Historically we were using [dentaku](https://github.com/rubysolo/dentaku) but due to the growing number of organisationUnits/equations/activities/complexities we hit performance problems. Parsing equations often generate lots small lived objects hiting garbage collectors limits. For backward compatibility and for some part of the validation of the equations we still use dentaku. This implies that newer functions/functionnality need to be coded/tested twice (generally easy to do).
 
-## Hesabu and go-hesabu
+# Hesabu and go-hesabu
 
 Hesabu is a ruby gem bundling the go-hesabu executables (picking the OS specific binaries mac vs linux, no windows support for the moment)
 
