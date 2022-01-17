@@ -173,6 +173,78 @@ Initially we tried to implement this still in ruby but  we were hiting the same 
 
 Since the instantiated equation payload can be huge (hundreds of megabytes) we went for a command line integration. So hesabu marshall to json the equations pipe it into the go-hesabu executable, parse the solution and return it to orbf-rules_engine (or throw an error if the equations were not valid (typo, unknown function, cycle, runtime error (divide by 0, index out of bound), ...)).
 
+[go-hesabu](https://github.com/BLSQ/go-hesabu) use [govaluate](https://github.com/Knetic/govaluate) to evaluate and get expression dependencies, then we sort the dependencies with [toposort](https://github.com/otaviokr/topological-sort) to find the order of evalution of the expression.
+
+Let's say we have these equations
+```json
+{
+  "c": "a + 10 * b",
+  "b": "10+a",
+  "a": "10"
+}
+```
+the dependencies
+
+```json
+{
+  "c": ["a","b"],
+  "b": ["a"],
+  "a": []
+}
+```
+
+can be visualized
+
+```mermaid
+graph LR;
+c --> a;
+c --> b;
+b --> a;
+```
+
+The engine now knows that we should evaluate in this order `[a,b,c]`
+
+If we evaluate step by step
+
+**Step 1 : a**
+
+```json
+{
+  "c": "a + 10 * b",
+  "b": "10+a",
+  "a": "10"
+}
+```
+**Step 2 : b**
+
+```json
+{
+  "c": "a + 10 * b",
+  "b": "20",
+  "a": "10"
+}
+```
+**Step 3 : c**
+
+```json
+{
+  "c": "a + 10 * b",
+  "b": "20",
+  "a": "10"
+}
+```
+**the solution** 
+
+```json
+{
+  "c": "210",
+  "b": "20",
+  "a": "10"
+}
+```
+
+We extend a bit govaluate to add our own functions.
+
 # Hesabu manager
 
 Hesabu manager is a dhis2 app that allows to run simulations and show the rules.
