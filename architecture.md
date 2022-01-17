@@ -1,5 +1,7 @@
 # Architecture
 
+Tries to give an overview and some historical point of view on the current architecture.
+
 # Modules
 
 ```mermaid
@@ -125,11 +127,43 @@ This code was extracted from orbf2
 - to ease the performance testing/tuning : fat models where filled with persitence logic and calculation logic making hard to know why a invoice calculation where slower.
 - to seperate the calculations from their operational usage : simulation or production write data to dhis2
 
-The main goal of this gem is build a graph of `Variable`s (with their instantiated equations) and let the hesabu engine solve these equations to finally return the variable and the solution of the equations.
-
 Most models discussed in orbf2 have their "value object" counterpart in the gem.
 
-Historically we were using [dentaku](https://github.com/rubysolo/dentaku) but due to the growing number of organisationUnits/equations/activities/complexities we hit performance problems. Parsing equations often generate lots small lived objects hiting garbage collectors limits. For backward compatibility and for some part of the validation of the equations we still use dentaku. This implies that newer functions/functionnality need to be coded/tested twice (generally easy to do).
+The main goal of this gem is build a graph of `Variable`s (with their instantiated equations) and let the hesabu engine solve these equations to finally return the variable and the solution of the equations.
+
+By instantiating we mean the process of turning a formula to something with the orgunit, period and activity in their "key".
+
+The activity formula : 
+
+```
+  code:        "allowed",
+  expression:  "if (percent_achieved < 0.75, 0, percent_achieved)"
+```
+
+become a variable
+
+```
+
+   key:            "myperf_package_act1_allowed_for_1_and_2016q1",
+   period:         "2016Q1",
+   expression:     "if (myperf_package_act1_percent_achieved_for_1_and_2016q1 < 0.75, 0, myperf_package_act1_percent_achieved_for_1_and_2016q1)",
+
+```
+
+Another process that will happen is the expansion of windowing expressions like `achieved_previous_year_same_quarter_monthly_values`
+
+```
+    "percent_achieved",
+    "active * safe_div(achieved,sum(%{achieved_previous_year_same_quarter_monthly_values}))"
+```
+
+to their instantiated counter parts
+
+```
+ "myperf_package_act1_active_for_1_and_2016q1 * safe_div(myperf_package_act1_achieved_for_1_and_2016q1,sum(myperf_package_act1_achieved_for_1_and_201501,myperf_package_act1_achieved_for_1_and_201502,myperf_package_act1_achieved_for_1_and_201503))",
+```
+
+Historically we were using [dentaku](https://github.com/rubysolo/dentaku) but due to the growing number of organisationUnits/equations/activities/complexities we hit performance problems. Parsing equations often generate lots small and short lived objects hiting garbage collectors limits. For backward compatibility and for some part of the validation of the equations we still use dentaku. This implies that newer functions/functionnality need to be coded/tested twice (generally easy to do).
 
 # Hesabu and go-hesabu
 
@@ -138,5 +172,30 @@ Hesabu is a ruby gem bundling the go-hesabu executables (picking the OS specific
 Initially we tried to implement this still in ruby but  we were hiting the same garbage collection limits as dentaku. So at some point we found some librairies that would allow us to port a dentaku like engine to golang.
 
 Since the instantiated equation payload can be huge (hundreds of megabytes) we went for a command line integration. So hesabu marshall to json the equations pipe it into the go-hesabu executable, parse the solution and return it to orbf-rules_engine (or throw an error if the equations were not valid (typo, unknown function, cycle, runtime error (divide by 0, index out of bound), ...)).
+
+# Hesabu manager
+
+Hesabu manager is a dhis2 app that allows to run simulations and show the rules.
+
+Hesabu depends on 
+ - [@blsq/manager-ui](http://viz.bluesquare.org/manager-ui/?path=/story/key-number-block--default)
+ - [jsonapi-serializer]() to make the api easier to consume as tree of objects vs json-api graph
+
+It's mostly read only but you can
+ - consult the packages(sets), payment rules (multi sets) and formulas (as graphviz/mermaid graphs)
+ - run simulation (but currently it's hard to force a new one if you only modified the data)
+ - change the mappings of certain formulas (if you have a special dhis2 role)
+
+Some screen were already designed for more create/update use cases but are not implemented or only in their readonly version (since the api don't support the create/update/validations)
+
+Sadly : 
+
+- the naming of concepts has been reviewed and I'm not certain that all were a good idea
+   - I would probably keep orbf2 names except for payments rules that I would rename to MultiPackages rule (and deprecate them, since they showed their limits in most advanced pbf scheme)
+   - The new naming is too abstract and make user knowing the old ui hard to get familiar with the new one   
+- the api exposed by orbf2 is not perfect to port all the orbf2 rails UI: 
+   - for example : hiding the fact that you can have multiple projects in the same app (the manager's project is a mix orbf2 project anchor and project draft)
+   - bundles the renaming in the previous points
+
 
 
