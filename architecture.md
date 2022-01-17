@@ -128,15 +128,16 @@ A simple package with can be seen as an excel like that
 |          |        |        |                    |  1750                | package_formula_1 `SUM(%{activity_formula_2})`
 |          |        |        | 7.5                |                      | package_formula_2 `AVERAGE(%{activity_formula_1})`
 
-The formula are defined by a `code` (activity_formula_1 or package_formula_2) and the `equation` (state2-state1)
-The equation can reference other formulas of the same level or from another level depending on their type.
+The formula are defined by
+- a `code` (activity_formula_1 or package_formula_2) and 
+- the `equation` (state2-state1) : The equation can reference other formulas of the same level or from another level depending on their type.
 
 eg weighting
 
-| points | weight  | relative_weight | actual_points `relative_weight * points`
+| points | weight  | relative_weight = ` weight / total_weight`| actual_points `relative_weight * points`
 | ------ | ------  | --------------- | --------------
 |    18  |    20   |   20/35 = 0.57  | 10.28 
-|    10  |    15   |   0.66666       | 6.66666
+|    10  |    15   |   10/35 = 0.66666       | 6.66666
 |        | total_weight: 35 `SUM(%{weight_values})` | | score = `SAFE_DIV(SUM(%{actual_points_values}), total_weight)` = 16.946666
 
 Here : 
@@ -147,8 +148,27 @@ Here :
 Various [functions](https://github.com/BLSQ/go-hesabu/blob/master/hesabu/registry.go#L26) are available most are derived from what excel supports, some are a bit specific (SAFE_DIV to avoid divide by 0 and return just a 0)
 
 In some cases you might want:
-* to verify that the data is actually present, the formula has access to the statex_is_null that return 1 if the data wasn't present (note the valueitself  is defaulted to 0).
+* to verify that the data is actually present, the formula has access to the `statex_is_null` that return 1 if the data wasn't present (note the valueitself  is defaulted to 0).
 * to access past periods state values (`%{statex_last_12_month_values}`) via windowing expressions
+* to access parents data : some price scheme are simple and so can be define at country level, and you can reference this via `statex_level_1`
+* to access a decision table: decision tables allows more dynamic behaviour based on the activity, the orgunit groups/contracts, the orgunit parents level but in a descriptive way.
+
+Decision table example, here we can set prices depending on region, the activity and equity categories the orgunit belongs to.
+
+![decistion table](./doc/decision_table_1.png)
+
+Generally this table will be flattened further taking this form 
+* `in:activity_code`
+* `in:level_2`
+* `in:groupset_category`
+* `out:price`
+
+To get the flattened csv, a simple ruby script or taskr recipe can take screenshoted input csv
+
+The star is a notation to match *any* other values in the level_2 column.
+
+Currently the edition of the decision table is not easy (paste csv, header naming convention to know) but we managed to handle it for now. Another thing that added lately is the period ranges on decision table. So that price changes is adding a new table for a new period range.
+It's now the recommended way to configure prices (it's supported also by the invoice app data entry)
 
 Then each formula can be sent back to dhis2 my adding a mapping to a data element & category option combo.
 
@@ -164,7 +184,7 @@ Finally :
 
 This code was extracted from orbf2 
 - to ease the testing : outside any persitence mechanism
-- to ease the performance testing/tuning : fat models where filled with persitence logic and calculation logic making hard to know why a invoice calculation where slower.
+- to ease the performance testing/tuning : fat models where filled with persitence logic and calculation logic making hard to know why an invoice calculation was slower.
 - to seperate the calculations from their operational usage : simulation or production write data to dhis2
 
 Most models discussed in orbf2 have their "value object" counterpart in the gem.
@@ -242,7 +262,7 @@ c --> b;
 b --> a;
 ```
 
-The engine now knows that we should evaluate in this order `[a,b,c]`
+By doing a topological sort, the engine now knows that we should evaluate in this order `[a,b,c]`
 
 If we evaluate step by step
 
