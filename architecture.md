@@ -157,7 +157,7 @@ Another process that will happen is the expansion of windowing expressions like 
     "active * safe_div(achieved,sum(%{achieved_previous_year_same_quarter_monthly_values}))"
 ```
 
-to their instantiated counter parts
+to their instantiated counter [parts](https://github.com/BLSQ/orbf-rules_engine/blob/master/lib/orbf/rules_engine/builders/spans/spans.rb#L116)
 
 ```
  "myperf_package_act1_active_for_1_and_2016q1 * safe_div(myperf_package_act1_achieved_for_1_and_2016q1,sum(myperf_package_act1_achieved_for_1_and_201501,myperf_package_act1_achieved_for_1_and_201502,myperf_package_act1_achieved_for_1_and_201503))",
