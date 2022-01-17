@@ -1,6 +1,6 @@
 # Architecture
 
-## Modules
+# Modules
 
 ```mermaid
 graph LR;
@@ -38,10 +38,10 @@ classDef js fill:#addadd;
 * [dhis2_taskr](https://github.com/BLSQ/dhis2-taskr) a dhis2 react app that can be used to automate tasks or cross/specific validations of configurations.
 * invoice_apps are specific dhis2 app for each project and generally not opensourced (holding invoice templates, logos, specific data entry,... ).
 
-## Orbf2
+# Orbf2
 
 
-### Model
+## Model
 
 
 ```mermaid
@@ -62,13 +62,13 @@ PaymentRule --> Package;
 
 ```
 
-#### Program, ProjectAnchor, Dhis2Snapshot 
+### Program, ProjectAnchor, Dhis2Snapshot 
 
 A program is a tenant that "can't be escaped" by users. The projectanchor is fixed point that will reference dhis2Snapshots per periods and also will have a multiple projects (set of rules per period).
 
 Dhis2Snapshots stores dhis2 api results (organisationUnit, organisationUnitGroups, ...) for versionning and caching/speed improvement. The versionning is a bit too weak, generally pbf projects don't rarely have the correct and on time information. That's how we introduced the concept of lately contracts.
 
-##### Project and its constellation
+#### Project and its constellation
 
 The project are the set rules that apply for a given period range (if published, not editable) or the last set rules that apply since last published version (if draft, still editable).
 
@@ -118,7 +118,7 @@ Finally :
 - To be a good citizen of dhis2, for each payment rule a dataset per periodicity can be created by orbf2 (but for the moment you need to maintain it manually by going in the sync datasets screen)
 
 
-### orb-rules_engine
+## orb-rules_engine
 
 This code was extracted from orbf2 
 - to ease the testing : outside any persitence mechanism
@@ -131,7 +131,7 @@ Most models discussed in orbf2 have their "value object" counterpart in the gem.
 
 Historically we were using [dentaku](https://github.com/rubysolo/dentaku) but due to the growing number of organisationUnits/equations/activities/complexities we hit performance problems. Parsing equations often generate lots small lived objects hiting garbage collectors limits. For backward compatibility and for some part of the validation of the equations we still use dentaku. This implies that newer functions/functionnality need to be coded/tested twice (generally easy to do).
 
-### Hesabu and go-hesabu
+## Hesabu and go-hesabu
 
 Hesabu is a ruby gem bundling the go-hesabu executables (picking the OS specific binaries mac vs linux, no windows support for the moment)
 
