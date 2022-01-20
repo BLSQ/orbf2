@@ -1,4 +1,7 @@
 <h1>Edit a state</h1>
 <%= simple_form_for(state,  url: setup_project_state_path(state.project), method: :put) do |f| %>
   <%= render 'form', f: f %>
+  <% unless @has_packages %>
+    <%= link_to "Delete State", setup_project_state_path(state.project), data: { confirm: "Are you sure?" }, method: :delete, class: "btn btn-danger"%>
+  <% end %>
 <%end%>

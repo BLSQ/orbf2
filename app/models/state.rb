@@ -44,6 +44,10 @@ class State < ApplicationRecord
     @code ||= Codifier.codify(name)
   end
 
+  def has_packages
+    PackageState.where(state_id: id).any?
+  end
+
   def to_unified_h
     { name: name }
   end
