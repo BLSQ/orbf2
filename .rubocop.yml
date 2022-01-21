@@ -32,4 +32,7 @@ Style/FormatStringToken:
 Rails/Delegate:
   Enabled: false
 Layout/HashAlignment:
-  Enabled: false
+  EnforcedHashRocketStyle: table
+  EnforcedColonStyle: table
+  EnforcedLastArgumentHashStyle: always_inspect
+  

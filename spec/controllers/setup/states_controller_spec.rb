@@ -45,10 +45,10 @@ RSpec.describe Setup::StatesController, type: :controller do
       post(:update,
            params: {
              project_id: project.id,
-             id: state.id,
-             state: {
-               id: state.id,
-               name: "New very very long state name",
+             id:         state.id,
+             state:      {
+               id:         state.id,
+               name:       "New very very long state name",
                short_name: "new short state name"
              }
            })
@@ -61,7 +61,7 @@ RSpec.describe Setup::StatesController, type: :controller do
       expect do
         State.update(
           state.id,
-          name: "New very very long state name",
+          name:       "New very very long state name",
           short_name: "new short state name"
         )
       end.to_not change { State.count }
