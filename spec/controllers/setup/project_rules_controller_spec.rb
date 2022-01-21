@@ -56,9 +56,7 @@ RSpec.describe Setup::ProjectRulesController, type: :controller do
         expect(response.body).to include("graph TD")
         expect(response.body).to include("attributed_points--&gt; claimed;")
       end
-
     end
-
 
     describe "#new" do
       it "should render new edit form" do

@@ -1,4 +1,3 @@
-
 class CreateDhis2ElementWorker
   include Sidekiq::Worker
 
@@ -11,6 +10,7 @@ class CreateDhis2ElementWorker
     status = dhis2.data_elements.create(to_data_element_creation_payload)
     Rails.logger.info "data elements created #{status.to_json}, creating activity states"
     raise "can't create data element #{status.to_json} vs #{data_element.to_json}" unless status.success?
+
     dhis2.data_elements.find_by(code: data_element["code"])
   end
 

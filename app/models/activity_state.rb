@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: activity_states
@@ -34,7 +35,7 @@ class ActivityStateValidator
         activity_state.errors[:external_reference] << "should contains a dot like DATAELEMENTID.COCID"
       end
     end
-    if (activity_state.kind_indicator? || activity_state.kind_data_element?)  && activity_state.external_reference.presence
+    if (activity_state.kind_indicator? || activity_state.kind_data_element?) && activity_state.external_reference.presence
       if activity_state.external_reference.include?(".")
         activity_state.errors[:external_reference] << "should NOT contains a dot like DATAELEMENTID.COCID"
       end

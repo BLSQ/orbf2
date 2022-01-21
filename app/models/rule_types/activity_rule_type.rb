@@ -18,7 +18,7 @@ module RuleTypes
         var_names.push(*null_states)
       end
       if package.monthly?
-        var_names.push(*package_states.map{ |s| s.code+"_quarterly" })
+        var_names.push(*package_states.map { |s| s.code + "_quarterly" })
       end
       var_names.push(*formulas.map(&:code))
       var_names.push(*Analytics::Locations::LevelScope.new.facts(package))
@@ -90,7 +90,7 @@ module RuleTypes
     def fake_facts
       # in case we are in a clone packages a not there so go through long road package_states instead of states
 
-      quarterly_facts = package.monthly?  ?  package_states.map { |state| ["#{state.code}_quarterly".to_sym, "10"] }.to_h : {}
+      quarterly_facts = package.monthly? ? package_states.map { |state| ["#{state.code}_quarterly".to_sym, "10"] }.to_h : {}
 
       to_fake_facts(package_states)
         .merge(quarterly_facts)

@@ -1,4 +1,3 @@
-
 module Datasets
   class BuildDatasets
     attr_reader :legacy_project

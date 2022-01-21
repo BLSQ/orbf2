@@ -17,7 +17,7 @@ RSpec.describe Setup::SnapshotsController, type: :controller do
     let(:project) { full_project }
     it "should allow to schedule dhis2 snapshots" do
       post :create, params: { project_id: project.id }
-      expect(Dhis2SnapshotWorker).to have_enqueued_sidekiq_job( project.project_anchor.id )
+      expect(Dhis2SnapshotWorker).to have_enqueued_sidekiq_job(project.project_anchor.id)
     end
   end
 end

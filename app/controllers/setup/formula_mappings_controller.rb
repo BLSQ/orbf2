@@ -1,4 +1,3 @@
-
 # frozen_string_literal: true
 
 class Setup::FormulaMappingsController < PrivateController
@@ -136,6 +135,7 @@ class Setup::FormulaMappingsController < PrivateController
 
   def missing?(options, mapping)
     return mapping if @to_check.include?(mapping.external_reference)
+
     options[:missing_only] && mapping.id ? nil : mapping
   end
 

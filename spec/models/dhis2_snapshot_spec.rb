@@ -1,17 +1,16 @@
 require "rails_helper"
 
 RSpec.describe Dhis2Snapshot, type: :model do
-
   def snapshot_with(content:)
     project_anchor = FactoryBot.create(:project_anchor)
     snapshot = Dhis2Snapshot.create!(
-      dhis2_version: "does-not-matter",
-      kind: "does-not-matter",
-      month: 1,
-      year: 1,
-      job_id: "does-not-matter",
+      dhis2_version:     "does-not-matter",
+      kind:              "does-not-matter",
+      month:             1,
+      year:              1,
+      job_id:            "does-not-matter",
       project_anchor_id: project_anchor.id,
-      content: content
+      content:           content
     )
   end
 
@@ -26,7 +25,7 @@ RSpec.describe Dhis2Snapshot, type: :model do
   describe "containing_dhis2_" do
     it "will find matching id" do
       dhis2_id = "fKb766I1Ma9"
-      snapshot = snapshot_with(content: [{"table"=>{"id"=> dhis2_id}}])
+      snapshot = snapshot_with(content: [{ "table"=>{ "id"=> dhis2_id } }])
 
       expect(Dhis2Snapshot.containing_dhis2_id(dhis2_id).first).to eq(snapshot)
     end
@@ -34,21 +33,21 @@ RSpec.describe Dhis2Snapshot, type: :model do
     it "will find matching display_name" do
       dhis2_display_name = "Inigo Montoya"
       project_anchor = FactoryBot.create(:project_anchor)
-      snapshot = snapshot_with(content: [{"table"=>{"display_name"=> dhis2_display_name}}])
+      snapshot = snapshot_with(content: [{ "table"=>{ "display_name"=> dhis2_display_name } }])
 
       expect(Dhis2Snapshot.containing_dhis2_display_name(dhis2_display_name).first).to eq(snapshot)
     end
 
     it "will not erroneously find matching display_name" do
       dhis2_display_name = "Inigo Montoya"
-      snapshot = snapshot_with(content: [{"table"=>{"display_name"=> dhis2_display_name}}])
+      snapshot = snapshot_with(content: [{ "table"=>{ "display_name"=> dhis2_display_name } }])
 
       expect(Dhis2Snapshot.containing_dhis2_display_name("fezzik").first).to eq(nil)
     end
 
     it "will not break if the json is not what we expected" do
       dhis2_display_name = "Inigo Montoya"
-      snapshot = snapshot_with(content: {"o"=>{"hai" => "there"}})
+      snapshot = snapshot_with(content: { "o"=>{ "hai" => "there" } })
 
       expect(Dhis2Snapshot.containing_dhis2_display_name("fezzik").count).to eq(0)
     end

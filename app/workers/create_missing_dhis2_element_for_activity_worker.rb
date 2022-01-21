@@ -1,4 +1,3 @@
-
 class CreateMissingDhis2ElementForActivityWorker < CreateDhis2ElementWorker
   def perform(project_id, payload)
     @project = Project.find(project_id)

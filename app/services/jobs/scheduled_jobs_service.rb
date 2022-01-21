@@ -20,6 +20,7 @@ module Jobs
         queue.each do |job|
           next unless job.klass == "InvoiceForProjectAnchorWorker"
           next unless job.args[0].to_s == project.project_anchor_id.to_s
+
           array.push(to_scheduled_job(job))
         end
       end
@@ -41,6 +42,7 @@ module Jobs
 
     def parent_names(orgunit_id)
       return nil unless pyramid
+
       pyramid.org_unit_parents(orgunit_id).map(&:name).join(" > ")
     end
   end

@@ -55,7 +55,7 @@ module Invoicing
       end
       Orbf::RulesEngine::OrgUnitWithFacts.new(
         orgunit: raw_org_unit,
-        facts:   Orbf::RulesEngine::OrgunitFacts.new(org_unit:raw_org_unit, pyramid: pyramid, contract_service:contract_service, invoicing_period: period).to_facts
+        facts:   Orbf::RulesEngine::OrgunitFacts.new(org_unit: raw_org_unit, pyramid: pyramid, contract_service: contract_service, invoicing_period: period).to_facts
       )
     end
   end

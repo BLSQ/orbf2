@@ -64,7 +64,6 @@ RSpec.describe Setup::AutocompleteController, type: :controller do
       stub_dhis2_system_info_success(project.dhis2_url)
       Dhis2SnapshotWorker.new.perform(project.project_anchor_id, filter: ["data_elements"])
     end
-
   end
 
   describe "When authenticated #data_elements_with_cocs" do
@@ -111,7 +110,6 @@ RSpec.describe Setup::AutocompleteController, type: :controller do
       stub_dhis2_system_info_success(project.dhis2_url)
       Dhis2SnapshotWorker.new.perform(project.project_anchor_id, filter: ["data_elements"])
     end
-
   end
 
   describe "When authenticated #indicators" do

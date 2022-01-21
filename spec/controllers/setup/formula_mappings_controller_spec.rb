@@ -33,9 +33,6 @@ RSpec.describe Setup::FormulaMappingsController, type: :controller do
       expect(assigns(:formula_mappings).project).to eq project
     end
 
-
-
-
     #  id                 :integer          not null, primary key
     #  formula_id         :integer          not null
     #  activity_id        :integer
@@ -75,7 +72,7 @@ RSpec.describe Setup::FormulaMappingsController, type: :controller do
           { id:                 mapping.id,
             formula_id:         mapping.formula_id,
             kind:               mapping.kind,
-            external_reference: existing == mapping ? "" : mapping.external_reference  }
+            external_reference: existing == mapping ? "" : mapping.external_reference }
         end
       }
 
@@ -94,10 +91,10 @@ RSpec.describe Setup::FormulaMappingsController, type: :controller do
         formula = package.activity_rule.formulas.first
 
         post :create_data_element, params: {
-          project_id: project.id,
-          formula_id: formula.id,
+          project_id:  project.id,
+          formula_id:  formula.id,
           activity_id: activity.id,
-          kind: "activity",
+          kind:        "activity",
           name:        "long and descriptrive name",
           short_name:  "short name",
           code:        "code"

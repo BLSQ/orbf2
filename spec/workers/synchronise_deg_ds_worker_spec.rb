@@ -129,10 +129,9 @@ RSpec.describe SynchroniseDegDsWorker do
         ).to_return(status: 200, body: "")
     end
 
-
     def stub_update_data_element_group
       stub_request(:put, "http://play.dhis2.org/demo/api/dataElementGroups/dhis2DEGID").with(
-        body: "{\"name\":\"ORBF - " + project.packages.first.id.to_s + " - Quantity PMA\",\"shortName\":\"hesabu-" + project.packages.first.id.to_s + "\",\"code\":\"hesabu-" + project.packages.first.id.to_s + "\",\"dataElements\":[{\"id\":\"cl-ext-2\"},{\"id\":\"tarif-ext-2\"},{\"id\":\"tarif-ext-1\"},{\"id\":\"clext1\"}],\"id\":\"dhis2DEGID\",\"displayName\":\"ORBF - "+project.packages.first.id.to_s+" - Quantity PMA\"}"
+        body: "{\"name\":\"ORBF - " + project.packages.first.id.to_s + " - Quantity PMA\",\"shortName\":\"hesabu-" + project.packages.first.id.to_s + "\",\"code\":\"hesabu-" + project.packages.first.id.to_s + "\",\"dataElements\":[{\"id\":\"cl-ext-2\"},{\"id\":\"tarif-ext-2\"},{\"id\":\"tarif-ext-1\"},{\"id\":\"clext1\"}],\"id\":\"dhis2DEGID\",\"displayName\":\"ORBF - " + project.packages.first.id.to_s + " - Quantity PMA\"}"
       ).to_return(status: 200, body: "", headers: {})
     end
 
@@ -142,7 +141,6 @@ RSpec.describe SynchroniseDegDsWorker do
     end
 
     def stub_data_element_group_find_by_code_empty_then_found
-
       stub_request(:get, "http://play.dhis2.org/demo/api/dataElementGroups?fields=:all&filter=code:eq:hesabu-" + project.packages.first.id.to_s)
         .to_return(status: 200, body: JSON.generate(dataElementGroups: []), headers: {}).then
         .to_return(status: 200, body: JSON.generate(dataElementGroups: [existing_data_element_group]), headers: {}).then

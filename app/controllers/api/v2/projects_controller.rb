@@ -32,7 +32,6 @@ module Api
           compounds.sets
           compounds.formulas.formula_mappings
         ] + default_sets_relationships
-
       end
 
       def default_sets_relationships

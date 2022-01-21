@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: formulas
@@ -33,11 +34,11 @@ RSpec.describe Formula, type: :model do
   let(:project) {
     Project.new(engine_version: 3)
   }
-  let(:package){
+  let(:package) {
     project.packages.build
   }
-  let(:rule){
-    Rule.new(name:"rspec",kind: "activity", package: package)
+  let(:rule) {
+    Rule.new(name: "rspec", kind: "activity", package: package)
   }
   def new_formula(args)
     rule.formulas.build(

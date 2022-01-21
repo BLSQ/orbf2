@@ -5,9 +5,9 @@ module Meta
                 :activity_state, :package, :formula_mapping, :payment_rule
 
     def initialize(
-        dhis2_id:, dhis2_name:, dhis2_short_name:, dhis2_code:,
-        activity_state: nil, package: nil, formula_mapping: nil, payment_rule: nil,
-        orbf_name:, orbf_short_name:, orbf_code:, orbf_type:
+      dhis2_id:, dhis2_name:, dhis2_short_name:, dhis2_code:,
+      activity_state: nil, package: nil, formula_mapping: nil, payment_rule: nil,
+      orbf_name:, orbf_short_name:, orbf_code:, orbf_type:
     )
       @orbf_name = orbf_name
       @orbf_short_name = orbf_short_name

@@ -19,7 +19,7 @@ module Descriptor
       return formulas unless rule
 
       rule.formulas.each do |formula|
-        #next unless formula.formula_mapping
+        # next unless formula.formula_mapping
         formulas[formula.code] = formula_descriptor_with_de(formula)
       end
       formulas

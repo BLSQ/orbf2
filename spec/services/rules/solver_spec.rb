@@ -50,5 +50,4 @@ RSpec.describe Rules::ValuesMocker, type: :services do
              ["demo_current_quarter_values"]
            )).to eq "SUM(4,6) / SUM(1 , 2 , 3) * 100.0"
   end
-
 end

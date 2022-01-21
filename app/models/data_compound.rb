@@ -8,6 +8,7 @@ class DataCompound
     data_elements_by_group = {}
     data_elements.each do |de|
       next unless de.data_element_groups
+
       de.data_element_groups.each do |group|
         data_elements_by_group[group["id"]] ||= Set.new
         data_elements_by_group[group["id"]].add(de)
@@ -20,6 +21,7 @@ class DataCompound
     date = Time.now.utc.to_date
     data_compound = project.project_anchor.latest_data_compound
     return data_compound if data_compound
+
     dhis2 = project.dhis2_connection
     data_elements = dhis2.data_elements.list(fields: ":all", page_size: Dhis2SnapshotWorker::PAGE_SIZE)
     data_element_groups = dhis2.data_element_groups.list(fields: ":all", page_size: Dhis2SnapshotWorker::PAGE_SIZE)

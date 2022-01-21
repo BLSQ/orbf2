@@ -7,7 +7,7 @@ describe Periods::YearQuarter do
 
   describe 'fails fast' do
     it "when nil" do
-      expect {Periods::YearQuarter.new(nil)}.to raise_error(ArgumentError,"Argument yyyyqq can't be nil")
+      expect {Periods::YearQuarter.new(nil)}.to raise_error(ArgumentError, "Argument yyyyqq can't be nil")
     end
 
     it "when year is a alpha" do
@@ -20,7 +20,6 @@ describe Periods::YearQuarter do
       expect {Periods::YearQuarter.new("2016Qa")}.to raise_error('invalid value for Integer(): "a"')
     end
   end
-
 
   describe "#from_yyyyqq" do
     it "should return yyyyqq" do

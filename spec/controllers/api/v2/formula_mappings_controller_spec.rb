@@ -90,8 +90,7 @@ RSpec.describe Api::V2::FormulaMappingsController, type: :controller do
       attribs = resp["data"]["attributes"]
       expect(attribs["externalReference"]).to eq("newdhis2id.comboid")
 
-      delete(:destroy, params: {id:  resp["data"]["id"]})
-
+      delete(:destroy, params: { id: resp["data"]["id"] })
     end
   end
 end

@@ -6,7 +6,7 @@ describe Periods::Year do
 
   describe 'fails fast' do
     it "when nil" do
-      expect {Periods::Year.new(nil)}.to raise_error(TypeError,"can't convert nil into Integer")
+      expect {Periods::Year.new(nil)}.to raise_error(TypeError, "can't convert nil into Integer")
     end
     it "when alhpa" do
       expect {Periods::Year.new("aze")}.to raise_error(ArgumentError, 'invalid value for Integer(): "aze"')

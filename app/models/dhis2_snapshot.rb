@@ -54,15 +54,15 @@ class Dhis2Snapshot < ApplicationRecord
 
   # If any of the elements inside content match this dhis2_id, the
   # snapshot will be a match.
-  scope :containing_dhis2_id, -> (id) {
-    part_to_contain = [{table: {id: id}}].to_json
+  scope :containing_dhis2_id, ->(id) {
+    part_to_contain = [{ table: { id: id } }].to_json
     where("content @> ?", part_to_contain)
   }
 
   # If any of the elements inside content match this display name, the
   # snapshot will be a match.
-  scope :containing_dhis2_display_name, -> (name) {
-    part_to_contain = [{table: {display_name: name}}].to_json
+  scope :containing_dhis2_display_name, ->(name) {
+    part_to_contain = [{ table: { display_name: name } }].to_json
     where("content @> ?", part_to_contain)
   }
 
