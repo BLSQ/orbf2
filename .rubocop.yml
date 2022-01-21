@@ -1,6 +1,6 @@
 require: rubocop-rails
 AllCops:
-  NewCops: enable
+  NewCops: disable
   # The serializers go wrong with relationships, rubocop interprets
   # them a `has_many` from ActiveRecord and autocorrects it to a
   # proc. Which is not how the JSONApi serializer works
@@ -10,7 +10,7 @@ AllCops:
     - app/serializers/**/*
 Rails:
   Enabled: true
-Metrics/LineLength:
+Layout/LineLength:
   Max: 100
 Style/StringLiterals:
   EnforcedStyle: double_quotes
