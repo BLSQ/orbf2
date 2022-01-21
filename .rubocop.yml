@@ -33,8 +33,6 @@ Rails/Delegate:
   Enabled: false
 Layout/HashAlignment:
   EnforcedHashRocketStyle:
-    - key
     - table
   EnforcedColonStyle:
-    - key
     - table
