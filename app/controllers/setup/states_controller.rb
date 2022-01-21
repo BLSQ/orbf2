@@ -18,7 +18,6 @@ class Setup::StatesController < PrivateController
 
   def edit
     @state = current_project.states.find(params[:id])
-    @has_packages = @state.has_packages
     render :edit
   end
 
@@ -38,11 +37,11 @@ class Setup::StatesController < PrivateController
 
   def destroy
     @state = current_project.states.find(params[:id])
-    if @state.has_packages
-      flash[:failure] = "State is in use"
-    else
+    if @state.unused?
       flash[:success] = "State deleted"
       @state.destroy
+    else
+      flash[:failure] = "State is in use"
     end
     redirect_to(root_path)
   end 
