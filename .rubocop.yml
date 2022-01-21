@@ -1,49 +1,27 @@
 require: rubocop-rails
 AllCops:
+  NewCops: disable
   # The serializers go wrong with relationships, rubocop interprets
   # them a `has_many` from ActiveRecord and autocorrects it to a
   # proc. Which is not how the JSONApi serializer works
-  TargetRubyVersion: 2.3
+  TargetRubyVersion: 2.5 
   Exclude:
     - db/schema.rb
     - app/serializers/**/*
 Rails:
   Enabled: true
-AlignHash:
-  # Alignment of entries using hash rocket as separator. Valid values are:
-  #
-  # key - left alignment of keys
-  # 'a' => 2
-  # 'bb' => 3
-  # separator - alignment of hash rockets, keys are right aligned
-  # 'a' => 2
-  # 'bb' => 3
-  # table - left alignment of keys, hash rockets, and values
-  # 'a' => 2
-  # 'bb' => 3
-  EnforcedHashRocketStyle: table
-  # Alignment of entries using colon as separator. Valid values are:
-  #
-  # key - left alignment of keys
-  # a: 0
-  # bb: 1
-  # separator - alignment of colons, keys are right aligned
-  # a: 0
-  # bb: 1
-  # table - left alignment of keys and values
-  # a: 0
-  # bb: 1
-  EnforcedColonStyle: table
-Metrics/LineLength:
+Layout/LineLength:
   Max: 100
-StringLiterals:
+Metrics/AbcSize:
+  Enabled: false  
+Style/StringLiterals:
   EnforcedStyle: double_quotes
-MethodCalledOnDoEndBlock:
+Style/MethodCalledOnDoEndBlock:
   Description: 'Avoid chaining a method call on a do...end block.'
   Enabled: true
-ClassLength:
+Metrics/ClassLength:
   Max: 400
-Documentation:
+Style/Documentation:
   Enabled: false
 Style/FrozenStringLiteralComment:
   Enabled: true
@@ -55,3 +33,9 @@ Style/FormatStringToken:
   EnforcedStyle: template
 Rails/Delegate:
   Enabled: false
+Layout/HashAlignment:
+  EnforcedHashRocketStyle: table
+  EnforcedColonStyle: table
+  EnforcedLastArgumentHashStyle: always_inspect
+Layout/ArgumentAlignment:
+  Enabled: true  

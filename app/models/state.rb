@@ -44,6 +44,10 @@ class State < ApplicationRecord
     @code ||= Codifier.codify(name)
   end
 
+  def unused?
+    PackageState.where(state_id: id).empty? && ActivityState.where(state_id: id).empty?
+  end
+
   def to_unified_h
     { name: name }
   end
