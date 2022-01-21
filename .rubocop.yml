@@ -12,6 +12,8 @@ Rails:
   Enabled: true
 Layout/LineLength:
   Max: 100
+Metrics/AbcSize:
+  Enabled: false  
 Style/StringLiterals:
   EnforcedStyle: double_quotes
 Style/MethodCalledOnDoEndBlock:
@@ -35,4 +37,5 @@ Layout/HashAlignment:
   EnforcedHashRocketStyle: table
   EnforcedColonStyle: table
   EnforcedLastArgumentHashStyle: always_inspect
-  
+Layout/ArgumentAlignment:
+  Enabled: true  
