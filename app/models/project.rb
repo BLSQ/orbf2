@@ -255,7 +255,7 @@ class Project < ApplicationRecord
 
     transaction do
       new_project = deep_clone(
-        include: Project.deep_clone_includes, 
+        include:        Project.deep_clone_includes,
         use_dictionary: true
       )
       new_project.original = old_project

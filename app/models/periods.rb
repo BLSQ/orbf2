@@ -20,7 +20,7 @@ module Periods
   FINANCIAL_JULY = "financialJuly"
 
   def self.detect(dhis2Period)
-    return QUARTERLY if dhis2Period[4]== "Q" && dhis2Period.size == 6
+    return QUARTERLY if dhis2Period[4] == "Q" && dhis2Period.size == 6
 
     return SIX_MONTHLY if dhis2Period.include?("S")
 

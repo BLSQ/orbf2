@@ -25,7 +25,6 @@
 #
 
 class EntityGroup < ApplicationRecord
-
   class Kinds
     GROUP_BASED = "group_based"
     CONTRACT_PROGRAM_BASED = "contract_program_based"
@@ -41,7 +40,7 @@ class EntityGroup < ApplicationRecord
   validates :external_reference, presence: true, if: :group_based?
   validates :name, presence: true, if: :group_based?
   validates :program_reference, presence: true, if:  :contract_program_based?
-  validates :all_event_sql_view_reference, presence: true, if:  :contract_program_based?
+  validates :all_event_sql_view_reference, presence: true, if: :contract_program_based?
 
   delegate :program_id, to: :project
 
@@ -52,5 +51,4 @@ class EntityGroup < ApplicationRecord
   def contract_program_based?
     kind == Kinds::CONTRACT_PROGRAM_BASED
   end
-
 end

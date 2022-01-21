@@ -22,9 +22,9 @@ RSpec.describe Api::V2::DeCocsController, type: :controller do
     include WebmockDhis2Helpers
 
     before do
-        stub_all_data_compound(project)
-        stub_dhis2_system_info_success(project.dhis2_url)
-        Dhis2SnapshotWorker.new.perform(project.project_anchor_id, filter: ["data_elements"])
+      stub_all_data_compound(project)
+      stub_dhis2_system_info_success(project.dhis2_url)
+      Dhis2SnapshotWorker.new.perform(project.project_anchor_id, filter: ["data_elements"])
     end
 
     it "returns matching de based on term" do

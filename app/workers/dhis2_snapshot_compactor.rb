@@ -1,5 +1,3 @@
-
-
 # frozen_string_literal: true
 
 class Dhis2SnapshotCompactor
@@ -11,6 +9,7 @@ class Dhis2SnapshotCompactor
   def compact!(snapshot)
     compacted = compact(snapshot)
     return unless compacted
+
     Rails.logger.info "saving id:#{snapshot.id} #{snapshot.kind} - #{snapshot.project_anchor.program.code} - #{snapshot.snapshoted_at}"
     snapshot.save!
   end

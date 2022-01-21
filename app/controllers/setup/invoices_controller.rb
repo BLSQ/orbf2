@@ -69,7 +69,7 @@ class Setup::InvoicesController < PrivateController
   private
 
   def current_quarter
-    current_project.calendar.periods(current_project.calendar.from_iso(Date.today).strftime("%Y%m"),"quarterly").last
+    current_project.calendar.periods(current_project.calendar.from_iso(Date.today).strftime("%Y%m"), "quarterly").last
   end
 
   def render_invoice(project, invoicing_request)
@@ -152,13 +152,13 @@ class Setup::InvoicesController < PrivateController
   end
 
   def add_contract_warning_if_non_contracted(invoicing_request, project)
-    return if contracted?(invoicing_request, project) 
+    return if contracted?(invoicing_request, project)
 
-    if (project.entity_group.contract_program_based?) 
-      return 
+    if (project.entity_group.contract_program_based?)
+      return
     end
+
     flash[:failure] = non_contracted_orgunit_message(project)
-  
   end
 
   def contracted?(invoicing_request, project)

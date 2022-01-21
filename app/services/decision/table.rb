@@ -64,6 +64,7 @@ module Decision
     def find!(raw_hash)
       values = find(raw_hash)
       raise "no extra facts for #{raw_hash} in #{@headers}" unless values
+
       values
     end
 

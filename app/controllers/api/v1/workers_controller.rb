@@ -42,14 +42,14 @@ module Api
       def invoicing_infos
         {
           last_day_stats: InvoicingJob.where("status in ('enqueued', 'errored', 'processed')")
-            .where("created_at > ? ", Time.zone.now - 1.day)
-            .select("project_anchor_id, count(*), status")
-            .group("project_anchor_id, status").map do |j|
-            { id:     j.project_anchor.id,
-              code:   j.project_anchor.program.code,
-              status: j.status,
-              count:  j.count }
-          end
+                                      .where("created_at > ? ", Time.zone.now - 1.day)
+                                      .select("project_anchor_id, count(*), status")
+                                      .group("project_anchor_id, status").map do |j|
+                            { id:     j.project_anchor.id,
+                              code:   j.project_anchor.program.code,
+                              status: j.status,
+                              count:  j.count }
+                          end
         }
       end
 

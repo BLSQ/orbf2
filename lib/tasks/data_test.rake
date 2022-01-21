@@ -13,20 +13,20 @@ end
 def find_test_cases
   test_cases = DataTest.all_cases
   if test_cases.empty?
-    abort <<MSG
-Error: No test cases!
-
-No test cases found, do you have a config/data_test.json?
-
-Get one using bundle exec rake data_test:download
-MSG
+    abort <<~MSG
+      Error: No test cases!
+      
+      No test cases found, do you have a config/data_test.json?
+      
+      Get one using bundle exec rake data_test:download
+    MSG
   end
 
   selected_test_case_name = ENV["TEST_CASE"] || "all"
   if selected_test_case_name != "all"
     wanted_cases = selected_test_case_name.split(",")
     test_cases = test_cases.select do |(name, _cases)|
-      wanted_cases.any? {|w| name =~ /#{w}/ }
+      wanted_cases.any? { |w| name =~ /#{w}/ }
     end
   end
   test_cases
@@ -107,14 +107,14 @@ namespace :data_test do
 
   desc "Upload artefacts"
   task upload: :environment do
-    message = <<STR
-Did you run?
-
-1. bundle exec rake data_test:capture
-2. bundle exec rake data_test:compare_capture
-3. Verified these results?
-4. Copied the files to the spec/artefacts folder? (these will be uploaded)
-STR
+    message = <<~STR
+      Did you run?
+      
+      1. bundle exec rake data_test:capture
+      2. bundle exec rake data_test:compare_capture
+      3. Verified these results?
+      4. Copied the files to the spec/artefacts folder? (these will be uploaded)
+    STR
     if ask_for_confirmation(message)
       puts "=> Uploading to S3+\n"
       uploader = DataTest::Uploader.new

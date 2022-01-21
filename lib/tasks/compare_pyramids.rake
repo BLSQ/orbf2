@@ -29,6 +29,7 @@ namespace :compare do
       results = pyramids.values.map do |pyramid|
         orgunit = pyramid.org_unit(selected_orgunit.id)
         next unless orgunit
+
         orgunit_group_ids = orgunit.organisation_unit_groups.map { |g| g["id"] }.sort
         orgunit_groups = pyramid.org_unit_groups(orgunit_group_ids.sort)
         parents = pyramid.org_unit_parents(orgunit.id)[1..-1]
@@ -95,6 +96,7 @@ namespace :compare do
         puts "****** fixing #{month}"
         ou_dhis2_snapshot = project.project_anchor.dhis2_snapshots.where(kind: "organisation_units", year: month.year, month: month.month).first
         next unless ou_dhis2_snapshot
+
         puts "found to fix #{ou_dhis2_snapshot.id} #{ou_dhis2_snapshot.year} #{ou_dhis2_snapshot.month}"
         ou_reference_snapshot = project.project_anchor.dhis2_snapshots.where(kind: "organisation_units", year: reference_period.year, month: reference_period.month).first
         puts "found as ref #{ou_reference_snapshot.id} #{ou_reference_snapshot.year} #{ou_reference_snapshot.month}"

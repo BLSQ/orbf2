@@ -44,7 +44,7 @@ class Synchros::V2::DataElementGroups < Synchros::Base
       dhis2 = package.project.dhis2_connection
       status = nil
       deg_id = package.deg_external_reference
-      created_deg= dhis2.data_element_groups.find_by(code: deg_code)      
+      created_deg = dhis2.data_element_groups.find_by(code: deg_code)
       puts "**************************************** #{deg_id}"
       unless created_deg
         status = dhis2.data_element_groups.create([deg])

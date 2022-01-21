@@ -62,8 +62,7 @@ RSpec.describe Api::V1::InvoicingJobsController, type: :controller do
       simulation_job = project_anchor.invoicing_simulation_jobs.create(orgunit_ref: orgunitid + "_3", dhis2_period: period)
       get(:index, params: { token: token, period: period })
       resp = JSON.parse(response.body)
-      expect(resp["data"].map {|d| d["id"]}).to_not include(simulation_job.id)
+      expect(resp["data"].map { |d| d["id"]}).to_not include(simulation_job.id)
     end
   end
-
 end

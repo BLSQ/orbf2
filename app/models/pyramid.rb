@@ -1,4 +1,3 @@
-
 # frozen_string_literal: true
 
 class Pyramid
@@ -11,6 +10,7 @@ class Pyramid
     org_units.each do |ou|
       ou.pyramid = self
       next unless ou.organisation_unit_groups
+
       ou.organisation_unit_groups.each do |group|
         org_units_by_group[group["id"]] ||= Set.new
         org_units_by_group[group["id"]].add(ou)
@@ -23,6 +23,7 @@ class Pyramid
     pyramid = project.project_anchor.nearest_pyramid_for(Time.now.utc.end_of_month)
 
     return pyramid if pyramid
+
     dhis2 = project.dhis2_connection
     org_unit_groups = dhis2.organisation_unit_groups
                            .list(
@@ -92,6 +93,7 @@ class Pyramid
     ou = org_unit(org_unit_id)
     return [] unless ou
     return [ou] unless ou.path
+
     ou.path.split("/").reject(&:empty?).map { |parent_id| org_unit(parent_id) }
   end
 

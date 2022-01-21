@@ -33,7 +33,6 @@ module Api
                            .search(term, kind: kind, limit: limit)
                            .sort_by(&:display_name)
       end
-
     end
   end
 end

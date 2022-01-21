@@ -1,8 +1,4 @@
-
 module Dhis2SnapshotFixture
-
-
-
   def stub_system_info(project)
     stub_request(:get, "#{project.dhis2_url}/api/system/info")
       .to_return(status: 200, body: '{"version":"1.0"}')

@@ -32,6 +32,4 @@ RSpec.describe Dhis2Helper, type: :helper do
         'href="https://sample.org/dhis2/dhis-web-maintenance/#/edit/categorySection/categoryOptionCombo/dsid">dsid</a>'
     )
   end
-
-
 end

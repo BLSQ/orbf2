@@ -25,9 +25,9 @@ class OutputDatasetWorker
 
     Datasets::BuildDatasets.new(legacy_project).call
 
-    @payment_rule = legacy_project.payment_rule_for_code(payment_rule_code)    
+    @payment_rule = legacy_project.payment_rule_for_code(payment_rule_code)
     @dataset_code = "hesabu-outputs-" + payment_rule.id.to_s + "-" + frequency
-    @dataset_name = "ORBF - "+@payment_rule.rule.name+" (#{@payment_rule.id}) - #{frequency.capitalize}"
+    @dataset_name = "ORBF - " + @payment_rule.rule.name + " (#{@payment_rule.id}) - #{frequency.capitalize}"
 
     dataset = payment_rule.dataset(frequency)
     begin

@@ -70,6 +70,7 @@ module DataTest
 
   def self.clear_config_file!
     return unless has_config_file?
+
     File.unlink(CONFIG_PATH)
   end
 
@@ -85,6 +86,7 @@ module DataTest
 
   def self.all_cases
     return {} unless has_config_file?
+
     test_json  = JSON.parse(File.read(CONFIG_PATH))
     test_cases = test_json.each_with_object({}) do |(name, cases), result|
       cases.each do |v|

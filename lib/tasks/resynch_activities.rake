@@ -13,6 +13,7 @@ namespace :activities do
 
       de = data_compound.data_element(activity_state.external_reference)
       next unless de
+
       activity_state.update!(name: de.name)
     end
   end

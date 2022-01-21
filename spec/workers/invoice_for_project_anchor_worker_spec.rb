@@ -58,7 +58,6 @@ RSpec.describe InvoiceForProjectAnchorWorker do
   end
 
   it "should perform for subset of contracted_entities" do
-
     invoicing_job = project.project_anchor.invoicing_jobs.find_or_initialize_by(
       project_anchor_id: project.project_anchor.id,
       dhis2_period:      "2015Q1",
@@ -74,7 +73,7 @@ RSpec.describe InvoiceForProjectAnchorWorker do
       .to_return(status: 200, body: "", headers: {})
 
     export_request = stub_export_values("invoice_zero_new.json")
-    worker.instance_variable_set(:@jid,"fakeJid123")
+    worker.instance_variable_set(:@jid, "fakeJid123")
     worker.perform(project.project_anchor.id, 2015, 1, [ORG_UNIT_ID])
 
     expect(export_request).to have_been_made.once
@@ -141,7 +140,6 @@ RSpec.describe InvoiceForProjectAnchorWorker do
     worker.perform(project.project_anchor.id, 2015, 1, [ORG_UNIT_ID])
     expect(value_request).to have_been_made.once
     expect(export_request).to have_been_made.once
-
   end
 
   it "should perform for sub contracted entities pattern" do
@@ -346,7 +344,6 @@ RSpec.describe InvoiceForProjectAnchorWorker do
       expect {
         worker.perform(project.project_anchor.id, 2015, 1, ["Rp268JB6Ne4"])
       }.to_not raise_error
-
     end
 
     it 'fails if hesabu error other than equation fails' do

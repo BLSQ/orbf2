@@ -25,7 +25,7 @@ RSpec.describe Api::V2::SimulationsController, type: :controller do
     it 'has an order' do
       (1..3).each do |i|
         project_anchor.invoicing_simulation_jobs.create(
-          orgunit_ref: orgunitid + "_#{i}",
+          orgunit_ref:  orgunitid + "_#{i}",
           dhis2_period: period
         )
       end
@@ -33,7 +33,7 @@ RSpec.describe Api::V2::SimulationsController, type: :controller do
       resp = JSON.parse(response.body)
 
       expected_order = project_anchor.invoicing_simulation_jobs.order(updated_at: :desc).pluck(:id).map(&:to_s)
-      received_order = resp["data"].map{|h| h["id"]}
+      received_order = resp["data"].map { |h| h["id"]}
       expect(received_order).to eq(expected_order)
     end
   end
