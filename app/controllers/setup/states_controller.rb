@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Setup::StatesController < PrivateController
   helper_method :state
   attr_reader :state
@@ -44,7 +46,7 @@ class Setup::StatesController < PrivateController
       flash[:failure] = "State is in use"
     end
     redirect_to(root_path)
-  end 
+  end
 
   private
 
