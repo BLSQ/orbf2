@@ -1,5 +1,6 @@
 require: rubocop-rails
 AllCops:
+  NewCops: enable
   # The serializers go wrong with relationships, rubocop interprets
   # them a `has_many` from ActiveRecord and autocorrects it to a
   # proc. Which is not how the JSONApi serializer works
@@ -30,3 +31,10 @@ Style/FormatStringToken:
   EnforcedStyle: template
 Rails/Delegate:
   Enabled: false
+Layout/HashAlignment:
+  EnforcedHashRocketStyle:
+    - key
+    - table
+  EnforcedColonStyle:
+    - key
+    - table
