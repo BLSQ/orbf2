@@ -142,5 +142,4 @@ class Synchros::V1::DataElementGroups < Synchros::Base
   rescue RestClient::Exception => e
     raise "Failed to create dataset #{ds} #{e.message} with #{package.project.dhis2_url} #{e.response.body}"
   end
-
 end

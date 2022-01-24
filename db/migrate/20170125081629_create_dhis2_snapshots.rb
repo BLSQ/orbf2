@@ -1,6 +1,5 @@
 class CreateDhis2Snapshots < ActiveRecord::Migration[5.0]
   def change
-
     create_table :dhis2_snapshots do |t|
       t.string :kind, null: false
       t.jsonb :content, null: false

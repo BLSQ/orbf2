@@ -1,4 +1,3 @@
-
 namespace :db do
   desc "pull db and create dhis2 logs table if not present"
   task fetch: :environment do
@@ -30,7 +29,7 @@ namespace :db do
         t.index ["project_anchor_id"], name: "index_dhis2_snapshots_on_project_anchor_id"
       end
       ActiveRecord::Base.connection.create_table "dhis2_snapshot_changes", force: :cascade do |t|
-        t.string   "dhis2_id",          null: false
+        t.string   "dhis2_id", null: false
         t.integer  "dhis2_snapshot_id"
         t.jsonb    "values_before"
         t.jsonb    "values_after"

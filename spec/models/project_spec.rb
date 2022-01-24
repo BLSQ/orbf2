@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: projects
@@ -102,7 +103,7 @@ RSpec.describe Project, type: :model do
       if project
         puts [period, " => ", project.id, project.publish_date, project.publish_end_date].map(&:to_s).join("\t")
       else
-        puts period+"   => nil"
+        puts period + "   => nil"
       end
     end
 

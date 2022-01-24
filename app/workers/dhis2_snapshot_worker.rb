@@ -23,6 +23,7 @@ class Dhis2SnapshotWorker
 
     Dhis2Snapshot::KINDS.each do |kind|
       next if filter && !filter.include?(kind.to_s)
+
       snapshot(project, kind, now)
     end
   end

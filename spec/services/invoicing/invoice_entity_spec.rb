@@ -127,7 +127,7 @@ describe Invoicing::InvoiceEntity do
       project.entity_group.update(kind: "contract_program_based", program_reference: "contractprogid", all_event_sql_view_reference: "sqlviewid")
 
       stub1 = stub_request(:get, "http://play.dhis2.org/demo/api/sqlViews/sqlviewid/data.json?paging=false&var=programId:contractprogid").to_return(status: 200, body: fixture_content(:dhis2, "contracts_events.json"))
-      stub2 =stub_request(:get, "http://play.dhis2.org/demo/api/programs/contractprogid?fields=id,name,programStages%5BprogramStageDataElements%5BdataElement%5Bid,name,code,optionSet%5Bid,name,code,options%5Bid,code,name%5D%5D%5D%5D&paging=false").to_return(status: 200, body: fixture_content(:dhis2, "contracts_program.json"))
+      stub2 = stub_request(:get, "http://play.dhis2.org/demo/api/programs/contractprogid?fields=id,name,programStages%5BprogramStageDataElements%5BdataElement%5Bid,name,code,optionSet%5Bid,name,code,options%5Bid,code,name%5D%5D%5D%5D&paging=false").to_return(status: 200, body: fixture_content(:dhis2, "contracts_program.json"))
 
       # no stub on push expect no dhis2
 

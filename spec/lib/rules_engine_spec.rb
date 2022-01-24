@@ -15,13 +15,13 @@ RSpec.describe "Rules Engine" do
     {
       "version 3" => Orbf::RulesEngine::CalculatorFactory.build(3),
       "version 2" => Orbf::RulesEngine::CalculatorFactory.build(2),
-      "internal" => Rules::CalculatorFactory.new.new_calculator
+      "internal"  => Rules::CalculatorFactory.new.new_calculator
     }.each do |name, calculator|
       it ".eval_array (#{name})" do
         solution = calculator.solve(
-          "arr" => "array(1,2,-3,4,5)",
+          "arr"        => "array(1,2,-3,4,5)",
           "evaled_arr" => "eval_array('a', arr, 'b', arr, 'a - b')",
-          "result" => "sum(evaled_arr)"
+          "result"     => "sum(evaled_arr)"
         )
         expect(solution["result"]).to eq(0.0)
       end
@@ -53,7 +53,6 @@ RSpec.describe "Rules Engine" do
         )
         expect(solution["formula"]).to eq(29)
       end
-
     end
   end
 end

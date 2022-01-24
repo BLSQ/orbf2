@@ -25,6 +25,7 @@ class Setup::DiagnoseController < PrivateController
                           .merge("activity_code" => activity_code)
             output_facts = decision_table.find(input_facts)
             next unless output_facts && output_facts["unit_amount"]
+
             puts " #{package.code} #{org_unit.name}"
             puts "#{(decision_table.headers(:in) - input_facts.keys)} : #{output_facts}"
             array.push(output_facts)
@@ -52,7 +53,7 @@ class Setup::DiagnoseController < PrivateController
 
   def show
     @possible_values_groupset_code = pyramid.org_unit_groupsets.each_with_object({}).each do |groupset, map|
-      map["groupset_code_"+groupset.code] = groupset.group_ext_ids.map { |gid| pyramid.groups(gid).first.code }.sort
+      map["groupset_code_" + groupset.code] = groupset.group_ext_ids.map { |gid| pyramid.groups(gid).first.code }.sort
     end
 
     decision_tables = []

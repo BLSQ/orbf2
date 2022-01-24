@@ -149,7 +149,7 @@ RSpec.describe Setup::InvoicesController, type: :controller do
       it "can handle normal" do
         limiter = described_class.from_params(selected_org_units: "1,2,3")
         expect(limiter.active?).to be true
-        expect(limiter.org_unit_ids).to eq(["1","2","3"])
+        expect(limiter.org_unit_ids).to eq(["1", "2", "3"])
       end
     end
 

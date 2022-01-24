@@ -25,7 +25,7 @@ RSpec.describe Setup::PublishDraftsController, type: :controller do
           publish_date: "15/01/2010"
         }
       }
-      
+
       expect(response).to redirect_to("/setup/projects/#{full_project.id + 1}")
     end
   end

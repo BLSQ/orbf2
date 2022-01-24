@@ -21,7 +21,6 @@
 #  fk_rails_...  (project_id => projects.id)
 #
 
-
 FactoryBot.define do
   factory :state do
   end

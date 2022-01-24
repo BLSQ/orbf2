@@ -152,9 +152,10 @@ class MapProjectToOrbfProject
   def map_decision_tables(decision_tables)
     decision_tables.map do |decision_table|
       Orbf::RulesEngine::DecisionTable.new(
-        decision_table.content, 
-        start_period: decision_table.start_period, 
-        end_period: decision_table.end_period)
+        decision_table.content,
+        start_period: decision_table.start_period,
+        end_period:   decision_table.end_period
+      )
     end
   end
 

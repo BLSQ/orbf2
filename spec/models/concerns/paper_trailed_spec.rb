@@ -29,7 +29,6 @@ RSpec.describe PaperTrailed do
                     .reject(&:abstract_class?)
                     .reject { |m| EXCEPTIONS.include?(m) }
                     .each do |model|
-
     it "model #{model} should be versioned except #{EXCEPTIONS.map(&:name).join(',')}" do
       expect(model).to be_paper_trailed
     end

@@ -64,8 +64,8 @@ RSpec.describe ParallelDhis2 do
     it "sets cookies if there were any found in the dhis2_client" do
       expected_url = "https://play.dhis2.org/demo/api/system/info"
       stub_request(:any, expected_url).to_return(
-        body: {"some" => "info"}.to_json,
-        headers: {"set-cookie" => "JSESSIONID=my-token-in-post-request"}
+        body:    { "some" => "info" }.to_json,
+        headers: { "set-cookie" => "JSESSIONID=my-token-in-post-request" }
       )
       # Prep the cookiejar in the internal client of our client
       internal_client.get("system/info")
@@ -165,12 +165,12 @@ RSpec.describe ParallelDhis2 do
       end
 
       describe "with only successes" do
-        subject(:rolled_up) { described_class.new([success_response]*5).call }
+        subject(:rolled_up) { described_class.new([success_response] * 5).call }
 
         it(:status) { expect(rolled_up["status"]).to eq("SUCCESS") }
         it(:conflicts) { expect(rolled_up).to_not have_key("conflicts") }
         it(:description) { expect(rolled_up["description"]).to eq("Import process completed successfully [parallel]") }
-        it(:import_count) { expect(rolled_up["import_count"]).to eq(deleted: 5*10, ignored: 5*20, updated: 5*30, imported: 5*40) }
+        it(:import_count) { expect(rolled_up["import_count"]).to eq(deleted: 5 * 10, ignored: 5 * 20, updated: 5 * 30, imported: 5 * 40) }
         it(:import_options) { expect(rolled_up["import_options"].count).to eq(5) }
         it(:data_set_complete) { expect(rolled_up["data_set_complete"]).to eq(false) }
       end
@@ -178,8 +178,8 @@ RSpec.describe ParallelDhis2 do
       describe "without data_set_complete" do
         subject(:failed_response_without_dataset_complete) {
           response = fake_response(status:       "ERROR",
-                        description:  "The import process failed: Failed to update object",
-                        import_count: { "deleted": 0, "ignored": 0, "updated": 0, "imported": 0 })
+                                   description:  "The import process failed: Failed to update object",
+                                   import_count: { "deleted": 0, "ignored": 0, "updated": 0, "imported": 0 })
           response.delete("data_set_complete")
           response
         }
@@ -285,7 +285,6 @@ RSpec.describe ParallelDhis2 do
       end
     end
 
-
     describe "#password" do
       it "handles normal ones" do
         client = described_class.new(dhis2_client)
@@ -327,14 +326,14 @@ RSpec.describe ParallelDhis2 do
         client = described_class.new(dhis2_client)
         expected_url = "https://play.dhis2.org/demo/api/system/info"
         stub_request(:any, expected_url).to_return(
-          body: {"some" => "info"}.to_json,
-          headers: {"set-cookie" => "JSESSIONID=session-id-if-found"}
+          body:    { "some" => "info" }.to_json,
+          headers: { "set-cookie" => "JSESSIONID=session-id-if-found" }
         )
 
         # The *internal* client of our client
         dhis2_client.get("system/info")
 
-        expect(client.cookies).to eq({"JSESSIONID" => "session-id-if-found"})
+        expect(client.cookies).to eq({ "JSESSIONID" => "session-id-if-found" })
 
         dhis2_client.class.class_variable_set(:@@cookie_jar, {})
       end

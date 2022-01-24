@@ -15,6 +15,7 @@ module RuleTypes
         all_formulas_by_codes = all_package_formulas.group_by(&:code)
         all_formulas_by_codes.each do |code, non_uniq_formulas|
           next unless formula_by_codes[code]
+
           if non_uniq_formulas.size > 1
             rule.errors[:formulas] << "Formula's code must be unique accross packages, you have #{non_uniq_formulas.size} formulas with '#{code}' in #{non_uniq_formulas.map(&:rule).map(&:package).map(&:name).join(' and ')}"
           end

@@ -71,7 +71,7 @@ Rails.application.routes.draw do
       resources :projects, only: %i[create update] do
         resources :metadatas, only: %i[index update]
         resources :snapshots, only: [:create]
-        resources :states, only: %i[new create edit update]
+        resources :states, only: %i[new create edit update destroy]
         resources :invoices, only: %i[new create]
         resources :formula_mappings, only: %i[new create] do
           collection do

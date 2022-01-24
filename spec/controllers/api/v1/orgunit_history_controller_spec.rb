@@ -75,12 +75,8 @@ RSpec.describe Api::V1::OrgunitHistoryController, type: :controller do
           "organisationUnitGroupSets" => [{ "id" => "Cbuj0VCyDjL", "name" => "Location Rural/Urban" }]
         }
       ],
-      "contractGroup"          => [
-
-      ],
-      "contractMembers"        => [
-
-      ]
+      "contractGroup"          => [],
+      "contractMembers"        => []
     }
   }
 

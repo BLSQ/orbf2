@@ -13,6 +13,7 @@ module Periods
 
     def initialize(yyyyqq)
       raise ArgumentError, "Argument yyyyqq can't be nil" unless yyyyqq
+
       @yyyyqq = yyyyqq.freeze
       components = yyyyqq.split("Q")
       @quarter = Integer(components.last)

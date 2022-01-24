@@ -10,6 +10,7 @@ module RuleTypes
 
     def available_variables
       return [] unless rule.package.package_rule
+
       var_names = []
 
       var_names << available_variables_for_values.map { |code| "%{#{code}}" }

@@ -1,4 +1,3 @@
-
 module Invoicing
   class MapToInvoices
     def initialize(invoicing_request, solver)

@@ -100,7 +100,7 @@ class InvoiceEntityToJson
 
     {
       meta: {
-        key: activity_item.activity.activity_code,
+        key:   activity_item.activity.activity_code,
         value: activity_item.activity.name
       }
     }.merge(cells)

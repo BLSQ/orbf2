@@ -20,8 +20,7 @@ module Groups
           create_change(added_or_modified, removed_or_modified, dhis2_id)
         elsif added_or_modified
           create_added(added_or_modified, dhis2_id)
-        elsif
-          create_deleted(removed_or_modified, dhis2_id)
+        elsif create_deleted(removed_or_modified, dhis2_id)
         end
       end
     end
@@ -48,7 +47,7 @@ module Groups
         values_after:   added_or_modified,
         whodunnit:      whodunnit
       )
-        end
+    end
 
     def create_change(added_or_modified, removed_or_modified, dhis2_id)
       values_before = {}
@@ -56,6 +55,7 @@ module Groups
       attribute_keys = (added_or_modified.keys + removed_or_modified.keys).uniq
       attribute_keys.each do |k|
         next unless added_or_modified[k] != removed_or_modified[k]
+
         values_after[k] = added_or_modified[k]
         values_before[k] = removed_or_modified[k]
       end

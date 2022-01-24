@@ -28,6 +28,7 @@ module Groups
     def ensure_not_current_or_futur
       at_least_one_period = compared_months && compared_months.size >= 1
       raise ArgumentError, "at least one period" unless at_least_one_period
+
       now = Periods.year_month(DateTime.now.to_date)
       periods_in_futur = compared_months.any? { |period| period >= now }
       raise ArgumentError, period_in_futur_message if periods_in_futur

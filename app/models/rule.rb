@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: rules
@@ -31,7 +32,6 @@ class Rule < ApplicationRecord
   RULE_TYPE_PAYMENT = "payment"
   RULE_TYPE_ZONE = "zone"
   RULE_TYPE_ZONE_ACTIVITY = "zone_activity"
-
 
   RULE_TYPES = [
     RULE_TYPE_PAYMENT, RULE_TYPE_ACTIVITY,

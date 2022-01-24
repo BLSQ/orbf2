@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 
 RSpec.describe Setup::StatesController, type: :controller do
@@ -69,6 +71,17 @@ RSpec.describe Setup::StatesController, type: :controller do
       post :create, params: { project_id: project.id, state: { name: "sample" } }
       expect(project.states.size).to eq(9)
       post :create, params: { project_id: project.id, state: { name: "sample" } }
+      expect(project.states.size).to eq(9)
+    end
+
+    it "should delete an unused state" do
+      unused_state = FactoryBot.create(:state, name: "unused", project_id: project.id)
+      delete :destroy, params: { project_id: project.id, id: unused_state.id }
+      expect(project.states.size).to eq(9)
+    end
+
+    it "should not delete a state that is in use" do
+      delete :destroy, params: { project_id: project.id, id: state.id }
       expect(project.states.size).to eq(9)
     end
   end

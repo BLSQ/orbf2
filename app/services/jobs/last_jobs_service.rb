@@ -37,6 +37,7 @@ module Jobs
 
     def parent_names(orgunit_id)
       return nil unless pyramid
+
       pyramid.org_unit_parents(orgunit_id).map(&:name).join(" > ")
     end
   end

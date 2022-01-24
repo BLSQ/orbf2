@@ -1,4 +1,3 @@
-
 require "rails_helper"
 
 describe Groups::TrackChanges do
@@ -89,8 +88,7 @@ describe Groups::TrackChanges do
   it "track removal" do
     Groups::TrackChanges.new(
       dhis2_snapshot: dhis2_snapshot,
-        current: [
-        ], previous: [
+        current: [], previous: [
           {
             "id" => "123", "myfield" => "untouch"
           }

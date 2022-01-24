@@ -60,7 +60,7 @@ module Invoicing
             solve_options
           )
           @pyramid = @fetch_and_solve.pyramid
-          @dhis2_export_values = @fetch_and_solve.call      
+          @dhis2_export_values = @fetch_and_solve.call
           @dhis2_input_values = @fetch_and_solve.dhis2_values
           @fetch_and_solve
         end

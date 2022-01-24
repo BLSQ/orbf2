@@ -1,4 +1,3 @@
-
 module Meta
   class MetaDataService
     def initialize(project)
@@ -56,6 +55,7 @@ module Meta
       project.activities.each_with_object([]) do |activity, metadatas|
         activity.activity_states.each do |activity_state|
           next unless activity_state.external_reference
+
           activity_state.activity.activity_packages.each do |activity_package|
             metadatas.push(new_meta_activity_state(activity_state, activity_package))
           end

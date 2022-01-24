@@ -36,6 +36,7 @@ module RuleTypes
 
       formula_by_codes.each do |code, formulas|
         next unless formulas.size > 1
+
         rule.errors[:formulas] << "Formula's code must be unique,"\
           " you have #{formulas.size} formulas with '#{code}'"
       end

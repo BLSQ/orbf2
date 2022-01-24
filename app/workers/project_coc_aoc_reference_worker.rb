@@ -1,4 +1,3 @@
-
 class ProjectCocAocReferenceWorker
   include Sidekiq::Worker
 
@@ -21,6 +20,7 @@ class ProjectCocAocReferenceWorker
     )
 
     return if category_option_combos.empty?
+
     puts "WARN just guessing category option combos... " if category_option_combos.size > 1
     category_option_combos.sort_by! { |coc| coc.category_combo["id"] == default_category_combo.id }
     category_option_combos.first

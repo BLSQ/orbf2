@@ -1,4 +1,3 @@
-
 module Groups
   class UpdateHistory
     attr_reader :project_anchor, :update_params

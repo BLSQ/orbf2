@@ -33,6 +33,7 @@ class MigrateStates < ActiveRecord::Migration[5.0]
   def up
     states_original = State.all.where("project_id is null").to_a
     return if states_original.empty?
+
     puts "Current : states_original #{states_original.size} : #{states_original.map(&:code).join(',')} "
     Project.find_each do |project|
       new_project_states = states_original.map do |state|
@@ -55,5 +56,5 @@ class MigrateStates < ActiveRecord::Migration[5.0]
     State.all.where("project_id is null").destroy_all
     states = State.all
     puts "Current : states #{states.size} : #{states.map { |s| [s.code, s.project_id].join(' - ') }.join(',')} "
-    end
+  end
 end
