@@ -20,7 +20,7 @@ gem "rack", ">= 2.0.6"
 gem "rails", "~> 5.2", "< 5.3"
 gem "activerecord-nulldb-adapter"
 gem "rails_admin", "~> 1.4.2"
-gem "sidekiq", "< 6"
+gem "sidekiq", "< 7"
 gem "sidekiq-throttled", "~> 0.9.0"
 
 ## Tooling
