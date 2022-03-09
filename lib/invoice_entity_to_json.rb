@@ -44,7 +44,13 @@ class InvoiceEntityToJson
         @invoice_entity.fetch_and_solve.contract_service,
         @invoicing_request.period
       ).to_h,
-      warnings:          contracted?(@invoicing_request, @project) ? nil : non_contracted_orgunit_message(@project)
+      warnings:          if @project.contract_settings
+                           nil
+                         elsif contracted?(@invoicing_request, @project)
+                           nil
+                         else
+                           non_contracted_orgunit_message(@project)
+                         end
     }
   end
 
