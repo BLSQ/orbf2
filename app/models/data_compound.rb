@@ -64,4 +64,12 @@ class DataCompound
   def category_combos
     @category_combos_by_id.values
   end
+
+  def category_option_combos_by_id
+    @category_option_combos_by_id ||= category_combos.flat_map { |cc| cc["category_option_combos"] }.index_by { |coc| coc["id"] }
+  end
+
+  def category_option_combo(id)
+    category_option_combos_by_id[id]
+  end
 end
