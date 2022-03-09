@@ -11,6 +11,9 @@
 <h2><%= (invoice.package&.code || invoice.payment_rule&.code).humanize %>
  -
  <span title="<%= invoice.orgunit_ext_id%>"> <%= @pyramid.org_unit(invoice.orgunit_ext_id) ? @pyramid.org_unit(invoice.orgunit_ext_id).name : invoice.orgunit_ext_id %> </span>
+ <% if invoice.coc_ext_id %>
+  <span title="<%= invoice.coc_ext_id%>"> <%= "- " + @data_compound.category_option_combo(invoice.coc_ext_id)["name"]  %> </span>
+ <% end %>
  <span class="pull-right"><%= icon("fas", "calendar")%> <%= invoice.period%></span>
 </h2>
 

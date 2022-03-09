@@ -55,6 +55,7 @@ class InvoiceEntityToJson
       orgunit_name:   pyramid.org_unit(invoice.orgunit_ext_id)&.name,
       period:         invoice.period,
       kind:           invoice.kind,
+      coc_ext_id:     invoice.coc_ext_id,
       code:           invoice.code,
       activity_items: invoice.activity_items.map do |activity_item|
         activity_item_hash(activity_item)
