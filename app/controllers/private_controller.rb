@@ -1,7 +1,6 @@
 class PrivateController < ApplicationController
   layout "layouts/private"
   helper_method :current_program
-
   protect_from_forgery with: :exception
   before_action :authenticate_user!
   before_action :set_paper_trail_whodunnit
@@ -33,6 +32,6 @@ class PrivateController < ApplicationController
   # impersonating someone else, if that's the case, the user who is
   # impersonating shall be logged.
   def user_for_paper_trail
-    true_user || current_user
+    true_user ? true_user.id : current_user.id
   end
 end
