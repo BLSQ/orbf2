@@ -6,6 +6,8 @@ require "spec_helper"
 require File.expand_path("../config/environment", __dir__)
 require "rspec/rails"
 
+require "paper_trail/frameworks/rspec"
+
 # WebMock::Config.instance.query_values_notation = :flat_array
 # Add additional requires below this line. Rails is not loaded until this point!
 
