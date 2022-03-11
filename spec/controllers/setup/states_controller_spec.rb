@@ -84,5 +84,22 @@ RSpec.describe Setup::StatesController, type: :controller do
       delete :destroy, params: { project_id: project.id, id: state.id }
       expect(project.states.size).to eq(9)
     end
+
+    with_versioning do
+      it "should store current user id as whodunnit in version when changes are made" do
+        post(:update,
+          params: {
+            project_id: project.id,
+            id:         state.id,
+            state:      {
+              id:         state.id,
+              name:       "New state name",
+              short_name: "new new short state name"
+            }
+          })
+        state.reload
+        expect(state.versions.last.whodunnit).to eq(subject.current_user.id.to_s)
+      end
+    end
   end
 end
