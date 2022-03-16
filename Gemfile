@@ -57,6 +57,11 @@ gem "uglifier", ">= 1.3.0"
 # [devise](https://github.com/plataformatec/devise)
 gem "devise", "~> 4.7.1"
 
+## SSO
+
+gem "omniauth"
+gem "omniauth-oauth2", require: false
+
 # Log in as another user in Rails
 # [pretender](https://github.com/ankane/pretender)
 gem "pretender", "~> 0.3.4"
