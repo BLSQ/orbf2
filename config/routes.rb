@@ -62,8 +62,12 @@ Rails.application.routes.draw do
     end
   end
 
+
   devise_scope :user do
     get "/users/sign_out" => "devise/sessions#destroy"
+    namespace :oauth do
+      get "/:program_id/callback", to: "oauth#callback"
+    end
     namespace :setup do
       get "/projects/", to: "setup#index", as: "project_anchor"
       get "/projects/:project_id", to: "setup#index", as: "project"
