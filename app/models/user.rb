@@ -30,6 +30,7 @@
 #
 
 class User < ApplicationRecord
+  include PaperTrailed
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable,
@@ -39,6 +40,8 @@ class User < ApplicationRecord
             format: { with:    /\A.*@bluesquare.org\z/,
                       message: "Sorry, restricted signup" },
             if:     :env_dev?
+
+  validates :dhis2_user_ref, uniqueness: true, allow_blank: true
 
   belongs_to :program, optional: true
 
@@ -61,5 +64,9 @@ class User < ApplicationRecord
 
   def flipper_id
     "User:#{id}"
+  end
+
+  def project_id
+    program&.project_anchor&.project&.id
   end
 end

@@ -14,38 +14,49 @@ class Oauth::OauthController < Devise::OmniauthCallbacksController
     request["Accept"] = "application/json"
     request.set_form_data(
       "code" => params["code"],
-      "grant_type" => "authorization_code",
+      "grant_type" => "authorization_code"
     )
     req_options = {
-      use_ssl: uri.scheme == "https",
+      use_ssl: uri.scheme == "https"
     }
     response = Net::HTTP.start(uri.hostname, uri.port, req_options) do |http|
       http.request(request)
     end
 
-    access_token = JSON.parse(response.body)["access_token"]
+    if response.code != "200"
+      flash[:failure] = "Log-in failed: invalid code provided to DHIS2 authorization"
+      redirect_to("/users/sign_in")
+      return
+    end
+
+    access_token = JSON.parse(response.body)["access_token"] rescue nil
+
+    if access_token.nil?
+      flash[:failure] = "Log-in failed: bad response from DHIS2, please check the logs"
+      redirect_to("/users/sign_in")
+      return
+    end
+
     user_info = RestClient.get(program.project_anchor.project.dhis2_url + "/api/me", { "Authorization": "Bearer #{access_token}" })
-    user_info = JSON.parse(user_info)
-    user_dhis2_id = user_info["userCredentials"]["id"]
+
+    user_info = JSON.parse(user_info) rescue nil
+
+    if user_info.nil?
+      flash[:failure] = "Log-in failed: bad response from DHIS2, please check the logs"
+      redirect_to("/users/sign_in")
+      return
+    end
+
+    dhis2_user_ref = user_info["id"]
+
+    user = program.users.find_by_dhis2_user_ref(dhis2_user_ref)
     
-    user = User.find_by_dhis2_user_ref(user_dhis2_id)
-    unless user.nil?
+    if user
       sign_in_and_redirect(user)
+    else  
+      flash[:failure] = "Log-in failed: user not found in DHIS2"
+      redirect_to("/users/sign_in")
+      return
     end
   end
 end
-
-# payload = {
-#   "code": params["code"],
-#   "grant_type": "authorization_code",
-#   "redirect_uri": "",
-#   "client_id": program.oauth_client_id,
-# }
-
-# url = URI.parse(url).tap do |url|
-#   url.user     = CGI.escape(program.oauth_client_id)
-#   url.password = CGI.escape(program.oauth_client_secret)
-# end.to_s
-
-# byebug
-# response = RestClient.post(url, payload.to_json, { content_type: :json, accept: :json })
