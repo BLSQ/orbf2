@@ -2,8 +2,31 @@ require 'net/http'
 require 'uri'
 
 class Oauth::OauthController < Devise::OmniauthCallbacksController
-  def callback
+  def dhis2_login
     # https://sandbox.bluesquare.org/uaa/oauth/authorize?client_id=[client_id]&response_type=code
+
+    program = Program.find(params["program_id"]) rescue nil
+
+    if program.nil?
+      flash[:failure] = "Log-in failed: program with ID #{params["program_id"]} does not exist"
+      redirect_to("/users/sign_in")
+      return
+    end
+
+    oauth_client_id = program.oauth_client_id
+    
+    if oauth_client_id.blank?
+      flash[:failure] = "Log-in failed: program with ID #{params["program_id"]} is not configured for sign-in with DHIS2"
+      redirect_to("/users/sign_in")
+      return
+    end
+
+    url_redirect = program.project_anchor.project.dhis2_url + "/uaa/oauth/authorize?client_id=#{oauth_client_id}&response_type=code"
+
+    redirect_to(url_redirect)
+  end
+
+  def callback
     program = Program.find(params["program_id"]) rescue nil
 
     if program.nil?

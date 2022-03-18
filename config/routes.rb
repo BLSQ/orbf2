@@ -66,6 +66,7 @@ Rails.application.routes.draw do
   devise_scope :user do
     get "/users/sign_out" => "devise/sessions#destroy"
     namespace :oauth do
+      get "/:program_id/login", to: "oauth#dhis2_login"
       get "/:program_id/callback", to: "oauth#callback"
     end
     namespace :setup do

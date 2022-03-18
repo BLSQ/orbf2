@@ -3,6 +3,27 @@
 require "rails_helper"
 
 RSpec.describe Oauth::OauthController, type: :controller do
+  describe "#dhis2_login" do
+    let!(:program) { 
+      program = FactoryBot.create(:program, oauth_client_id: "test-program", oauth_client_secret: "1234abcd")
+      FactoryBot.create(:project, project_anchor: program.build_project_anchor)
+      program
+    }
+
+    describe "valid information" do
+      it "should redirect to the DHIS2 authorize URL" do
+        get :dhis2_login, params: { program_id: program.id }
+        
+        oauth_client_id = program.oauth_client_id
+        url_redirect = program.project_anchor.project.dhis2_url + "/uaa/oauth/authorize?client_id=#{oauth_client_id}&response_type=code"
+
+        expect(response.redirect?).to eq(true)
+        expect(response).to redirect_to(url_redirect)
+      end
+    end
+
+  end
+
   describe "#callback" do
     let!(:program) { 
       program = FactoryBot.create(:program, oauth_client_id: "test-program", oauth_client_secret: "1234abcd")
