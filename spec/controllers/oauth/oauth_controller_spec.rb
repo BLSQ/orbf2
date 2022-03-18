@@ -10,6 +10,10 @@ RSpec.describe Oauth::OauthController, type: :controller do
       program
     }
 
+    before(:each) do
+      @request.env["devise.mapping"] = Devise.mappings[:user]
+    end
+
     describe "valid information" do
       it "should redirect to the DHIS2 authorize URL" do
         get :dhis2_login, params: { program_id: program.id }
@@ -17,11 +21,29 @@ RSpec.describe Oauth::OauthController, type: :controller do
         oauth_client_id = program.oauth_client_id
         url_redirect = program.project_anchor.project.dhis2_url + "/uaa/oauth/authorize?client_id=#{oauth_client_id}&response_type=code"
 
-        expect(response.redirect?).to eq(true)
         expect(response).to redirect_to(url_redirect)
       end
     end
 
+    describe "invalid information" do
+      describe "program does not exist" do
+        it "should redirect to users sign-in" do
+          get :dhis2_login, params: { program_id: "123456" }
+  
+          expect(response).to redirect_to("/users/sign_in")
+        end
+      end
+      
+      describe "program is not configured for oauth" do
+        it "should redirect to users sign-in" do
+          program = FactoryBot.create(:program)
+          
+          get :dhis2_login, params: { program_id: program.id}
+  
+          expect(response).to redirect_to("/users/sign_in")
+        end
+      end
+    end
   end
 
   describe "#callback" do
