@@ -41,7 +41,7 @@ class User < ApplicationRecord
                       message: "Sorry, restricted signup" },
             if:     :env_dev?
 
-  validates :dhis2_user_ref, uniqueness: true, allow_blank: true
+  validates :dhis2_user_ref, uniqueness: { scope: :program_id }, allow_blank: true
 
   belongs_to :program, optional: true
 
