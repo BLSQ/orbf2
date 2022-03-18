@@ -4,8 +4,14 @@ require 'uri'
 class Oauth::OauthController < Devise::OmniauthCallbacksController
   def callback
     # https://sandbox.bluesquare.org/uaa/oauth/authorize?client_id=[client_id]&response_type=code
+    program = Program.find(params["program_id"]) rescue nil
 
-    program = Program.find(params["program_id"])
+    if program.nil?
+      flash[:failure] = "Log-in failed: program with ID #{params["program_id"]} does not exist"
+      redirect_to("/users/sign_in")
+      return
+    end
+    
     url_post = program.project_anchor.project.dhis2_url + "/uaa/oauth/token"
     
     uri = URI.parse(url_post)

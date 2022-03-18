@@ -18,6 +18,10 @@ RSpec.describe Oauth::OauthController, type: :controller do
 
     let(:access_token) { "randomaccesstoken" } 
 
+    before(:each) do
+      @request.env["devise.mapping"] = Devise.mappings[:user]
+    end
+
     describe "valid information" do
       it "should redirect to home" do
         stub_request(:post, program.project_anchor.project.dhis2_url + "/uaa/oauth/token").
@@ -28,7 +32,6 @@ RSpec.describe Oauth::OauthController, type: :controller do
           with(headers: {"Authorization"=>"Bearer #{access_token}"}).
           to_return(status: 200, body: "{\"id\":\"#{user.dhis2_user_ref}\"}")
 
-        @request.env["devise.mapping"] = Devise.mappings[:user]
         get :callback, params: { program_id: program.id, code: code }
 
         expect(response.redirect?).to eq(true)
@@ -43,9 +46,17 @@ RSpec.describe Oauth::OauthController, type: :controller do
             with(body: {"code"=>code, "grant_type"=>"authorization_code"}).
             to_return(status: 400, body: "{\"error\":\"invalid_grant\",\"error_description\":\"Invalid authorization code: #{code}\"}")
    
+          get :callback, params: { program_id: program.id, code: "123456" }
+
+          expect(response).to redirect_to("/users/sign_in")
+        end
+      end
+
+      describe "program does not exist" do
+        it "should redirect to users sign-in" do
           @request.env["devise.mapping"] = Devise.mappings[:user]
 
-          get :callback, params: { program_id: program.id, code: "123456" }
+          get :callback, params: { program_id: 8912, code: "123456" }
 
           expect(response).to redirect_to("/users/sign_in")
         end
@@ -61,7 +72,6 @@ RSpec.describe Oauth::OauthController, type: :controller do
             with(headers: {"Authorization"=>"Bearer #{access_token}"}).
             to_return(status: 200, body: "{\"id\":\"unknownuserref\"}")
 
-          @request.env["devise.mapping"] = Devise.mappings[:user]
           get :callback, params: { program_id: program.id, code: code }
 
           expect(response).to redirect_to("/users/sign_in")
@@ -74,7 +84,6 @@ RSpec.describe Oauth::OauthController, type: :controller do
           with(body: {"code"=>code, "grant_type"=>"authorization_code"}).
           to_return(status: 200, body: "<p>DHIS2 timeout</p>")
 
-          @request.env["devise.mapping"] = Devise.mappings[:user]
           get :callback, params: { program_id: program.id, code: code }
 
           expect(response).to redirect_to("/users/sign_in")
@@ -91,7 +100,6 @@ RSpec.describe Oauth::OauthController, type: :controller do
             with(headers: {"Authorization"=>"Bearer #{access_token}"}).
             to_return(status: 200, body: "<p>DHIS2 timeout</p>")
 
-          @request.env["devise.mapping"] = Devise.mappings[:user]
           get :callback, params: { program_id: program.id, code: code }
 
           expect(response).to redirect_to("/users/sign_in")
