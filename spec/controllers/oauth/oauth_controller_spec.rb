@@ -31,6 +31,7 @@ RSpec.describe Oauth::OauthController, type: :controller do
           get :dhis2_login, params: { program_id: "123456" }
   
           expect(response).to redirect_to("/users/sign_in")
+          expect(flash[:failure]).to eq("Log-in failed: program with ID 123456 does not exist")
         end
       end
       
@@ -41,6 +42,7 @@ RSpec.describe Oauth::OauthController, type: :controller do
           get :dhis2_login, params: { program_id: program.id}
   
           expect(response).to redirect_to("/users/sign_in")
+          expect(flash[:failure]).to eq("Log-in failed: program with ID #{program.id} is not configured for sign-in with DHIS2")
         end
       end
     end
@@ -92,6 +94,7 @@ RSpec.describe Oauth::OauthController, type: :controller do
           get :callback, params: { program_id: program.id, code: "123456" }
 
           expect(response).to redirect_to("/users/sign_in")
+          expect(flash[:failure]).to eq("Log-in failed: invalid code provided to DHIS2 authorization")
         end
       end
 
@@ -102,6 +105,7 @@ RSpec.describe Oauth::OauthController, type: :controller do
           get :callback, params: { program_id: 8912, code: "123456" }
 
           expect(response).to redirect_to("/users/sign_in")
+          expect(flash[:failure]).to eq("Log-in failed: program with ID 8912 does not exist")
         end
       end
 
@@ -118,6 +122,7 @@ RSpec.describe Oauth::OauthController, type: :controller do
           get :callback, params: { program_id: program.id, code: code }
 
           expect(response).to redirect_to("/users/sign_in")
+          expect(flash[:failure]).to eq("Log-in failed: user not found in DHIS2")
         end
       end
 
@@ -130,6 +135,7 @@ RSpec.describe Oauth::OauthController, type: :controller do
           get :callback, params: { program_id: program.id, code: code }
 
           expect(response).to redirect_to("/users/sign_in")
+          expect(flash[:failure]).to eq("Log-in failed: bad response from DHIS2, please check the logs")
         end
       end
 
@@ -146,6 +152,7 @@ RSpec.describe Oauth::OauthController, type: :controller do
           get :callback, params: { program_id: program.id, code: code }
 
           expect(response).to redirect_to("/users/sign_in")
+          expect(flash[:failure]).to eq("Log-in failed: bad response from DHIS2, please check the logs")
         end
       end
     end
