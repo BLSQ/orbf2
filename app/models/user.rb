@@ -5,6 +5,7 @@
 #  id                     :bigint(8)        not null, primary key
 #  current_sign_in_at     :datetime
 #  current_sign_in_ip     :inet
+#  dhis2_user_ref         :string
 #  email                  :string           default(""), not null
 #  encrypted_password     :string           default(""), not null
 #  last_sign_in_at        :datetime
@@ -29,6 +30,7 @@
 #
 
 class User < ApplicationRecord
+  include PaperTrailed
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable,
@@ -38,6 +40,8 @@ class User < ApplicationRecord
             format: { with:    /\A.*@bluesquare.org\z/,
                       message: "Sorry, restricted signup" },
             if:     :env_dev?
+
+  validates :dhis2_user_ref, uniqueness: { scope: :program_id }, allow_blank: true
 
   belongs_to :program, optional: true
 
@@ -60,5 +64,9 @@ class User < ApplicationRecord
 
   def flipper_id
     "User:#{id}"
+  end
+
+  def project_id
+    program&.project_anchor&.project&.id
   end
 end

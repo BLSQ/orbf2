@@ -11,7 +11,6 @@ end
 
 RSpec.describe PaperTrailed do
   EXCEPTIONS = [
-    User,
     ActiveRecord::SchemaMigration,
     PaperTrail::Version,
     Version,
