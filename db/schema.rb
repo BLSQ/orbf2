@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_23_135626) do
+ActiveRecord::Schema.define(version: 2022_03_16_120758) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -269,6 +269,8 @@ ActiveRecord::Schema.define(version: 2021_04_23_135626) do
     t.string "code", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "oauth_client_id"
+    t.string "oauth_client_secret"
     t.index ["code"], name: "index_programs_on_code", unique: true
   end
 
@@ -340,6 +342,7 @@ ActiveRecord::Schema.define(version: 2021_04_23_135626) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "program_id"
+    t.string "dhis2_user_ref"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["program_id"], name: "index_users_on_program_id"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
