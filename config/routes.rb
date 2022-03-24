@@ -74,6 +74,7 @@ Rails.application.routes.draw do
       get "/projects/:project_id", to: "setup#index", as: "project"
       resources :seeds, only: [:index] if Scorpio.is_dev?
       resources :projects, only: %i[create update] do
+        resources :oauth, only: [:create]
         resources :metadatas, only: %i[index update]
         resources :snapshots, only: [:create]
         resources :states, only: %i[new create edit update destroy]
