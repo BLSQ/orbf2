@@ -7,4 +7,7 @@
   <%= f.input :password, input_html: { autocomplete: "new-password" } %>
   <%= f.input :bypass_ssl, label: "Check this to bypass SSL verification for self-signed certificate. Note that this might allow man-in-the middle attack!" %>
   <%= f.button :submit, class: "btn btn-success" %>
+  <% if !current_program.oauth_enabled? && current_program&.project_anchor&.project&.dhis2_url %>
+    <%= link_to 'Enable DHIS2 log-in', setup_project_oauth_index_path(current_program.project_anchor.project), method: "POST"  %>
+  <% end %>
 <% end %>

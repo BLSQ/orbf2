@@ -102,7 +102,6 @@ class Project < ApplicationRecord
     }
   }.freeze
 
-
   def enable_oauth
     program = project_anchor.program
     
