@@ -1,9 +1,12 @@
 # frozen_string_literal: true
 
 module Scorpio
+  def self.orbf2_url
+    ENV.fetch("ORBF2_URL", "https://orbf2.bluesquare.org")
+  end
+
   # rubocop:disable Naming/PredicateName
   # In this case, I think the `is_` actually provides some value
-  #
   # Returns true if user is a developer or if we are in a development
   # environment.
   def self.is_developer?(user)

@@ -4,6 +4,7 @@
 <%= render "readonly" %>
 <%else%>
 <%= render partial: "setup/setup/step", collection: setup.steps, locals: { readonly: false }%>
+<%= link_to 'Enable DHIS2 log-in', setup_project_oauth_index_path(current_program.project_anchor.project), method: "POST"  %>
 <%end%>
 <% else %>
 <h1>This project is in readonly</h1>
