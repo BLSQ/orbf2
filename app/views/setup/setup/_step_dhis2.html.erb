@@ -1,3 +1,10 @@
+<% if !current_program.oauth_enabled? && current_program&.project_anchor&.project&.dhis2_url %>
+  <div class="actions pull-right">
+      <%= link_to 'Enable DHIS2 log-in', setup_project_oauth_index_path(current_program.project_anchor.project), method: "POST", class: 'btn btn-info' %>
+  </div>
+  <br>
+  <br>
+<% end %>
 <%= simple_form_for([:setup,step.model]) do |f| %>
   <%= f.input :name %>
   <%= f.input :qualifier %>

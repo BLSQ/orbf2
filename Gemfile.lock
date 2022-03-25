@@ -200,7 +200,6 @@ GEM
       temple (>= 0.8.0)
       tilt
     hashdiff (0.3.7)
-    hashie (5.0.0)
     heroku-deflater (0.6.3)
       rack (>= 1.4.5)
     http-accept (1.7.0)
@@ -225,7 +224,6 @@ GEM
       railties (>= 3.2.16)
     json (2.3.0)
     json-diff (0.4.1)
-    jwt (2.3.0)
     kaminari (1.2.1)
       activesupport (>= 4.1.0)
       kaminari-actionview (= 1.2.1)
@@ -271,22 +269,9 @@ GEM
     nokogiri (1.12.5)
       mini_portile2 (~> 2.6.1)
       racc (~> 1.4)
-    oauth2 (1.4.9)
-      faraday (>= 0.17.3, < 3.0)
-      jwt (>= 1.0, < 3.0)
-      multi_json (~> 1.3)
-      multi_xml (~> 0.5)
-      rack (>= 1.2, < 3)
     octokit (4.22.0)
       faraday (>= 0.9)
       sawyer (~> 0.8.0, >= 0.5.3)
-    omniauth (2.0.4)
-      hashie (>= 3.4.6)
-      rack (>= 1.6.2, < 3)
-      rack-protection
-    omniauth-oauth2 (1.7.2)
-      oauth2 (~> 1.4)
-      omniauth (>= 1.9, < 3)
     orm_adapter (0.5.0)
     paper_trail (10.1.0)
       activerecord (>= 4.2, < 6.0)
@@ -581,8 +566,6 @@ DEPENDENCIES
   loofah (>= 2.2.3)
   memory_profiler
   naturalsort
-  omniauth
-  omniauth-oauth2
   orbf-rules_engine!
   paper_trail (~> 10.1.0)
   paper_trail-association_tracking (~> 1.0.0)
