@@ -104,9 +104,8 @@ class Project < ApplicationRecord
 
   def enable_oauth
     program = project_anchor.program
-    
     orbf2_url = Scorpio.orbf2_url + "/oauth/#{program.id}/callback"
-    orbf2_program_suffix = ENV["ORBF2_PROGRAM_SUFFIX"]
+    orbf2_program_suffix = ENV.fetch("ORBF2_PROGRAM_SUFFIX", "")
     orbf2_name = "orbf2" + orbf2_program_suffix
     
     body = {
@@ -121,13 +120,13 @@ class Project < ApplicationRecord
     }
     
     response = dhis2_connection.post("oAuth2Clients", body)
-    
     oauth_uid = response["response"]["uid"]
+
     secret = dhis2_connection.get("oAuth2Clients/#{oauth_uid}")["secret"]
-    
+
     program.oauth_client_id = orbf2_name
     program.oauth_client_secret = secret
-    program.save
+    program.save!
   end
 
   def contract_settings
