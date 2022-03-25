@@ -22,4 +22,8 @@ class Program < ApplicationRecord
   def label
     "#{code} (#{id})"
   end
+
+  def oauth_enabled?
+    !oauth_client_id.nil? && !oauth_client_secret.nil?
+  end
 end
