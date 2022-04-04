@@ -1,69 +1,71 @@
-<div class="nested-fields">
-<h3><%= f.object.id ? f.object.formatted_name : "New decision table"  %></h3>
-<%= f.input :name %>
-<%= f.input :comment %>
-<%= f.input :source_url %>
-<p>If filled these periods are specified with the same frequency as the package, in the dhis2 format</p>
-<%= f.input :start_period %>
-<%= f.input :end_period %>
+<div class="nested-fields" style="margin-top: 5rem">
+  <h3><b><%= f.object.id ? f.object.formatted_name : "New decision table"  %></b></h3>
+  <div style="margin-left: 2rem">
+    <%= f.input :name %>
+    <%= f.input :comment %>
+    <%= f.input :source_url %>
+    <p>If filled these periods are specified with the same frequency as the package, in the dhis2 format</p>
+    <%= f.input :start_period %>
+    <%= f.input :end_period %>
 
- <table class="table">
-   <thead>
-    <tr>
-      <th>In</th>
-      <th>Out</th>
-      <th>Decision table data</th>
-    </tr>
-  <thead>
-  <tbody>
-  <tr>
-    <td>
-      <%if f.object%>
-        <% f.object.in_headers.each do |header|%>
-          <li><%= header %></li>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>In</th>
+          <th>Out</th>
+          <th>Decision table data</th>
+        </tr>
+      <thead>
+      <tbody>
+      <tr>
+        <td>
+          <%if f.object%>
+            <% f.object.in_headers.each do |header|%>
+              <li><%= header %></li>
+            <%end %>
+          <%end %>
+      </td>
+      <td>
+        <%if f.object%>
+          <% f.object.out_headers.each do |header|%>
+            <li><%= header %></li>
+          <%end %>
         <%end %>
-      <%end %>
-   </td>
-   <td>
-     <%if f.object%>
-       <% f.object.out_headers.each do |header|%>
-         <li><%= header %></li>
-       <%end %>
-     <%end %>
-   </td>
-   <td>
-     <a href="#decision-table-data-edit-<%= f.object&.id %>" data-toggle="collapse" data-target="#decision-table-data-edit-<%= f.object&.id %>">Edit data</a> |
-     <a href="#decision-table-data-show-<%= f.object&.id %>" data-toggle="collapse" data-target="#decision-table-data-show-<%= f.object&.id %>">Show data</a>
-   </td>
- </tr>
- </tbody>
-</table>
-<div id="decision-table-data-edit-<%= f.object&.id %>" class="collapse">
-  <%= f.input :content, as: :text %>
-</div>
-
-<% if f.object%>
-<div id="decision-table-data-show-<%= f.object&.id %>" class="collapse">
-  <table class="table">
-    <thead>
-      <tr>
-      <% f.object.decision_table.headers.each do |header|%>
-        <th><%= header %></th>
-      <% end%>
-      <tr>
-    </thead>
-    <tbody>
-      <% f.object.decision_table.rules.each do |rule| %>
-      <tr>
-          <% f.object.decision_table.headers.each do |header|%>
-           <td><%= rule[header] %></td>
-          <% end %>
-      </tr>
-      <% end %>
+      </td>
+      <td>
+        <a href="#decision-table-data-edit-<%= f.object&.id %>" data-toggle="collapse" data-target="#decision-table-data-edit-<%= f.object&.id %>">Edit data</a> |
+        <a href="#decision-table-data-show-<%= f.object&.id %>" data-toggle="collapse" data-target="#decision-table-data-show-<%= f.object&.id %>">Show data</a>
+      </td>
+    </tr>
     </tbody>
-  </thead>
+    </table>
+    <div id="decision-table-data-edit-<%= f.object&.id %>" class="collapse">
+      <%= f.input :content, as: :text %>
+    </div>
 
-</table>
-</div>
-<% end %>
+    <% if f.object%>
+    <div id="decision-table-data-show-<%= f.object&.id %>" class="collapse">
+      <table class="table">
+        <thead>
+          <tr>
+          <% f.object.decision_table.headers.each do |header|%>
+            <th><%= header %></th>
+          <% end%>
+          <tr>
+        </thead>
+        <tbody>
+          <% f.object.decision_table.rules.each do |rule| %>
+          <tr>
+              <% f.object.decision_table.headers.each do |header|%>
+              <td><%= rule[header] %></td>
+              <% end %>
+          </tr>
+          <% end %>
+        </tbody>
+      </thead>
+
+    </table>
+    </div>
+    <% end %>
+  </div>
 </div>
