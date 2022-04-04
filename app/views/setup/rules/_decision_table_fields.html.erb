@@ -1,4 +1,8 @@
 <div class="nested-fields">
+<h3><%= f.object.id ? f.object.formatted_name : "New decision table"  %></h3>
+<%= f.input :name %>
+<%= f.input :comment %>
+<%= f.input :source_url %>
 <p>If filled these periods are specified with the same frequency as the package, in the dhis2 format</p>
 <%= f.input :start_period %>
 <%= f.input :end_period %>
