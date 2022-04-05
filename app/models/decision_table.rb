@@ -109,7 +109,16 @@ class DecisionTable < ApplicationRecord
     @decision_table ||= Decision::Table.new(content || "in:nothing,out:nothing_too")
   end
 
+  def to_csv
+    attributes = %w{id rule_id start_period end_period name content comment source_url}
+
+    CSV.generate(headers: true) do |csv|
+      csv << attributes
+      csv << attributes.map { |attr| self.send(attr) }
+    end
+  end
+
   def formatted_name
-    name ? name : "Decision table - " + id.to_s
+    name || "Decision table - " + id.to_s
   end
 end
