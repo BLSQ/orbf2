@@ -96,7 +96,9 @@ Rails.application.routes.draw do
         resource :main_entity_group, only: %i[create update]
         resources :diagnose, only: %i[index show]
         resources :packages, only: %i[new create update edit] do
-          resources :rules, only: %i[new create update edit]
+          resources :rules, only: %i[new create update edit] do
+            post "download_decision_table", to: "rules#download_decision_table", format: true, constraints: { format: 'csv' }
+          end
         end
         resources :rules, only: %i[new create update edit index], controller: "project_rules" do
         end

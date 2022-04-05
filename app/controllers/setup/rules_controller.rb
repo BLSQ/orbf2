@@ -52,6 +52,21 @@ class Setup::RulesController < PrivateController
     render action: "edit"
   end
 
+  def download_decision_table
+    @rule = current_package.rules.find(params[:rule_id])
+    decision_table = @rule.decision_tables.find(params[:decision_table_id])
+    respond_to do |format|
+      format.csv do
+        # Send the data with a selection of attributes
+        send_data decision_table.to_csv,
+          # Change name of the attachment
+          filename: "decision-table-#{decision_table.formatted_name}.csv",
+          # Change content disposition
+          :disposition => 'attachment', :type => 'text/csv'
+      end
+    end
+  end
+
   private
 
   def reasons_rule_can_not_be_added(rule_kind)
