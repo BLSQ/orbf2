@@ -53,8 +53,8 @@ class Setup::RulesController < PrivateController
   end
 
   def download_decision_table
-    @rule = current_package.rules.find(params[:rule_id])
-    decision_table = @rule.decision_tables.find(params[:decision_table_id])
+    # @rule = current_package.rules.find(params[:rule_id])
+    decision_table = DecisionTable.find(params[:decision_table_id])
     respond_to do |format|
       format.csv do
         # Send the data with a selection of attributes

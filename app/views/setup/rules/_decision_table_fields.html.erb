@@ -35,8 +35,7 @@
       <td>
         <a href="#decision-table-data-edit-<%= f.object&.id %>" data-toggle="collapse" data-target="#decision-table-data-edit-<%= f.object&.id %>">Edit data</a> |
         <a href="#decision-table-data-show-<%= f.object&.id %>" data-toggle="collapse" data-target="#decision-table-data-show-<%= f.object&.id %>">Show data</a> |
-        <%= link_to "Download as CSV", setup_project_package_rule_download_decision_table_path(format: :csv, rule_id: @rule.id, decision_table_id: f.object&.id), method: 'POST' %>
-
+        <%= link_to "Download as CSV", setup_project_download_decision_table_path(format: :csv, decision_table_id: f.object&.id), method: 'GET' %>
       </td>
     </tr>
     </tbody>
