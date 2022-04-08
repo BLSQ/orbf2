@@ -98,7 +98,6 @@ Rails.application.routes.draw do
         resources :packages, only: %i[new create update edit] do
           resources :rules, only: %i[new create update edit]
         end
-        get "/download_decision_table", to: "rules#download_decision_table", format: true, constraints: { format: 'csv' }, as: :download_decision_table
         resources :rules, only: %i[new create update edit index], controller: "project_rules" do
         end
         resources :datasets

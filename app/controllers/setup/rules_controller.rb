@@ -18,6 +18,7 @@ class Setup::RulesController < PrivateController
 
   def edit
     @rule = current_package.rules.find(params[:id])
+    @decision_tables = @rule.decision_tables
     @rule.valid?
   end
 
@@ -50,21 +51,6 @@ class Setup::RulesController < PrivateController
     flash[:notice] = "Rule updated !" if @rule.save
 
     render action: "edit"
-  end
-
-  def download_decision_table
-    # @rule = current_package.rules.find(params[:rule_id])
-    decision_table = DecisionTable.find(params[:decision_table_id])
-    respond_to do |format|
-      format.csv do
-        # Send the data with a selection of attributes
-        send_data decision_table.to_csv,
-          # Change name of the attachment
-          filename: "decision-table-#{decision_table.formatted_name}.csv",
-          # Change content disposition
-          :disposition => 'attachment', :type => 'text/csv'
-      end
-    end
   end
 
   private
