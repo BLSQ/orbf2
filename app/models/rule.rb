@@ -58,6 +58,10 @@ class Rule < ApplicationRecord
 
   validate :formulas, :package_formula_uniqness
 
+  def sorted_decision_tables
+    decision_tables.sort_by { |d| [d.start_period, d.name].map(&:to_s).join("-") }
+  end
+
   def activity_kind?
     kind == RULE_TYPE_ACTIVITY
   end
