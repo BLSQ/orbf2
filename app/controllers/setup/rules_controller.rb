@@ -82,6 +82,6 @@ class Setup::RulesController < PrivateController
           .permit(:name,
                   :kind,
                   formulas_attributes:        Formula::WHITELISTED_FIELDS,
-                  decision_tables_attributes: %i[id content name comment source_url start_period end_period])
+                  decision_tables_attributes: %i[id content name comment source_url start_period end_period _destroy])
   end
 end

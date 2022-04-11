@@ -1,6 +1,13 @@
 <div class="nested-fields" style="margin-top: 5rem">
   <h3><b><%= f.object.id ? f.object.formatted_name : "New decision table"  %></b></h3>
   <div style="margin-left: 2rem">
+    <div><%= link_to_remove_association(
+        icon('fas', "trash-alt", class: "text-danger fa-lg"), 
+        f , 
+        title: "This will delete the decision table #{f.object.formatted_name}", 
+        data: { confirm: "This will delete the decision table #{f.object.formatted_name}, are you sure ?"},
+        class: "btn pull-right"  )%>
+    </div>
     <%= f.input :name %>
     <%= f.input :comment %>
     <%= f.input :source_url %>

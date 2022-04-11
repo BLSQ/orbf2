@@ -110,6 +110,6 @@ class DecisionTable < ApplicationRecord
   end
 
   def formatted_name
-    name || "Decision table - " + id.to_s
+    name.presence || "Decision table - " + id.to_s
   end
 end
