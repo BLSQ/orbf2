@@ -87,11 +87,14 @@ module Descriptor
 
       package.activity_rule.decision_tables.map do |decision_table|
         {
+          name:         decision_table.name,
           start_period: decision_table.start_period,
           end_period:   decision_table.end_period,
           in_headers:   decision_table.in_headers,
           out_headers:  decision_table.out_headers,
-          content:      decision_table.content
+          content:      decision_table.content,
+          source_url:   decision_table.source_url,
+          comment:      decision_table.comment,
         }
       end
     end

@@ -1,12 +1,14 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: decision_tables
 #
 #  id           :bigint(8)        not null, primary key
+#  comment      :text
 #  content      :text
 #  end_period   :string
+#  name         :string
+#  source_url   :string
 #  start_period :string
 #  rule_id      :integer
 #
@@ -105,5 +107,9 @@ class DecisionTable < ApplicationRecord
 
   def decision_table
     @decision_table ||= Decision::Table.new(content || "in:nothing,out:nothing_too")
+  end
+
+  def formatted_name
+    name.presence || "Decision table - " + id.to_s
   end
 end

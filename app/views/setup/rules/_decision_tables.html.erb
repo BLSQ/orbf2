@@ -3,15 +3,13 @@
   <h2>Extra facts based on org unit</h2>
 
 
-  <%= f.simple_fields_for :decision_tables do |decision_table| %>
+  <%= f.simple_fields_for(:decision_tables, f.object.sorted_decision_tables) do |decision_table| %>
     <%= render 'setup/rules/decision_table_fields', :f => decision_table %>
   <% end %>
 
 
   <div class="links">
-  <%=  link_to_add_association "Add decision table", f, :decision_tables, class: "btn btn-primary pull-right",  partial: "setup/rules/decision_table_fields" %>
+    <%= link_to_add_association "Add decision table", f, :decision_tables, class: "btn btn-primary pull-right",  partial: "setup/rules/decision_table_fields" %>
   </div>
-
-
 </div>
 <br>
