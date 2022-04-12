@@ -122,7 +122,7 @@ RSpec.describe Oauth::OauthController, type: :controller do
           get :callback, params: { program_id: program.id, code: code }
 
           expect(response).to redirect_to("/users/sign_in")
-          expect(flash[:failure]).to eq("Log-in failed: user not found in DHIS2")
+          expect(flash[:failure]).to eq("Log-in failed: no ORBF2 user associated to the DHIS2 user with name  and ID unknownuserref")
         end
       end
 
