@@ -83,7 +83,7 @@ class Oauth::OauthController < Devise::OmniauthCallbacksController
     if user
       sign_in_and_redirect(user)
     else  
-      flash[:failure] = "Log-in failed: user not found in DHIS2"
+      flash[:failure] = "Log-in failed: no ORBF2 user associated to the DHIS2 user with name #{user_info["displayName"]} and ID #{dhis2_user_ref}"
       redirect_to("/users/sign_in")
       return
     end
