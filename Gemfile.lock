@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/BLSQ/hesabu.git
-  revision: ed9bfe85c59121815cb0c3fce7ad66b86427dbc4
+  revision: 0aa737cb94f57c27381bf4fcac7054a9437f1f2c
   specs:
     hesabu (0.1.14)
 
