@@ -24,6 +24,6 @@ class Program < ApplicationRecord
   end
 
   def oauth_enabled?
-    !oauth_client_id.nil? && !oauth_client_secret.nil?
+    oauth_client_id.presence && auth_client_secret.presence
   end
 end
