@@ -26,6 +26,11 @@ end
       <div class="navbar-header">
         <%= link_to "Documentation", setup_project_rules_path(@current_project), class: "navbar-brand" %>
       </div>
+      <% if @current_project && @current_project.dhis2_url %>
+      <div class="navbar-header">
+        <%= link_to "Dhis2", @current_project.dhis2_url, class: "navbar-brand" %>
+      </div>      
+      <%  end %>
       <% if true_user && current_user != true_user %>
         <div class="navbar-header">
           <span class="navbar__impersonate__label label label-danger">
