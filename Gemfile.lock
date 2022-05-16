@@ -14,7 +14,7 @@ GIT
 
 GIT
   remote: https://github.com/BLSQ/orbf-rules_engine.git
-  revision: 5d30fa15bc0b76cd128af5f5e578c76b885a4944
+  revision: c5b317e89b0f5bccfb38c0d776751bb828684b18
   branch: master
   specs:
     orbf-rules_engine (0.1.0)
@@ -134,7 +134,7 @@ GEM
       execjs
     coffee-script-source (1.12.2)
     colorize (0.8.1)
-    concurrent-ruby (1.1.9)
+    concurrent-ruby (1.1.10)
     connection_pool (2.2.5)
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
@@ -505,7 +505,7 @@ GEM
       execjs (>= 0.3.0, < 3)
     unf (0.1.4)
       unf_ext
-    unf_ext (0.0.8)
+    unf_ext (0.0.8.1)
     unicode-display_width (1.8.0)
     warden (1.2.8)
       rack (>= 2.0.6)
