@@ -32,7 +32,7 @@ class Activity < ApplicationRecord
 
   accepts_nested_attributes_for :activity_states, allow_destroy: true
 
-  validates :name, presence: true
+  validates :name, presence: true, uniqueness: { scope: :project_id }
   validates :short_name, allow_blank: true, length: { minimum: 1, maximum: 40 }
 
   validates :code, allow_blank: true, format: {
