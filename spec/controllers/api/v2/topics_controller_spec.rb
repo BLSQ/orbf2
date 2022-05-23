@@ -78,8 +78,8 @@ RSpec.describe Api::V2::TopicsController, type: :controller do
       resp = JSON.parse(response.body)
       expect(resp).to eq("errors" => [
                            { "status"  => "400",
-                             "message" => "Validation failed: Code has already been taken",
-                             "details" => { "code" => ["has already been taken"] } }
+                             "message" => "Validation failed: Name has already been taken, Code has already been taken",
+                             "details" => { "code" => ["has already been taken"], "name"=> ["has already been taken"]} }
                          ])
     end
   end
