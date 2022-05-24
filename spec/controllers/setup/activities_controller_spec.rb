@@ -252,11 +252,11 @@ RSpec.describe Setup::ActivitiesController, type: :controller do
         expect(created_activity.code).to eq("activity_code")
       end
 
-      it "should prevent duplicate activity_code in same project" do
+      it "should prevent duplicate activity_code, activity_name in same project" do
         create_activity_with_code_and_data_element
         create_activity_with_code_and_data_element
         expect(flash[:failure]).to eq("Some validation errors occured")
-        expect(assigns(:activity).errors.full_messages).to eq(["Code has already been taken"])
+        expect(assigns(:activity).errors.full_messages).to eq(["Name has already been taken", "Code has already been taken"])
       end
 
       it "should be possible to create a indicator activity state" do

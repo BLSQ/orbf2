@@ -53,6 +53,12 @@ RSpec.describe Activity, type: :model do
     expect(activity.valid?).to be true
   end
 
+  it "should have unique name" do
+    FactoryBot.create(:activity, name: "activity_name", project: project)
+    invalid_activity = FactoryBot.build(:activity, name: "activity_name", project: project)
+    expect(invalid_activity.valid?).to be false
+  end
+
   it "should only contains lowercase letters and _ chars" do
     activity.code = "Activit4_Code"
     activity.valid?
