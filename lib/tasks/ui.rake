@@ -56,8 +56,8 @@ namespace :ui do
       log_info "INFO skipping no token for #{project_anchor.project.name} (project_anchor_id : #{project_anchor.id})"
       return
     end
-    config = { url: Scorpio.orbf2_url, token: project_anchor.token, program_id: project_anchor.program_id }
     project = project_anchor.project
+    config = { url: Scorpio.orbf2_url, token: project_anchor.token, program_id: project_anchor.program_id, invoice_app_path: project.invoice_app_path}
     dhis2 = Dhis2::Client.new(project.dhis_configuration.merge(timeout: 20))
     log_info "*** setup of token for #{project_anchor.project.name} (project_anchor_id : #{project_anchor.id}, #{project.dhis2_url})"
     begin
