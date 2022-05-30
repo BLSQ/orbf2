@@ -10,6 +10,9 @@ module Api::V2
       formula_mapping = formula.formula_mappings.create!(formula_mapping_attributes.merge(kind: current_formula.rule.kind))
       # make stable id visible
       formula_mapping.reload
+
+      OutputDatasetWorker.trigger_sync_for_project(current_project)
+
       render json: serializer_class.new(formula_mapping).serialized_json
     end
 
@@ -18,6 +21,8 @@ module Api::V2
 
       formula_mapping.update!(formula_mapping_attributes)
 
+      OutputDatasetWorker.trigger_sync_for_project(current_project)
+      
       render json: serializer_class.new(formula_mapping).serialized_json
     end
 

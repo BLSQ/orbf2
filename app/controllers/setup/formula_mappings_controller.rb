@@ -20,6 +20,8 @@ class Setup::FormulaMappingsController < PrivateController
     end
     @formula_mappings.mappings = @formula_mappings.mappings.reject(&:destroyed?)
 
+    OutputDatasetWorker.trigger_sync_for_project(current_project)
+
     render :new
   end
 

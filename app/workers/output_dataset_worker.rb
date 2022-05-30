@@ -19,6 +19,18 @@ class OutputDatasetWorker
     ["Remove extra org units", REMOVE_EXTRA_OU]
   ].freeze
 
+  def self.trigger_sync_for_project(project)
+    project.payment_rules.each do |payment_rule|
+      payment_rule.datasets.each do |dataset|
+        OutputDatasetWorker.perform_async(
+          project.id,
+          payment_rule.code,
+          dataset.frequency, "modes" => [ADD_MISSING_DE]
+        )
+      end
+    end
+  end
+
   def perform(project_id, payment_rule_code, frequency, options)
     modes = options.fetch("modes")
     @legacy_project = Project.find(project_id)
@@ -118,6 +130,7 @@ class OutputDatasetWorker
 
       dse = { "data_element" => { "id" => id_to_add } }
       dse["data_set"] = { "id" => dhis2_dataset.id } if dhis2_dataset.id
+      puts "adding #{dse}"
       data_set_elements.push(dse)
     end
   end

@@ -20,5 +20,7 @@ class CreateDhis2ElementForFormulaMappingWorker < CreateDhis2ElementWorker
       kind:               kind,
       external_reference: new_data_element.id
     )
+
+    OutputDatasetWorker.trigger_sync_for_project(Project.find(formula.project_id))
   end
 end
