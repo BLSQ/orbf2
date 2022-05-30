@@ -130,6 +130,7 @@ class OutputDatasetWorker
 
       dse = { "data_element" => { "id" => id_to_add } }
       dse["data_set"] = { "id" => dhis2_dataset.id } if dhis2_dataset.id
+      puts "adding #{dse}"
       data_set_elements.push(dse)
     end
   end
