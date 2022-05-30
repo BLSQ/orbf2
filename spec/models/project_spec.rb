@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: projects
@@ -13,6 +12,7 @@
 #  default_coc_reference :string
 #  dhis2_url             :string           not null
 #  engine_version        :integer          default(3), not null
+#  invoice_app_path      :string
 #  name                  :string           not null
 #  password              :string
 #  publish_date          :datetime
