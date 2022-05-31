@@ -10,6 +10,27 @@
   See in current situation in dhis2 : <%= link_to_debug_orgunit(@current_project, invoicing_request.entity)%>
   <br>
 
+  <% if invoicing_request&.project&.dhis2_url %>
+    <div class="btn btn-default">
+      <%= link_to "View invoices for orgunit", invoicing_request.generate_invoices_url %>
+    </div>
+  <% end %>
+
+  <button class="pull-right btn btn-default">
+    Copy to clipboard this invoice url <%= icon("fas", "copy") %>
+  </button>
+  <span id="invoice-url" class="hidden">
+    <% url_params = {
+      entity: invoicing_request.entity,
+      year: invoicing_request.year,
+      quarter: invoicing_request.quarter
+    } %>
+    <% url_params = url_params.merge(@org_unit_limiter.to_param) %>
+
+    <%= new_setup_project_invoice_url(url_params) %>
+  </span>
+
+
   <button class="pull-right btn btn-default" onclick="copyToClipboard('#invoice-url')">
     Copy to clipboard this invoice url <%= icon("fas", "copy") %>
   </button>

@@ -13,7 +13,8 @@ shared_context "basic_context" do
       user:           "admin",
       password:       "district",
       bypass_ssl:     false,
-      project_anchor: program.build_project_anchor
+      project_anchor: program.build_project_anchor,
+      invoice_app_path: "/api/apps/ORBF2-test-factures/test.html"
     )
     project_factory.update_links(project)
 
