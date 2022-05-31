@@ -64,4 +64,8 @@ class InvoicingRequest
       mocked_data:    mocked_data
     }
   end
+
+  def generate_invoices_url
+    project.dhis2_url + project.invoice_app_path + "#/reports/" + year + "Q" + quarter + "/" + entity
+  end
 end

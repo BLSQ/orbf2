@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_04_04_170152) do
+ActiveRecord::Schema.define(version: 2022_05_30_092048) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -306,6 +306,7 @@ ActiveRecord::Schema.define(version: 2022_04_04_170152) do
     t.datetime "publish_end_date"
     t.string "calendar_name", default: "gregorian", null: false
     t.boolean "read_through_deg", default: true, null: false
+    t.string "invoice_app_path", default: "/api/apps/ORBF2---Invoices-and-Reports/index.html", null: false
     t.index ["project_anchor_id"], name: "index_projects_on_project_anchor_id"
   end
 
