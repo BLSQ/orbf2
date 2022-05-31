@@ -10,6 +10,7 @@
   <%= f.input :qualifier %>
   <%= f.input :cycle, collection: Project::CYCLES %>
   <%= f.input :dhis2_url, placeholder: "eg : https://play.dhis2.org/2.28" %>
+  <%= f.input :invoice_app_path %>
   <%= f.input :user, input_html: { autocomplete: "nope" }  %>
   <%= f.input :password, input_html: { autocomplete: "new-password" } %>
   <%= f.input :bypass_ssl, label: "Check this to bypass SSL verification for self-signed certificate. Note that this might allow man-in-the middle attack!" %>

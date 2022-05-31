@@ -10,6 +10,12 @@
   See in current situation in dhis2 : <%= link_to_debug_orgunit(@current_project, invoicing_request.entity)%>
   <br>
 
+  <% if invoicing_request&.project&.dhis2_url %>
+    <div class="btn btn-default">
+      <%= link_to "View invoices for orgunit", invoicing_request.generate_invoices_url %>
+    </div>
+  <% end %>
+
   <button class="pull-right btn btn-default" onclick="copyToClipboard('#invoice-url')">
     Copy to clipboard this invoice url <%= icon("fas", "copy") %>
   </button>

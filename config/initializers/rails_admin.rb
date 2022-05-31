@@ -77,9 +77,11 @@ RailsAdmin.config do |config|
       field :dhis2_url
       field :bypass_ssl
       field :engine_version
+      field :invoice_app_path
     end
     edit do
       field :engine_version
+      field :invoice_app_path
     end
   end
 

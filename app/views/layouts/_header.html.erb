@@ -26,11 +26,36 @@ end
       <div class="navbar-header">
         <%= link_to "Documentation", setup_project_rules_path(@current_project), class: "navbar-brand" %>
       </div>
-      <% if @current_project && @current_project.dhis2_url %>
-      <div class="navbar-header">
-        <%= link_to "Dhis2", @current_project.dhis2_url, class: "navbar-brand" %>
-      </div>      
+
+      <% if @current_project&.dhis2_url %>
+        <div class="collapse navbar-collapse navbar-header">
+          <ul class="nav navbar-nav">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle navbar-brand" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                Apps
+                <span class="caret"></span>
+              </a>
+              <ul class="dropdown-menu">
+                <li>
+                  <%= link_to "Dhis2", @current_project.dhis2_url, class: "navbar-brand" %>
+                </li> 
+                <li>
+                  <%= link_to "Dhis2 Maintenance", @current_project.dhis2_url + "/dhis-web-maintenance/#/list/all", class: "navbar-brand" %>
+                </li>  
+                <% if @current_project.invoice_app_path %>
+                  <li>
+                    <%= link_to "Invoice App", @current_project.dhis2_url + @current_project.invoice_app_path, class: "navbar-brand" %>
+                  </li>      
+                <%  end %>
+                <li>
+                  <%= link_to "Hesabu Manager", @current_project.dhis2_url + "/api/apps/Hesabu/index.html", class: "navbar-brand" %>
+                </li>     
+              </ul>
+            </li>
+          </ul>
+        </div>
       <%  end %>
+
       <% if true_user && current_user != true_user %>
         <div class="navbar-header">
           <span class="navbar__impersonate__label label label-danger">
