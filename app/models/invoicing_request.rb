@@ -68,4 +68,8 @@ class InvoicingRequest
   def generate_invoices_url
     project.dhis2_url + project.invoice_app_path + "#/reports/" + year + "Q" + quarter + "/" + entity
   end
+
+  def simulation_url
+    project.dhis2_url + "/api/apps/Hesabu/index.html#/simulation?periods=#{year}Q#{quarter}&orgUnit=#{entity}"
+  end
 end
