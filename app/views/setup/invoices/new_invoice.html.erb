@@ -14,7 +14,12 @@
     <div class="btn btn-default">
       <%= link_to "View invoices for orgunit", invoicing_request.generate_invoices_url %>
     </div>
+    <div class="btn btn-default">
+      <%= link_to "Hesabu simulation", invoicing_request.simulation_url %>
+    </div>
   <% end %>
+
+
 
   <button class="pull-right btn btn-default" onclick="copyToClipboard('#invoice-url')">
     Copy to clipboard this invoice url <%= icon("fas", "copy") %>
