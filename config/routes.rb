@@ -45,7 +45,9 @@ Rails.application.routes.draw do
       resources :org_units, only: [:index]
       resources :de_cocs, only: [:index]
       resources :formula_mappings
-      resources :sets, only: %i[index show]
+      resources :sets, only: %i[index show] do
+        resources :topic_formulas, only: [:show]
+      end
       resources :compounds, only: %i[index show]
       resources :simulations, only: %i[index show]
       resources :topics, only: %i[index create update] do
