@@ -47,6 +47,7 @@ Rails.application.routes.draw do
       resources :formula_mappings
       resources :sets, only: %i[index show] do
         resources :topic_formulas, only: [:show]
+        resources :set_formulas, only: [:show]
       end
       resources :compounds, only: %i[index show]
       resources :simulations, only: %i[index show]
