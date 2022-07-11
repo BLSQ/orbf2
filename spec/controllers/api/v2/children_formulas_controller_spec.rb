@@ -15,7 +15,25 @@ def stub_dhis2_snapshot(project)
   Dhis2SnapshotWorker.new.perform(project.project_anchor_id, filter: ["organisation_units"])
 end
 
-RSpec.describe Api::V2::ZoneTopicFormulasController, type: :controller do
+def with_multi_entity_rule(project)
+  package = project.packages.first
+
+  package.update!(ogs_reference: "J5jldMd8OHv", kind: "multi-groupset")
+  package.package_states.each_with_index do |package_state, index|
+    package_state.update!(ds_external_reference: "ds-#{index}")
+  end
+  rule = package.rules.create!(name: "multi-entities test", kind: "multi-entities")
+  rule.decision_tables.create!(
+    content: fixture_content(:scorpio, "decision_table_multi_entities.csv")
+  )
+  package.multi_entities_rule.formulas.create!(
+    code:        "org_units_count_exported",
+    description: "org_units_count_exported",
+    expression:  "org_units_count"
+  )
+end
+
+RSpec.describe Api::V2::ChildrenFormulasController, type: :controller do
   let(:program) { create :program }
   let(:token) { "123456789" }
 
@@ -55,19 +73,9 @@ RSpec.describe Api::V2::ZoneTopicFormulasController, type: :controller do
       stub_all_pyramid(project_with_packages)
       request.headers["Accept"] = "application/vnd.api+json;version=2"
       request.headers["X-Token"] = project_with_packages.project_anchor.token
-
+      with_multi_entity_rule(project_with_packages)
       package = project_with_packages.packages.first
-      package.rules.create!(
-        name: "zone points",
-        kind: "zone_activity",
-        formulas_attributes: [{
-          code:        "zone_activity_formula",
-          short_name:  "short",
-          expression:  "10+10",
-          description: "pma for the zone"
-        }]
-      )
-      formula = package.zone_activity_rule.formulas.first
+      formula = package.multi_entities_rule.formulas.first
 
       get(:show, params: { set_id: package.id, id: formula.id })
       resp = JSON.parse(response.body)
