@@ -49,6 +49,7 @@ Rails.application.routes.draw do
         resources :topic_formulas, only: [:show]
         resources :set_formulas, only: [:show]
         resources :zone_formulas, only: [:show]
+        resources :zone_topic_formulas, only: [:show]
       end
       resources :compounds, only: %i[index show]
       resources :simulations, only: %i[index show]
