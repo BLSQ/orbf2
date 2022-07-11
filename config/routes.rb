@@ -52,7 +52,9 @@ Rails.application.routes.draw do
         resources :children_formulas, only: [:show]
         resources :zone_topic_formulas, only: [:show]
       end
-      resources :compounds, only: %i[index show]
+      resources :compounds, only: %i[index show] do
+        resources :compound_formulas, only: [:show]
+      end
       resources :simulations, only: %i[index show]
       resources :topics, only: %i[index create update] do
         resources :input_mappings, only: %i[index create update]
