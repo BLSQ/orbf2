@@ -40,11 +40,13 @@ Rails.application.routes.draw do
             constraints: { method: "OPTIONS" },
             via:         [:options]
     end
+    # , constraints: ApiConstraints.new(version: 2)
     scope module: :v2, constraints: ApiConstraints.new(version: 2) do
       resource :project, only: [:show]
       resources :org_units, only: [:index]
       resources :de_cocs, only: [:index]
       resources :formula_mappings
+      resource :calculations, only: [:show, :create]
       resources :sets, only: %i[index show] do
         resources :topic_formulas, only: [:show]
         resources :set_formulas, only: [:show]
