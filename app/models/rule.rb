@@ -62,6 +62,19 @@ class Rule < ApplicationRecord
     decision_tables.sort_by { |d| [d.start_period, d.name].map(&:to_s).join("-") }
   end
 
+  def used_formulas(formula)
+    dependencies = formula.dependencies
+    formulas.select { |f| dependencies.include?(f.code) }
+  end
+
+  def used_by_formulas(formula)
+    formulas.select { |f| f.dependencies.include?(formula.code) }
+  end
+
+  def parent_id
+    kind == RULE_TYPE_PAYMENT ? payment_rule_id : package_id
+  end
+
   def activity_kind?
     kind == RULE_TYPE_ACTIVITY
   end

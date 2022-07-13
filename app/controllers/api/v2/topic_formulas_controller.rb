@@ -8,6 +8,11 @@ module Api
         formula = package.activity_rule.formulas.find(params[:id])
         formula
       end
+
+      def detailed_relationships
+        # %i[topics.input_mappings] + detailed_formulas_relationships
+        %i[used_formulas]
+      end
     end
   end
 end

@@ -56,14 +56,17 @@ RSpec.describe Api::V2::TopicFormulasController, type: :controller do
       request.headers["Accept"] = "application/vnd.api+json;version=2"
       request.headers["X-Token"] = project_with_packages.project_anchor.token
       package = project_with_packages.packages.first
-      formula = package.activity_rule.formulas.first
-
+      formula = package.activity_rule.formula("quantity")
+      
       get(:show, params: { set_id: package.id, id: formula.id })
       resp = JSON.parse(response.body)
+      
       expect(resp["data"]["id"]).to eq(formula.id.to_s)
       expect(resp["data"]["attributes"]["availableVariables"]).to eq(formula.rule.available_variables)
       expect(resp["data"]["attributes"]["mockValues"]).to eq({})
-
+      expect(resp["data"]["relationships"]["usedFormulas"]["data"][0]["id"]).to eq(formula.used_formulas.first.id.to_s)
+      expect(resp["data"]["relationships"]["usedByFormulas"]["data"][0]["id"]).to eq(formula.used_by_formulas.first.id.to_s)
+      
       record_json("set.json", resp)
     end
   end
