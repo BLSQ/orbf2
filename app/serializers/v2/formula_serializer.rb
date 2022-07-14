@@ -21,7 +21,7 @@ class V2::FormulaSerializer < V2::BaseSerializer
     Rule::RULE_TYPE_PACKAGE => "set_formulas",
     Rule::RULE_TYPE_ZONE => "zone_formulas",
     Rule::RULE_TYPE_ZONE_ACTIVITY => "zone_topic_formulas",
-    Rule::RULE_TYPE_PAYMENT => "formulas",
+    Rule::RULE_TYPE_PAYMENT => "compound_formulas",
   }
 
   attributes :available_variables, if: EDITION_DETAILS do |object, record_serialization_params|
