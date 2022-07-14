@@ -8,6 +8,10 @@ module Api
         formula = payment_rule.rule.formulas.find(params[:id])
         formula
       end
+
+      def detailed_relationships
+        %i[used_formulas used_by_formulas]
+      end
     end
   end
 end

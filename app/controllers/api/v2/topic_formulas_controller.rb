@@ -10,8 +10,7 @@ module Api
       end
 
       def detailed_relationships
-        # %i[topics.input_mappings] + detailed_formulas_relationships
-        %i[used_formulas]
+        %i[used_formulas used_by_formulas]
       end
     end
   end
