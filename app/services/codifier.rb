@@ -2,6 +2,6 @@
 
 class Codifier
   def self.codify(string)
-    string.parameterize(separator: "_").tr("-", "_").gsub("__", "_")
+    Orbf::RulesEngine::Codifier.codify(string)
   end
 end
