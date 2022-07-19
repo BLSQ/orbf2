@@ -10,6 +10,19 @@ module RuleTypes
       rule.payment_rule.project
     end
 
+    def used_formulas(formula)
+      used = super
+
+      dependencies = formula.dependencies
+      payment_rule.packages.each do |package|
+        package.package_rule.formulas.each do |f|
+          used.push(f) if dependencies.include?(f.code)
+        end
+      end
+
+      used
+    end
+
     def available_variables
       var_names = []
 

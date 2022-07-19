@@ -15,6 +15,15 @@ class V2::FormulaSerializer < V2::BaseSerializer
 
   EDITION_DETAILS = proc { |_record, params| (params || {}).fetch(:with_edition_details, false) }
 
+  KIND_TRANSLATION = {
+    Rule::RULE_TYPE_ACTIVITY => "topic_formulas",
+    Rule::RULE_TYPE_MULTI_ENTITIES => "children_formulas",
+    Rule::RULE_TYPE_PACKAGE => "set_formulas",
+    Rule::RULE_TYPE_ZONE => "zone_formulas",
+    Rule::RULE_TYPE_ZONE_ACTIVITY => "zone_topic_formulas",
+    Rule::RULE_TYPE_PAYMENT => "compound_formulas",
+  }
+
   attributes :available_variables, if: EDITION_DETAILS do |object, record_serialization_params|
     object.rule.available_variables
   end
@@ -27,5 +36,25 @@ class V2::FormulaSerializer < V2::BaseSerializer
     {}
   end
 
+  attributes :parent_id, if: EDITION_DETAILS do |object, record_serialization_params|
+    object.rule.parent_id
+  end
+
+  attributes :kind, if: EDITION_DETAILS do |object, record_serialization_params|
+    KIND_TRANSLATION[object.rule.kind]
+  end
+
+  attributes :parent_kind, if: EDITION_DETAILS do |object, record_serialization_params|
+    object.rule.kind == Rule::RULE_TYPE_PAYMENT ? "compounds" : "sets"
+  end
+
   has_many :formula_mappings, serializer: V2::FormulaMappingSerializer, record_type: :formulaMapping
+
+  has_many :used_formulas, serializer: V2::FormulaSerializer, record_type: :formula, if: EDITION_DETAILS do |object, record_serialization_params|
+    object.used_formulas
+  end
+
+  has_many :used_by_formulas, serializer: V2::FormulaSerializer, record_type: :formula, if: EDITION_DETAILS do |object, record_serialization_params|
+    object.used_by_formulas
+  end
 end
