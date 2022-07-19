@@ -63,12 +63,11 @@ class Rule < ApplicationRecord
   end
 
   def used_formulas(formula)
-    dependencies = formula.dependencies
-    formulas.select { |f| dependencies.include?(f.code) }
+    rule_type.used_formulas(formula)
   end
 
   def used_by_formulas(formula)
-    formulas.select { |f| f.dependencies.include?(formula.code) }
+    rule_type.used_by_formulas(formula)
   end
 
   def parent_id

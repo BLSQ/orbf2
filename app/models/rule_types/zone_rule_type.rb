@@ -8,6 +8,32 @@ module RuleTypes
       rule.package.project
     end
 
+    def used_formulas(formula)
+      used = super
+
+      if rule.package.package_rule
+        dependencies = formula.dependencies
+        rule.package.package_rule.formulas.each do |f|
+          if dependencies.include?("#{f.code}_values")
+            used.push(f) 
+          end
+        end
+      end
+      used
+    end
+
+    def used_by_formulas(formula)
+      used_by = super
+      if rule.package.package_rule
+        rule.package.package_rule.formulas.each do |f|
+          if f.dependencies.include?(f.code)
+            used.push(f) 
+          end
+        end
+      end
+      used_by
+    end
+
     def available_variables
       return [] unless rule.package.package_rule
 
