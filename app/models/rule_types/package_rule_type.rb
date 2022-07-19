@@ -8,6 +8,35 @@ module RuleTypes
       rule.package.project
     end
 
+    def used_formulas(formula)
+      used = super
+
+      if package.activity_rule
+        dependencies = formula.dependencies
+        package.activity_rule.formulas.each do |f|
+          if dependencies.include?("#{f.code}_values")
+            used.push(f) 
+          end
+        end
+      end
+
+     
+      used
+    end
+
+    def used_by_formulas(formula)
+      used_by = super
+      if rule.package.zone_rule
+        rule.package.zone_rule.formulas.each do |f|
+          if f.dependencies.include?("#{formula.code}_values")
+            used_by.push(f) 
+          end
+        end
+      end 
+
+      used_by
+    end
+
     def package_formula_uniqness
       formula_by_codes = formulas.group_by(&:code)
       if package.project
@@ -23,7 +52,9 @@ module RuleTypes
       end
 
       formula_by_codes.each do |code, formulas|
-        rule.errors[:formulas] << "Formula's code must be unique, you have #{formulas.size} formulas with '#{code}'" if formulas.size > 1
+        if formulas.size > 1
+          rule.errors[:formulas] << "Formula's code must be unique, you have #{formulas.size} formulas with '#{code}'"
+        end
       end
     end
 

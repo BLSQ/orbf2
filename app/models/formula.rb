@@ -66,6 +66,14 @@ class Formula < ApplicationRecord
     end
   end
 
+  def used_formulas
+    rule.used_formulas(self)
+  end
+
+  def used_by_formulas
+    rule.used_by_formulas(self)
+  end
+
   def exportable_formula_code_belongs_to_available_one
     return if exportable_formula_code.blank?
     return if available_exportable_formula_codes.include?(exportable_formula_code)

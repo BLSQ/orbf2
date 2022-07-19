@@ -10,6 +10,23 @@ module RuleTypes
       rule.package.project
     end
 
+    def used_formulas(formula)
+      super
+    end
+
+    def used_by_formulas(formula)
+      used = super
+
+      if package.package_rule
+        package.package_rule.formulas.each do |f|
+          if f.dependencies.include?("#{formula.code}_values")
+            used.push(f) 
+          end
+        end
+      end
+      used
+    end
+
     def available_variables
       var_names = []
 

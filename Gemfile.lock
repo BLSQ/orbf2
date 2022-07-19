@@ -14,7 +14,7 @@ GIT
 
 GIT
   remote: https://github.com/BLSQ/orbf-rules_engine.git
-  revision: c5b317e89b0f5bccfb38c0d776751bb828684b18
+  revision: 1d26798fcc7136ca75b96a34e5430e13b0421d60
   branch: master
   specs:
     orbf-rules_engine (0.1.0)
@@ -203,12 +203,12 @@ GEM
     heroku-deflater (0.6.3)
       rack (>= 1.4.5)
     http-accept (1.7.0)
-    http-cookie (1.0.4)
+    http-cookie (1.0.5)
       domain_name (~> 0.5)
     httparty (0.20.0)
       mime-types (~> 3.0)
       multi_xml (>= 0.5.2)
-    i18n (1.10.0)
+    i18n (1.12.0)
       concurrent-ruby (~> 1.0)
     immigrant (0.3.6)
       activerecord (>= 3.0)
@@ -505,7 +505,7 @@ GEM
       execjs (>= 0.3.0, < 3)
     unf (0.1.4)
       unf_ext
-    unf_ext (0.0.8.1)
+    unf_ext (0.0.8.2)
     unicode-display_width (1.8.0)
     warden (1.2.8)
       rack (>= 2.0.6)

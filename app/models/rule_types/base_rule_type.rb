@@ -14,6 +14,15 @@ module RuleTypes
     delegate :decision_tables, to: :rule
     delegate :payment_rule, to: :rule
 
+    def used_formulas(formula)
+      dependencies = formula.dependencies
+      formulas.select { |f| dependencies.include?(f.code) }      
+    end
+
+    def used_by_formulas(formula)
+      formulas.select { |f| f.dependencies.include?(formula.code) }      
+    end
+
     def package_states
       package.package_states.map(&:state)
     end
