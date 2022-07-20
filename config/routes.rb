@@ -47,11 +47,11 @@ Rails.application.routes.draw do
       resources :formula_mappings
       resource :calculations, only: [:show, :create]
       resources :sets, only: %i[index show] do
-        resources :topic_formulas, only: [:show]
-        resources :set_formulas, only: [:show]
-        resources :zone_formulas, only: [:show]
-        resources :children_formulas, only: [:show]
-        resources :zone_topic_formulas, only: [:show]
+        resources :topic_formulas, only: [:show, :update]
+        resources :set_formulas, only: [:show, :update]
+        resources :zone_formulas, only: [:show, :update]
+        resources :children_formulas, only: [:show, :update]
+        resources :zone_topic_formulas, only: [:show, :update]
       end
       resources :compounds, only: %i[index show] do
         resources :compound_formulas, only: [:show]

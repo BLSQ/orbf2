@@ -88,7 +88,7 @@ class Formula < ApplicationRecord
   end
 
   def frequency=(val)
-    striped = val.strip
+    striped = val.nil? ? val : val.strip
     super(striped.presence)
   end
 

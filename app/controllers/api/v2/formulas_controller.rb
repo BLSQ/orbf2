@@ -21,6 +21,19 @@ module Api
         render json: serializer_class.new(formula, options).serialized_json
       end
 
+      def update
+        formula = find_formula
+        options = {
+          params: { with_edition_details: true }
+        }
+
+        
+        formula.update!(formula_attributes)
+
+        options[:include] = default_relationships + detailed_relationships
+        render json: serializer_class.new(formula, options).serialized_json
+      end
+
       private
 
       def default_relationships
@@ -39,6 +52,29 @@ module Api
 
       def serializer_class
         ::V2::FormulaSerializer
+      end
+
+      def formula_params
+        params.require(:data)
+              .permit(:type,
+                      attributes: %i[
+                        description
+                        exportableFormulaCode
+                        expression
+                        frequency
+                        shortName
+                      ])
+      end
+  
+      def formula_attributes
+        att = formula_params[:attributes]
+        {
+          description:                   att[:description],
+          short_name:                    att[:shortName],
+          expression:                    att[:expression],
+          frequency:                     att[:frequency],
+          exportable_formula_code:       att[:exportableFormulaCode]
+        }
       end
     end
   end

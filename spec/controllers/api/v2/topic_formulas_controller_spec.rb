@@ -70,4 +70,23 @@ RSpec.describe Api::V2::TopicFormulasController, type: :controller do
       record_json("set.json", resp)
     end
   end
+
+  describe "#update" do
+    include_context "basic_context"
+    include WebmockDhis2Helpers
+
+    it "should return validation errors" do
+      stub_all_pyramid(project_with_packages)
+      request.headers["Accept"] = "application/vnd.api+json;version=2"
+      request.headers["X-Token"] = project_with_packages.project_anchor.token
+      package = project_with_packages.packages.first
+      formula = package.activity_rule.formula("quantity")
+
+      put(:update, params: { set_id: package.id, id: formula.id, data: { id: formula.id, attributes: { shortName: "new", description: "new desc", expression: "if( " } } })
+      resp = JSON.parse(response.body)
+
+      expect(resp).to eq({"errors"=>[{"details"=>{"expression"=>["too many opening parentheses"]}, "message"=>"Validation failed: Expression too many opening parentheses", "status"=>"400"}]}
+      )
+    end
+  end
 end
