@@ -27,8 +27,20 @@ module Api
           params: { with_edition_details: true }
         }
 
-        
         formula.update!(formula_attributes)
+
+        options[:include] = default_relationships + detailed_relationships
+        render json: serializer_class.new(formula, options).serialized_json
+      end
+
+      def create
+        formula = create_formula
+
+        formula.reload
+
+        options = {
+          params: { with_edition_details: true }
+        }
 
         options[:include] = default_relationships + detailed_relationships
         render json: serializer_class.new(formula, options).serialized_json
@@ -58,6 +70,7 @@ module Api
         params.require(:data)
               .permit(:type,
                       attributes: %i[
+                        code
                         description
                         exportableFormulaCode
                         expression
@@ -69,6 +82,7 @@ module Api
       def formula_attributes
         att = formula_params[:attributes]
         {
+          code:                          att[:code],
           description:                   att[:description],
           short_name:                    att[:shortName],
           expression:                    att[:expression],
