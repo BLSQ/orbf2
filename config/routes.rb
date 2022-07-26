@@ -45,13 +45,13 @@ Rails.application.routes.draw do
       resources :org_units, only: [:index]
       resources :de_cocs, only: [:index]
       resources :formula_mappings
-      resource :calculations, only: [:show, :create]
+      resource :calculations, only: %i[show create]
       resources :sets, only: %i[index show] do
-        resources :topic_formulas, only: [:show, :update]
-        resources :set_formulas, only: [:show, :update]
-        resources :zone_formulas, only: [:show, :update]
-        resources :children_formulas, only: [:show, :update]
-        resources :zone_topic_formulas, only: [:show, :update]
+        resources :topic_formulas, only: %i[show update create]
+        resources :set_formulas, only: %i[show update create]
+        resources :zone_formulas, only: %i[show update create]
+        resources :children_formulas, only: %i[show update create]
+        resources :zone_topic_formulas, only: %i[show update create]
       end
       resources :compounds, only: %i[index show] do
         resources :compound_formulas, only: [:show]
