@@ -87,6 +87,17 @@ RSpec.describe Api::V2::TopicFormulasController, type: :controller do
 
       expect(resp).to eq({ "errors"=>[{ "details" => { "expression"=>["too many opening parentheses"] }, "message" => "Validation failed: Expression too many opening parentheses", "status" => "400" }] })
     end
+
+    it "should update errors" do
+      stub_all_pyramid(project_with_packages)
+      request.headers["Accept"] = "application/vnd.api+json;version=2"
+      request.headers["X-Token"] = project_with_packages.project_anchor.token
+      package = project_with_packages.packages.first
+      formula = package.activity_rule.formula("quantity")
+
+      put(:update, params: { set_id: package.id, id: formula.id, data: { id: formula.id, attributes: { code: "new_quantity_code", shortName: "new", description: "new desc", expression: formula.expression } } })
+      resp = JSON.parse(response.body)
+    end
   end
 
   describe "#create" do
@@ -100,10 +111,10 @@ RSpec.describe Api::V2::TopicFormulasController, type: :controller do
       package = project_with_packages.packages.first
 
       post(:create, params: { set_id: package.id, data: { attributes: {
-             code: "test_code",
+             code:        "test_code",
              description: "test",
-             shortName: "test",
-             expression: "2+2",
+             shortName:   "test",
+             expression:  "2+2"
            } } })
 
       resp = JSON.parse(response.body)
@@ -123,14 +134,14 @@ RSpec.describe Api::V2::TopicFormulasController, type: :controller do
       package = project_with_packages.packages.first
 
       post(:create, params: { set_id: package.id, data: { attributes: {
-             code: "test_code",
-             shortName: "test",
-             expression: "2+2",
+             code:       "test_code",
+             shortName:  "test",
+             expression: "2+2"
            } } })
 
       resp = JSON.parse(response.body)
 
-      expect(resp).to eq({"errors"=>[{"status"=>"400", "message"=>"Validation failed: Description can't be blank", "details"=>{"description"=>["can't be blank"]}}]})
+      expect(resp).to eq({ "errors"=>[{ "status" => "400", "message" => "Validation failed: Description can't be blank", "details" => { "description"=>["can't be blank"] } }] })
     end
   end
 end
