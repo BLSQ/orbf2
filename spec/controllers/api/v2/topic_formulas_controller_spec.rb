@@ -144,4 +144,41 @@ RSpec.describe Api::V2::TopicFormulasController, type: :controller do
       expect(resp).to eq({ "errors"=>[{ "status" => "400", "message" => "Validation failed: Description can't be blank", "details" => { "description"=>["can't be blank"] } }] })
     end
   end
+
+  describe "#destroy" do
+    include_context "basic_context"
+    include WebmockDhis2Helpers
+
+    it "should delete an unused formula" do
+      stub_all_pyramid(project_with_packages)
+      request.headers["Accept"] = "application/vnd.api+json;version=2"
+      request.headers["X-Token"] = project_with_packages.project_anchor.token
+      package = project_with_packages.packages.first
+      package.activity_rule.formulas.create(
+        rule:        package.activity_rule,
+        code:        "no_used_by_formulas",
+        expression:  "1",
+        description: "no used by formulas"
+      )
+      formula = package.activity_rule.formula("no_used_by_formulas")
+      delete(:destroy, params: { set_id: package.id, id: formula.id })
+      resp = JSON.parse(response.body)
+      attributes = resp["data"]["attributes"]
+      expect(attributes["id"]).to eq(formula.id)
+      expect(Formula.where(id: formula.id).any?).to be_falsey
+    end
+
+    it "should not delete a used formula" do
+      stub_all_pyramid(project_with_packages)
+      request.headers["Accept"] = "application/vnd.api+json;version=2"
+      request.headers["X-Token"] = project_with_packages.project_anchor.token
+      package = project_with_packages.packages.first
+      formula = package.activity_rule.formula("quantity")
+      delete(:destroy, params: { set_id: package.id, id: formula.id })
+      resp = JSON.parse(response.body)
+      attributes = resp["data"]["attributes"]
+      expect(attributes["id"]).to eq(formula.id)
+      expect(Formula.where(id: formula.id).any?).to be_truthy
+    end
+  end
 end
