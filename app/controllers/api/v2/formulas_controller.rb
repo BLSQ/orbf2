@@ -27,16 +27,34 @@ module Api
           params: { with_edition_details: true }
         }
 
-        formula.update!(formula_attributes)
+        updated_formulas = []
+        if formula_attributes[:code] != formula.code
+          updated_formulas = formula.rule.refactor(formula, formula_attributes[:code])
+        end
+
+        formula.transaction do
+          formula.update!(formula_attributes)
+          updated_formulas.each do |f|
+            f.save(validate: false) # skipping validation because not aware of formula_attributes code change in other formulas
+          end
+          rule = formula.rule
+          rule.reload
+          rule.save!
+        end
 
         options[:include] = default_relationships + detailed_relationships
         render json: serializer_class.new(formula, options).serialized_json
       end
 
       def create
-        formula = create_formula
-
-        formula.reload
+        formula = nil
+        Formula.transaction do
+          formula = create_formula
+          rule = formula.rule
+          formula.reload
+          rule.reload
+          rule.save!
+        end
 
         options = {
           params: { with_edition_details: true }
@@ -78,16 +96,16 @@ module Api
                         shortName
                       ])
       end
-  
+
       def formula_attributes
         att = formula_params[:attributes]
         {
-          code:                          att[:code],
-          description:                   att[:description],
-          short_name:                    att[:shortName],
-          expression:                    att[:expression],
-          frequency:                     att[:frequency],
-          exportable_formula_code:       att[:exportableFormulaCode]
+          code:                    att[:code],
+          description:             att[:description],
+          short_name:              att[:shortName],
+          expression:              att[:expression],
+          frequency:               att[:frequency],
+          exportable_formula_code: att[:exportableFormulaCode]
         }
       end
     end
