@@ -59,8 +59,17 @@ module Api
         options = {
           params: { with_edition_details: true }
         }
+        render json: serializer_class.new(formula, options).serialized_json
+      end
 
-        options[:include] = default_relationships + detailed_relationships
+      def destroy
+        formula = find_formula
+        options = {
+          params: { with_edition_details: true }
+        }
+
+        formula.destroy! unless formula.used_by_formulas.any?
+
         render json: serializer_class.new(formula, options).serialized_json
       end
 
