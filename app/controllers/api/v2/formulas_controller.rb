@@ -75,14 +75,21 @@ module Api
 
       private
 
+      def find_formula
+        find_rule.formulas.find(params[:id])
+      end
+
+      def create_formula
+        find_rule.formulas.create!(formula_attributes)
+      end
+
       def default_relationships
         # %i[topics inputs org_unit_groups org_unit_group_sets]
         []
       end
 
       def detailed_relationships
-        # %i[topics.input_mappings] + detailed_formulas_relationships
-        []
+        %i[used_formulas used_by_formulas]
       end
 
       def detailed_formulas_relationships
