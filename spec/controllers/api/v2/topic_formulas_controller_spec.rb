@@ -57,17 +57,128 @@ RSpec.describe Api::V2::TopicFormulasController, type: :controller do
       request.headers["X-Token"] = project_with_packages.project_anchor.token
       package = project_with_packages.packages.first
       formula = package.activity_rule.formula("quantity")
-      
+
       get(:show, params: { set_id: package.id, id: formula.id })
       resp = JSON.parse(response.body)
-      
+
       expect(resp["data"]["id"]).to eq(formula.id.to_s)
       expect(resp["data"]["attributes"]["availableVariables"]).to eq(formula.rule.available_variables)
       expect(resp["data"]["attributes"]["mockValues"]).to eq({})
       expect(resp["data"]["relationships"]["usedFormulas"]["data"][0]["id"]).to eq(formula.used_formulas.first.id.to_s)
       expect(resp["data"]["relationships"]["usedByFormulas"]["data"][0]["id"]).to eq(formula.used_by_formulas.first.id.to_s)
-      
+
       record_json("set.json", resp)
+    end
+  end
+
+  describe "#update" do
+    include_context "basic_context"
+    include WebmockDhis2Helpers
+
+    it "should return validation errors" do
+      stub_all_pyramid(project_with_packages)
+      request.headers["Accept"] = "application/vnd.api+json;version=2"
+      request.headers["X-Token"] = project_with_packages.project_anchor.token
+      package = project_with_packages.packages.first
+      formula = package.activity_rule.formula("quantity")
+
+      put(:update, params: { set_id: package.id, id: formula.id, data: { id: formula.id, attributes: { code: "test_code", shortName: "new", description: "new desc", expression: "if( " } } })
+      resp = JSON.parse(response.body)
+
+      expect(resp).to eq({ "errors"=>[{ "details" => { "expression"=>["too many opening parentheses"] }, "message" => "Validation failed: Expression too many opening parentheses", "status" => "400" }] })
+    end
+
+    it "should update errors" do
+      stub_all_pyramid(project_with_packages)
+      request.headers["Accept"] = "application/vnd.api+json;version=2"
+      request.headers["X-Token"] = project_with_packages.project_anchor.token
+      package = project_with_packages.packages.first
+      formula = package.activity_rule.formula("quantity")
+
+      put(:update, params: { set_id: package.id, id: formula.id, data: { id: formula.id, attributes: { code: "new_quantity_code", shortName: "new", description: "new desc", expression: formula.expression } } })
+      resp = JSON.parse(response.body)
+    end
+  end
+
+  describe "#create" do
+    include_context "basic_context"
+    include WebmockDhis2Helpers
+
+    it "should create a formula" do
+      stub_all_pyramid(project_with_packages)
+      request.headers["Accept"] = "application/vnd.api+json;version=2"
+      request.headers["X-Token"] = project_with_packages.project_anchor.token
+      package = project_with_packages.packages.first
+
+      post(:create, params: { set_id: package.id, data: { attributes: {
+             code:        "test_code",
+             description: "test",
+             shortName:   "test",
+             expression:  "2+2"
+           } } })
+
+      resp = JSON.parse(response.body)
+      attributes = resp["data"]["attributes"]
+
+      expect(attributes["id"]).to_not be_nil
+      expect(attributes["code"]).to eq("test_code")
+      expect(attributes["description"]).to eq("test")
+      expect(attributes["shortName"]).to eq("test")
+      expect(attributes["expression"]).to eq("2+2")
+    end
+
+    it "should return validation errors" do
+      stub_all_pyramid(project_with_packages)
+      request.headers["Accept"] = "application/vnd.api+json;version=2"
+      request.headers["X-Token"] = project_with_packages.project_anchor.token
+      package = project_with_packages.packages.first
+
+      post(:create, params: { set_id: package.id, data: { attributes: {
+             code:       "test_code",
+             shortName:  "test",
+             expression: "2+2"
+           } } })
+
+      resp = JSON.parse(response.body)
+
+      expect(resp).to eq({ "errors"=>[{ "status" => "400", "message" => "Validation failed: Description can't be blank", "details" => { "description"=>["can't be blank"] } }] })
+    end
+  end
+
+  describe "#destroy" do
+    include_context "basic_context"
+    include WebmockDhis2Helpers
+
+    it "should delete an unused formula" do
+      stub_all_pyramid(project_with_packages)
+      request.headers["Accept"] = "application/vnd.api+json;version=2"
+      request.headers["X-Token"] = project_with_packages.project_anchor.token
+      package = project_with_packages.packages.first
+      package.activity_rule.formulas.create(
+        rule:        package.activity_rule,
+        code:        "no_used_by_formulas",
+        expression:  "1",
+        description: "no used by formulas"
+      )
+      formula = package.activity_rule.formula("no_used_by_formulas")
+      delete(:destroy, params: { set_id: package.id, id: formula.id })
+      resp = JSON.parse(response.body)
+      attributes = resp["data"]["attributes"]
+      expect(attributes["id"]).to eq(formula.id)
+      expect(Formula.where(id: formula.id).any?).to be_falsey
+    end
+
+    it "should not delete a used formula" do
+      stub_all_pyramid(project_with_packages)
+      request.headers["Accept"] = "application/vnd.api+json;version=2"
+      request.headers["X-Token"] = project_with_packages.project_anchor.token
+      package = project_with_packages.packages.first
+      formula = package.activity_rule.formula("quantity")
+      delete(:destroy, params: { set_id: package.id, id: formula.id })
+      resp = JSON.parse(response.body)
+      attributes = resp["data"]["attributes"]
+      expect(attributes["id"]).to eq(formula.id)
+      expect(Formula.where(id: formula.id).any?).to be_truthy
     end
   end
 end
