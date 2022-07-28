@@ -16,11 +16,40 @@ module RuleTypes
 
     def used_formulas(formula)
       dependencies = formula.dependencies
-      formulas.select { |f| dependencies.include?(f.code) }      
+      used = formulas.select { |f| dependencies.include?(f.code) }
+      if formula.exportable_formula_code.presence
+        used += formulas.select { |f| f.code == formula.exportable_formula_code }
+      end
+      used
     end
 
     def used_by_formulas(formula)
-      formulas.select { |f| f.dependencies.include?(formula.code) }      
+      used_by = formulas.select { |f| f.dependencies.include?(formula.code) }
+
+      used_by += formulas.select { |f| f.exportable_formula_code == formula.code }
+
+      used_by
+    end
+
+    # returns an array of modified formula expression or exportable_formula_code
+    def refactor(formula, new_code)
+      used_by = used_by_formulas(formula)
+
+      used_by.each do |used_by_formula|
+        tokens = Orbf::RulesEngine::Tokenizer.tokenize(used_by_formula.expression)
+        new_expression = tokens.map { |token| token == formula.code ? new_code : token }.join
+        if used_by_formula.expression != new_expression
+          puts "refactoring formula #{used_by_formula.id} : #{used_by_formula.code} := #{used_by_formula.expression} to #{new_expression}"
+          used_by_formula.expression = new_expression
+        end
+
+        if used_by_formula.exportable_formula_code.presence && used_by_formula.exportable_formula_code == formula.code
+          puts "updating exportable_formula_code #{used_by_formula.id} : #{used_by_formula.exportable_formula_code} to #{new_code}"
+          used_formula.exportable_formula_code = new_code
+        end
+      end
+
+      used_by
     end
 
     def package_states

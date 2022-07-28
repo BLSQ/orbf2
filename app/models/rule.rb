@@ -70,6 +70,10 @@ class Rule < ApplicationRecord
     rule_type.used_by_formulas(formula)
   end
 
+  def refactor(formula, new_code)    
+    rule_type.refactor(formula, new_code)
+  end
+
   def parent_id
     kind == RULE_TYPE_PAYMENT ? payment_rule_id : package_id
   end
