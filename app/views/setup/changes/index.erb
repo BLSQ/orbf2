@@ -21,7 +21,7 @@
         <% end %>
       </td>
       <td><%= version.event %></td>
-      <td><%= version.author ? version.author.email : "System" %></td>
+      <td><%= version.author ? version.author.email : version.whodunnit || "System" %></td>
       <td><%= time_ago_in_words(version.created_at) %> </td>
 			<td>
         <small>
