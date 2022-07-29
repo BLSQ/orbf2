@@ -19,16 +19,6 @@ RSpec.describe Api::V2::ZoneTopicFormulasController, type: :controller do
   let(:program) { create :program }
   let(:token) { "123456789" }
 
-  let(:project_without_packages) do
-    project = build :project
-    project.project_anchor = program.build_project_anchor(token: token)
-    project.save!
-    user.program = program
-    user.save!
-    user.reload
-    project
-  end
-
   let(:project_with_packages) do
     project = full_project
     project.project_anchor.update(token: token)
@@ -39,34 +29,46 @@ RSpec.describe Api::V2::ZoneTopicFormulasController, type: :controller do
     project
   end
 
+  let(:package) do 
+    package = project_with_packages.packages.first
+    package.rules.create!(
+      name: "zone points",
+      kind: "zone_activity",
+      formulas_attributes: [{
+        code:        "zone_activity_formula",
+        short_name:  "short",
+        expression:  "10+10",
+        description: "pma for the zone"
+      }]
+    )
+    package
+  end
+
+  def authenticated
+    request.headers["Accept"] = "application/vnd.api+json;version=2"
+    request.headers["X-Token"] = token
+    request.headers["X-Dhis2UserId"] = "aze123sdf"
+  end
+
   describe "#show" do
     include_context "basic_context"
     include WebmockDhis2Helpers
 
+    before do
+      authenticated
+    end
+
     it "returns not found for non existing formula" do
-      request.headers["Accept"] = "application/vnd.api+json;version=2"
-      request.headers["X-Token"] = project_without_packages.project_anchor.token
-      get(:show, params: { set_id: "123abcd", id: "abdc123" })
+      stub_all_pyramid(project_with_packages)
+    
+      get(:show, params: { set_id: package.id, id: "abdc123" })
       _resp = JSON.parse(response.body)
       expect(response.status).to eq(404)
     end
 
     it "returns formula data for existing formula" do
       stub_all_pyramid(project_with_packages)
-      request.headers["Accept"] = "application/vnd.api+json;version=2"
-      request.headers["X-Token"] = project_with_packages.project_anchor.token
 
-      package = project_with_packages.packages.first
-      package.rules.create!(
-        name: "zone points",
-        kind: "zone_activity",
-        formulas_attributes: [{
-          code:        "zone_activity_formula",
-          short_name:  "short",
-          expression:  "10+10",
-          description: "pma for the zone"
-        }]
-      )
       formula = package.zone_activity_rule.formulas.first
 
       get(:show, params: { set_id: package.id, id: formula.id })
