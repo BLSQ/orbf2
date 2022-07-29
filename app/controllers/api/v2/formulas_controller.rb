@@ -3,13 +3,7 @@
 module Api
   module V2
     class FormulasController < BaseController
-      # def index
-      #   packages = current_project_anchor.project.packages
-      #   options = {}
-      #   options[:include] = default_relationships
-
-      #   render json: serializer_class.new(packages, options).serialized_json
-      # end
+      before_action :check_whodunnit!
 
       def show
         formula = find_formula

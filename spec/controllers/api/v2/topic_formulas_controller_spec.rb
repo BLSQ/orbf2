@@ -39,22 +39,33 @@ RSpec.describe Api::V2::TopicFormulasController, type: :controller do
     project
   end
 
+  def authenticated
+    request.headers["Accept"] = "application/vnd.api+json;version=2"
+    request.headers["X-Token"] = token
+    request.headers["X-Dhis2UserId"] = "aze123sdf"
+  end
+
   describe "#show" do
     include_context "basic_context"
     include WebmockDhis2Helpers
 
+    before do
+      authenticated
+    end
+
     it "returns not found for non existing formula" do
-      request.headers["Accept"] = "application/vnd.api+json;version=2"
-      request.headers["X-Token"] = project_without_packages.project_anchor.token
-      get(:show, params: { set_id: "123abcd", id: "abdc123" })
-      _resp = JSON.parse(response.body)
+      stub_all_pyramid(project_with_packages)
+      package = project_with_packages.packages.first
+      formula = package.activity_rule.formula("quantity")
+
+      get(:show, params: { set_id: package.id, id: "abdc123" })
+      resp = JSON.parse(response.body)
       expect(response.status).to eq(404)
+      expect(resp).to eq({"errors"=>[{"message"=>"Not Found", "status"=>"404"}]})
     end
 
     it "returns formula data for existing formula" do
       stub_all_pyramid(project_with_packages)
-      request.headers["Accept"] = "application/vnd.api+json;version=2"
-      request.headers["X-Token"] = project_with_packages.project_anchor.token
       package = project_with_packages.packages.first
       formula = package.activity_rule.formula("quantity")
 
@@ -75,10 +86,12 @@ RSpec.describe Api::V2::TopicFormulasController, type: :controller do
     include_context "basic_context"
     include WebmockDhis2Helpers
 
+    before do
+      authenticated
+    end
+
     it "should return validation errors" do
       stub_all_pyramid(project_with_packages)
-      request.headers["Accept"] = "application/vnd.api+json;version=2"
-      request.headers["X-Token"] = project_with_packages.project_anchor.token
       package = project_with_packages.packages.first
       formula = package.activity_rule.formula("quantity")
 
@@ -90,8 +103,6 @@ RSpec.describe Api::V2::TopicFormulasController, type: :controller do
 
     it "should update errors" do
       stub_all_pyramid(project_with_packages)
-      request.headers["Accept"] = "application/vnd.api+json;version=2"
-      request.headers["X-Token"] = project_with_packages.project_anchor.token
       package = project_with_packages.packages.first
       formula = package.activity_rule.formula("quantity")
 
@@ -104,10 +115,12 @@ RSpec.describe Api::V2::TopicFormulasController, type: :controller do
     include_context "basic_context"
     include WebmockDhis2Helpers
 
+    before do
+      authenticated
+    end
+
     it "should create a formula" do
       stub_all_pyramid(project_with_packages)
-      request.headers["Accept"] = "application/vnd.api+json;version=2"
-      request.headers["X-Token"] = project_with_packages.project_anchor.token
       package = project_with_packages.packages.first
 
       post(:create, params: { set_id: package.id, data: { attributes: {
@@ -129,8 +142,6 @@ RSpec.describe Api::V2::TopicFormulasController, type: :controller do
 
     it "should return validation errors" do
       stub_all_pyramid(project_with_packages)
-      request.headers["Accept"] = "application/vnd.api+json;version=2"
-      request.headers["X-Token"] = project_with_packages.project_anchor.token
       package = project_with_packages.packages.first
 
       post(:create, params: { set_id: package.id, data: { attributes: {
@@ -149,10 +160,12 @@ RSpec.describe Api::V2::TopicFormulasController, type: :controller do
     include_context "basic_context"
     include WebmockDhis2Helpers
 
+    before do
+      authenticated
+    end
+
     it "should delete an unused formula" do
       stub_all_pyramid(project_with_packages)
-      request.headers["Accept"] = "application/vnd.api+json;version=2"
-      request.headers["X-Token"] = project_with_packages.project_anchor.token
       package = project_with_packages.packages.first
       package.activity_rule.formulas.create(
         rule:        package.activity_rule,
@@ -161,7 +174,9 @@ RSpec.describe Api::V2::TopicFormulasController, type: :controller do
         description: "no used by formulas"
       )
       formula = package.activity_rule.formula("no_used_by_formulas")
+
       delete(:destroy, params: { set_id: package.id, id: formula.id })
+
       resp = JSON.parse(response.body)
       attributes = resp["data"]["attributes"]
       expect(attributes["id"]).to eq(formula.id)
@@ -170,11 +185,11 @@ RSpec.describe Api::V2::TopicFormulasController, type: :controller do
 
     it "should not delete a used formula" do
       stub_all_pyramid(project_with_packages)
-      request.headers["Accept"] = "application/vnd.api+json;version=2"
-      request.headers["X-Token"] = project_with_packages.project_anchor.token
       package = project_with_packages.packages.first
       formula = package.activity_rule.formula("quantity")
+
       delete(:destroy, params: { set_id: package.id, id: formula.id })
+
       resp = JSON.parse(response.body)
       attributes = resp["data"]["attributes"]
       expect(attributes["id"]).to eq(formula.id)
