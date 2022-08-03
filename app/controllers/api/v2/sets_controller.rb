@@ -22,6 +22,36 @@ module Api
         render json: serializer_class.new(package, options).serialized_json
       end
 
+      def create
+        package = nil
+        Package.transaction do
+          package = current_project_anchor.project.packages.create!(set_attributes)
+          if set_attributes[:state_ids].any?
+            state_ids = set_attributes[:state_ids].reject(&:empty?)
+            update_package_constants
+            package.states = current_project.states.find(state_ids)
+          end
+          # package.data_element_group_ext_ref = "todo"
+          # entity_groups = package.create_package_entity_groups(
+          #   params[:package][:main_entity_groups],
+          #   params[:package][:target_entity_groups]
+          # )
+          # package.data_element_group_ext_ref = "todo"
+          # if package.save!
+          #   package.package_entity_groups.create(entity_groups)
+          #   SynchroniseDegDsWorker.perform_async(current_project.project_anchor.id)
+          # end
+          package.save!
+        end
+
+        options = {
+          params: { with_sim_org_unit: true }
+        }
+
+        options[:include] = default_relationships + detailed_relationships
+        render json: serializer_class.new(package, options).serialized_json
+      end
+
       private
 
       def default_relationships
@@ -41,6 +71,43 @@ module Api
             "#{scope}_formulas.formula_mappings.external_ref"
           ].map(&:to_sym)
         end
+      end
+
+      def set_params
+        params.require(:data)
+              .permit(attributes: %i[
+                name
+                description
+                frequency
+                kind
+                ogsReference
+                includeMainOrgUnit
+                loopOver
+                stateIds
+                topicIds
+                groupSetsExtRefs
+                mainEntityGroups
+                targetEntityGroups
+              ])
+      end
+
+      def set_attributes
+        att = set_params[:attributes]
+        {
+          name: att[:name],
+          description: att[:description],
+          frequency: att[:frequency],
+          kind: att[:kind],
+          ogs_reference: att[:ogsReference],
+          loop_over_combo_ext_id: att[:loopOver],
+          activity_ids: att[:topicIds] || [],
+          groupsets_ext_refs: att[:groupSetsExtRefs] || [],
+          state_ids: att[:stateIds] || [],
+          include_main_orgunit: att[:includeMainOrgUnit],
+          main_entity_groups: att[:mainEntityGroups],
+          target_entity_groups: att[:targetEntityGroups],
+          data_element_group_ext_ref: "todo",
+        }
       end
 
       def serializer_class

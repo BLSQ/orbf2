@@ -31,11 +31,15 @@ RSpec.describe Api::V2::SetsController, type: :controller do
 
   let(:project_with_packages) do
     project = full_project
+    %w[claimed declared tarif].each do |state_name|
+      project.states.build(name: state_name)
+    end
     project.project_anchor.update(token: token)
     project.save!
     user.program = program
     user.save!
     user.reload
+    project.create_entity_group(external_reference: "external_reference", name: "main group")
     project
   end
 
@@ -64,6 +68,55 @@ RSpec.describe Api::V2::SetsController, type: :controller do
       expect(resp["data"].length).to be > 0
       expect(resp["data"].length).to eq(project_with_packages.packages.length)
       record_json("sets.json", resp)
+    end
+  end
+
+  describe "#create" do
+    include_context "basic_context"
+    include WebmockDhis2Helpers
+
+    it "should create basic set (no main entity groups, no target entity groups)" do
+      stub_all_pyramid(project_with_packages)
+      request.headers["Accept"] = "application/vnd.api+json;version=2"
+      request.headers["X-Token"] = project_with_packages.project_anchor.token
+
+      post(:create, params: { data: { attributes: {
+            name:               "azeaze",
+            stateIds:           [],
+            frequency:          "monthly",
+            kind:               "zone",
+            groupSetsExtRefs:   %w[groupsets_ext_ref1 groupsets_ext_ref2],
+            includeMainOrgUnit: false
+        } } })
+
+      resp = JSON.parse(response.body)
+      attributes = resp["data"]["attributes"]
+      expect(resp["data"]["id"]).to_not be_nil
+      expect(attributes["name"]).to eq("azeaze")
+    end
+
+    it "should return validation errors" do
+      stub_all_pyramid(project_with_packages)
+      request.headers["Accept"] = "application/vnd.api+json;version=2"
+      request.headers["X-Token"] = project_with_packages.project_anchor.token
+
+      post(:create, params: { data: { attributes: {
+            name:               "",
+            stateIds:           [],
+            frequency:          "monthly",
+            kind:               "zone",
+            groupSetsExtRefs:   %w[groupsets_ext_ref1 groupsets_ext_ref2],
+            includeMainOrgUnit: false
+        } } })
+
+      resp = JSON.parse(response.body)
+      expect(resp).to eq({"errors"=>[{"status"=>"400", "message"=>"Validation failed: Name can't be blank", "details"=>{"name"=>["can't be blank"]}}]})
+    end
+
+    it "should create set with main entity groups, without target entity groups" do
+    end
+
+    it "should create set with main entity groups and target entity groups" do
     end
   end
 
