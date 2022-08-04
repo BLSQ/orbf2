@@ -47,6 +47,7 @@ Rails.application.routes.draw do
       resources :formula_mappings
       resource :calculations, only: %i[show create]
       resources :sets, only: %i[index show create] do
+        resources :inputs, only: [:create]
         resources :topic_formulas
         resources :set_formulas
         resources :zone_formulas
