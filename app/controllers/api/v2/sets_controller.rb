@@ -22,6 +22,24 @@ module Api
         render json: serializer_class.new(package, options).serialized_json
       end
 
+      def update
+        package = current_project_anchor.project.packages.includes(Project::PACKAGE_INCLUDES).find(params[:id])
+        if set_attributes[:state_ids].any?
+          state_ids = set_attributes[:state_ids].reject(&:empty?).map(&:to_i)
+          package.states = package.states + current_project_anchor.project.states.find(state_ids)
+          package.reload
+        end
+
+        options = {
+          params: { with_sim_org_unit: true }
+        }
+
+        package.save!
+
+        options[:include] = default_relationships + detailed_relationships
+        render json: serializer_class.new(package, options).serialized_json
+      end
+
       def create
         package = nil
         Package.transaction do
@@ -29,19 +47,21 @@ module Api
           if set_attributes[:state_ids].any?
             state_ids = set_attributes[:state_ids].reject(&:empty?)
             update_package_constants
-            package.states = current_project.states.find(state_ids)
+            package.states = current_project_anchor.project.states.find(state_ids)
           end
-          # package.data_element_group_ext_ref = "todo"
-          # entity_groups = package.create_package_entity_groups(
-          #   params[:package][:main_entity_groups],
-          #   params[:package][:target_entity_groups]
-          # )
-          # package.data_element_group_ext_ref = "todo"
-          # if package.save!
-          #   package.package_entity_groups.create(entity_groups)
-          #   SynchroniseDegDsWorker.perform_async(current_project.project_anchor.id)
-          # end
-          package.save!
+
+          entity_groups = nil
+          if meta_set_attributes[:main_entity_groups].any? || meta_set_attributes[:target_entity_groups].any?
+            entity_groups = package.create_package_entity_groups(
+              meta_set_attributes[:main_entity_groups],
+              meta_set_attributes[:target_entity_groups]
+            )
+          end
+
+          if package.save! && entity_groups.present?
+            package.package_entity_groups.create(entity_groups)
+            SynchroniseDegDsWorker.perform_async(current_project_anchor.id)
+          end
         end
 
         options = {
@@ -55,7 +75,7 @@ module Api
       private
 
       def default_relationships
-        %i[topics inputs org_unit_groups org_unit_group_sets]
+        %i[topics inputs unused_project_inputs org_unit_groups org_unit_group_sets]
       end
 
       def detailed_relationships
@@ -75,38 +95,44 @@ module Api
 
       def set_params
         params.require(:data)
-              .permit(attributes: %i[
-                name
-                description
-                frequency
-                kind
-                ogsReference
-                includeMainOrgUnit
-                loopOver
-                stateIds
-                topicIds
-                groupSetsExtRefs
-                mainEntityGroups
-                targetEntityGroups
-              ])
+              .permit(attributes: [
+                        :name,
+                        :description,
+                        :frequency,
+                        :kind,
+                        :includeMainOrgUnit,
+                        :ogsReference => [],
+                        :loopOver => [],
+                        :stateIds => [],
+                        :topicIds => [],
+                        :groupSetsExtRefs => [],
+                        :mainEntityGroups => [],
+                        :targetEntityGroups => []
+                      ])
       end
 
       def set_attributes
         att = set_params[:attributes]
         {
-          name: att[:name],
-          description: att[:description],
-          frequency: att[:frequency],
-          kind: att[:kind],
-          ogs_reference: att[:ogsReference],
-          loop_over_combo_ext_id: att[:loopOver],
-          activity_ids: att[:topicIds] || [],
-          groupsets_ext_refs: att[:groupSetsExtRefs] || [],
-          state_ids: att[:stateIds] || [],
-          include_main_orgunit: att[:includeMainOrgUnit],
-          main_entity_groups: att[:mainEntityGroups],
-          target_entity_groups: att[:targetEntityGroups],
-          data_element_group_ext_ref: "todo",
+          name:                       att[:name],
+          description:                att[:description],
+          frequency:                  att[:frequency],
+          kind:                       att[:kind],
+          ogs_reference:              att[:ogsReference],
+          loop_over_combo_ext_id:     att[:loopOver],
+          activity_ids:               att[:topicIds] || [],
+          groupsets_ext_refs:         att[:groupSetsExtRefs] || [],
+          state_ids:                  att[:stateIds] || [],
+          include_main_orgunit:       att[:includeMainOrgUnit],
+          data_element_group_ext_ref: "todo"
+        }
+      end
+
+      def meta_set_attributes
+        att = set_params[:attributes]
+        {
+          main_entity_groups:   att[:mainEntityGroups] || [],
+          target_entity_groups: att[:targetEntityGroups] || []
         }
       end
 
