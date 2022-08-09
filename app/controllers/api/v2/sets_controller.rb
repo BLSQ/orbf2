@@ -30,6 +30,12 @@ module Api
           package.reload
         end
 
+        if set_attributes[:activity_ids].any?
+          activity_ids = set_attributes[:activity_ids].reject(&:empty?)
+          package.activities = package.activities + current_project_anchor.project.activities.find(activity_ids)
+          package.reload
+        end
+
         options = {
           params: { with_sim_org_unit: true }
         }
@@ -47,7 +53,7 @@ module Api
           if set_attributes[:state_ids].any?
             state_ids = set_attributes[:state_ids].reject(&:empty?)
             update_package_constants
-            package.states = current_project_anchor.project.states.find(state_ids)
+            package.states = package.states + current_project_anchor.project.states.find(state_ids)
           end
 
           entity_groups = nil
@@ -75,7 +81,7 @@ module Api
       private
 
       def default_relationships
-        %i[topics inputs unused_project_inputs org_unit_groups org_unit_group_sets]
+        %i[topics inputs unused_project_inputs project_activities org_unit_groups org_unit_group_sets]
       end
 
       def detailed_relationships
