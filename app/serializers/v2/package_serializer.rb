@@ -41,6 +41,10 @@ class V2::PackageSerializer < V2::BaseSerializer
   has_many :unused_project_inputs, serializer: V2::StateSerializer, record_type: :input do |package|
     package.project&.states.where.not(name: package.states.pluck(:name))
   end
+
+  has_many :project_activities, serializer: V2::ActivitySerializer, record_type: :topic do |package|
+    package.project&.activities.where.not(id: package.activities.pluck(:id))
+  end
   
   has_many :topic_formulas, serializer: V2::FormulaSerializer, record_type: :formula  do |package|
     package.activity_rule&.formulas
