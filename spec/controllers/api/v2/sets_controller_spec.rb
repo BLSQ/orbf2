@@ -117,6 +117,50 @@ RSpec.describe Api::V2::SetsController, type: :controller do
     end
 
     it "should create set with main entity groups and target entity groups" do
+      # to do 
+    end
+  end
+
+  describe "#update" do
+    include_context "basic_context"
+    include WebmockDhis2Helpers
+
+    it "updates the state ids" do
+      request.headers["Accept"] = "application/vnd.api+json;version=2"
+      request.headers["X-Token"] = project_without_packages.project_anchor.token
+      package = project_with_packages.packages.first
+      unused_project_states = project_with_packages.states.where.not(name: package.states.pluck(:name))
+      state_ids = unused_project_states[0..1].pluck(:id).map(&:to_s)
+      put(:update, params: { id: package.id, data: { attributes: {
+        stateIds: state_ids,
+      } } })
+
+      package.reload
+
+      package_state_ids = package.states.pluck(:id).map(&:to_s)
+      state_ids.each do |id|
+        expect(package_state_ids.include?(id)).to eq(true)
+      end
+    end
+
+    it "updates the topic ids" do
+      request.headers["Accept"] = "application/vnd.api+json;version=2"
+      request.headers["X-Token"] = project_without_packages.project_anchor.token
+      package = project_with_packages.packages.first
+      project_with_packages.activities.create!(name: "new activity", short_name: "new activity", code: "new_activity") 
+      unused_project_topics = project_with_packages.activities.where.not(id: package.activities.pluck(:id))
+      topic_ids = unused_project_topics.pluck(:id).map(&:to_s)
+
+      put(:update, params: { id: package.id, data: { attributes: {
+        topicIds: topic_ids,
+      } } })
+
+      package.reload
+      
+      package_activity_ids = package.activities.pluck(:id).map(&:to_s)
+      topic_ids.each do |id|
+        expect(package_activity_ids.include?(id)).to eq(true)
+      end
     end
   end
 
