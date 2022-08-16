@@ -82,11 +82,11 @@ RSpec.describe Api::V2::SetsController, type: :controller do
 
       post(:create, params: { data: { attributes: {
             name:               "azeaze",
-            stateIds:           [],
+            inputs:           [],
             frequency:          "monthly",
             kind:               "zone",
             groupSetsExtRefs:   %w[groupsets_ext_ref1 groupsets_ext_ref2],
-            includeMainOrgUnit: false
+            includeMainOrgunit: false
         } } })
 
       resp = JSON.parse(response.body)
@@ -102,11 +102,11 @@ RSpec.describe Api::V2::SetsController, type: :controller do
 
       post(:create, params: { data: { attributes: {
             name:               "",
-            stateIds:           [],
+            inputs:           [],
             frequency:          "monthly",
             kind:               "zone",
             groupSetsExtRefs:   %w[groupsets_ext_ref1 groupsets_ext_ref2],
-            includeMainOrgUnit: false
+            includeMainOrgunit: false
         } } })
 
       resp = JSON.parse(response.body)
@@ -132,7 +132,11 @@ RSpec.describe Api::V2::SetsController, type: :controller do
       unused_project_states = project_with_packages.states.where.not(name: package.states.pluck(:name))
       state_ids = unused_project_states[0..1].pluck(:id).map(&:to_s)
       put(:update, params: { id: package.id, data: { attributes: {
-        stateIds: state_ids,
+        name: "test",
+        frequency: "monthly",
+        kind: "zone",
+        includeMainOrgunit: false,
+        inputs: state_ids
       } } })
 
       package.reload
@@ -152,7 +156,11 @@ RSpec.describe Api::V2::SetsController, type: :controller do
       topic_ids = unused_project_topics.pluck(:id).map(&:to_s)
 
       put(:update, params: { id: package.id, data: { attributes: {
-        topicIds: topic_ids,
+        name: "test",
+        frequency: "monthly",
+        kind: "zone",
+        topics: topic_ids,
+        includeMainOrgunit: false
       } } })
 
       package.reload
