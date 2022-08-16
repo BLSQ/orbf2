@@ -24,17 +24,8 @@ module Api
 
       def update
         package = current_project_anchor.project.packages.includes(Project::PACKAGE_INCLUDES).find(params[:id])
-        if set_attributes[:state_ids].any?
-          state_ids = set_attributes[:state_ids].reject(&:empty?).map(&:to_i)
-          package.states = package.states + current_project_anchor.project.states.find(state_ids)
-          package.reload
-        end
 
-        if set_attributes[:activity_ids].any?
-          activity_ids = set_attributes[:activity_ids].reject(&:empty?)
-          package.activities = package.activities + current_project_anchor.project.activities.find(activity_ids)
-          package.reload
-        end
+        package.update(set_attributes)
 
         options = {
           params: { with_sim_org_unit: true }
@@ -50,11 +41,6 @@ module Api
         package = nil
         Package.transaction do
           package = current_project_anchor.project.packages.create!(set_attributes)
-          if set_attributes[:state_ids].any?
-            state_ids = set_attributes[:state_ids].reject(&:empty?)
-            update_package_constants
-            package.states = package.states + current_project_anchor.project.states.find(state_ids)
-          end
 
           entity_groups = nil
           if meta_set_attributes[:main_entity_groups].any? || meta_set_attributes[:target_entity_groups].any?
@@ -81,7 +67,7 @@ module Api
       private
 
       def default_relationships
-        %i[topics inputs unused_project_inputs project_activities org_unit_groups org_unit_group_sets]
+        %i[topics inputs project_inputs project_activities org_unit_groups org_unit_group_sets]
       end
 
       def detailed_relationships
@@ -106,13 +92,14 @@ module Api
                         :description,
                         :frequency,
                         :kind,
-                        :includeMainOrgUnit,
-                        :ogsReference => [],
-                        :loopOver => [],
-                        :stateIds => [],
-                        :topicIds => [],
+                        :dataElementGroupExtRef,
+                        :includeMainOrgunit,
+                        :orgUnitGroupSets => [],
+                        :loopOverComboExtId => [],
+                        :inputs => [],
+                        :topics => [],
                         :groupSetsExtRefs => [],
-                        :mainEntityGroups => [],
+                        :orgUnitGroups => [],
                         :targetEntityGroups => []
                       ])
       end
@@ -124,12 +111,12 @@ module Api
           description:                att[:description],
           frequency:                  att[:frequency],
           kind:                       att[:kind],
-          ogs_reference:              att[:ogsReference],
-          loop_over_combo_ext_id:     att[:loopOver],
-          activity_ids:               att[:topicIds] || [],
-          groupsets_ext_refs:         att[:groupSetsExtRefs] || [],
-          state_ids:                  att[:stateIds] || [],
-          include_main_orgunit:       att[:includeMainOrgUnit],
+          ogs_reference:              att[:orgUnitGroups],
+          loop_over_combo_ext_id:     att[:loopOverComboExtId],
+          activity_ids:               att[:topics] || [],
+          groupsets_ext_refs:         att[:orgUnitGroupSets] || [],
+          state_ids:                  att[:inputs] || [],
+          include_main_orgunit:       att[:includeMainOrgunit],
           data_element_group_ext_ref: "todo"
         }
       end
