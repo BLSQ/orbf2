@@ -10,6 +10,8 @@ class V2::PackageSerializer < V2::BaseSerializer
   attributes :include_main_orgunit
   attributes :loop_over_combo_ext_id
   attributes :data_element_group_ext_ref
+  attributes :ogs_reference
+  attributes :groupsets_ext_refs
 
   belongs_to :simulation_org_unit,
              serializer: V2::OrgUnitSerializer,

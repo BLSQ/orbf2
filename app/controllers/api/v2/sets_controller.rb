@@ -94,12 +94,12 @@ module Api
                         :kind,
                         :dataElementGroupExtRef,
                         :includeMainOrgunit,
-                        :orgUnitGroupSets => [],
+                        :ogsReference => [],
                         :loopOverComboExtId => [],
                         :inputs => [],
                         :topics => [],
                         :groupSetsExtRefs => [],
-                        :orgUnitGroups => [],
+                        :mainEntityGroups => [],
                         :targetEntityGroups => []
                       ])
       end
@@ -111,10 +111,10 @@ module Api
           description:                att[:description],
           frequency:                  att[:frequency],
           kind:                       att[:kind],
-          ogs_reference:              att[:orgUnitGroups],
+          ogs_reference:              att[:ogsReference],
           loop_over_combo_ext_id:     att[:loopOverComboExtId],
           activity_ids:               att[:topics] || [],
-          groupsets_ext_refs:         att[:orgUnitGroupSets] || [],
+          groupsets_ext_refs:         att[:groupSetsExtRefs] || [],
           state_ids:                  att[:inputs] || [],
           include_main_orgunit:       att[:includeMainOrgunit],
           data_element_group_ext_ref: "todo"
