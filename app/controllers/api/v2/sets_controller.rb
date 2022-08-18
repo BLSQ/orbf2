@@ -24,14 +24,24 @@ module Api
 
       def update
         package = current_project_anchor.project.packages.includes(Project::PACKAGE_INCLUDES).find(params[:id])
-
         package.update(set_attributes)
+
+        if package.valid? && set_group_attributes[:main_entity_groups].any?
+          entity_groups = package.create_package_entity_groups(
+            set_group_attributes[:main_entity_groups],
+            set_group_attributes[:target_entity_groups]
+          )
+          package.package_entity_groups = []
+          package.package_entity_groups.create(entity_groups)
+          package.package_states.each(&:save!)
+          SynchroniseDegDsWorker.perform_async(current_project_anchor.id)
+        end
+
+        package.save!
 
         options = {
           params: { with_sim_org_unit: true }
         }
-
-        package.save!
 
         options[:include] = default_relationships + detailed_relationships
         render json: serializer_class.new(package, options).serialized_json
@@ -40,13 +50,12 @@ module Api
       def create
         package = nil
         Package.transaction do
-          package = current_project_anchor.project.packages.create!(set_attributes)
-
+          package = current_project_anchor.project.packages.create(set_attributes)
           entity_groups = nil
-          if meta_set_attributes[:main_entity_groups].any? || meta_set_attributes[:target_entity_groups].any?
+          if set_group_attributes[:main_entity_groups].any?
             entity_groups = package.create_package_entity_groups(
-              meta_set_attributes[:main_entity_groups],
-              meta_set_attributes[:target_entity_groups]
+              set_group_attributes[:main_entity_groups],
+              set_group_attributes[:target_entity_groups]
             )
           end
 
@@ -67,7 +76,7 @@ module Api
       private
 
       def default_relationships
-        %i[topics inputs project_inputs project_activities org_unit_groups org_unit_group_sets]
+        %i[topics inputs project_inputs project_activities target_entity_groups org_unit_groups org_unit_group_sets]
       end
 
       def detailed_relationships
@@ -121,7 +130,7 @@ module Api
         }
       end
 
-      def meta_set_attributes
+      def set_group_attributes
         att = set_params[:attributes]
         {
           main_entity_groups:   att[:mainEntityGroups] || [],
