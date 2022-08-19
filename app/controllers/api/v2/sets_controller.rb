@@ -25,15 +25,13 @@ module Api
       def update
         package = current_project_anchor.project.packages.includes(Project::PACKAGE_INCLUDES).find(params[:id])
         package.update(set_attributes)
-
         if package.valid? && set_group_attributes[:main_entity_groups].any?
           entity_groups = package.create_package_entity_groups(
             set_group_attributes[:main_entity_groups],
             set_group_attributes[:target_entity_groups]
           )
           package.package_entity_groups = []
-          package.package_entity_groups.create(entity_groups)
-          package.package_states.each(&:save!)
+          package.package_entity_groups.create!(entity_groups)          
           SynchroniseDegDsWorker.perform_async(current_project_anchor.id)
         end
 
@@ -103,7 +101,7 @@ module Api
                         :kind,
                         :dataElementGroupExtRef,
                         :includeMainOrgunit,
-                        :ogsReference => [],
+                        :ogsReference,
                         :loopOverComboExtId => [],
                         :inputs => [],
                         :topics => [],
