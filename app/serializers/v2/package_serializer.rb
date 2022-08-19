@@ -25,7 +25,7 @@ class V2::PackageSerializer < V2::BaseSerializer
     end
   end
 
-  has_many :target_entity_groups, serializer: V2::OrgUnitGroupSerializer do |package|
+  has_many :target_entity_groups, record_type: "orgUnitGroup", serializer: V2::OrgUnitGroupSerializer do |package|
     package.target_entity_groups.map do |group|
       Struct.new(:id, :value, :display_name).new(group.organisation_unit_group_ext_ref, group.organisation_unit_group_ext_ref, group.name)
     end
