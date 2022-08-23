@@ -102,7 +102,7 @@ module Api
                         :dataElementGroupExtRef,
                         :includeMainOrgunit,
                         :ogsReference,
-                        :loopOverComboExtId => [],
+                        :loopOverComboExtId,
                         :inputs => [],
                         :topics => [],
                         :groupSetsExtRefs => [],
