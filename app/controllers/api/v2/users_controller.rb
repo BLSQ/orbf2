@@ -1,7 +1,7 @@
 module Api::V2
   class UsersController < BaseController
     def index
-      users = User.where(program_id: current_program.id)
+      users = current_program.users
       options = {}
       render json: serializer_class.new(users, options).serialized_json
     end
