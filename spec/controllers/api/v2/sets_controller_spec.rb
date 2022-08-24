@@ -15,6 +15,11 @@ def stub_dhis2_snapshot(project)
   Dhis2SnapshotWorker.new.perform(project.project_anchor_id, filter: ["organisation_units"])
 end
 
+def authenticated(project)
+  request.headers["Accept"] = "application/vnd.api+json;version=2"
+  request.headers["X-Token"] = project.project_anchor.token
+end
+
 RSpec.describe Api::V2::SetsController, type: :controller do
   let(:program) { create :program }
   let(:token) { "123456789" }
@@ -48,8 +53,7 @@ RSpec.describe Api::V2::SetsController, type: :controller do
     include WebmockDhis2Helpers
 
     it "returns empty array for project without packages" do
-      request.headers["Accept"] = "application/vnd.api+json;version=2"
-      request.headers["X-Token"] = project_without_packages.project_anchor.token
+      authenticated(project_without_packages)
       get(:index, params: {})
       resp = JSON.parse(response.body)
       expect(resp["data"]).to eq([])
@@ -60,8 +64,7 @@ RSpec.describe Api::V2::SetsController, type: :controller do
       stub_dhis2_all_orgunits_groups(project_with_packages)
       stub_dhis2_orgunits_fetch(project_with_packages)
       stub_dhis2_snapshot(project_with_packages)
-      request.headers["Accept"] = "application/vnd.api+json;version=2"
-      request.headers["X-Token"] = project_with_packages.project_anchor.token
+      authenticated(project_with_packages)
       get(:index, params: {})
       resp = JSON.parse(response.body)
 
@@ -75,11 +78,12 @@ RSpec.describe Api::V2::SetsController, type: :controller do
     include_context "basic_context"
     include WebmockDhis2Helpers
 
-    it "should create basic set (no main entity groups, no target entity groups)" do
+    before do
+      authenticated(project_with_packages)
       stub_all_pyramid(project_with_packages)
-      request.headers["Accept"] = "application/vnd.api+json;version=2"
-      request.headers["X-Token"] = project_with_packages.project_anchor.token
+    end
 
+    it "should create basic set (no main entity groups, no target entity groups)" do
       post(:create, params: { data: { attributes: {
             name:               "azeaze",
             inputs:           [],
@@ -96,10 +100,6 @@ RSpec.describe Api::V2::SetsController, type: :controller do
     end
 
     it "should return validation errors" do
-      stub_all_pyramid(project_with_packages)
-      request.headers["Accept"] = "application/vnd.api+json;version=2"
-      request.headers["X-Token"] = project_with_packages.project_anchor.token
-
       post(:create, params: { data: { attributes: {
             name:               "",
             inputs:           [],
@@ -114,10 +114,6 @@ RSpec.describe Api::V2::SetsController, type: :controller do
     end
 
     it "should create set with main entity groups, without target entity groups" do
-      stub_all_pyramid(project_with_packages)
-      request.headers["Accept"] = "application/vnd.api+json;version=2"
-      request.headers["X-Token"] = project_with_packages.project_anchor.token
-
       %w[claimed declared tarif].each do |state_name|
         project_with_packages.states.build(name: state_name)
       end
@@ -157,10 +153,6 @@ RSpec.describe Api::V2::SetsController, type: :controller do
     end
 
     it "should create set with main entity groups and target entity groups" do
-      stub_all_pyramid(project_with_packages)
-      request.headers["Accept"] = "application/vnd.api+json;version=2"
-      request.headers["X-Token"] = project_with_packages.project_anchor.token
-
       %w[claimed declared tarif].each do |state_name|
         project_with_packages.states.build(name: state_name)
       end
@@ -206,9 +198,11 @@ RSpec.describe Api::V2::SetsController, type: :controller do
     include_context "basic_context"
     include WebmockDhis2Helpers
 
+    before do
+      authenticated(project_with_packages)
+    end
+
     it "updates the state ids" do
-      request.headers["Accept"] = "application/vnd.api+json;version=2"
-      request.headers["X-Token"] = project_without_packages.project_anchor.token
       package = project_with_packages.packages.first
       unused_project_states = project_with_packages.states.where.not(name: package.states.pluck(:name))
       state_ids = unused_project_states[0..1].pluck(:id).map(&:to_s)
@@ -229,8 +223,6 @@ RSpec.describe Api::V2::SetsController, type: :controller do
     end
 
     it "updates the topic ids" do
-      request.headers["Accept"] = "application/vnd.api+json;version=2"
-      request.headers["X-Token"] = project_without_packages.project_anchor.token
       package = project_with_packages.packages.first
       project_with_packages.activities.create!(name: "new activity", short_name: "new activity", code: "new_activity") 
       unused_project_topics = project_with_packages.activities.where.not(id: package.activities.pluck(:id))
@@ -258,8 +250,7 @@ RSpec.describe Api::V2::SetsController, type: :controller do
     include WebmockDhis2Helpers
 
     it "returns not found for non existing set" do
-      request.headers["Accept"] = "application/vnd.api+json;version=2"
-      request.headers["X-Token"] = project_without_packages.project_anchor.token
+      authenticated(project_without_packages)
       get(:show, params: { id: "abdc123" })
       _resp = JSON.parse(response.body)
       expect(response.status).to eq(404)
@@ -267,8 +258,7 @@ RSpec.describe Api::V2::SetsController, type: :controller do
 
     it "returns set data for existing set" do
       stub_all_pyramid(project_with_packages)
-      request.headers["Accept"] = "application/vnd.api+json;version=2"
-      request.headers["X-Token"] = project_with_packages.project_anchor.token
+      authenticated(project_with_packages)
       package = project_with_packages.packages.first
       get(:show, params: { id: package.id })
       resp = JSON.parse(response.body)
