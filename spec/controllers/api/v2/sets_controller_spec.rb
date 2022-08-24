@@ -121,18 +121,7 @@ RSpec.describe Api::V2::SetsController, type: :controller do
       state_ids = project_with_packages.states.map(&:id).map(&:to_s).slice(0, 3)
       expect(state_ids.size).to eql 3
 
-      stub_request(:post, "#{project_with_packages.dhis2_url}/api/metadata")
-        .with(body: "{\"dataElementGroups\":[{\"name\":\"azeaze\",\"shortName\":\"azeaze\",\"code\":\"azeaze\",\"dataElements\":[{\"id\":\"FTRrcoaog83\"}]}]}")
-        .to_return(status: 200, body: fixture_content(:dhis2, "organisationUnitGroups.json"))
-
-      stub_request(:get, "#{project_with_packages.dhis2_url}/api/dataElementGroups?fields=:all&filter=name:eq:azeaze")
-        .to_return(status: 200, body: fixture_content(:dhis2, "data_element_group.json"))
-
-      stub_request(:get, "#{project_with_packages.dhis2_url}/api/organisationUnitGroups?fields=:all&filter=id:in:%5Bentityid1%5D&pageSize=1")
-        .to_return(status: 200, body: fixture_content(:dhis2, "organisationUnitGroups-byid.json"))
-
-      stub_request(:get, "#{project_with_packages.dhis2_url}/api/organisationUnitGroupSets?fields=:all&filter=id:in:%groupsets_ext_ref1,groupsets_ext_ref2%5D&pageSize=1")
-        .to_return(status: 200, body: fixture_content(:dhis2, "organisationUnitGroups-byid.json"))
+      stub_dhis2_lookups(project_with_packages)
 
       post(:create, params: { data: { attributes: {
         name:               "azeaze",
@@ -160,18 +149,7 @@ RSpec.describe Api::V2::SetsController, type: :controller do
       state_ids = project_with_packages.states.map(&:id).map(&:to_s).slice(0, 3)
       expect(state_ids.size).to eql 3
 
-      stub_request(:post, "#{project_with_packages.dhis2_url}/api/metadata")
-        .with(body: "{\"dataElementGroups\":[{\"name\":\"azeaze\",\"shortName\":\"azeaze\",\"code\":\"azeaze\",\"dataElements\":[{\"id\":\"FTRrcoaog83\"}]}]}")
-        .to_return(status: 200, body: fixture_content(:dhis2, "organisationUnitGroups.json"))
-
-      stub_request(:get, "#{project_with_packages.dhis2_url}/api/dataElementGroups?fields=:all&filter=name:eq:azeaze")
-        .to_return(status: 200, body: fixture_content(:dhis2, "data_element_group.json"))
-
-      stub_request(:get, "#{project_with_packages.dhis2_url}/api/organisationUnitGroups?fields=:all&filter=id:in:%5Bentityid1,sub_entityid1%5D&pageSize=2")
-        .to_return(status: 200, body: fixture_content(:dhis2, "organisationUnitGroups-byid-with-target.json"))
-
-      stub_request(:get, "#{project_with_packages.dhis2_url}/api/organisationUnitGroupSets?fields=:all&filter=id:in:%groupsets_ext_ref1,groupsets_ext_ref2%5D&pageSize=1")
-        .to_return(status: 200, body: fixture_content(:dhis2, "organisationUnitGroups-byid.json"))
+      stub_dhis2_lookups(project_with_packages)
 
       post(:create, params: { data: { attributes: {
         name:               "azeaze",

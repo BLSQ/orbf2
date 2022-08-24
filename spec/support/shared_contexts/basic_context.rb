@@ -29,6 +29,21 @@ shared_context "basic_context" do
     project
   end
 
+  def stub_dhis2_lookups(project)
+    stub_request(:post, "#{project.dhis2_url}/api/metadata")
+    .with(body: "{\"dataElementGroups\":[{\"name\":\"azeaze\",\"shortName\":\"azeaze\",\"code\":\"azeaze\",\"dataElements\":[{\"id\":\"FTRrcoaog83\"}]}]}")
+    .to_return(status: 200, body: fixture_content(:dhis2, "organisationUnitGroups.json"))
+
+    stub_request(:get, "#{project.dhis2_url}/api/dataElementGroups?fields=:all&filter=name:eq:azeaze")
+      .to_return(status: 200, body: fixture_content(:dhis2, "data_element_group.json"))
+
+    stub_request(:get, "#{project.dhis2_url}/api/organisationUnitGroups?fields=:all&filter=id:in:%5Bentityid1%5D&pageSize=1")
+      .to_return(status: 200, body: fixture_content(:dhis2, "organisationUnitGroups-byid.json"))
+
+    stub_request(:get, "#{project.dhis2_url}/api/organisationUnitGroupSets?fields=:all&filter=id:in:%groupsets_ext_ref1,groupsets_ext_ref2%5D&pageSize=1")
+      .to_return(status: 200, body: fixture_content(:dhis2, "organisationUnitGroups-byid.json"))
+  end
+
   def with_activities_and_formula_mappings(project)
     project.packages.each do |package|
       package.states.each do |state|
