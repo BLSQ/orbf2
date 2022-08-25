@@ -53,7 +53,6 @@ class Rule < ApplicationRecord
     message: "%{value} is not a valid see #{RULE_TYPES.join(',')}"
   }
   validates :name, presence: true
-  validates :formulas, length: { minimum: 1 }, unless: :multi_entities_kind?
   validate :formulas, :formulas_are_coherent
 
   validate :formulas, :package_formula_uniqness
