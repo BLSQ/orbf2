@@ -7,7 +7,7 @@ module Api
         package = current_project_anchor.project.packages.find(params[:set_id])
         rule = package.zone_activity_rule
         if rule.nil?
-          rule = package.rules.create!(kind: :zone, name: package.name + " - zone activity")
+          rule = package.rules.create!(kind: :zone_activity, name: package.name + " - zone activity")
         end
         rule
       end
