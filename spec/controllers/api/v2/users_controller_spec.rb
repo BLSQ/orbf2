@@ -33,18 +33,21 @@ RSpec.describe Api::V2::UsersController, type: :controller do
     project
   end
 
+  def authenticated
+    request.headers["Accept"] = "application/vnd.api+json;version=2"
+    request.headers["X-Token"] = project_with_packages.project_anchor.token
+  end
+
   describe "#index" do
     include_context "basic_context"
     include WebmockDhis2Helpers
 
     before(:each) do
       sign_in user
+      authenticated
     end
 
     it "should only return users in the same program" do
-      request.headers["Accept"] = "application/vnd.api+json;version=2"
-      request.headers["X-Token"] = project_with_packages.project_anchor.token
-
       create(:user, program_id: user.program_id)
       create(:user, program_id: create(:program).id)
 
@@ -56,12 +59,63 @@ RSpec.describe Api::V2::UsersController, type: :controller do
     end
   end
 
+  describe "#create" do
+    include_context "basic_context"
+    include WebmockDhis2Helpers
+
+    before(:each) do
+      sign_in user
+      authenticated
+    end
+
+    it "should create a new user" do
+      post(:create, params: { data: { attributes: {
+        email:        "testcreate@test.com",
+        dhis2UserRef: "testuserref123",
+        password:     "password123"
+      } } })
+
+      resp = JSON.parse(response.body)
+      attributes = resp["data"]["attributes"]
+      
+      expect(attributes["dhis2UserRef"]).to eq("testuserref123")
+      expect(attributes["email"]).to eq("testcreate@test.com")
+    end
+
+    it "should return validation errors" do
+      post(:create, params: { data: { attributes: {
+        email:        "testcreate@test.com",
+        dhis2UserRef: "testuserref123",
+        password:     ""
+      } } })
+
+      resp = JSON.parse(response.body)
+
+      expect(resp["errors"][0]["message"]).to eq("Validation failed: Password can't be blank")
+    end
+  end
+
   describe "#update" do
     include_context "basic_context"
     include WebmockDhis2Helpers
 
     before(:each) do
       sign_in user
+      authenticated
+    end
+
+    it "should update user attrs" do
+      other_user = create(:user, program_id: user.program_id)
+
+      put(:update, params: { id: other_user.id, data: { attributes: {
+        email:        "testupdate@test.com",
+        dhis2UserRef: "testupdateuserref123"
+      } } })
+      
+      resp = JSON.parse(response.body)
+      attributes = resp["data"]["attributes"]
+
+      expect(attributes["dhis2UserRef"]).to eq("testupdateuserref123")
     end
   end
 end
