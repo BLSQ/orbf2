@@ -1,7 +1,7 @@
 module Api::V2
   class UsersController < BaseController
     def index
-      users = current_program.users
+      users = current_project_anchor.program.users
       options = {}
       render json: serializer_class.new(users, options).serialized_json
     end
@@ -13,10 +13,6 @@ module Api::V2
     end
 
     private
-
-    def current_program
-      current_user.program
-    end
 
     def serializer_class
       ::V2::UserSerializer
