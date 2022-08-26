@@ -4,7 +4,12 @@ module Api
   module V2
     class ZoneTopicFormulasController < FormulasController
       def find_rule
-        current_project_anchor.project.packages.find(params[:set_id]).zone_activity_rule
+        package = current_project_anchor.project.packages.find(params[:set_id])
+        rule = package.zone_activity_rule
+        if rule.nil?
+          rule = package.rules.create!(kind: :zone_activity, name: package.name + " - zone activity")
+        end
+        rule
       end
     end
   end

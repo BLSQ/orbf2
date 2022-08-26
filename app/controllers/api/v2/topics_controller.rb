@@ -7,9 +7,16 @@ module Api::V2
     def create
       topic = current_project.activities.create!(topic_attributes)
       # make stable id visible
+      if package_id
+        package = current_project.packages.find(package_id)
+        package.activities = package.activities << topic
+      end
+
       topic.reload
 
       synchronize_relationships(topic)
+
+      topic.save!
 
       render json: serializer_class.new(topic).serialized_json
     end
@@ -67,6 +74,7 @@ module Api::V2
                       code
                       name
                       shortName
+                      setId
                     ])
     end
 
@@ -77,6 +85,11 @@ module Api::V2
         short_name: att[:shortName],
         code:       att[:code]
       }
+    end
+
+    def package_id
+      att = topic_params[:attributes]
+      att[:setId]
     end
   end
 end

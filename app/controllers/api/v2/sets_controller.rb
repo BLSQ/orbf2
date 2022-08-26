@@ -22,10 +22,59 @@ module Api
         render json: serializer_class.new(package, options).serialized_json
       end
 
+      def update
+        package = current_project_anchor.project.packages.includes(Project::PACKAGE_INCLUDES).find(params[:id])
+        package.update(set_attributes)
+        if package.valid? && set_group_attributes[:main_entity_groups].any?
+          entity_groups = package.create_package_entity_groups(
+            set_group_attributes[:main_entity_groups],
+            set_group_attributes[:target_entity_groups]
+          )
+          package.package_entity_groups = []
+          package.package_entity_groups.create!(entity_groups)          
+          SynchroniseDegDsWorker.perform_async(current_project_anchor.id)
+        end
+
+        package.save!
+
+        options = {
+          params: { with_sim_org_unit: true }
+        }
+
+        options[:include] = default_relationships + detailed_relationships
+        render json: serializer_class.new(package, options).serialized_json
+      end
+
+      def create
+        package = nil
+        Package.transaction do
+          package = current_project_anchor.project.packages.create(set_attributes)
+          entity_groups = nil
+          if set_group_attributes[:main_entity_groups].any?
+            entity_groups = package.create_package_entity_groups(
+              set_group_attributes[:main_entity_groups],
+              set_group_attributes[:target_entity_groups]
+            )
+          end
+
+          if package.save! && entity_groups.present?
+            package.package_entity_groups.create(entity_groups)
+            SynchroniseDegDsWorker.perform_async(current_project_anchor.id)
+          end
+        end
+
+        options = {
+          params: { with_sim_org_unit: true }
+        }
+
+        options[:include] = default_relationships + detailed_relationships
+        render json: serializer_class.new(package, options).serialized_json
+      end
+
       private
 
       def default_relationships
-        %i[topics inputs org_unit_groups org_unit_group_sets]
+        %i[topics inputs project_inputs project_activities target_entity_groups org_unit_groups org_unit_group_sets]
       end
 
       def detailed_relationships
@@ -41,6 +90,50 @@ module Api
             "#{scope}_formulas.formula_mappings.external_ref"
           ].map(&:to_sym)
         end
+      end
+
+      def set_params
+        params.require(:data)
+              .permit(attributes: [
+                        :name,
+                        :description,
+                        :frequency,
+                        :kind,
+                        :dataElementGroupExtRef,
+                        :includeMainOrgunit,
+                        :ogsReference,
+                        :loopOverComboExtId,
+                        :inputs => [],
+                        :topics => [],
+                        :groupSetsExtRefs => [],
+                        :mainEntityGroups => [],
+                        :targetEntityGroups => []
+                      ])
+      end
+
+      def set_attributes
+        att = set_params[:attributes]
+        {
+          name:                       att[:name],
+          description:                att[:description],
+          frequency:                  att[:frequency],
+          kind:                       att[:kind],
+          ogs_reference:              att[:ogsReference],
+          loop_over_combo_ext_id:     att[:loopOverComboExtId],
+          activity_ids:               att[:topics] || [],
+          groupsets_ext_refs:         att[:groupSetsExtRefs] || [],
+          state_ids:                  att[:inputs] || [],
+          include_main_orgunit:       att[:includeMainOrgunit],
+          data_element_group_ext_ref: "todo"
+        }
+      end
+
+      def set_group_attributes
+        att = set_params[:attributes]
+        {
+          main_entity_groups:   att[:mainEntityGroups] || [],
+          target_entity_groups: att[:targetEntityGroups] || []
+        }
       end
 
       def serializer_class

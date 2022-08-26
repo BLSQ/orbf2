@@ -46,7 +46,8 @@ Rails.application.routes.draw do
       resources :de_cocs, only: [:index]
       resources :formula_mappings
       resource :calculations, only: %i[show create]
-      resources :sets, only: %i[index show] do
+      resources :sets, only: %i[index show create update] do
+        resources :inputs, only: [:create]
         resources :topic_formulas
         resources :set_formulas
         resources :zone_formulas
@@ -60,6 +61,7 @@ Rails.application.routes.draw do
       resources :topics, only: %i[index create update] do
         resources :input_mappings, only: %i[index create update]
       end
+      resources :users, only: %i[index create update]
 
       get :simulation, to: "simulations#query_based_show"
 
