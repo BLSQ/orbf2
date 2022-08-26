@@ -34,6 +34,17 @@ module RuleTypes
         end
       end 
 
+      rule.package.payment_rules.each do |payment_rule|
+        payment_rule.rule.formulas.each do |f|
+          if f.dependencies.include?("#{formula.code}_values")
+            used_by.push(f) 
+          end
+          if f.dependencies.include?(formula.code)
+            used_by.push(f) 
+          end
+        end
+      end
+
       used_by
     end
 

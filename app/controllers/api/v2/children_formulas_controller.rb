@@ -3,14 +3,8 @@
 module Api
   module V2
     class ChildrenFormulasController < FormulasController
-      def find_formula
-        package = current_project_anchor.project.packages.find(params[:set_id])
-        formula = package.multi_entities_rule.formulas.find(params[:id])
-        formula
-      end
-
-      def detailed_relationships
-        %i[used_formulas used_by_formulas]
+      def find_rule 
+        current_project_anchor.project.packages.find(params[:set_id]).multi_entities_rule
       end
     end
   end

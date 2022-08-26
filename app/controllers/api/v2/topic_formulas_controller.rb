@@ -3,14 +3,13 @@
 module Api
   module V2
     class TopicFormulasController < FormulasController
-      def find_formula
+      def find_rule
         package = current_project_anchor.project.packages.find(params[:set_id])
-        formula = package.activity_rule.formulas.find(params[:id])
-        formula
-      end
-
-      def detailed_relationships
-        %i[used_formulas used_by_formulas]
+        rule = package.activity_rule
+        if rule.nil?
+          rule = package.rules.create!(kind: :activity, name: package.name + " - activity")
+        end
+        rule
       end
     end
   end

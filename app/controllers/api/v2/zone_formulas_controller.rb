@@ -3,14 +3,13 @@
 module Api
   module V2
     class ZoneFormulasController < FormulasController
-      def find_formula
+      def find_rule
         package = current_project_anchor.project.packages.find(params[:set_id])
-        formula = package.zone_rule.formulas.find(params[:id])
-        formula
-      end
-
-      def detailed_relationships
-        %i[used_formulas used_by_formulas]
+        rule = package.zone_rule
+        if rule.nil?
+          rule = package.rules.create!(kind: :zone, name: package.name + " - zone")
+        end
+        rule
       end
     end
   end

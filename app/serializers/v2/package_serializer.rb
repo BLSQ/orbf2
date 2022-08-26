@@ -10,6 +10,8 @@ class V2::PackageSerializer < V2::BaseSerializer
   attributes :include_main_orgunit
   attributes :loop_over_combo_ext_id
   attributes :data_element_group_ext_ref
+  attributes :ogs_reference
+  attributes :groupsets_ext_refs
 
   belongs_to :simulation_org_unit,
              serializer: V2::OrgUnitSerializer,
@@ -23,6 +25,12 @@ class V2::PackageSerializer < V2::BaseSerializer
     end
   end
 
+  has_many :target_entity_groups, record_type: "orgUnitGroup", serializer: V2::OrgUnitGroupSerializer do |package|
+    package.target_entity_groups.map do |group|
+      Struct.new(:id, :value, :display_name).new(group.organisation_unit_group_ext_ref, group.organisation_unit_group_ext_ref, group.name)
+    end
+  end
+
   has_many :org_unit_group_sets, serializer: V2::OrgUnitGroupSetSerializer do |package|
     package.org_unit_group_sets.map do |group_set_data|
       Struct.new(:id, :value, :display_name).new(
@@ -32,11 +40,19 @@ class V2::PackageSerializer < V2::BaseSerializer
       )
     end
   end
-
+  
   has_many :inputs, serializer: V2::StateSerializer, record_type: :input do |package|
     package.states
   end
+  
+  has_many :project_inputs, serializer: V2::StateSerializer, record_type: :input do |package|
+    package.project&.states
+  end
 
+  has_many :project_activities, serializer: V2::ActivitySerializer, record_type: :topic do |package|
+    package.project&.activities
+  end
+  
   has_many :topic_formulas, serializer: V2::FormulaSerializer, record_type: :formula  do |package|
     package.activity_rule&.formulas
   end

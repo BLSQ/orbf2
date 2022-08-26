@@ -11,12 +11,25 @@ module RuleTypes
     end
 
     def used_formulas(formula)
-      super
+      used = super
+
+      formulas.each do |f| 
+        if formula.dependencies.include?("#{f.code}_current_quarter_values")
+          used.push(f)
+        end
+      end
+
+      used
     end
 
     def used_by_formulas(formula)
       used = super
 
+      formulas.each do |f| 
+        if f.dependencies.include?("#{formula.code}_current_quarter_values")
+          used.push(f)
+        end
+      end
       if package.package_rule
         package.package_rule.formulas.each do |f|
           if f.dependencies.include?("#{formula.code}_values")
@@ -25,6 +38,26 @@ module RuleTypes
         end
       end
       used
+    end
+
+    def refactor(formula, new_code)
+      used_by = super 
+
+      substitions = {
+        formula.code+"_current_quarter_values" => new_code+"_current_quarter_values",
+        formula.code+"_values" => new_code+"_values"
+      }
+      
+      used_by.each do |used_by_formula|
+        tokens = Orbf::RulesEngine::Tokenizer.tokenize(used_by_formula.expression)
+        new_expression = tokens.map { |token| substitions[token] || token }.join
+        if new_expression != used_by_formula.expression
+          puts "refactoring formula #{used_by_formula.id} : #{used_by_formula.code} := #{used_by_formula.expression} to #{new_expression}"
+          used_by_formula.expression = new_expression
+        end
+      end
+
+      used_by 
     end
 
     def available_variables

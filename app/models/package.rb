@@ -44,6 +44,9 @@ class Package < ApplicationRecord
 
   has_many :activities, -> { order(code: :asc) }, through: :activity_packages, source: :activity
 
+  has_many :package_payment_rules
+  has_many :payment_rules, through: :package_payment_rules, source: :payment_rule
+
   validates :name, presence: true, length: { maximum: 50 }
 
   validates :frequency, presence: true, inclusion: {

@@ -40,6 +40,11 @@ class V2::FormulaSerializer < V2::BaseSerializer
     object.rule.parent_id
   end
 
+  attributes :errors, if: EDITION_DETAILS do |object, record_serialization_params|
+    object.rule.valid?
+    object.rule.errors
+  end
+
   attributes :kind, if: EDITION_DETAILS do |object, record_serialization_params|
     KIND_TRANSLATION[object.rule.kind]
   end

@@ -45,21 +45,23 @@ Rails.application.routes.draw do
       resources :org_units, only: [:index]
       resources :de_cocs, only: [:index]
       resources :formula_mappings
-      resource :calculations, only: [:show, :create]
-      resources :sets, only: %i[index show] do
-        resources :topic_formulas, only: [:show]
-        resources :set_formulas, only: [:show]
-        resources :zone_formulas, only: [:show]
-        resources :children_formulas, only: [:show]
-        resources :zone_topic_formulas, only: [:show]
+      resource :calculations, only: %i[show create]
+      resources :sets, only: %i[index show create update] do
+        resources :inputs, only: [:create]
+        resources :topic_formulas
+        resources :set_formulas
+        resources :zone_formulas
+        resources :children_formulas
+        resources :zone_topic_formulas
       end
       resources :compounds, only: %i[index show] do
-        resources :compound_formulas, only: [:show]
+        resources :compound_formulas
       end
       resources :simulations, only: %i[index show]
       resources :topics, only: %i[index create update] do
         resources :input_mappings, only: %i[index create update]
       end
+      resources :users, only: %i[index create update]
 
       get :simulation, to: "simulations#query_based_show"
 

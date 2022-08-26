@@ -53,7 +53,6 @@ class Rule < ApplicationRecord
     message: "%{value} is not a valid see #{RULE_TYPES.join(',')}"
   }
   validates :name, presence: true
-  validates :formulas, length: { minimum: 1 }, unless: :multi_entities_kind?
   validate :formulas, :formulas_are_coherent
 
   validate :formulas, :package_formula_uniqness
@@ -68,6 +67,10 @@ class Rule < ApplicationRecord
 
   def used_by_formulas(formula)
     rule_type.used_by_formulas(formula)
+  end
+
+  def refactor(formula, new_code)    
+    rule_type.refactor(formula, new_code)
   end
 
   def parent_id

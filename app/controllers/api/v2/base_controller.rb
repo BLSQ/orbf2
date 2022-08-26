@@ -25,7 +25,7 @@ module Api
         error = {
           status:  "400",
           message: exception.message,
-          details: exception.record.errors.messages
+          details: exception.record.errors
         }
         render status: :bad_request, json: { errors: [error] }
       end
