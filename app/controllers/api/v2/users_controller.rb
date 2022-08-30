@@ -7,8 +7,8 @@ module Api::V2
     end
 
     def create
-      attrs = user_attributes.merge(program_id: current_project_anchor.program.id)
-
+      password = SecureRandom.hex
+      attrs = user_attributes.merge(password: password)
       user = nil
       User.transaction do
         user = current_project_anchor.program.users.create!(attrs)
