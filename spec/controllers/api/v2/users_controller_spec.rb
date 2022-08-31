@@ -71,27 +71,25 @@ RSpec.describe Api::V2::UsersController, type: :controller do
     it "should create a new user" do
       post(:create, params: { data: { attributes: {
         email:        "testcreate@test.com",
-        dhis2UserRef: "testuserref123",
-        password:     "password123"
+        dhis2UserRef: "testuserref123"
       } } })
 
       resp = JSON.parse(response.body)
       attributes = resp["data"]["attributes"]
-      
+
       expect(attributes["dhis2UserRef"]).to eq("testuserref123")
       expect(attributes["email"]).to eq("testcreate@test.com")
     end
 
     it "should return validation errors" do
       post(:create, params: { data: { attributes: {
-        email:        "testcreate@test.com",
+        email:        "",
         dhis2UserRef: "testuserref123",
-        password:     ""
       } } })
 
       resp = JSON.parse(response.body)
 
-      expect(resp["errors"][0]["message"]).to eq("Validation failed: Password can't be blank")
+      expect(resp["errors"][0]["message"]).to eq("Validation failed: Email can't be blank")
     end
   end
 
