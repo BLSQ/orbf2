@@ -3,7 +3,7 @@ module Api
     class TopicDecisionTablesController < BaseController
       before_action :check_whodunnit!
 
-      def update     
+      def update
         package = current_project_anchor.project.packages.find(params[:set_id])
         decision_table = package.activity_rule.decision_tables.find(params[:id])
         decision_table.update!(decision_table_attributes)
@@ -11,19 +11,18 @@ module Api
         render json: serializer_class.new(decision_table, options).serialized_json
       end
 
-      def create 
+      def create
         package = current_project_anchor.project.packages.find(params[:set_id])
         decision_table = package.activity_rule.decision_tables.create!(decision_table_attributes)
         options = {}
         render json: serializer_class.new(decision_table, options).serialized_json
       end
 
-
       def destroy
         package = current_project_anchor.project.packages.find(params[:set_id])
         decision_table = package.activity_rule.decision_tables.find(params[:id])
         decision_table.destroy
-        render json: {status: "done"}
+        render json: { status: "done" }
       end
 
       private
