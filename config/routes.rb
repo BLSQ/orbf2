@@ -49,7 +49,7 @@ Rails.application.routes.draw do
       resources :sets, only: %i[index show create update] do
         resources :inputs, only: [:create]
         resources :topic_formulas
-        resources :topic_decision_tables, only: [:create, :update, :destroy]
+        resources :topic_decision_tables, only: %i[index create update destroy]
         resources :set_formulas
         resources :zone_formulas
         resources :children_formulas

@@ -58,6 +58,19 @@ RSpec.describe Api::V2::TopicDecisionTablesController, type: :controller do
     end
   end
 
+  describe "#index" do
+    it "should return the decision tables for the package" do
+      authenticate
+
+      get(:index, params: {
+               set_id: package.id,
+             })
+
+      resp = JSON.parse(response.body)
+      expect(resp["data"][0]["type"]).to eq("decisionTable")
+    end
+  end
+
   describe "#update" do
     let(:decision_table) do
       package.activity_rule.decision_tables.first
