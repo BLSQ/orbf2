@@ -3,6 +3,13 @@ module Api
     class TopicDecisionTablesController < BaseController
       before_action :check_whodunnit!
 
+      def index
+        package = current_project_anchor.project.packages.find(params[:set_id])
+        decision_tables = package.activity_rule.decision_tables
+        options = {}
+        render json: serializer_class.new(decision_tables, options).serialized_json
+      end
+      
       def update
         package = current_project_anchor.project.packages.find(params[:set_id])
         decision_table = package.activity_rule.decision_tables.find(params[:id])
