@@ -71,4 +71,29 @@ RSpec.describe Api::V2::CompoundsController, type: :controller do
       record_json("compound.json", resp)
     end
   end
+
+  describe "#create" do
+    include_context "basic_context"
+
+    it "should create payment rule and associated rule" do
+      request.headers["Accept"] = "application/vnd.api+json;version=2"
+      request.headers["X-Token"] = project_with_packages.project_anchor.token
+      rule_count_before = Rule.all.count
+      payment_rule_count_before = PaymentRule.all.count
+      post(:create, params: { data: { attributes: { name: "new payment rule", frequency: "quarterly", sets: project_with_packages.packages.pluck(:id).map(&:to_s) }}})
+      resp = JSON.parse(response.body)
+      attrs = resp["data"]["attributes"]
+      expect(attrs["name"]).to eq("new payment rule")
+      expect(Rule.all.count).to eq rule_count_before + 1
+      expect(PaymentRule.all.count).to eq payment_rule_count_before + 1
+    end
+
+    it "should return validation errors" do
+      request.headers["Accept"] = "application/vnd.api+json;version=2"
+      request.headers["X-Token"] = project_with_packages.project_anchor.token
+      post(:create, params: { data: { attributes: { name: "new payment rule", frequency: "invalid", sets: project_with_packages.packages.pluck(:id).map(&:to_s) }}})
+      resp = JSON.parse(response.body)
+      expect(resp["errors"][0]).to eq({"status"=>"400", "message"=>"Validation failed: Frequency invalid is not a valid see monthly,quarterly", "details"=>{"frequency"=>["invalid is not a valid see monthly,quarterly"]}})
+    end
+  end
 end
