@@ -40,7 +40,8 @@ Rails.application.routes.draw do
             constraints: { method: "OPTIONS" },
             via:         [:options]
     end
-    scope module: :v2, constraints: ApiConstraints.new(version: 2) do
+    # , constraints: ApiConstraints.new(version: 2)
+    scope module: :v2 do
       resource :project, only: [:show]
       resources :org_units, only: [:index]
       resources :de_cocs, only: [:index]
@@ -63,6 +64,7 @@ Rails.application.routes.draw do
         resources :input_mappings, only: %i[index create update]
       end
       resources :users, only: %i[index create update]
+      resources :changes, only: [:index]
 
       get :simulation, to: "simulations#query_based_show"
 
