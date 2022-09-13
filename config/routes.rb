@@ -40,8 +40,7 @@ Rails.application.routes.draw do
             constraints: { method: "OPTIONS" },
             via:         [:options]
     end
-    # , constraints: ApiConstraints.new(version: 2)
-    scope module: :v2 do
+    scope module: :v2, constraints: ApiConstraints.new(version: 2) do
       resource :project, only: [:show]
       resources :org_units, only: [:index]
       resources :de_cocs, only: [:index]
