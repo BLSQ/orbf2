@@ -55,7 +55,7 @@ Rails.application.routes.draw do
         resources :children_formulas
         resources :zone_topic_formulas
       end
-      resources :compounds, only: %i[index show] do
+      resources :compounds, only: %i[index show new create update] do
         resources :compound_formulas
       end
       resources :simulations, only: %i[index show]
