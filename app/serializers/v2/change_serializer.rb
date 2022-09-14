@@ -11,8 +11,7 @@ class V2::ChangeSerializer < V2::BaseSerializer
   attributes :event
   attributes :diffs do |object, record_serialization_params|
     object.diffs.map do |diff|
-      # byebug
-      { diff: diff, html: diff[1].diff.format_as(:html) }
+      { field: diff[0], before: diff[1].changes[0], after: diff[1].changes[1] }
     end
   end
 end
