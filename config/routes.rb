@@ -63,6 +63,7 @@ Rails.application.routes.draw do
         resources :input_mappings, only: %i[index create update]
       end
       resources :users, only: %i[index create update]
+      resources :changes, only: [:index]
 
       get :simulation, to: "simulations#query_based_show"
 
