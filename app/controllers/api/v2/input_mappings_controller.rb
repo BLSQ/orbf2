@@ -38,6 +38,12 @@ module Api::V2
       render_activity_state(activity_state)
     end
 
+    def destroy
+      activity_state = current_activity.activity_states.find(params[:id])
+      activity_state.destroy!
+      render_activity_state(activity_state)
+    end
+
     private
 
     def render_activity_state(activity_state)
