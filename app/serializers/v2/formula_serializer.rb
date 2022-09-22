@@ -53,6 +53,10 @@ class V2::FormulaSerializer < V2::BaseSerializer
     object.rule.kind == Rule::RULE_TYPE_PAYMENT ? "compounds" : "sets"
   end
 
+  attributes :set_name, if: EDITION_DETAILS do |object, record_serialization_params|
+    object.rule.package.name
+  end
+
   has_many :formula_mappings, serializer: V2::FormulaMappingSerializer, record_type: :formulaMapping
 
   has_many :used_formulas, serializer: V2::FormulaSerializer, record_type: :formula, if: EDITION_DETAILS do |object, record_serialization_params|
