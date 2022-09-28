@@ -53,6 +53,7 @@ class ActivityState < ApplicationRecord
 
   validates :state, presence: { message: "Select a state or remove this activity from the list" }
   validates :external_reference, presence: true, if: :dhis2_related?
+  validates :external_reference, uniqueness: { scope: [:activity_id] }
   validates :name, presence: true
 
   validates :formula, presence: true, if: :kind_formula?
