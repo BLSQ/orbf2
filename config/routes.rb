@@ -60,7 +60,7 @@ Rails.application.routes.draw do
       end
       resources :simulations, only: %i[index show]
       resources :topics, only: %i[index create update] do
-        resources :input_mappings, only: %i[index create update]
+        resources :input_mappings, only: %i[index create update destroy]
       end
       resources :users, only: %i[index create update]
       resources :changes, only: [:index]
