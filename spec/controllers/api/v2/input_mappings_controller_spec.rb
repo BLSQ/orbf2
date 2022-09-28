@@ -63,8 +63,8 @@ RSpec.describe Api::V2::InputMappingsController, type: :controller do
       resp = JSON.parse(response.body)
       expect(resp).to eq(
         "errors" => [
-          { "details" => { "state_id"=>["has already been taken"] },
-            "message" => "Validation failed: State has already been taken",
+          { "details" => { "state_id"=>["has already been taken"], "external_reference"=>["has already been taken"] },
+            "message" => "Validation failed: External reference has already been taken, State has already been taken",
             "status"  => "400" }
         ]
       )
