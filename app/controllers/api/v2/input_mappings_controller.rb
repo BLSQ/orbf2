@@ -16,6 +16,7 @@ module Api::V2
       activity_state = activity.activity_states.create!(input_attributes.merge(state_id: state.id))
       # make stable id visible
       activity_state.reload
+      SynchroniseDegDsWorker.perform_async(current_project.project_anchor.id)
       render_activity_state(activity_state)
     end
 
@@ -34,6 +35,7 @@ module Api::V2
                 activity_state.state
               end
       activity_state.update!(input_attributes.merge(state_id: state.id))
+      SynchroniseDegDsWorker.perform_async(current_project.project_anchor.id)
 
       render_activity_state(activity_state)
     end
