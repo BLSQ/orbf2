@@ -76,14 +76,18 @@ module Invoicing
                  project.dhis2_connection.data_value_sets.create(@dhis2_export_values)
                end
 
-      Rails.logger.info @dhis2_export_values.to_json
+      # minimize memory usage, don't log exported values but only the status
+      # Rails.logger.info @dhis2_export_values.to_json
       Rails.logger.info status.raw_status.to_json
-      project.project_anchor.dhis2_logs.create(
-        sent:             @dhis2_export_values,
-        status:           status.raw_status,
-        invoicing_job_id: options.invoicing_job_id,
-        sidekiq_job_ref:  options.sidekiq_job_ref
-      )
+
+      if project.dhis2_logs_enabled
+        project.project_anchor.dhis2_logs.create(
+          sent:             @dhis2_export_values,
+          status:           status.raw_status,
+          invoicing_job_id: options.invoicing_job_id,
+          sidekiq_job_ref:  options.sidekiq_job_ref
+        )
+      end
       ConflictsHandler.new(status).raise_if_blocking_conflicts?
     end
 

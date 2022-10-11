@@ -2,7 +2,7 @@
 #
 # Table name: dhis2_snapshots
 #
-#  id                :bigint(8)        not null, primary key
+#  id                :integer          not null, primary key
 #  content           :jsonb            not null
 #  dhis2_version     :string           not null
 #  kind              :string           not null
@@ -16,10 +16,6 @@
 # Indexes
 #
 #  index_dhis2_snapshots_on_project_anchor_id  (project_anchor_id)
-#
-# Foreign Keys
-#
-#  fk_rails_...  (project_anchor_id => project_anchors.id)
 #
 
 require "rails_helper"

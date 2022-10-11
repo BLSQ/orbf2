@@ -9,7 +9,9 @@
 #  cycle                 :string           default("quarterly"), not null
 #  default_aoc_reference :string
 #  default_coc_reference :string
+#  dhis2_logs_enabled    :boolean          default(TRUE), not null
 #  dhis2_url             :string           not null
+#  enabled               :boolean          default(TRUE), not null
 #  engine_version        :integer          default(3), not null
 #  invoice_app_path      :string           default("/api/apps/ORBF2---Invoices-and-Reports/index.html"), not null
 #  name                  :string           not null
