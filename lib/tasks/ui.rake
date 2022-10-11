@@ -11,12 +11,10 @@ namespace :ui do
 
   desc "Setup the token and url for hesabu ui manager for all projects"
   task :setup_all, [:project_anchor_id] => [:environment] do |_task, _args|
-    ProjectAnchor.find_each do |project_anchor|
-      begin
-        setup_token(project_anchor)
-      rescue StandardError => e
-        puts "FAILED TO SETUP #{project_anchor.id} #{e.message}"
-      end
+    ProjectAnchor.all.with_enabled_projects.find_each do |project_anchor|
+      setup_token(project_anchor)
+    rescue StandardError => e
+      puts "FAILED TO SETUP #{project_anchor.id} #{e.message}"
     end
   end
 
@@ -32,12 +30,10 @@ namespace :ui do
   desc "Deploy hesabu ui manager for all projects"
   task :deploy_all, [:project_anchor_id] => [:environment] do |_task, _args|
     download_latest_build
-    ProjectAnchor.find_each do |project_anchor|
-      begin
-        deploy_dhis2_app(project_anchor)
-      rescue StandardError => e
-        puts "FAILED TO DEPLOY #{project_anchor.id} #{e.message}"
-      end
+    ProjectAnchor.all.with_enabled_projects.find_each do |project_anchor|
+      deploy_dhis2_app(project_anchor)
+    rescue StandardError => e
+      puts "FAILED TO DEPLOY #{project_anchor.id} #{e.message}"
     end
   end
 
@@ -57,7 +53,7 @@ namespace :ui do
       return
     end
     project = project_anchor.project
-    config = { url: Scorpio.orbf2_url, token: project_anchor.token, program_id: project_anchor.program_id, invoice_app_path: project.invoice_app_path}
+    config = { url: Scorpio.orbf2_url, token: project_anchor.token, program_id: project_anchor.program_id, invoice_app_path: project.invoice_app_path }
     dhis2 = Dhis2::Client.new(project.dhis_configuration.merge(timeout: 20))
     log_info "*** setup of token for #{project_anchor.project.name} (project_anchor_id : #{project_anchor.id}, #{project.dhis2_url})"
     begin
@@ -91,7 +87,9 @@ namespace :ui do
     log_info "*** deploying for #{project_anchor.project.name} (project_anchor_id : #{project_anchor.id}, #{project.dhis2_url})"
     deploy_command = "curl --connect-timeout 20 -s -H 'Accept: application/json' -X POST -u '#{dhis2_user}:#{dhis2_password}' --compressed -F file=@#{TARGET_FILE_NAME} #{dhis2_url}/api/apps --write-out '%{http_code}' --output /dev/null | grep [^403] | grep [^504] | grep [^000] > /dev/null"
     push_app = system(deploy_command)
-    update_app_ref = system("curl -s -X PUT -u '#{dhis2_user}:#{dhis2_password}' -H 'Accept: application/json' #{dhis2_url}/api/apps") if push_app
+    if push_app
+      update_app_ref = system("curl -s -X PUT -u '#{dhis2_user}:#{dhis2_password}' -H 'Accept: application/json' #{dhis2_url}/api/apps")
+    end
     if push_app
       log_info "deployed"
     else

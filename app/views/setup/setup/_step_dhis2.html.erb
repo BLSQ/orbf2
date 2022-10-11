@@ -14,5 +14,7 @@
   <%= f.input :user, input_html: { autocomplete: "nope" }  %>
   <%= f.input :password, input_html: { autocomplete: "new-password" } %>
   <%= f.input :bypass_ssl, label: "Check this to bypass SSL verification for self-signed certificate. Note that this might allow man-in-the middle attack!" %>
+  <%= f.input :enabled, hint: "checked if project enabled : daily snapshots, hesabu-manager deployments" %>
+  <%= f.input :dhis2_logs_enabled, hint: "checked if dhis2 logs enabled : disable the dhis2 audit logs in favour of performance improvements for large calculation (LMIS a like)" %>
   <%= f.button :submit, class: "btn btn-success" %>
 <% end %>

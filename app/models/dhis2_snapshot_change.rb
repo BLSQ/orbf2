@@ -15,10 +15,6 @@
 #
 #  index_dhis2_snapshot_changes_on_dhis2_snapshot_id  (dhis2_snapshot_id)
 #
-# Foreign Keys
-#
-#  fk_rails_...  (dhis2_snapshot_id => dhis2_snapshots.id)
-#
 
 class Dhis2SnapshotChange < ApplicationRecord
   belongs_to :dhis2_snapshot, inverse_of: :dhis2_snapshot_changes
