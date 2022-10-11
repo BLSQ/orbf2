@@ -27,6 +27,9 @@ class ProjectAnchor < ApplicationRecord
   has_many :dhis2_logs, inverse_of: :project_anchor, dependent: :destroy
   has_many :invoicing_jobs, -> { where(type: "InvoicingJob") }, inverse_of: :project_anchor, dependent: :destroy
   has_many :invoicing_simulation_jobs, -> { where(type: "InvoicingSimulationJob") }, inverse_of: :project_anchor, dependent: :destroy
+
+  scope :with_enabled_projects, -> { joins(:projects).where("projects.enabled = true") }
+
   def invalid_project?
     project.nil? || project.invalid?
   end
@@ -64,7 +67,7 @@ class ProjectAnchor < ApplicationRecord
     new_pyramid(final_snapshots)
   end
 
-  def latest_data_compound()
+  def latest_data_compound
     kinds = %i[data_elements data_element_groups indicators category_combos]
     pyramid_snapshots = dhis2_snapshots.select("id, year, month, kind").where(kind: kinds)
 
