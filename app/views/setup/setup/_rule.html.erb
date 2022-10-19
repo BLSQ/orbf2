@@ -31,7 +31,7 @@
         <% else %>
           <% if package.activity_rule %>
             <%= link_to package.activity_rule.name, edit_setup_project_package_rule_path(project, package, package.activity_rule) ,
-            title:package.activity_rule && package.activity_rule.formulas ? package.activity_rule.formulas.first.description : "-", class: package.activity_rule.invalid? ? 'btn btn-danger' :''
+            title:package.activity_rule && package.activity_rule.formulas && package.activity_rule.formulas.first ? package.activity_rule.formulas.first.description : "-", class: package.activity_rule.invalid? ? 'btn btn-danger' :''
             %>
             <%= package.activity_rule.invalid? ? icon('fas', 'exclamation-triangle', class: "text-danger fa-lg") :''%>
           <% else %>
