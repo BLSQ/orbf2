@@ -14,7 +14,7 @@ GIT
 
 GIT
   remote: https://github.com/BLSQ/orbf-rules_engine.git
-  revision: 1d26798fcc7136ca75b96a34e5430e13b0421d60
+  revision: 89c59c18608029348a0d2643e1d32c162656fe5d
   branch: master
   specs:
     orbf-rules_engine (0.1.0)
@@ -499,7 +499,7 @@ GEM
     turbolinks-source (5.2.0)
     typhoeus (1.3.1)
       ethon (>= 0.9.0)
-    tzinfo (1.2.9)
+    tzinfo (1.2.10)
       thread_safe (~> 0.1)
     uglifier (4.1.20)
       execjs (>= 0.3.0, < 3)
