@@ -19,7 +19,7 @@ RUN apk update \
 COPY Gemfile* ./
 # install rubygem
 COPY Gemfile Gemfile.lock $RAILS_ROOT/
-RUN gem update --system && gem install bundler -i 2.2.3 && bundle config set --local without 'development test' && bundle config set --local path 'vendor/bundle'
+RUN gem update --system 3.2.3 && gem install bundler -i 2.2.3 && bundle config set --local without 'development test' && bundle config set --local path 'vendor/bundle'
 RUN bundle install \
     && rm -rf vendor/bundle/ruby/2.5.0/cache/*.gem \
     && find vendor/bundle/ruby/2.5.0/gems/ -name "*.c" -delete \
@@ -35,7 +35,7 @@ ARG RAILS_ROOT=/app
 ARG PACKAGES="tzdata postgresql-client nodejs bash curl-dev"
 ENV RAILS_ENV=production
 ENV BUNDLE_APP_CONFIG="$RAILS_ROOT/.bundle"
-RUN gem update --system && gem install bundler -i 2.2.3
+RUN gem update --system 3.2.3 && gem install bundler -i 2.2.3
 WORKDIR $RAILS_ROOT
 # install packages
 RUN apk update \
