@@ -1,4 +1,4 @@
-FROM blsq/hesabu:1.0.257.gce92f2e4
+FROM blsq/hesabu:1.0.263.g00b87b35
 
 ADD http_server.rb http_server.rb
 ADD entrypoint.sh entrypoint.sh
