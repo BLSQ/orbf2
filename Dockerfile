@@ -1,4 +1,5 @@
 FROM blsq/hesabu:1.0.257.gce92f2e4
 
+ADD entrypoint.sh
 EXPOSE 3000
-CMD bundle exec rails s 
+CMD entrypoint.sh
