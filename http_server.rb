@@ -7,10 +7,10 @@ while session = server.accept
   request = session.gets
   puts request
 
-  session.print "HTTP/1.1 200\r\n" # 1
-  session.print "Content-Type: text/html\r\n" # 2
-  session.print "\r\n" # 3
-  session.print "Hello world! The time is #{Time.now}" # 4
+  session.print "HTTP/1.1 200\r\n"
+  session.print "Content-Type: text/html\r\n"
+  session.print "\r\n"
+  session.print "hesabu: #{ENV['RELEASE_TAG']}"
 
   session.close
 end
