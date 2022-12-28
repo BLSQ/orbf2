@@ -33,6 +33,7 @@ RUN rm -rf node_modules tmp/cache app/assets vendor/assets spec
 FROM ruby:2.5.8-alpine
 ARG RAILS_ROOT=/app
 ARG PACKAGES="tzdata postgresql-client nodejs bash curl-dev"
+ARG DOCKER_TAG
 ENV RAILS_ENV=production
 ENV BUNDLE_APP_CONFIG="$RAILS_ROOT/.bundle"
 RUN gem update --system 3.2.3 && gem install bundler -i 2.2.3
@@ -42,5 +43,7 @@ RUN apk update \
     && apk upgrade \
     && apk add --update --no-cache $PACKAGES
 COPY --from=build-env $RAILS_ROOT $RAILS_ROOT
+ENV RELEASE_TAG="$DOCKER_TAG"
+
 EXPOSE 3000
 CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0"]

@@ -10,10 +10,10 @@ PATCH=`echo $DESCRIBE | awk '{split($0,a,"-"); print a[3]}'`
 
 echo "version $DESCRIBE =>  VERSION:${VERSION} BUILD:${BUILD} PATCH:${PATCH}"
 
-VERSION=${VERSION}"."${BUILD}"."${PATCH}
+DOCKER_TAG=${VERSION}"."${BUILD}"."${PATCH}
 
-echo "building image with tags :  ${VERSION}    patch ${PATCH} ($DESCRIBE)"
-docker build -t blsq/hesabu:$VERSION --file Dockerfile.build .
+echo "building image with tags :  ${DOCKER_TAG} based on ${VERSION}    patch ${PATCH} ($DESCRIBE)"
+docker build -t blsq/hesabu:$DOCKER_TAG --build-arg DOCKER_TAG=$DOCKER_TAG --file Dockerfile.build .
 
 echo "Next step to monitor the size, for the moment let's log it"
 docker images blsq/hesabu
