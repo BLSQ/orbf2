@@ -1,4 +1,4 @@
-FROM blsq/hesabu:1.0.268.g5d1e8efb
+FROM blsq/hesabu:1.0.275.gabb1ba38
 
 ADD ./bin/eb/every_ten.sh /bin/eb/every_ten.sh
 ADD http_server.rb http_server.rb
