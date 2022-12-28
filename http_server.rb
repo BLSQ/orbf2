@@ -8,7 +8,7 @@ while session = server.accept
   puts request
 
   session.print "HTTP/1.1 200\r\n"
-  session.print "Content-Type: text/html\r\n"
+  session.print "Content-Type: text/plain\r\n"
   session.print "\r\n"
   session.print "hesabu: #{ENV['RELEASE_TAG']}"
 
