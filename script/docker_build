@@ -12,8 +12,12 @@ echo "version $DESCRIBE =>  VERSION:${VERSION} BUILD:${BUILD} PATCH:${PATCH}"
 
 DOCKER_TAG=${VERSION}"."${BUILD}"."${PATCH}
 
+DOCKER_RELEASE_TIME=`date +"%Y-%m-%dT%H:%M:%S%z"`
+
 echo "building image with tags :  ${DOCKER_TAG} based on ${VERSION}    patch ${PATCH} ($DESCRIBE)"
-docker build -t blsq/hesabu:$DOCKER_TAG --build-arg DOCKER_TAG=$DOCKER_TAG --file Dockerfile.build .
+echo "RELEASE_TIME: ${DOCKER_RELEASE_TIME}"
+
+docker build -t blsq/hesabu:$DOCKER_TAG --build-arg DOCKER_TAG=$DOCKER_TAG --build-arg DOCKER_RELEASE_TIME=$DOCKER_RELEASE_TIME --file Dockerfile.build .
 
 echo "Next step to monitor the size, for the moment let's log it"
 docker images blsq/hesabu
