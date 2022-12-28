@@ -1,0 +1,14 @@
+#!/bin/bash
+
+echo "********** Deploy "
+echo "  web" 
+eb use orbf2-staging
+eb deploy
+echo "  sidekiq" 
+eb use orbf2-staging-sidekiq
+eb deploy
+echo "********** Deploy complete let's check the versions"
+echo "  web" 
+curl https://orbf2-staging.bluesquare.org/status
+echo -e "\n  sidekiq"
+curl https://sidekiq-orbf2-staging.bluesquare.org
