@@ -10,7 +10,11 @@ while session = server.accept
   session.print "HTTP/1.1 200\r\n"
   session.print "Content-Type: text/plain\r\n"
   session.print "\r\n"
-  session.print "hesabu: #{ENV['RELEASE_TAG']}"
+  session.print [
+    "APPLICATION: hesabu",
+    "RELEASE_TAG: #{ENV['RELEASE_TAG']}",
+    "RELEASE_TIME: #{ENV['RELEASE_TIME']}"
+  ].join("\n")
 
   session.close
 end
