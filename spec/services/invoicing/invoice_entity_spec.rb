@@ -131,6 +131,24 @@ describe Invoicing::InvoiceEntity do
       )
     end
 
+    it "sends locked values with feature enabled to a dhis2 >= 2.38" do
+      Flipper[:use_parallel_publishing].enable(project.project_anchor)
+      entity.instance_variable_set(:@dhis2_export_values, [{ value: 1234 }] * 1001)
+      stub_request(:any, expected_url).to_return(status: 409, body:  {
+        "httpStatus":     "Conflict",
+        "httpStatusCode": 409,
+        "status":         "WARNING",
+        "message":        "One more conflicts encountered, please check import summary.",
+        "response":       conflicts_reponse
+      }.to_json)
+
+      expect { entity.publish_to_dhis2 }.to raise_error(
+        Invoicing::PublishingError,
+        "Data is already approved for data set: TsLR0wQJknp period: 201903 organisation unit: iA3y8AyMTG2 attribute option combo: HllvX50cXC0, Data is already approved for data set: TsLR0wQJknp period: 201902 organisation unit: iA3y8AyMTG2 attribute option combo: HllvX50cXC0, Data is already approved for data set: TsLR0wQJknp period: 201901 organisation unit: iA3y8AyMTG2 attribute option combo: HllvX50cXC0"
+      )
+      expect(a_request(:post, expected_url)).to have_been_made.times(2)
+    end
+
     it "sends values with feature enabled" do
       Flipper[:use_parallel_publishing].enable(project.project_anchor)
       entity.instance_variable_set(:@dhis2_export_values, [{ value: 1234 }] * 1001)
