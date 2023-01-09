@@ -272,6 +272,7 @@ class ParallelDhis2
     responses = requests.map(&:response)
     parsed_responses = parse_responses(responses)
     raw_status = RollUpResponses.new(parsed_responses).call
+
     Dhis2::Status.new(raw_status)
   end
 
@@ -282,14 +283,16 @@ class ParallelDhis2
       next if [nil, ""].include?(response.body)
 
       parsed_response = JSON.parse(response.body)
-      Dhis2::Case.deep_change(parsed_response, :underscore)
+      r = Dhis2::Case.deep_change(parsed_response, :underscore)
+
+      r["response"] || r
     end
     parsed.compact
   end
 
   def check_for_errors!(responses)
     responses.each do |response|
-      next if response.success?
+      next if response.success? || response.code == 409
 
       if response.timed_out?
         message = "#{response.effective_url} timed out"
