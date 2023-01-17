@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: projects
@@ -52,16 +53,16 @@ RSpec.describe Project, type: :model do
 
   it "should validate url " do
     expect(project.valid?).to eq true
-    project.dhis2_url = "http:// bad : userexport@/dev:456.url"
+    project.dhis2_url = "http://bad:userexport@/dev:456.url"
     expect(project.valid?).to eq false
   end
 
   describe "#verify_connection" do
     it "should validate url before testing" do
-      project.dhis2_url = "http:// bad : userexport@/dev:456.url"
+      project.dhis2_url = "http://bad:userexport@/dev:456.url"
       expect(project.verify_connection).to eq(
         status:  :ko,
-        message: "Dhis2 url is not an url"
+        message: "no host component for URI"
       )
     end
 

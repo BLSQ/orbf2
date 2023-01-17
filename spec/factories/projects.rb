@@ -44,7 +44,7 @@ FactoryBot.define do
     name { Faker::Address.country }
     dhis2_url { Faker::Internet.url }
     user { Faker::Internet.user_name }
-    password { Faker::Internet.password(8) }
+    password { "password123" }
     bypass_ssl { false }
   end
 end
