@@ -26,7 +26,8 @@ describe ProjectFactory do
     PaperTrail::VersionAssociation,
     Flipper::Adapters::ActiveRecord::Feature,
     Flipper::Adapters::ActiveRecord::Gate,
-    ActiveRecord::InternalMetadata
+    ActiveRecord::InternalMetadata,
+    ActiveStorage::VariantRecord
   ].freeze
 
   NON_PROJECT_AR = [
