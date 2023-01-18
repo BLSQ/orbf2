@@ -12,7 +12,6 @@
 
 ActiveRecord::Schema[7.0].define(version: 2023_01_17_110950) do
   # These are extensions that must be enabled in order to support this database
-  enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
   enable_extension "uuid-ossp"
 
@@ -101,6 +100,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_17_110950) do
     t.integer "project_anchor_id"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
+    t.bigint "invoicing_job_id"
+    t.string "sidekiq_job_ref"
+    t.index ["invoicing_job_id"], name: "index_dhis2_logs_on_invoicing_job_id"
     t.index ["project_anchor_id"], name: "index_dhis2_logs_on_project_anchor_id"
   end
 
@@ -115,7 +117,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_17_110950) do
     t.index ["dhis2_snapshot_id"], name: "index_dhis2_snapshot_changes_on_dhis2_snapshot_id"
   end
 
-  create_table "dhis2_snapshots", id: :serial, force: :cascade do |t|
+  create_table "dhis2_snapshots", force: :cascade do |t|
     t.string "kind", null: false
     t.jsonb "content", null: false
     t.integer "project_anchor_id"
@@ -303,9 +305,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_17_110950) do
     t.integer "original_id"
     t.string "cycle", default: "quarterly", null: false
     t.integer "engine_version", default: 3, null: false
-    t.string "qualifier"
     t.string "default_coc_reference"
     t.string "default_aoc_reference"
+    t.string "qualifier"
     t.datetime "publish_end_date", precision: nil
     t.string "calendar_name", default: "gregorian", null: false
     t.boolean "read_through_deg", default: true, null: false
@@ -366,7 +368,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_17_110950) do
   end
 
   create_table "versions", force: :cascade do |t|
-    t.string "item_type", null: false
+    t.string "item_type"
+    t.string "{:null=>false}"
     t.integer "item_id", null: false
     t.string "event", null: false
     t.string "whodunnit"
@@ -391,6 +394,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_17_110950) do
   add_foreign_key "activity_states", "activities"
   add_foreign_key "activity_states", "states"
   add_foreign_key "decision_tables", "rules"
+  add_foreign_key "dhis2_logs", "invoicing_jobs"
+  add_foreign_key "dhis2_logs", "project_anchors"
+  add_foreign_key "dhis2_snapshot_changes", "dhis2_snapshots"
+  add_foreign_key "dhis2_snapshots", "project_anchors"
   add_foreign_key "entity_groups", "projects"
   add_foreign_key "formula_mappings", "activities"
   add_foreign_key "formula_mappings", "formulas"
