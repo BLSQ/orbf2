@@ -40,7 +40,7 @@ module Meta
     def new_meta_formula_mapping(formula_mapping, package)
       name = formula_mapping.names
       Meta::Metadata.new(
-        dhis2_props(formula_mapping.external_reference).merge(
+        **dhis2_props(formula_mapping.external_reference).merge(
           formula_mapping: formula_mapping,
           package:         package,
           orbf_type:       "Formula mapping",
@@ -68,7 +68,7 @@ module Meta
         project.naming_patterns, activity_state.activity
       )
       Meta::Metadata.new(
-        dhis2_props(activity_state.external_reference).merge(
+        **dhis2_props(activity_state.external_reference).merge(
           activity_state:  activity_state,
           package:         activity_package.package,
           orbf_type:       "Activity state",
