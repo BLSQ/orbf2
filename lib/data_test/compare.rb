@@ -82,7 +82,8 @@ module DataTest
         if result.empty?
           Result.new(success: true)
         else
-          Result.new(success: false, key_count: [a.keys.count, b.keys.count], short: result.sample(10), full: result)
+          Result.new(success: false, key_count: [a.keys.count, b.keys.count],
+                     short: result.sample(10), full: result)
         end
       end
     end
@@ -94,11 +95,12 @@ module DataTest
       a = JSON.parse(File.open(file_a).read)
       b = JSON.parse(File.open(file_b).read)
       guard_timeout do
-        diff = HashDiff.diff(a, b, use_lcs: false)
+        diff = Hashdiff.diff(a, b, use_lcs: false, numeric_tolerance: 0.000000001)
         if diff.empty?
           Result.new(success: true)
         else
-          Result.new(success: false, key_count: [a.count, b.count], short: diff.sample(10), full: diff)
+          Result.new(success: false, key_count: [a.count, b.count], short: diff.sample(10),
+                     full: diff)
         end
       end
     end
@@ -123,7 +125,8 @@ module DataTest
         puts "    #{result.message}"
         puts "    + Differences (first 10 out of #{result.full.count})"
         result.short.each do |item|
-          puts format("      [%s] Was: %s Is: %s Path: %s", item["op"], item["was"], item["value"], item["path"])
+          puts format("      [%s] Was: %s Is: %s Path: %s", item["op"], item["was"], item["value"],
+                      item["path"])
         end
       end
     end
@@ -148,7 +151,7 @@ module DataTest
       handle_hash_diff(filename, hash_diff(filename))
       [
         %w[project yml],
-        ["data-compound", "yml"],
+        %w[data-compound yml],
         %w[pyramid yml]
       ].each do |(name, extension)|
         filename = subject.filename(name, extension)
