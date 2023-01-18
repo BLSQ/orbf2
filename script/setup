@@ -33,45 +33,6 @@ if [ -z "${CI+x}" ]; then
         createuser --superuser --createdb hesabu-test-user
     fi
 else
-    # We're on CI
-    if ! command -v chromedriver &> /dev/null; then
-        echo "Chromedriver was already found"
-        which chromedriver
-        chromedriver --version
-        whoami
-    else
-        cat <<STR
-No chromedriver for you! But let's try to call it anyway:
-
-        /usr/bin/chromedriver --version
-        -> $(/usr/bin/chromedriver --version)
-
-        chromedriver --version
-        -> $(chromedriver --version)
-
-        path
-        -> ${PATH}
-
-        Me
-        -> $(whoami)
-
-STR
-
-        if [ -f "/usr/local/bin/chromedriver" ]; then
-            echo "==> Using cached chromedriver"
-            sudo chmod +x /usr/local/share/chromedriver
-            sudo ln -s /usr/local/share/chromedriver /usr/local/bin/chromedriver
-        else
-            echo "==> Fetching chromedriver"
-            version=$(curl -s https://chromedriver.storage.googleapis.com/LATEST_RELEASE)
-            wget -N https://chromedriver.storage.googleapis.com/$version/chromedriver_linux64.zip -P ~/
-            unzip ~/chromedriver_linux64.zip -d ~/
-            rm ~/chromedriver_linux64.zip
-            sudo mv -f ~/chromedriver /usr/local/share/
-            sudo chmod +x /usr/local/share/chromedriver
-            sudo ln -s /usr/local/share/chromedriver /usr/local/bin/chromedriver
-        fi
-    fi
     export RAILS_ENV="test"
     export RACK_ENV="test"
     export CI="CIJOE"
