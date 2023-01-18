@@ -394,7 +394,7 @@ class Project < ApplicationRecord
 
     diff_symbols = { "+" => :added, "-" => :removed, "~" => :modified }
     all_names = to_unified_names.merge(other_project.to_unified_names)
-    HashDiff.diff(other_project.to_unified_h, to_unified_h).map do |hash_diff|
+    Hashdiff.diff(other_project.to_unified_h, to_unified_h).map do |hash_diff|
       operation, path, value, current = hash_diff
 
       ChangelogEntry.new(

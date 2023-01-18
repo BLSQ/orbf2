@@ -65,7 +65,7 @@ RSpec.describe "Data Test", data_test: true do
         it "exported_values" do
           original = artefact("#{name}-exported_values.json")
           new = result("#{name}-exported_values.json")
-          diff = HashDiff.diff(original, new, use_lcs: false)
+          diff = Hashdiff.diff(original, new, use_lcs: false)
           unless diff.empty?
             puts "  + original: #{original.count} vs new: #{new.count}"
             puts "  + diff (first 10): #{diff.sample(10)}"
@@ -77,13 +77,13 @@ RSpec.describe "Data Test", data_test: true do
   else
     message = <<~DESC
       No FETCHER_S3_ACCESS and FETCHER_S3_KEY found in ENV-variables.
-      
+
       These are needed to download the artefacts to verify the results with,
       so now skipping.
     DESC
     if ENV["CI"]
-      it 'has S3 configured' do
-        fail message
+      it "has S3 configured" do
+        raise message
       end
     else
       puts message
