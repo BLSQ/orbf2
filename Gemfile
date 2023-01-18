@@ -109,10 +109,8 @@ group :development, :test do
   gem "ruby-prof"
   gem "shoulda-matchers", require: false
 
-  gem "capybara"
   gem "json-diff", "~> 0.4.1"
   gem "rubyzip", "~> 1.3.0"
-  gem "selenium-webdriver", "~> 4.7.1"
 end
 
 group :development do
