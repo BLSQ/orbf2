@@ -1,0 +1,70 @@
+version: "3"
+services:
+  hesabu-db:
+    image: postgres:${POSTGRES_VERSION}
+    volumes:
+      - ./storage/db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+
+  hesabu-redis:
+    image: redis:${REDIS_VERSION}
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+
+  hesabu-web:
+    image: blsq/hesabu
+    build:
+      context: ..
+      dockerfile: Dockerfile.build
+    command: bash -c "bundle exec rake db:migrate && rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - hesabu-db
+      - hesabu-redis
+    environment:
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@hesabu-redis:6379
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@hesabu-db:5432/${POSTGRES_DB}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - DISABLE_FORCE_SSL=TRUE
+      - SECRET_KEY_BASE=${SECRET_KEY_BASE}
+      - RAILS_ACTIVE_STORAGE=minio
+      - S3_SIMULATION_ACCESS=${MINIO_ROOT_USER}
+      - S3_SIMULATION_BUCKET=simulation
+      - S3_SIMULATION_REGION=us-east-1
+      - S3_SIMULATION_SECRET=${MINIO_ROOT_PASSWORD}
+      - S3_SIMULATION_ENDPOINT=${MINIO_URL}
+      - RAILS_SERVE_STATIC_FILES=true
+    labels:
+      - "ofelia.enabled=true"
+      # job1 to flag in db jobs no more appearing in sidekiq
+      - "ofelia.job-exec.invoicing_jobs.schedule=@every 10m"
+      - "ofelia.job-exec.invoicing_jobs.command=rake invoicing_jobs:discard"
+      # job2 to remove from sidekiq queue duplicated jobs
+      - "ofelia.job-exec.duplicate_jobs.schedule=@every 11m"
+      - "ofelia.job-exec.duplicate_jobs.command=rake duplicate_jobs:clear"
+
+  hesabu-worker:
+    image: blsq/hesabu
+    build:
+      context: ..
+      dockerfile: Dockerfile.build
+    command: bash -c "bundle exec sidekiq -q dhis2-safe -q default"
+    depends_on:
+      - hesabu-db
+      - hesabu-redis
+    environment:
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@hesabu-redis:6379
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@hesabu-db:5432/${POSTGRES_DB}
+      - RAILS_ENV=production
+      - RACK_ENV=production
+      - SECRET_KEY_BASE=${SECRET_KEY_BASE}
+      - RAILS_ACTIVE_STORAGE=minio
+      - S3_SIMULATION_ACCESS=${MINIO_ROOT_USER}
+      - S3_SIMULATION_BUCKET=simulation
+      - S3_SIMULATION_REGION=us-east-1
+      - S3_SIMULATION_SECRET=${MINIO_ROOT_PASSWORD}
+      - S3_SIMULATION_ENDPOINT=${MINIO_URL}
+      - RAILS_SERVE_STATIC_FILES=true

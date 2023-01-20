@@ -47,7 +47,7 @@ gem "jquery-ui-rails", "~> 5.0.5"
 gem "rails-jquery-autocomplete"
 gem "sassc-rails", "~> 2.1.2"
 gem "simple_form"
-gem "sprockets", "~> 3.7.2"
+gem "sprockets", "~> 4.2.0"
 gem "turbolinks", "~> 5"
 gem "uglifier", ">= 1.3.0"
 ## Authentication
