@@ -221,8 +221,6 @@ GEM
     globalid (1.0.0)
       activesupport (>= 5.0)
     hashdiff (1.0.1)
-    heroku-deflater (0.6.3)
-      rack (>= 1.4.5)
     http-accept (1.7.0)
     http-cookie (1.0.5)
       domain_name (~> 0.5)
@@ -565,7 +563,6 @@ DEPENDENCIES
   flipper-active_record (~> 0.26.0)
   flipper-ui (~> 0.26.0)
   hashdiff
-  heroku-deflater
   hesabu!
   immigrant
   jbuilder (~> 2.5)

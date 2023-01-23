@@ -14,10 +14,7 @@ services:
     command: redis-server --requirepass ${REDIS_PASSWORD}
 
   hesabu-web:
-    image: blsq/hesabu
-    build:
-      context: ..
-      dockerfile: Dockerfile.build
+    image: blsq/hesabu:${HESABU_VERSION}
     command: bash -c "bundle exec rake db:migrate && rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
     ports:
       - "3000:3000"
@@ -37,6 +34,8 @@ services:
       - S3_SIMULATION_SECRET=${MINIO_ROOT_PASSWORD}
       - S3_SIMULATION_ENDPOINT=${MINIO_URL}
       - RAILS_SERVE_STATIC_FILES=true
+      - RAILS_ENV=production
+      - RACK_ENV=production
     labels:
       - "ofelia.enabled=true"
       # job1 to flag in db jobs no more appearing in sidekiq
@@ -47,10 +46,7 @@ services:
       - "ofelia.job-exec.duplicate_jobs.command=rake duplicate_jobs:clear"
 
   hesabu-worker:
-    image: blsq/hesabu
-    build:
-      context: ..
-      dockerfile: Dockerfile.build
+    image: blsq/hesabu:${HESABU_VERSION}
     command: bash -c "bundle exec sidekiq -q dhis2-safe -q default"
     depends_on:
       - hesabu-db
