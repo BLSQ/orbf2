@@ -5,6 +5,7 @@ module RuleTypes
     end
 
     attr_reader :rule
+
     delegate :package, to: :rule
     delegate :formulas, to: :rule
     delegate :activity_kind?, to: :rule
@@ -75,8 +76,8 @@ module RuleTypes
       formula_by_codes.each do |code, formulas|
         next unless formulas.size > 1
 
-        rule.errors[:formulas] << "Formula's code must be unique,"\
-          " you have #{formulas.size} formulas with '#{code}'"
+        rule.errors.add(:formulas, "Formula's code must be unique,"\
+          " you have #{formulas.size} formulas with '#{code}'")
       end
     end
   end

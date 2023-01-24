@@ -10,7 +10,7 @@ class V2::ActivitySerializer < V2::BaseSerializer
   attributes :updated_at
   attributes :stable_id
 
-  has_many :input_mappings, serializer: ActivityStateSerializer do |activity|
+  has_many :input_mappings, serializer: ::V2::ActivityStateSerializer do |activity|
     activity.activity_states
   end
 

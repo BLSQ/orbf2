@@ -137,19 +137,19 @@ RSpec.describe InvoicingJob, type: :model do
   end
 
   describe "processed_after?" do
-    it 'true for processed and after' do
+    it "true for processed and after" do
       job = FactoryBot.build_stubbed(:invoicing_simulation_job, :processed)
       job.processed_at = 9.minutes.ago
       expect(job.processed_after?(time_stamp: 10.minutes.ago)).to eq true
     end
 
-    it 'false for processed and before timestamp' do
+    it "false for processed and before timestamp" do
       job = FactoryBot.build_stubbed(:invoicing_simulation_job, :processed)
       job.processed_at = 11.minutes.ago
       expect(job.processed_after?(time_stamp: 10.minutes.ago)).to eq false
     end
 
-    it 'false for not processed' do
+    it "false for not processed" do
       job = FactoryBot.build_stubbed(:invoicing_simulation_job, :errored)
       job.processed_at = 11.minutes.ago
       expect(job.processed_after?(time_stamp: 10.minutes.ago)).to eq false
@@ -157,7 +157,7 @@ RSpec.describe InvoicingJob, type: :model do
   end
 
   describe "status" do
-    it 'adds scopes' do
+    it "adds scopes" do
       processed_job = FactoryBot.create(:invoicing_simulation_job, :processed)
       errored_job = FactoryBot.create(:invoicing_simulation_job, :errored)
       new_job = FactoryBot.create(:invoicing_simulation_job)
@@ -166,7 +166,7 @@ RSpec.describe InvoicingJob, type: :model do
       expect(InvoicingJob.enqueued.pluck(:id)).to eq([new_job.id])
     end
 
-    it 'complains on invalid state' do
+    it "complains on invalid state" do
       new_job = FactoryBot.create(:invoicing_simulation_job)
 
       expect {
@@ -174,7 +174,7 @@ RSpec.describe InvoicingJob, type: :model do
       }.to raise_error(ArgumentError)
     end
 
-    it 'defaults to enqueued' do
+    it "defaults to enqueued" do
       new_job = FactoryBot.create(:invoicing_simulation_job)
       expect(new_job.enqueued?).to eq(true)
     end

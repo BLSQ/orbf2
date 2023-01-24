@@ -3,7 +3,7 @@
 module DataTest
   module FileHelpers
     def read_yaml(file_path)
-      YAML.load_file(file_path)
+      YAML.unsafe_load_file(file_path)
     end
 
     def record_yaml(file_path, yamlable)

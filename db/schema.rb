@@ -2,16 +2,15 @@
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
 #
-# Note that this schema.rb definition is the authoritative source for your
-# database schema. If you need to create the application database on another
-# system, you should be using db:schema:load, not running all the migrations
-# from scratch. The latter is a flawed and unsustainable approach (the more migrations
-# you'll amass, the slower it'll run and the greater likelihood for issues).
+# This file is the source Rails uses to define your schema when running `bin/rails
+# db:schema:load`. When creating a new database, `bin/rails db:schema:load` tends to
+# be faster and is potentially less error prone than running all of your
+# migrations from scratch. Old migrations may fail to apply correctly if those
+# migrations use external dependencies or application code.
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_10_11_074011) do
-
+ActiveRecord::Schema[7.0].define(version: 2023_01_18_133922) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "uuid-ossp"
@@ -21,7 +20,7 @@ ActiveRecord::Schema.define(version: 2022_10_11_074011) do
     t.string "record_type", null: false
     t.bigint "record_id", null: false
     t.bigint "blob_id", null: false
-    t.datetime "created_at", null: false
+    t.datetime "created_at", precision: nil, null: false
     t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
     t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
   end
@@ -32,17 +31,24 @@ ActiveRecord::Schema.define(version: 2022_10_11_074011) do
     t.string "content_type"
     t.text "metadata"
     t.bigint "byte_size", null: false
-    t.string "checksum", null: false
-    t.datetime "created_at", null: false
+    t.string "checksum"
+    t.datetime "created_at", precision: nil, null: false
+    t.string "service_name", null: false
     t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
   create_table "activities", force: :cascade do |t|
     t.string "name", null: false
     t.integer "project_id", null: false
     t.uuid "stable_id", default: -> { "uuid_generate_v4()" }, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "code"
     t.string "short_name"
     t.index ["name", "project_id"], name: "index_activities_on_name_and_project_id", unique: true
@@ -54,8 +60,8 @@ ActiveRecord::Schema.define(version: 2022_10_11_074011) do
     t.integer "activity_id", null: false
     t.integer "package_id", null: false
     t.uuid "stable_id", default: -> { "uuid_generate_v4()" }, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["activity_id"], name: "index_activity_packages_on_activity_id"
     t.index ["package_id", "activity_id"], name: "index_activity_packages_on_package_id_and_activity_id", unique: true
     t.index ["package_id"], name: "index_activity_packages_on_package_id"
@@ -67,8 +73,8 @@ ActiveRecord::Schema.define(version: 2022_10_11_074011) do
     t.integer "state_id", null: false
     t.integer "activity_id", null: false
     t.uuid "stable_id", default: -> { "uuid_generate_v4()" }, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "kind", default: "data_element", null: false
     t.string "formula"
     t.string "origin", default: "dataValueSets"
@@ -92,8 +98,8 @@ ActiveRecord::Schema.define(version: 2022_10_11_074011) do
     t.jsonb "sent"
     t.jsonb "status"
     t.integer "project_anchor_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.bigint "invoicing_job_id"
     t.string "sidekiq_job_ref"
     t.index ["invoicing_job_id"], name: "index_dhis2_logs_on_invoicing_job_id"
@@ -106,8 +112,8 @@ ActiveRecord::Schema.define(version: 2022_10_11_074011) do
     t.jsonb "values_before"
     t.jsonb "values_after"
     t.string "whodunnit"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["dhis2_snapshot_id"], name: "index_dhis2_snapshot_changes_on_dhis2_snapshot_id"
   end
 
@@ -119,8 +125,8 @@ ActiveRecord::Schema.define(version: 2022_10_11_074011) do
     t.integer "year", null: false
     t.integer "month", null: false
     t.string "job_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["project_anchor_id"], name: "index_dhis2_snapshots_on_project_anchor_id"
   end
 
@@ -128,8 +134,8 @@ ActiveRecord::Schema.define(version: 2022_10_11_074011) do
     t.string "name"
     t.string "external_reference"
     t.integer "project_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.boolean "limit_snaphot_to_active_regions", default: false, null: false
     t.string "kind", default: "group_based"
     t.string "program_reference"
@@ -141,8 +147,8 @@ ActiveRecord::Schema.define(version: 2022_10_11_074011) do
 
   create_table "flipper_features", force: :cascade do |t|
     t.string "key", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["key"], name: "index_flipper_features_on_key", unique: true
   end
 
@@ -150,8 +156,8 @@ ActiveRecord::Schema.define(version: 2022_10_11_074011) do
     t.string "feature_key", null: false
     t.string "key", null: false
     t.string "value"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["feature_key", "key", "value"], name: "index_flipper_gates_on_feature_key_and_key_and_value", unique: true
   end
 
@@ -169,8 +175,8 @@ ActiveRecord::Schema.define(version: 2022_10_11_074011) do
     t.string "description", null: false
     t.text "expression", null: false
     t.integer "rule_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "frequency"
     t.string "short_name"
     t.string "exportable_formula_code"
@@ -182,14 +188,14 @@ ActiveRecord::Schema.define(version: 2022_10_11_074011) do
     t.string "orgunit_ref", null: false
     t.string "dhis2_period", null: false
     t.string "user_ref"
-    t.datetime "processed_at"
-    t.datetime "errored_at"
+    t.datetime "processed_at", precision: nil
+    t.datetime "errored_at", precision: nil
     t.string "last_error"
     t.integer "duration_ms"
     t.string "status", default: "enqueued"
     t.string "sidekiq_job_ref"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "type", default: "InvoicingJob"
     t.index ["project_anchor_id", "orgunit_ref", "dhis2_period", "type"], name: "index_invoicing_jobs_on_anchor_ou_period", unique: true
     t.index ["project_anchor_id"], name: "index_invoicing_jobs_on_project_anchor_id"
@@ -199,8 +205,8 @@ ActiveRecord::Schema.define(version: 2022_10_11_074011) do
     t.string "name"
     t.integer "package_id"
     t.string "organisation_unit_group_ext_ref"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "kind", default: "main", null: false
     t.index ["package_id"], name: "index_package_entity_groups_on_package_id"
   end
@@ -208,8 +214,8 @@ ActiveRecord::Schema.define(version: 2022_10_11_074011) do
   create_table "package_payment_rules", force: :cascade do |t|
     t.integer "package_id", null: false
     t.integer "payment_rule_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["package_id"], name: "index_package_payment_rules_on_package_id"
     t.index ["payment_rule_id"], name: "index_package_payment_rules_on_payment_rule_id"
   end
@@ -217,8 +223,8 @@ ActiveRecord::Schema.define(version: 2022_10_11_074011) do
   create_table "package_states", force: :cascade do |t|
     t.integer "package_id"
     t.integer "state_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "ds_external_reference"
     t.string "deg_external_reference"
     t.string "de_external_reference"
@@ -233,8 +239,8 @@ ActiveRecord::Schema.define(version: 2022_10_11_074011) do
     t.string "data_element_group_ext_ref", null: false
     t.string "frequency", null: false
     t.integer "project_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.uuid "stable_id", default: -> { "uuid_generate_v4()" }, null: false
     t.string "kind", default: "single"
     t.string "ogs_reference"
@@ -250,27 +256,27 @@ ActiveRecord::Schema.define(version: 2022_10_11_074011) do
     t.integer "payment_rule_id"
     t.string "frequency"
     t.string "external_reference"
-    t.datetime "last_synched_at"
+    t.datetime "last_synched_at", precision: nil
     t.string "last_error"
     t.boolean "desynchronized"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["payment_rule_id", "frequency"], name: "index_payment_rule_datasets_on_payment_rule_id_and_frequency", unique: true
     t.index ["payment_rule_id"], name: "index_payment_rule_datasets_on_payment_rule_id"
   end
 
   create_table "payment_rules", force: :cascade do |t|
     t.integer "project_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "frequency", default: "quarterly", null: false
     t.index ["project_id"], name: "index_payment_rules_on_project_id"
   end
 
   create_table "programs", force: :cascade do |t|
     t.string "code", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "oauth_client_id"
     t.string "oauth_client_secret"
     t.index ["code"], name: "index_programs_on_code", unique: true
@@ -278,8 +284,8 @@ ActiveRecord::Schema.define(version: 2022_10_11_074011) do
 
   create_table "project_anchors", force: :cascade do |t|
     t.integer "program_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "token"
     t.index ["program_id"], name: "index_project_anchors_on_program_id"
   end
@@ -291,10 +297,10 @@ ActiveRecord::Schema.define(version: 2022_10_11_074011) do
     t.string "password"
     t.boolean "bypass_ssl", default: false
     t.boolean "boolean", default: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "status", default: "draft", null: false
-    t.datetime "publish_date"
+    t.datetime "publish_date", precision: nil
     t.integer "project_anchor_id"
     t.integer "original_id"
     t.string "cycle", default: "quarterly", null: false
@@ -302,7 +308,7 @@ ActiveRecord::Schema.define(version: 2022_10_11_074011) do
     t.string "default_coc_reference"
     t.string "default_aoc_reference"
     t.string "qualifier"
-    t.datetime "publish_end_date"
+    t.datetime "publish_end_date", precision: nil
     t.string "calendar_name", default: "gregorian", null: false
     t.boolean "read_through_deg", default: true, null: false
     t.string "invoice_app_path", default: "/api/apps/ORBF2---Invoices-and-Reports/index.html", null: false
@@ -315,8 +321,8 @@ ActiveRecord::Schema.define(version: 2022_10_11_074011) do
     t.string "name", null: false
     t.string "kind", null: false
     t.integer "package_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.integer "payment_rule_id"
     t.uuid "stable_id", default: -> { "uuid_generate_v4()" }, null: false
     t.index ["package_id"], name: "index_rules_on_package_id"
@@ -325,8 +331,8 @@ ActiveRecord::Schema.define(version: 2022_10_11_074011) do
 
   create_table "states", force: :cascade do |t|
     t.string "name", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.integer "project_id", null: false
     t.string "short_name"
     t.index ["project_id", "name"], name: "index_states_on_project_id_and_name", unique: true
@@ -337,15 +343,15 @@ ActiveRecord::Schema.define(version: 2022_10_11_074011) do
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.string "reset_password_token"
-    t.datetime "reset_password_sent_at"
-    t.datetime "remember_created_at"
+    t.datetime "reset_password_sent_at", precision: nil
+    t.datetime "remember_created_at", precision: nil
     t.integer "sign_in_count", default: 0, null: false
-    t.datetime "current_sign_in_at"
-    t.datetime "last_sign_in_at"
+    t.datetime "current_sign_in_at", precision: nil
+    t.datetime "last_sign_in_at", precision: nil
     t.inet "current_sign_in_ip"
     t.inet "last_sign_in_ip"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.integer "program_id"
     t.string "dhis2_user_ref"
     t.index ["email"], name: "index_users_on_email", unique: true
@@ -357,17 +363,19 @@ ActiveRecord::Schema.define(version: 2022_10_11_074011) do
     t.integer "version_id"
     t.string "foreign_key_name", null: false
     t.integer "foreign_key_id"
-    t.index ["foreign_key_name", "foreign_key_id"], name: "index_version_associations_on_foreign_key"
+    t.string "foreign_type"
+    t.index ["foreign_key_name", "foreign_key_id", "foreign_type"], name: "index_version_associations_on_foreign_key"
     t.index ["version_id"], name: "index_version_associations_on_version_id"
   end
 
   create_table "versions", force: :cascade do |t|
-    t.string "item_type", null: false
+    t.string "item_type"
+    t.string "{:null=>false}"
     t.integer "item_id", null: false
     t.string "event", null: false
     t.string "whodunnit"
     t.text "old_object"
-    t.datetime "created_at"
+    t.datetime "created_at", precision: nil
     t.integer "transaction_id"
     t.jsonb "object"
     t.integer "program_id"
@@ -380,6 +388,7 @@ ActiveRecord::Schema.define(version: 2022_10_11_074011) do
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "activities", "projects"
   add_foreign_key "activity_packages", "activities"
   add_foreign_key "activity_packages", "packages"

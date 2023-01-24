@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: decision_tables
@@ -49,7 +50,7 @@ class DecisionTable < ApplicationRecord
   def in_headers_belong_to_facts
     in_headers.each do |header|
       unless HEADER_PREFIXES.include?(header) || header.starts_with?("groupset_code_")
-        errors[:content] << "Not '#{header}' in available org unit facts !"
+        errors.add(:content, "Not '#{header}' in available org unit facts !")
       end
     end
   end
@@ -59,8 +60,13 @@ class DecisionTable < ApplicationRecord
 
     available_codes = rule.package.activity_packages.map(&:activity).map(&:code).compact
     available_codes.push Decision::Rule::ANY
-    invalid_rules = decision_table.rules.reject { |rule| available_codes.include?(rule[HEADER_IN_ACTIVITY_CODE]) }
-    invalid_rules.each { |invalid_rule| errors[:content] << "#{invalid_rule.inspect} not in available package codes #{available_codes}!" }
+    invalid_rules = decision_table.rules.reject do |rule|
+      available_codes.include?(rule[HEADER_IN_ACTIVITY_CODE])
+    end
+    invalid_rules.each do |invalid_rule|
+      errors.add(:content,
+                 "#{invalid_rule.inspect} not in available package codes #{available_codes}!")
+    end
   end
 
   def period_start_before_end
@@ -68,12 +74,12 @@ class DecisionTable < ApplicationRecord
     return if !start_period.presence && !end_period.presence
 
     if start_period.presence && !end_period.presence
-      errors[:end_period] << "Should be filled in if start period is filled"
+      errors.add(:end_period, "Should be filled in if start period is filled")
     elsif !start_period.presence && end_period.presence
-      errors[:start_period] << "Should be filled in if end period is filled"
+      errors.add(:start_period, "Should be filled in if end period is filled")
     else
       if start_period.presence > end_period.presence
-        errors[:start_period] << "Should be before end period"
+        errors.add(:start_period, "Should be before end period")
       end
 
       package_frequency = rule.package.frequency
@@ -86,10 +92,10 @@ class DecisionTable < ApplicationRecord
   def validate_period_type(value, field, expected_frequency)
     frequency = Periods.detect(value)
     if frequency != expected_frequency
-      errors[field] << "Should be of period type " + expected_frequency
+      errors.add(field, "Should be of period type " + expected_frequency)
     end
   rescue StandardError => e
-    errors[field] << "Should be of period type " + expected_frequency + " : " + e.message
+    errors.add(field, "Should be of period type " + expected_frequency + " : " + e.message)
   end
 
   def in_headers

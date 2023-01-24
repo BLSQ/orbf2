@@ -30,16 +30,16 @@
 
 class ActivityStateValidator
   def self.validate(activity_state)
-    if activity_state.kind_data_element_coc? && activity_state.external_reference.presence
-      if !activity_state.external_reference.include?(".")
-        activity_state.errors[:external_reference] << "should contains a dot like DATAELEMENTID.COCID"
-      end
+    if activity_state.kind_data_element_coc? && activity_state.external_reference.presence && !activity_state.external_reference.include?(".")
+      activity_state.errors.add(:external_reference,
+                                "should contains a dot like DATAELEMENTID.COCID")
     end
-    if (activity_state.kind_indicator? || activity_state.kind_data_element?) && activity_state.external_reference.presence
-      if activity_state.external_reference.include?(".")
-        activity_state.errors[:external_reference] << "should NOT contains a dot like DATAELEMENTID.COCID"
-      end
-    end
+    de_or_indicator = activity_state.kind_indicator? || activity_state.kind_data_element?
+    return unless de_or_indicator && activity_state.external_reference.presence
+    return unless activity_state.external_reference.include?(".")
+
+    activity_state.errors.add(:external_reference,
+                              "should NOT contains a dot like DATAELEMENTID.COCID")
   end
 end
 
@@ -52,7 +52,8 @@ class ActivityState < ApplicationRecord
   belongs_to :state
 
   validates :state, presence: { message: "Select a state or remove this activity from the list" }
-  validates :external_reference, presence: true,  uniqueness: { scope: [:activity_id] }, if: :dhis2_related?
+  validates :external_reference, presence: true, uniqueness: { scope: [:activity_id] },
+if: :dhis2_related?
   validates :name, presence: true
 
   validates :formula, presence: true, if: :kind_formula?

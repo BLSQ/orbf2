@@ -10,7 +10,7 @@ PATCH=`echo $DESCRIBE | awk '{split($0,a,"-"); print a[3]}'`
 
 echo "version $DESCRIBE =>  VERSION:${VERSION} BUILD:${BUILD} PATCH:${PATCH}"
 
-VERSION=${VERSION}"."${BUILD}"."${PATCH}
+VERSION=${VERSION}"."${BUILD:-local}"."${PATCH:-local}
 
 echo "building image with tags :  ${VERSION}    patch ${PATCH} ($DESCRIBE)"
 docker build -t blsq/hesabu:$VERSION --file Dockerfile.build .

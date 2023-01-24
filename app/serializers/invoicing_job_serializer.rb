@@ -32,12 +32,12 @@
 class InvoicingJobSerializer
   include FastJsonapi::ObjectSerializer
   set_key_transform :camel_lower
-  attribute :org_unit, &:orgunit_ref
+  attribute :org_unit do |rec| rec.orgunit_ref end
   attribute :dhis2_period
-  attribute :user, &:user_ref
+  attribute :user do |rec| rec.user_ref end
   attributes :created_at, :processed_at, :errored_at, :duration_ms, :status, :last_error
   attribute :sidekiq_job_ref
 
-  attribute :is_alive, &:alive?
-  attribute :result_url, &:result_url
+  attribute :is_alive do |rec| rec.alive? end 
+  attribute :result_url do |rec| rec.result_url end
 end

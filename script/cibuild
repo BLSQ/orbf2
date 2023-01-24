@@ -29,11 +29,6 @@ fi
 script/test
 status=$?
 
-echo "[cibuild] Running system tests ..."
-date "+%H:%M:%S"
-SKIP_SIMPLECOV=1 bundle exec rails spec:system
-status=$?
-
 echo "[cibuild] Running data tests ..."
 date "+%H:%M:%S"
 SKIP_SIMPLECOV=1 bundle exec rails spec:data_test

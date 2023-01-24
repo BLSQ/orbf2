@@ -15,12 +15,12 @@ module Rules
       log "********** #{message} #{Time.new}\n#{JSON.pretty_generate(facts_and_rules)}\n" if debug
       begin
         solution = calculator.solve!(facts_and_rules)
-      rescue TSort::Cyclic => cycle_error
+      rescue TSort::Cyclic => e
         log JSON.pretty_generate(facts_and_rules)
-        log cycle_error.message
-        raise SolvingError.new("a cycle has been created : " + cycle_error.message, facts_and_rules),
+        log e.message
+        raise SolvingError.new("a cycle has been created : " + e.message, facts_and_rules),
               "Failed to solve this problem : a cycle exist between formulas: "\
-              "#{message} : #{cycle_error.message}"
+              "#{message} : #{e.message}"
       rescue StandardError => e
         log JSON.pretty_generate(facts_and_rules)
         log e.message
@@ -39,11 +39,11 @@ module Rules
         )
       )
     rescue KeyError => e
-      formula.errors[:expression] << "#{e.message}. " \
-        "Remove extra spaces or verify it's in the available variables"
+      formula.errors.add(:expression, "#{e.message}. " \
+        "Remove extra spaces or verify it's in the available variables")
     rescue StandardError => e
       Rails.logger.warn("FAILED to validate #{formula} : #{e.backtrace.join("\n")}")
-      formula.errors[:expression] << e.message
+      formula.errors.add(:expression, e.message)
     end
 
     def dependencies(formula)
@@ -53,7 +53,7 @@ module Rules
           formula.rule.available_variables_for_values
         )
       )
-    rescue StandardError => ignored
+    rescue StandardError => e
       []
     end
 
@@ -70,12 +70,13 @@ module Rules
       facts[:actictity_rule_name] = Solver.escape_string(rule.name)
       solve!("validate_all_formulas", facts)
     rescue Rules::SolvingError => e
-      rule.errors[:formulas] << e.original_message
+      rule.errors.add(:formulas, e.original_message)
     rescue KeyError => e
-      rule.errors[:formulas] << "#{e.message}. Remove extra spaces or verify it's in the available variables"
+      rule.errors.add(:formulas,
+                      "#{e.message}. Remove extra spaces or verify it's in the available variables")
     rescue StandardError => e
       log(e.message)
-      rule.errors[:formulas] << e.message
+      rule.errors.add(:formulas, e.message)
     end
 
     def self.escape_string(string)

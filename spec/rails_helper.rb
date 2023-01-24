@@ -55,15 +55,6 @@ RSpec.configure do |config|
   # The different available types are documented in the features, such as in
   # https://relishapp.com/rspec/rspec-rails/docs
   config.infer_spec_type_from_file_location!
-
-  config.before(:each, type: :system) do
-    if ENV["SHOW_BROWSER"]
-      # This can be handy when diagnosing system tests that break
-      driven_by :selenium, using: :chrome, screen_size: [1400, 1400]
-    else
-      driven_by :headless_chrome
-    end
-  end
 end
 
 Shoulda::Matchers.configure do |config|

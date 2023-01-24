@@ -13,6 +13,7 @@ RSpec.describe PaperTrailed do
   EXCEPTIONS = [
     ActiveRecord::SchemaMigration,
     PaperTrail::Version,
+    PaperTrail::VersionAssociation,
     Version,
     Dhis2Log,
     Dhis2Snapshot,
@@ -22,6 +23,10 @@ RSpec.describe PaperTrailed do
     InvoicingSimulationJob,
     Flipper::Adapters::ActiveRecord::Feature,
     Flipper::Adapters::ActiveRecord::Gate,
+    ActiveStorage::Blob,
+    ActiveStorage::Attachment,
+    ActiveStorage::VariantRecord,
+    ActiveRecord::InternalMetadata
   ].freeze
 
   ActiveRecord::Base.descendants

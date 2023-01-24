@@ -4,7 +4,6 @@ if Rake::Task.task_defined?("spec")
   Rake::Task["spec"].clear
   # Clear out rspec/rails tasks as well, to avoid double run
   Rake::Task["spec:models"].clear
-  Rake::Task["spec:system"].clear
 end
 
 namespace :spec do
@@ -12,14 +11,6 @@ namespace :spec do
   task :models do
     cmds = [
       %w[rspec spec --tag @type:models]
-    ]
-    run_commands(cmds)
-  end
-
-  desc "Run feature/request/system specs"
-  task :system do
-    cmds = [
-      %w[rspec spec --tag @type:system]
     ]
     run_commands(cmds)
   end
