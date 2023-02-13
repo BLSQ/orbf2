@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+hostname = `hostname`.strip()
+
 class InvoiceForProjectAnchorWorker
   include Sidekiq::Worker
   include Sidekiq::Throttled::Worker
@@ -11,7 +13,7 @@ class InvoiceForProjectAnchorWorker
   sidekiq_throttle(
     concurrency: { limit: ENV.fetch("SDKQ_MAX_CONCURRENT_INVOICE", 3).to_i },
     key_suffix:  ->(project_anchor_id, _year, _quarter, _selected_org_unit_ids = nil, _options = {}) {
-      per_process_id = ENV.fetch("HEROKU_DYNO_ID", $PROCESS_ID)
+      per_process_id = ENV.fetch("HEROKU_DYNO_ID", hostname)
       [project_anchor_id, per_process_id].join("-")
     }
   )
