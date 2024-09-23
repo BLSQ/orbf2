@@ -9,18 +9,33 @@ class InvoiceForProjectAnchorWorker
   )
 
   sidekiq_throttle(
-    concurrency: { limit: ENV.fetch("SDKQ_MAX_CONCURRENT_INVOICE", 3).to_i },
-    key_suffix:  ->(project_anchor_id, _year, _quarter, _selected_org_unit_ids = nil, _options = {}) {
+    concurrency: {
+      limit: ENV.fetch("SDKQ_MAX_CONCURRENT_INVOICE", 3).to_i,
+      ttl:   ENV.fetch("SDKQ_MAX_TTL_INVOICE", 1.hour.to_i).to_i
+    },
+    key_suffix:  lambda { |project_anchor_id, _year, _quarter, _selected_org_unit_ids = nil, _options = {}|
       per_process_id = ENV.fetch("HEROKU_DYNO_ID", $PROCESS_ID)
       [project_anchor_id, per_process_id].join("-")
     }
   )
 
   def perform(project_anchor_id, year, quarter, selected_org_unit_ids = nil, options = {})
+    if ENV.fetch("SDKQ_FORK_ENABLED", "false") == "true"
+      command = "time bundle exec rails runner 'InvoiceForProjectAnchorWorker.new.really_perform(#{project_anchor_id}, #{year}, #{quarter}, [\"" + selected_org_unit_ids[0] + "\"])'"
+      puts("forking invoice", command)
+      puts(exec(command))
+    else
+      really_perform(project_anchor_id, year, quarter, selected_org_unit_ids, options)
+    end
+  end
+
+  def really_perform(project_anchor_id, year, quarter, selected_org_unit_ids = nil, options = {})
     default_options = {
       slice_size: 25
     }
-    raise "no more supported : should provide an single selected_org_unit_ids " if selected_org_unit_ids.nil? || selected_org_unit_ids.size > 1
+    if selected_org_unit_ids.nil? || selected_org_unit_ids.size > 1
+      raise "no more supported : should provide an single selected_org_unit_ids "
+    end
 
     options = default_options.merge(options)
     project_anchor = ProjectAnchor.find(project_anchor_id)

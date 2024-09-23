@@ -8,7 +8,7 @@ class Dhis2SnapshotWorker
   PAGE_SIZE = 1000
 
   sidekiq_throttle(
-    concurrency: { limit: 1 },
+    concurrency: { limit: 1, ttl: ENV.fetch("SDKQ_MAX_TTL_SNAPSHOT", 1.hour.to_i).to_i },
     threshold:   { limit: 3, period: 2.minutes }
   )
 
