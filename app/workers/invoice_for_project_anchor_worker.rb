@@ -12,28 +12,39 @@ class InvoiceForProjectAnchorWorker
     concurrency: {
       limit: ENV.fetch("SDKQ_MAX_CONCURRENT_INVOICE", 3).to_i,
       ttl:   ENV.fetch("SDKQ_MAX_TTL_INVOICE", 1.hour.to_i.to_s).to_i
-    },  
-    key_suffix:  ->(project_anchor_id, _year, _quarter, _selected_org_unit_ids = nil, _options = {}) {
+    },
+    key_suffix:  lambda { |project_anchor_id, _year, _quarter, _selected_org_unit_ids = nil, _options = {}|
       per_process_id = ENV.fetch("HEROKU_DYNO_ID", $PROCESS_ID)
       [project_anchor_id, per_process_id].join("-")
     }
   )
 
   def perform(project_anchor_id, year, quarter, selected_org_unit_ids = nil, options = {})
+    if project_anchor_id == 60
+      sleep_time = rand(0..60)
+      puts("sleeping #{project_anchor_id} #{year} #{quarter} #{selected_org_unit_ids} for #{sleep_time} seconds")
+      sleep(sleep_time)
+    end
+
     if ENV.fetch("SDKQ_FORK_ENABLED", "false") == "true"
       command = "time bundle exec rails runner 'InvoiceForProjectAnchorWorker.new.really_perform(#{project_anchor_id}, #{year}, #{quarter}, [\"" + selected_org_unit_ids[0] + "\"])'"
+
       puts("forking invoice", command)
-      puts(exec(command))
+      puts(system(command))
     else
       really_perform(project_anchor_id, year, quarter, selected_org_unit_ids, options)
     end
   end
 
-  def really_perform(project_anchor_id, year, quarter, selected_org_unit_ids = nil, options = {})  
+  def really_perform(project_anchor_id, year, quarter, selected_org_unit_ids = nil, options = {})
+
+    puts("processing #{project_anchor_id} #{year} #{quarter} #{selected_org_unit_ids}")
     default_options = {
       slice_size: 25
     }
-    raise "no more supported : should provide an single selected_org_unit_ids " if selected_org_unit_ids.nil? || selected_org_unit_ids.size > 1
+    if selected_org_unit_ids.nil? || selected_org_unit_ids.size > 1
+      raise "no more supported : should provide an single selected_org_unit_ids "
+    end
 
     options = default_options.merge(options)
     project_anchor = ProjectAnchor.find(project_anchor_id)
