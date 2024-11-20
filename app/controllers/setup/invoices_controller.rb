@@ -75,7 +75,7 @@ class Setup::InvoicesController < PrivateController
   def render_invoice(project, invoicing_request)
     if params[:push_to_dhis2] && invoicing_request.entity
 
-      dhis2_period = invoicing_request.year_quarter.to_dhis2
+      dhis2_period = invoicing_request.invoicing_period
 
       invoicing_job = project.project_anchor.invoicing_jobs.find_or_initialize_by(
         project_anchor_id: project.project_anchor.id,
@@ -95,7 +95,7 @@ class Setup::InvoicesController < PrivateController
         status:          "enqueued",
         sidekiq_job_ref: job_id
       )
-      flash[:alert] = "Worker scheduled for #{invoicing_request.entity} : #{invoicing_request.year_quarter.to_dhis2}"
+      flash[:alert] = "Worker scheduled for #{invoicing_request.entity} : #{dhis2_period}"
       render(:new)
       return
     end

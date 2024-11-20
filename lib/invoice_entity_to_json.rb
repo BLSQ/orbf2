@@ -36,7 +36,7 @@ class InvoiceEntityToJson
   def request_hash
     {
       entity:            @invoicing_request.entity,
-      period:            @invoicing_request.year_quarter.to_dhis2,
+      period:            @invoicing_request.invoicing_period,
       engine_version:    @invoicing_request.engine_version,
       organisation_unit: Invoicing::EntitySignalitic.new(
         @invoice_entity.pyramid,

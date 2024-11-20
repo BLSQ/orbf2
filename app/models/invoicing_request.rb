@@ -26,6 +26,12 @@ class InvoicingRequest
     Periods::YearQuarter.new("#{year}Q#{quarter}")
   end
 
+  def invoicing_period
+    if project 
+      project.calendar.to_invoicing_period(year, quarter)
+    end
+  end
+
   def period
     year_quarter.to_s
   end

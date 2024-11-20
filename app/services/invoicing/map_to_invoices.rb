@@ -29,8 +29,8 @@ module Invoicing
 
     def selected_periods
       @selected_periods ||= [
-        invoicing_request.project.calendar.periods(invoicing_request.year_quarter.to_dhis2, "monthly"),
-        invoicing_request.year_quarter.to_dhis2
+        invoicing_request.project.calendar.periods(invoicing_request.invoicing_period, "monthly"),
+        invoicing_request.invoicing_period
       ].flatten.to_set
     end
   end
