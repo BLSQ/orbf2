@@ -42,7 +42,7 @@ module Datasets
       [
         "ORBF",
         dataset.payment_rule.rule.name,
-        dataset.frequency.humanize
+        to_dhis2_frequency(dataset.frequency)
       ].join(" - ")
     end
   end
