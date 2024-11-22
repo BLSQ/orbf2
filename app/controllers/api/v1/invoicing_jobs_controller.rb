@@ -19,9 +19,14 @@ module Api
       private
 
       def find_jobs(project_anchor)
-        period = Periods.from_dhis2_period(params.fetch(:period))
+        period = params.fetch(:period)
+        # if monthly then turn it into quarterly
+        if Periods.detect(period) == Periods::MONTHLY
+          period = Periods.from_dhis2_period(period)
+          period = period.to_quarter.to_dhis2
+        end
         jobs = project_anchor.invoicing_jobs
-                             .where(dhis2_period: period.to_quarter.to_dhis2)
+                             .where(dhis2_period: period)
         jobs = jobs.where(orgunit_ref: params[:orgUnitIds].split(",")) if params[:orgUnitIds]
         jobs = jobs.where(status: params[:status].split(",")) if params[:status]
         jobs.last(1000)
