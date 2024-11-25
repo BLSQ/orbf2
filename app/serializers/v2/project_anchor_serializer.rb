@@ -8,8 +8,14 @@ class V2::ProjectAnchorSerializer < V2::BaseSerializer
 
     if project
       start_year = 2016
+      year_suffix=""
       end_year = project.calendar.from_iso(DateTime.now).year + 1
-      (start_year..end_year).flat_map {|year| project.calendar.periods(year.to_s,"quarterly")}
+      frequency = "quarterly"
+      if project.calendar_name == "ethiopian_v2"
+        year_suffix = "Nov"
+        frequency = "quarterly_nov"
+      end
+      (start_year..end_year).flat_map {|year| project.calendar.periods(year.to_s+year_suffix,frequency)}
     else
       []
     end

@@ -29,6 +29,7 @@ class InvoiceSimulationWorker
 
       if job
         name = format("%s.json", [project_id.to_s, entity, period].map(&:underscore).join("-"))
+        puts(" storing simulation results in #{name}")
         active_storage_blob = uploaded_blob(name, serialized_json)
         job.result.attach(active_storage_blob)
       end
@@ -131,11 +132,19 @@ class InvoiceSimulationWorker
     end
 
     def year
-      @period.split("Q").first
+      split= "Q"
+      if project.calendar_name == "ethiopian_v2"
+        split = "NovQ"
+      end      
+      @period.split(split).first
     end
 
     def quarter
-      @period.split("Q").last
+      split= "Q"
+      if project.calendar_name == "ethiopian_v2"
+        split = "NovQ"
+      end      
+      @period.split(split).last
     end
 
     def project

@@ -63,7 +63,7 @@ class InvoicingRequest
   def to_h
     {
       entity:         entity,
-      period:         period,
+      period:         invoicing_period,
       project_id:     project&.id,
       with_details:   with_details,
       engine_version: engine_version,

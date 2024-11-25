@@ -29,11 +29,15 @@ module Api::V2
       if valid_query_params?(params)
         org_unit = params[:orgUnit]
         period = params[:periods].split(",").first
+        separator = "Q"
+        if project.calendar_name == "ethiopian_v2"
+          separator = "NovQ"
+        end
         invoicing_request = InvoicingRequest.new(
           project:        project,
           entity:         org_unit,
-          year:           period.split("Q")[0],
-          quarter:        period.split("Q")[1],
+          year:           period.split(separator)[0],
+          quarter:        period.split(separator)[1],
           engine_version: project.engine_version
         )
         job = project_anchor.invoicing_simulation_jobs.where(
@@ -48,6 +52,7 @@ module Api::V2
           # Ensure status of job back is enqueued
           job.enqueued!
           args = invoicing_request.to_h.merge(simulate_draft: params[:simulate_draft])
+          puts("SimulationsController scheduling worker for : #{args}")
           InvoiceSimulationWorker.perform_async(*args.values)
         end
         options = {}
