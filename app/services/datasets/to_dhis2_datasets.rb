@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+def to_dhis2_frequency(hesabu_frequency)
+  hesabu_frequency.titleize.gsub(" ","")
+end
+
 module Datasets
   class ToDhis2Datasets
     attr_reader :dataset
@@ -15,7 +19,7 @@ module Datasets
       {
         name:                  name,
         short_name:            name,
-        period_type:           dataset_info.frequency.humanize,
+        period_type:           to_dhis2_frequency(dataset_info.frequency),
         open_future_periods:   3,
         data_elements:         data_elements.map do |de_id|
           {
@@ -38,7 +42,7 @@ module Datasets
       [
         "ORBF",
         dataset.payment_rule.rule.name,
-        dataset.frequency.humanize
+        to_dhis2_frequency(dataset.frequency)
       ].join(" - ")
     end
   end

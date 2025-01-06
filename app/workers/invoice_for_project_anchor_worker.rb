@@ -48,10 +48,15 @@ class InvoiceForProjectAnchorWorker
 
     options = default_options.merge(options)
     project_anchor = ProjectAnchor.find(project_anchor_id)
-    InvoicingJob.execute(project_anchor, "#{year}Q#{quarter}", selected_org_unit_ids&.first) do |invoicing_job|
-      request = InvoicingRequest.new(year: year, quarter: quarter)
 
-      project = project_anchor.projects.for_date(request.end_date_as_date) || project_anchor.latest_draft
+    request = InvoicingRequest.new(year: year, quarter: quarter)
+
+    project = project_anchor.projects.for_date(request.end_date_as_date) || project_anchor.latest_draft
+    request.project = project
+
+    period = project.calendar.to_invoicing_period(year,quarter)
+
+    InvoicingJob.execute(project_anchor, period, selected_org_unit_ids&.first) do |invoicing_job|
       request.engine_version = project.engine_version
 
       options = Invoicing::InvoicingOptions.new(

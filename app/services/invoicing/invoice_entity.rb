@@ -56,7 +56,7 @@ module Invoicing
           @fetch_and_solve = Orbf::RulesEngine::FetchAndSolve.new(
             orbf_project,
             invoicing_request.entity,
-            invoicing_request.year_quarter.to_dhis2,
+            invoicing_request.invoicing_period,
             solve_options
           )
           @pyramid = @fetch_and_solve.pyramid

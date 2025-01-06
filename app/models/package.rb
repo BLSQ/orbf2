@@ -33,7 +33,7 @@ class Package < ApplicationRecord
   include PaperTrailed
   delegate :program_id, to: :project
 
-  FREQUENCIES = %w[monthly quarterly yearly].freeze
+  FREQUENCIES = %w[monthly quarterly quarterly_nov yearly].freeze
   KINDS = %w[single multi-groupset zone].freeze
   belongs_to :project, inverse_of: :packages
   has_many :package_entity_groups, dependent: :destroy

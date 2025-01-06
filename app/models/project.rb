@@ -160,6 +160,8 @@ class Project < ApplicationRecord
   def calendar
     @calendar ||= if calendar_name == "ethiopian"
                     Orbf::RulesEngine::EthiopianCalendar.new
+                  elsif calendar_name == "ethiopian_v2"
+                    Orbf::RulesEngine::EthiopianV2Calendar.new
                   else
                     Orbf::RulesEngine::GregorianCalendar.new
                   end

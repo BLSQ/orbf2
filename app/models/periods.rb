@@ -18,8 +18,11 @@ module Periods
   QUARTERLY = "quarterly"
   SIX_MONTHLY = "sixMonthly"
   FINANCIAL_JULY = "financialJuly"
+  QUARTERLY_NOV = "quarterlyNov"
 
   def self.detect(dhis2Period)
+    return QUARTERLY_NOV if dhis2Period.include?("NovQ")
+
     return QUARTERLY if dhis2Period[4] == "Q" && dhis2Period.size == 6
 
     return SIX_MONTHLY if dhis2Period.include?("S")

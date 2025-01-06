@@ -21,6 +21,10 @@ describe Periods do
       expect(Periods.detect("2020Q2")).to equal("quarterly")
     end
 
+    it "quarterlyNov" do 
+      expect(Periods.detect("2020NovQ2")).to equal("quarterlyNov")
+    end
+
     it "yearly" do
       expect(Periods.detect("2020")).to equal("yearly")
     end
