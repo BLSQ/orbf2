@@ -29,6 +29,8 @@ class InvoicingRequest
   def invoicing_period
     if project 
       project.calendar.to_invoicing_period(year, quarter)
+    else 
+      "#{year}Q#{quarter}"
     end
   end
 
