@@ -67,7 +67,7 @@ RSpec.describe Api::V2::CompoundsController, type: :controller do
       resp = JSON.parse(response.body)
       expect(resp["data"]["id"]).to eq(payment_rule.id.to_s)
       expect(resp["data"]["relationships"]["sets"]["data"].uniq.length).to eq(2)
-      expect(resp["included"].select { |r| r["type"] == "set"}.length).to eq(4)
+      expect(resp["included"].select { |r| r["type"] == "set" }.length).to eq(4)
       record_json("compound.json", resp)
     end
   end
@@ -80,7 +80,7 @@ RSpec.describe Api::V2::CompoundsController, type: :controller do
       request.headers["X-Token"] = project_with_packages.project_anchor.token
       rule_count_before = Rule.all.count
       payment_rule_count_before = PaymentRule.all.count
-      post(:create, params: { data: { attributes: { name: "new payment rule", frequency: "quarterly", setIds: project_with_packages.packages.pluck(:id).map(&:to_s) }}})
+      post(:create, params: { data: { attributes: { name: "new payment rule", frequency: "quarterly", setIds: project_with_packages.packages.pluck(:id).map(&:to_s) } } })
       resp = JSON.parse(response.body)
       attrs = resp["data"]["attributes"]
       expect(attrs["name"]).to eq("new payment rule")
@@ -91,9 +91,13 @@ RSpec.describe Api::V2::CompoundsController, type: :controller do
     it "should return validation errors" do
       request.headers["Accept"] = "application/vnd.api+json;version=2"
       request.headers["X-Token"] = project_with_packages.project_anchor.token
-      post(:create, params: { data: { attributes: { name: "new payment rule", frequency: "invalid", setIds: project_with_packages.packages.pluck(:id).map(&:to_s) }}})
+      post(:create, params: { data: { attributes: { name: "new payment rule", frequency: "invalid", setIds: project_with_packages.packages.pluck(:id).map(&:to_s) } } })
       resp = JSON.parse(response.body)
-      expect(resp["errors"][0]).to eq({"status"=>"400", "message"=>"Validation failed: Frequency invalid is not a valid see monthly,quarterly", "details"=>{"frequency"=>["invalid is not a valid see monthly,quarterly"]}})
+      expect(resp["errors"][0]).to eq({ 
+        "status" => "400", 
+        "message" => "Validation failed: Frequency invalid is not a valid see monthly,quarterly,quarterly_nov", 
+        "details" => { "frequency"=>["invalid is not a valid see monthly,quarterly,quarterly_nov"] } 
+      })
     end
   end
 end
