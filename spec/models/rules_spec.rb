@@ -1,4 +1,3 @@
-# coding: utf-8
 # frozen_string_literal: true
 
 require "rails_helper"
@@ -133,6 +132,7 @@ RSpec.describe Rule, kind: :model do
 
   describe "#available_variables" do
     EXPECTED_VARIABLES = %w[
+      %{amount_current_quarter_nov_values}
       %{amount_current_quarter_values}
       %{claimed_current_cycle_values}
       %{claimed_current_quarter_quarterly_values}
@@ -144,12 +144,20 @@ RSpec.describe Rule, kind: :model do
       %{claimed_is_null_last_12_months_window_values}
       %{claimed_is_null_last_1_months_exclusive_window_values}
       %{claimed_is_null_last_1_months_window_values}
+      %{claimed_is_null_last_1_quarters_exclusive_window_values}
+      %{claimed_is_null_last_1_quarters_window_values}
       %{claimed_is_null_last_2_months_exclusive_window_values}
       %{claimed_is_null_last_2_months_window_values}
+      %{claimed_is_null_last_2_quarters_exclusive_window_values}
+      %{claimed_is_null_last_2_quarters_window_values}
       %{claimed_is_null_last_3_months_exclusive_window_values}
       %{claimed_is_null_last_3_months_window_values}
+      %{claimed_is_null_last_3_quarters_exclusive_window_values}
+      %{claimed_is_null_last_3_quarters_window_values}
       %{claimed_is_null_last_4_months_exclusive_window_values}
       %{claimed_is_null_last_4_months_window_values}
+      %{claimed_is_null_last_4_quarters_exclusive_window_values}
+      %{claimed_is_null_last_4_quarters_window_values}
       %{claimed_is_null_last_5_months_exclusive_window_values}
       %{claimed_is_null_last_5_months_window_values}
       %{claimed_is_null_last_6_months_exclusive_window_values}
@@ -168,12 +176,20 @@ RSpec.describe Rule, kind: :model do
       %{claimed_last_12_months_window_values}
       %{claimed_last_1_months_exclusive_window_values}
       %{claimed_last_1_months_window_values}
+      %{claimed_last_1_quarters_exclusive_window_values}
+      %{claimed_last_1_quarters_window_values}
       %{claimed_last_2_months_exclusive_window_values}
       %{claimed_last_2_months_window_values}
+      %{claimed_last_2_quarters_exclusive_window_values}
+      %{claimed_last_2_quarters_window_values}
       %{claimed_last_3_months_exclusive_window_values}
       %{claimed_last_3_months_window_values}
+      %{claimed_last_3_quarters_exclusive_window_values}
+      %{claimed_last_3_quarters_window_values}
       %{claimed_last_4_months_exclusive_window_values}
       %{claimed_last_4_months_window_values}
+      %{claimed_last_4_quarters_exclusive_window_values}
+      %{claimed_last_4_quarters_window_values}
       %{claimed_last_5_months_exclusive_window_values}
       %{claimed_last_5_months_window_values}
       %{claimed_last_6_months_exclusive_window_values}
@@ -186,7 +202,9 @@ RSpec.describe Rule, kind: :model do
       %{claimed_last_9_months_window_values}
       %{claimed_previous_year_same_quarter_values}
       %{claimed_previous_year_values}
+      %{difference_percentage_current_quarter_nov_values}
       %{difference_percentage_current_quarter_values}
+      %{quantity_current_quarter_nov_values}
       %{quantity_current_quarter_values}
       %{tarif_current_cycle_values}
       %{tarif_current_quarter_quarterly_values}
@@ -198,12 +216,20 @@ RSpec.describe Rule, kind: :model do
       %{tarif_is_null_last_12_months_window_values}
       %{tarif_is_null_last_1_months_exclusive_window_values}
       %{tarif_is_null_last_1_months_window_values}
+      %{tarif_is_null_last_1_quarters_exclusive_window_values}
+      %{tarif_is_null_last_1_quarters_window_values}
       %{tarif_is_null_last_2_months_exclusive_window_values}
       %{tarif_is_null_last_2_months_window_values}
+      %{tarif_is_null_last_2_quarters_exclusive_window_values}
+      %{tarif_is_null_last_2_quarters_window_values}
       %{tarif_is_null_last_3_months_exclusive_window_values}
       %{tarif_is_null_last_3_months_window_values}
+      %{tarif_is_null_last_3_quarters_exclusive_window_values}
+      %{tarif_is_null_last_3_quarters_window_values}
       %{tarif_is_null_last_4_months_exclusive_window_values}
       %{tarif_is_null_last_4_months_window_values}
+      %{tarif_is_null_last_4_quarters_exclusive_window_values}
+      %{tarif_is_null_last_4_quarters_window_values}
       %{tarif_is_null_last_5_months_exclusive_window_values}
       %{tarif_is_null_last_5_months_window_values}
       %{tarif_is_null_last_6_months_exclusive_window_values}
@@ -222,12 +248,20 @@ RSpec.describe Rule, kind: :model do
       %{tarif_last_12_months_window_values}
       %{tarif_last_1_months_exclusive_window_values}
       %{tarif_last_1_months_window_values}
+      %{tarif_last_1_quarters_exclusive_window_values}
+      %{tarif_last_1_quarters_window_values}
       %{tarif_last_2_months_exclusive_window_values}
       %{tarif_last_2_months_window_values}
+      %{tarif_last_2_quarters_exclusive_window_values}
+      %{tarif_last_2_quarters_window_values}
       %{tarif_last_3_months_exclusive_window_values}
       %{tarif_last_3_months_window_values}
+      %{tarif_last_3_quarters_exclusive_window_values}
+      %{tarif_last_3_quarters_window_values}
       %{tarif_last_4_months_exclusive_window_values}
       %{tarif_last_4_months_window_values}
+      %{tarif_last_4_quarters_exclusive_window_values}
+      %{tarif_last_4_quarters_window_values}
       %{tarif_last_5_months_exclusive_window_values}
       %{tarif_last_5_months_window_values}
       %{tarif_last_6_months_exclusive_window_values}
@@ -250,12 +284,20 @@ RSpec.describe Rule, kind: :model do
       %{verified_is_null_last_12_months_window_values}
       %{verified_is_null_last_1_months_exclusive_window_values}
       %{verified_is_null_last_1_months_window_values}
+      %{verified_is_null_last_1_quarters_exclusive_window_values}
+      %{verified_is_null_last_1_quarters_window_values}
       %{verified_is_null_last_2_months_exclusive_window_values}
       %{verified_is_null_last_2_months_window_values}
+      %{verified_is_null_last_2_quarters_exclusive_window_values}
+      %{verified_is_null_last_2_quarters_window_values}
       %{verified_is_null_last_3_months_exclusive_window_values}
       %{verified_is_null_last_3_months_window_values}
+      %{verified_is_null_last_3_quarters_exclusive_window_values}
+      %{verified_is_null_last_3_quarters_window_values}
       %{verified_is_null_last_4_months_exclusive_window_values}
       %{verified_is_null_last_4_months_window_values}
+      %{verified_is_null_last_4_quarters_exclusive_window_values}
+      %{verified_is_null_last_4_quarters_window_values}
       %{verified_is_null_last_5_months_exclusive_window_values}
       %{verified_is_null_last_5_months_window_values}
       %{verified_is_null_last_6_months_exclusive_window_values}
@@ -274,12 +316,20 @@ RSpec.describe Rule, kind: :model do
       %{verified_last_12_months_window_values}
       %{verified_last_1_months_exclusive_window_values}
       %{verified_last_1_months_window_values}
+      %{verified_last_1_quarters_exclusive_window_values}
+      %{verified_last_1_quarters_window_values}
       %{verified_last_2_months_exclusive_window_values}
       %{verified_last_2_months_window_values}
+      %{verified_last_2_quarters_exclusive_window_values}
+      %{verified_last_2_quarters_window_values}
       %{verified_last_3_months_exclusive_window_values}
       %{verified_last_3_months_window_values}
+      %{verified_last_3_quarters_exclusive_window_values}
+      %{verified_last_3_quarters_window_values}
       %{verified_last_4_months_exclusive_window_values}
       %{verified_last_4_months_window_values}
+      %{verified_last_4_quarters_exclusive_window_values}
+      %{verified_last_4_quarters_window_values}
       %{verified_last_5_months_exclusive_window_values}
       %{verified_last_5_months_window_values}
       %{verified_last_6_months_exclusive_window_values}
@@ -294,7 +344,6 @@ RSpec.describe Rule, kind: :model do
       %{verified_previous_year_values}
       amount
       claimed
-      claimed_quarterly
       claimed_is_null
       claimed_level_1
       claimed_level_1_quarterly
@@ -306,14 +355,13 @@ RSpec.describe Rule, kind: :model do
       claimed_level_4_quarterly
       claimed_level_5
       claimed_level_5_quarterly
+      claimed_quarterly
       difference_percentage
-      year
       month_of_quarter
       month_of_year
       quantity
       quarter_of_year
       tarif
-      tarif_quarterly
       tarif_is_null
       tarif_level_1
       tarif_level_1_quarterly
@@ -325,8 +373,8 @@ RSpec.describe Rule, kind: :model do
       tarif_level_4_quarterly
       tarif_level_5
       tarif_level_5_quarterly
+      tarif_quarterly
       verified
-      verified_quarterly
       verified_is_null
       verified_level_1
       verified_level_1_quarterly
@@ -338,54 +386,8 @@ RSpec.describe Rule, kind: :model do
       verified_level_4_quarterly
       verified_level_5
       verified_level_5_quarterly
-      %{claimed_is_null_last_1_quarters_exclusive_window_values}
-      %{claimed_is_null_last_1_quarters_window_values}
-      %{claimed_is_null_last_2_quarters_exclusive_window_values}
-      %{claimed_is_null_last_2_quarters_window_values}
-      %{claimed_is_null_last_3_quarters_exclusive_window_values}
-      %{claimed_is_null_last_3_quarters_window_values}
-      %{claimed_is_null_last_4_quarters_exclusive_window_values}
-      %{claimed_is_null_last_4_quarters_window_values}
-      %{claimed_last_1_quarters_exclusive_window_values}
-      %{claimed_last_1_quarters_window_values}
-      %{claimed_last_2_quarters_exclusive_window_values}
-      %{claimed_last_2_quarters_window_values}
-      %{claimed_last_3_quarters_exclusive_window_values}
-      %{claimed_last_3_quarters_window_values}
-      %{claimed_last_4_quarters_exclusive_window_values}
-      %{claimed_last_4_quarters_window_values}
-      %{verified_is_null_last_1_quarters_exclusive_window_values}
-      %{verified_is_null_last_1_quarters_window_values}
-      %{verified_is_null_last_2_quarters_exclusive_window_values}
-      %{verified_is_null_last_2_quarters_window_values}
-      %{verified_is_null_last_3_quarters_exclusive_window_values}
-      %{verified_is_null_last_3_quarters_window_values}
-      %{verified_is_null_last_4_quarters_exclusive_window_values}
-      %{verified_is_null_last_4_quarters_window_values}
-      %{verified_last_1_quarters_exclusive_window_values}
-      %{verified_last_1_quarters_window_values}
-      %{verified_last_2_quarters_exclusive_window_values}
-      %{verified_last_2_quarters_window_values}
-      %{verified_last_3_quarters_exclusive_window_values}
-      %{verified_last_3_quarters_window_values}
-      %{verified_last_4_quarters_exclusive_window_values}
-      %{verified_last_4_quarters_window_values}
-      %{tarif_is_null_last_1_quarters_exclusive_window_values}
-      %{tarif_is_null_last_1_quarters_window_values}
-      %{tarif_is_null_last_2_quarters_exclusive_window_values}
-      %{tarif_is_null_last_2_quarters_window_values}
-      %{tarif_is_null_last_3_quarters_exclusive_window_values}
-      %{tarif_is_null_last_3_quarters_window_values}
-      %{tarif_is_null_last_4_quarters_exclusive_window_values}
-      %{tarif_is_null_last_4_quarters_window_values}
-      %{tarif_last_1_quarters_exclusive_window_values}
-      %{tarif_last_1_quarters_window_values}
-      %{tarif_last_2_quarters_exclusive_window_values}
-      %{tarif_last_2_quarters_window_values}
-      %{tarif_last_3_quarters_exclusive_window_values}
-      %{tarif_last_3_quarters_window_values}
-      %{tarif_last_4_quarters_exclusive_window_values}
-      %{tarif_last_4_quarters_window_values}
+      verified_quarterly
+      year
     ].freeze
 
     it "should return all states and scoped states " do
@@ -393,7 +395,7 @@ RSpec.describe Rule, kind: :model do
       expect(availailable_variables).to match_array(EXPECTED_VARIABLES)
     end
 
-    it 'allows monthly package to reference quarterly values' do
+    it "allows monthly package to reference quarterly values" do
       p = project.packages.build(frequency: "monthly")
       p.states << p.project.states.select { |state| %w[Claimed Verified Tarif].include?(state.name) }.to_a
       rule = p.rules.build(
@@ -605,6 +607,7 @@ RSpec.describe Rule, kind: :model do
 
     it "has available_variables for activity_rules" do
       expected = %w[
+        %{attributed_points_current_quarter_nov_values}
         %{attributed_points_current_quarter_values}
         %{claimed_current_cycle_values}
         %{claimed_current_quarter_quarterly_values}
@@ -616,12 +619,20 @@ RSpec.describe Rule, kind: :model do
         %{claimed_is_null_last_12_months_window_values}
         %{claimed_is_null_last_1_months_exclusive_window_values}
         %{claimed_is_null_last_1_months_window_values}
+        %{claimed_is_null_last_1_quarters_exclusive_window_values}
+        %{claimed_is_null_last_1_quarters_window_values}
         %{claimed_is_null_last_2_months_exclusive_window_values}
         %{claimed_is_null_last_2_months_window_values}
+        %{claimed_is_null_last_2_quarters_exclusive_window_values}
+        %{claimed_is_null_last_2_quarters_window_values}
         %{claimed_is_null_last_3_months_exclusive_window_values}
         %{claimed_is_null_last_3_months_window_values}
+        %{claimed_is_null_last_3_quarters_exclusive_window_values}
+        %{claimed_is_null_last_3_quarters_window_values}
         %{claimed_is_null_last_4_months_exclusive_window_values}
         %{claimed_is_null_last_4_months_window_values}
+        %{claimed_is_null_last_4_quarters_exclusive_window_values}
+        %{claimed_is_null_last_4_quarters_window_values}
         %{claimed_is_null_last_5_months_exclusive_window_values}
         %{claimed_is_null_last_5_months_window_values}
         %{claimed_is_null_last_6_months_exclusive_window_values}
@@ -640,12 +651,20 @@ RSpec.describe Rule, kind: :model do
         %{claimed_last_12_months_window_values}
         %{claimed_last_1_months_exclusive_window_values}
         %{claimed_last_1_months_window_values}
+        %{claimed_last_1_quarters_exclusive_window_values}
+        %{claimed_last_1_quarters_window_values}
         %{claimed_last_2_months_exclusive_window_values}
         %{claimed_last_2_months_window_values}
+        %{claimed_last_2_quarters_exclusive_window_values}
+        %{claimed_last_2_quarters_window_values}
         %{claimed_last_3_months_exclusive_window_values}
         %{claimed_last_3_months_window_values}
+        %{claimed_last_3_quarters_exclusive_window_values}
+        %{claimed_last_3_quarters_window_values}
         %{claimed_last_4_months_exclusive_window_values}
         %{claimed_last_4_months_window_values}
+        %{claimed_last_4_quarters_exclusive_window_values}
+        %{claimed_last_4_quarters_window_values}
         %{claimed_last_5_months_exclusive_window_values}
         %{claimed_last_5_months_window_values}
         %{claimed_last_6_months_exclusive_window_values}
@@ -658,25 +677,8 @@ RSpec.describe Rule, kind: :model do
         %{claimed_last_9_months_window_values}
         %{claimed_previous_year_same_quarter_values}
         %{claimed_previous_year_values}
-        %{claimed_is_null_last_1_quarters_exclusive_window_values}
-        %{claimed_is_null_last_1_quarters_window_values}
-        %{claimed_is_null_last_2_quarters_exclusive_window_values}
-        %{claimed_is_null_last_2_quarters_window_values}
-        %{claimed_is_null_last_3_quarters_exclusive_window_values}
-        %{claimed_is_null_last_3_quarters_window_values}
-        %{claimed_is_null_last_4_quarters_exclusive_window_values}
-        %{claimed_is_null_last_4_quarters_window_values}
-        %{claimed_last_1_quarters_exclusive_window_values}
-        %{claimed_last_1_quarters_window_values}
-        %{claimed_last_2_quarters_exclusive_window_values}
-        %{claimed_last_2_quarters_window_values}
-        %{claimed_last_3_quarters_exclusive_window_values}
-        %{claimed_last_3_quarters_window_values}
-        %{claimed_last_4_quarters_exclusive_window_values}
-        %{claimed_last_4_quarters_window_values}
         attributed_points
         claimed
-        claimed_quarterly
         claimed_is_null
         claimed_level_1
         claimed_level_1_quarterly
@@ -688,12 +690,14 @@ RSpec.describe Rule, kind: :model do
         claimed_level_4_quarterly
         claimed_level_5
         claimed_level_5_quarterly
+        claimed_quarterly
         claimed_zone_main_orgunit
         fosa_attributed_points
         month_of_quarter
         month_of_year
         quarter_of_year
         year
+
       ]
       expect(activity_rule.available_variables).to match_array(expected)
     end
