@@ -124,7 +124,7 @@ module Api
           groupsets_ext_refs:         att[:groupSetsExtRefs] || [],
           state_ids:                  att[:inputs] || [],
           include_main_orgunit:       att[:includeMainOrgunit],
-          data_element_group_ext_ref: "todo"
+          data_element_group_ext_ref: att[:data_element_group_ext_ref] || "todo"
         }
       end
 

@@ -10,6 +10,7 @@ class V2::PackageSerializer < V2::BaseSerializer
   attributes :include_main_orgunit
   attributes :loop_over_combo_ext_id
   attributes :data_element_group_ext_ref
+  attributes :deg_external_reference
   attributes :ogs_reference
   attributes :groupsets_ext_refs
 
