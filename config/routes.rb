@@ -66,7 +66,7 @@ Rails.application.routes.draw do
       end
       resources :users, only: %i[index create update]
       resources :changes, only: [:index]
-
+      resources :descriptors, only: [:show]
       get :simulation, to: "simulations#query_based_show"
 
       match "*path",
