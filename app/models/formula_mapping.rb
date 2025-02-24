@@ -36,7 +36,9 @@ class FormulaMapping < ApplicationRecord
   belongs_to :formula, inverse_of: :formula_mappings
   belongs_to :activity, optional: true
 
-  validates :activity, presence: true, if: -> { [Rule::RULE_TYPE_ACTIVITY, Rule::RULE_TYPE_ZONE_ACTIVITY].include?(kind) }
+  validates :activity, presence: true, if: lambda {
+                                             [Rule::RULE_TYPE_ACTIVITY, Rule::RULE_TYPE_ZONE_ACTIVITY].include?(kind)
+                                           }
 
   def project
     formula.rule.project
@@ -55,7 +57,7 @@ class FormulaMapping < ApplicationRecord
       short: format(naming_patterns[:short], substitutions).strip,
       code:  format(naming_patterns[:code], substitutions).strip
     }
-    Dhis2Name.new(dhis2_name)
+    Dhis2Name.new(**dhis2_name)
   end
 
   def data_element_ext_ref

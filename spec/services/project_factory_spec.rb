@@ -25,7 +25,9 @@ describe ProjectFactory do
     PaperTrail::Version,
     PaperTrail::VersionAssociation,
     Flipper::Adapters::ActiveRecord::Feature,
-    Flipper::Adapters::ActiveRecord::Gate
+    Flipper::Adapters::ActiveRecord::Gate,
+    ActiveRecord::InternalMetadata,
+    ActiveStorage::VariantRecord
   ].freeze
 
   NON_PROJECT_AR = [
@@ -78,7 +80,7 @@ describe ProjectFactory do
     end
 
     old_activity_ids = project.activities.map(&:id)
-    formula_mappings_with_bad_activities = new_draft.packages.flat_map { |p| p.activity_rule.formulas.flat_map(&:formula_mappings)}.select { |fm| old_activity_ids.include?(fm.activity_id) }
+    formula_mappings_with_bad_activities = new_draft.packages.flat_map { |p| p.activity_rule.formulas.flat_map(&:formula_mappings) }.select { |fm| old_activity_ids.include?(fm.activity_id) }
     expect(formula_mappings_with_bad_activities).to(eq([]))
   end
 

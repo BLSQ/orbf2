@@ -53,10 +53,14 @@ RSpec.describe "Data Test", data_test: true do
 
         it "solution" do
           original = artefact("#{name}-solution.json")
-          new = result("#{name}-solution.json")
-          result = JsonDiff.diff(original, new, include_was: true)
+          new_solution = result("#{name}-solution.json")
+          result = JsonDiff.diff(original, new_solution, include_was: true)
+          # omit type changes since dentaku upgrade (expected_float - actual_float).abs <= delta
+          result = result.reject do |change|
+            change["op"] == "replace" && (change["was"].to_f - change["value"].to_f).abs <= 0.000000001
+          end
           unless result.empty?
-            puts "  + original: #{original.keys.count} vs new: #{new.keys.count}"
+            puts "  + original: #{original.keys.count} vs new: #{new_solution.keys.count}"
             puts "  + diff (first 10): #{result.sample(10)}"
           end
           expect(result).to be_empty
@@ -65,7 +69,7 @@ RSpec.describe "Data Test", data_test: true do
         it "exported_values" do
           original = artefact("#{name}-exported_values.json")
           new = result("#{name}-exported_values.json")
-          diff = HashDiff.diff(original, new, use_lcs: false)
+          diff = Hashdiff.diff(original, new, use_lcs: false, numeric_tolerance: 0.000000001)
           unless diff.empty?
             puts "  + original: #{original.count} vs new: #{new.count}"
             puts "  + diff (first 10): #{diff.sample(10)}"
@@ -77,13 +81,13 @@ RSpec.describe "Data Test", data_test: true do
   else
     message = <<~DESC
       No FETCHER_S3_ACCESS and FETCHER_S3_KEY found in ENV-variables.
-      
+
       These are needed to download the artefacts to verify the results with,
       so now skipping.
     DESC
     if ENV["CI"]
-      it 'has S3 configured' do
-        fail message
+      it "has S3 configured" do
+        raise message
       end
     else
       puts message

@@ -27,7 +27,7 @@ Rails.application.configure do
   end
 
   # Store uploaded files on the local file system (see config/storage.yml for options)
-  config.active_storage.service = ENV.fetch("RAILS_ACTIVE_STORAGE", 'amazon')
+  config.active_storage.service = ENV.fetch("RAILS_ACTIVE_STORAGE", "amazon")
 
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false
@@ -61,24 +61,29 @@ Rails.application.configure do
   config.action_mailer.default_url_options   = { host: "localhost", port: 3000 }
   config.action_mailer.delivery_method       = :smtp
   config.action_mailer.smtp_settings         = { address: "localhost", port: 1025 }
+  config.autoload_paths += %W[#{config.root}/app/services]
 
   ::Rack::MiniProfiler.profile_method(Orbf::RulesEngine::Dhis2ValuesPrinter, :print)
   ::Rack::MiniProfiler.profile_method(Orbf::RulesEngine::Solver, :solve!)
   ::Rack::MiniProfiler.profile_method(Orbf::RulesEngine::FetchAndSolve, :call)
   ::Rack::MiniProfiler.profile_method(Orbf::RulesEngine::GroupOrgunitsResolver, :call)
   ::Rack::MiniProfiler.profile_method(Orbf::RulesEngine::ResolveArguments, :call)
-  ::Rack::MiniProfiler.profile_singleton_method(Orbf::RulesEngine::ActivityVariablesBuilder, :to_variables)
-  #::Rack::MiniProfiler.profile_singleton_method(Orbf::RulesEngine::PeriodIterator, :periods)
+  ::Rack::MiniProfiler.profile_singleton_method(Orbf::RulesEngine::ActivityVariablesBuilder,
+                                                :to_variables)
+  # ::Rack::MiniProfiler.profile_singleton_method(Orbf::RulesEngine::PeriodIterator, :periods)
   ::Rack::MiniProfiler.profile_method(Orbf::RulesEngine::SolverFactory, :new_solver)
 
   ::Rack::MiniProfiler.profile_method(Orbf::RulesEngine::DecisionVariablesBuilder, :to_variables)
-  ::Rack::MiniProfiler.profile_method(Orbf::RulesEngine::ActivityConstantVariablesBuilder, :to_variables)
-  ::Rack::MiniProfiler.profile_method(Orbf::RulesEngine::ActivityFormulaVariablesBuilder, :to_variables)
+  ::Rack::MiniProfiler.profile_method(Orbf::RulesEngine::ActivityConstantVariablesBuilder,
+                                      :to_variables)
+  ::Rack::MiniProfiler.profile_method(Orbf::RulesEngine::ActivityFormulaVariablesBuilder,
+                                      :to_variables)
   ::Rack::MiniProfiler.profile_method(Orbf::RulesEngine::PackageVariablesBuilder, :to_variables)
   ::Rack::MiniProfiler.profile_method(Orbf::RulesEngine::ZoneFormulaVariablesBuilder, :to_variables)
-  ::Rack::MiniProfiler.profile_method(Orbf::RulesEngine::PaymentFormulaVariablesBuilder, :to_variables)
+  ::Rack::MiniProfiler.profile_method(Orbf::RulesEngine::PaymentFormulaVariablesBuilder,
+                                      :to_variables)
   ::Rack::MiniProfiler.profile_method(ActionView::Template, :render)
 
   ::Rack::MiniProfiler.profile_method(Hesabu::Solver, :solve!)
-  ::Rack::MiniProfiler.profile_method(Invoicing::InvoiceEntity, :call)
+  # ::Rack::MiniProfiler.profile_method(Invoicing::InvoiceEntity, :call)
 end

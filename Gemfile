@@ -2,7 +2,7 @@
 
 source "https://rubygems.org"
 
-ruby "2.5.8"
+ruby "3.2.0"
 
 git_source(:github) do |repo_name|
   repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
@@ -11,30 +11,30 @@ end
 
 ## Infrastructure
 
+gem "activerecord-nulldb-adapter"
 gem "dhis2", github: "BLSQ/dhis2", branch: "legacy-v2"
-gem "paper_trail", "~> 10.1.0"
-gem "paper_trail-association_tracking", "~> 1.0.0"
-gem "pg", "~> 0.18"
+gem "paper_trail", "~> 13.0.0"
+gem "paper_trail-association_tracking", "~> 2.2.1"
+gem "pg", "~> 1.4.5"
 gem "puma", "~> 4.3"
 gem "rack", ">= 2.0.6"
-gem "rails", "~> 5.2", "< 5.3"
-gem "activerecord-nulldb-adapter"
-gem "rails_admin", "~> 1.4.2"
+gem "rails", "~> 7.0.4.1"
+gem "rails_admin", "~> 3.1.1"
 gem "sidekiq", "< 6"
 gem "sidekiq-throttled", "~> 0.9.0"
 
 ## Tooling
 
-gem "bootsnap", "~> 1.3.2"
+gem "bootsnap", "~> 1.15.0"
 gem "figaro"
-gem "lograge", "~> 0.10.0"
+gem "lograge", "~> 0.12.0"
 gem "sentry-raven", "~> 2.7.4"
 
 # Feature flipper is the act of enabling/disabling features in your app...
 # [flipper](https://github.com/jnunemaker/flipper)
-gem "flipper", "~> 0.16.1"
-gem "flipper-active_record", "~> 0.16.1"
-gem "flipper-ui", "~> 0.16.1"
+gem "flipper", "~> 0.26.0"
+gem "flipper-active_record", "~> 0.26.0"
+gem "flipper-ui", "~> 0.26.0"
 
 ## Frontend and asset related
 
@@ -45,17 +45,16 @@ gem "coffee-rails", "~> 4.2"
 gem "jquery-rails", "~> 4.3.3"
 gem "jquery-ui-rails", "~> 5.0.5"
 gem "rails-jquery-autocomplete"
-gem "sassc-rails", "~> 2.0.0"
+gem "sassc-rails", "~> 2.1.2"
 gem "simple_form"
-gem "sprockets", "~> 3.7.2"
+gem "sprockets", "~> 4.2.0"
 gem "turbolinks", "~> 5"
 gem "uglifier", ">= 1.3.0"
-
 ## Authentication
 
 # Flexible authentication solution for Rails with Warden
 # [devise](https://github.com/plataformatec/devise)
-gem "devise", "~> 4.7.1"
+gem "devise", "~> 4.8.1"
 
 # Log in as another user in Rails
 # [pretender](https://github.com/ankane/pretender)
@@ -86,7 +85,7 @@ else
   # We're using both of them against the latest master. We should set
   # them to versions when they become more stable
   gem "hesabu", github: "BLSQ/hesabu"
-  gem "orbf-rules_engine", github: "BLSQ/orbf-rules_engine", branch: "master"
+  gem "orbf-rules_engine", github: "BLSQ/orbf-rules_engine", branch: "ruby-3.2.0-test" # TODO: back to master
 end
 # Like a modern code version of the mythical beast with 100 serpent hea...
 # [typhoeus](https://github.com/typhoeus/typhoeus)
@@ -96,28 +95,26 @@ group :development, :test do
   gem "byebug", platform: :mri
 
   # Use pry instead of irb: http://pryrepl.org
-  gem "pry", "~> 0.12.2"
+  gem "pry", "~> 0.14.2"
   gem "pry-rails", "~> 0.3.9"
 
   gem "database_cleaner"
-  gem "factory_bot_rails", "~> 4.11.1"
+  gem "factory_bot_rails", "~> 6.2.0"
   gem "faker"
   gem "immigrant"
   gem "rails-controller-testing"
   gem "rest-client-logger", github: "uswitch/rest-client-logger"
   gem "rspec-its"
-  gem "rspec-rails", "~> 3.0"
+  gem "rspec-rails", "~> 6.0.1"
   gem "ruby-prof"
   gem "shoulda-matchers", require: false
 
-  gem "capybara"
   gem "json-diff", "~> 0.4.1"
   gem "rubyzip", "~> 1.3.0"
-  gem "selenium-webdriver"
 end
 
 group :development do
-  gem "annotate", "~> 2.7.4"
+  gem "annotate", "~> 3.2.0"
   gem "flamegraph"
   gem "listen", "~> 3.0.5"
   gem "memory_profiler"
@@ -127,7 +124,7 @@ group :development do
   gem "pronto-simplecov", require: false
   gem "rack-mini-profiler"
   gem "rubocop", require: false
-  gem 'rubocop-rails', require: false
+  gem "rubocop-rails", require: false
   gem "spring"
   gem "spring-watcher-listen", "~> 2.0.0"
   gem "stackprof"
@@ -138,10 +135,6 @@ group :test do
   gem "rspec-sidekiq"
   gem "simplecov", require: false
   gem "webmock"
-end
-
-group :production do
-  gem "heroku-deflater"
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

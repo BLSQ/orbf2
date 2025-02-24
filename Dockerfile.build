@@ -1,4 +1,4 @@
-FROM ruby:2.5.8-alpine AS build-env
+FROM ruby:3.2.0-alpine AS build-env
 
 ARG RAILS_ROOT=/app
 ARG BUILD_PACKAGES="build-base curl-dev git"
@@ -19,23 +19,23 @@ RUN apk update \
 COPY Gemfile* ./
 # install rubygem
 COPY Gemfile Gemfile.lock $RAILS_ROOT/
-RUN gem update --system 3.2.3 && gem install bundler -i 2.2.3 && bundle config set --local without 'development test' && bundle config set --local path 'vendor/bundle'
+RUN gem update --system 3.4.1 && gem install bundler -i 2.4.4 && bundle config set --local without 'development test' && bundle config set --local path 'vendor/bundle'
 RUN bundle install \
-    && rm -rf vendor/bundle/ruby/2.5.0/cache/*.gem \
-    && find vendor/bundle/ruby/2.5.0/gems/ -name "*.c" -delete \
-    && find vendor/bundle/ruby/2.5.0/gems/ -name "*.o" -delete
+    && rm -rf vendor/bundle/ruby/3.2.0/cache/*.gem \
+    && find vendor/bundle/ruby/3.2.0/gems/ -name "*.c" -delete \
+    && find vendor/bundle/ruby/3.2.0/gems/ -name "*.o" -delete
 COPY . .
 RUN DATABASE_URL=nulldb:://null SECRET_KEY_BASE=1 RAILS_ENV=production bundle exec rake assets:precompile --trace
 # Remove folders not needed in resulting image
-RUN rm -rf node_modules tmp/cache app/assets vendor/assets spec
+RUN rm -rf node_modules tmp/cache vendor/assets spec
 
 
-FROM ruby:2.5.8-alpine
+FROM ruby:3.2.0-alpine
 ARG RAILS_ROOT=/app
 ARG PACKAGES="tzdata postgresql-client nodejs bash curl-dev"
 ENV RAILS_ENV=production
 ENV BUNDLE_APP_CONFIG="$RAILS_ROOT/.bundle"
-RUN gem update --system 3.2.3 && gem install bundler -i 2.2.3
+RUN gem update --system 3.4.1 && gem install bundler -i 2.4.4
 WORKDIR $RAILS_ROOT
 # install packages
 RUN apk update \

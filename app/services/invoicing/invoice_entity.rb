@@ -48,22 +48,22 @@ module Invoicing
 
     def fetch_and_solve
       @fetch_and_solve ||= begin
-          solve_options = {
-            pyramid:     pyramid,
-            mock_values: invoicing_request.mocked_data
-          }
+        solve_options = {
+          pyramid:     pyramid,
+          mock_values: invoicing_request.mocked_data
+        }
 
-          @fetch_and_solve = Orbf::RulesEngine::FetchAndSolve.new(
-            orbf_project,
-            invoicing_request.entity,
-            invoicing_request.year_quarter.to_dhis2,
-            solve_options
-          )
-          @pyramid = @fetch_and_solve.pyramid
-          @dhis2_export_values = @fetch_and_solve.call
-          @dhis2_input_values = @fetch_and_solve.dhis2_values
-          @fetch_and_solve
-        end
+        @fetch_and_solve = Orbf::RulesEngine::FetchAndSolve.new(
+          orbf_project,
+          invoicing_request.entity,
+          invoicing_request.year_quarter.to_dhis2,
+          **solve_options
+        )
+        @pyramid = @fetch_and_solve.pyramid
+        @dhis2_export_values = @fetch_and_solve.call
+        @dhis2_input_values = @fetch_and_solve.dhis2_values
+        @fetch_and_solve
+      end
     end
 
     def publish_to_dhis2

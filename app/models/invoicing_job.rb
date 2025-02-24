@@ -62,18 +62,17 @@ class InvoicingJob < ApplicationRecord
       start_time = time
 
       instrument :execute do |payload|
-        begin
-          payload[:found] = "FOUND #{invoicing_job.inspect} vs #{period} #{orgunit_ref}"
-          yield(invoicing_job)
-        ensure
-          payload[:processed] = "mark_as_processed #{invoicing_job.inspect}"
-          find_invoicing_job(project_anchor, period, orgunit_ref)&.mark_as_processed(start_time, time)
-        end
+        payload[:found] = "FOUND #{invoicing_job.inspect} vs #{period} #{orgunit_ref}"
+        yield(invoicing_job)
+      ensure
+        payload[:processed] = "mark_as_processed #{invoicing_job.inspect}"
+        find_invoicing_job(project_anchor, period,
+                           orgunit_ref)&.mark_as_processed(start_time, time)
       end
-    rescue StandardError => err
-      warn "ERROR #{invoicing_job.inspect} #{err.message}"
-      find_invoicing_job(project_anchor, period, orgunit_ref)&.mark_as_error(start_time, time, err)
-      raise err
+    rescue StandardError => e
+      warn "ERROR #{invoicing_job.inspect} #{e.message}"
+      find_invoicing_job(project_anchor, period, orgunit_ref)&.mark_as_error(start_time, time, e)
+      raise e
     end
 
     private
@@ -102,8 +101,8 @@ class InvoicingJob < ApplicationRecord
   end
 
   def processed_after?(time_stamp: 10.minutes.ago)
-    return errored_at > time_stamp if errored?
-    return processed_at > time_stamp if processed?
+    return errored_at > time_stamp if errored? && errored_at
+    return processed_at > time_stamp if processed? && processed_at
 
     false
   end

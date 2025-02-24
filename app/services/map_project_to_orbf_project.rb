@@ -27,7 +27,8 @@ class MapProjectToOrbfProject
 
   private
 
-  attr_reader :project, :packages, :dhis2_indicators_by_id, :data_elements_by_id, :category_combos_by_id
+  attr_reader :project, :packages, :dhis2_indicators_by_id, :data_elements_by_id,
+              :category_combos_by_id
 
   PACKAGE_KINDS = {
     "multi-groupset" => "subcontract"
@@ -129,7 +130,7 @@ class MapProjectToOrbfProject
         formula.code,
         formula.expression,
         formula.description,
-        map_formula_mappings(formula)
+        **map_formula_mappings(formula)
       )
     end
   end
@@ -137,7 +138,10 @@ class MapProjectToOrbfProject
   def map_formula_mappings(formula)
     formula_mappings = {}
     formula_mappings[:frequency] = formula.frequency if formula.frequency
-    formula_mappings[:exportable_formula_code] = formula.exportable_formula_code if formula.exportable_formula_code
+    if formula.exportable_formula_code
+      formula_mappings[:exportable_formula_code] =
+formula.exportable_formula_code
+    end
     if formula.rule.activity_related_kind? && formula.formula_mappings.any?
       formula_mappings[:activity_mappings] = formula.formula_mappings
                                                     .each_with_object({}) do |mapping, hash|

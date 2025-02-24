@@ -25,7 +25,7 @@ dump.rdb
 coverage
 spec/artefacts/*
 config/data_test.json
-.env*
+./.env*
 
 # I, pj, still vendor my ruby gems in the directory of the
 # application, this stops me from committing them here.
