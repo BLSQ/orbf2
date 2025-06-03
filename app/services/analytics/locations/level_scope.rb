@@ -17,6 +17,9 @@ module Analytics
           states.each do |state|
             result["#{state.code}_level_#{level}"] = state
             result["#{state.code}_level_#{level}_quarterly"] = state
+            if package.project.calendar_name == "ethiopian_v2"
+              result["#{state.code}_level_#{level}_quarterly_nov"] = state
+            end
           end
         end
       end
