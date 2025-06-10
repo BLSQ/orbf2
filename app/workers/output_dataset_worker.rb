@@ -92,7 +92,7 @@ class OutputDatasetWorker
     dhis2_status = dhis2_connection.data_sets.create(dataset_hash)
     Rails.logger.info(dataset_hash.to_json)
     Rails.logger.info(dhis2_status.to_json)
-    dhis2_dataset = dhis2_connection.data_sets.list(code: dataset_hash[:code])
+    dhis2_dataset = dhis2_connection.data_sets.find_by(code: dataset_hash[:code])
     dataset.external_reference = dhis2_dataset.id
     dataset.save!
     update(dhis2_dataset, dataset, MODES)
