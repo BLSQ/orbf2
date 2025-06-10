@@ -14,6 +14,7 @@ RailsAdmin.config do |config|
   DELETABLE_MODELS = %w[
     Program
     User
+    Dhis2Snapshot
   ].freeze
 
   config.actions do
@@ -56,6 +57,8 @@ RailsAdmin.config do |config|
       field :id
       field :kind
       field :snapshoted_at
+      field :month
+      field :year
       field :created_at
       field :project_anchor
     end
