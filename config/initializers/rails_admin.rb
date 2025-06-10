@@ -8,6 +8,7 @@ RailsAdmin.config do |config|
     User
     ProjectAnchor
     Project
+    PaymentRuleDataset
   ].freeze
 
   DELETABLE_MODELS = %w[
@@ -93,6 +94,12 @@ RailsAdmin.config do |config|
       field :code
       field :project_anchor
       field :users
+    end
+  end
+
+  config.model "PaymentRuleDataset" do 
+    edit do
+      field :external_reference
     end
   end
 
