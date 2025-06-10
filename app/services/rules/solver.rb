@@ -13,7 +13,7 @@ module Rules
 
     def solve!(message, facts_and_rules, debug = false)
       log "********** #{message} #{Time.new}\n#{JSON.pretty_generate(facts_and_rules)}\n" if debug
-      puts JSON.pretty_generate(facts_and_rules)
+      #puts JSON.pretty_generate(facts_and_rules)
       begin
         solution = calculator.solve!(facts_and_rules)
       rescue TSort::Cyclic => cycle_error

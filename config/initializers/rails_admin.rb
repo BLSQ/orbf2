@@ -8,11 +8,13 @@ RailsAdmin.config do |config|
     User
     ProjectAnchor
     Project
+    PaymentRuleDataset
   ].freeze
 
   DELETABLE_MODELS = %w[
     Program
     User
+    Dhis2Snapshot
   ].freeze
 
   config.actions do
@@ -55,6 +57,8 @@ RailsAdmin.config do |config|
       field :id
       field :kind
       field :snapshoted_at
+      field :month
+      field :year
       field :created_at
       field :project_anchor
     end
@@ -93,6 +97,12 @@ RailsAdmin.config do |config|
       field :code
       field :project_anchor
       field :users
+    end
+  end
+
+  config.model "PaymentRuleDataset" do 
+    edit do
+      field :external_reference
     end
   end
 

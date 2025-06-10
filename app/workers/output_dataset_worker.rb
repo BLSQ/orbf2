@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+
 class OutputDatasetWorker
   include Sidekiq::Worker
 
@@ -42,6 +43,7 @@ class OutputDatasetWorker
     @dataset_name = "ORBF - " + @payment_rule.rule.name + " (#{@payment_rule.id}) - #{frequency.capitalize}"
 
     dataset = payment_rule.dataset(frequency)
+    dhis2_dataset = nil
     begin
       dhis2_dataset = load_dhis2_dataset(payment_rule, frequency, dataset)
       if modes.include?("create") || dhis2_dataset.nil?
@@ -55,8 +57,11 @@ class OutputDatasetWorker
 
       update(dhis2_dataset, dataset, modes)
       dataset.update(last_error: nil)
+    rescue RestClient::Conflict => e
+      Rails.logger.error([e.class.name, e.message, e.backtrace.join("\n"), dhis2_dataset.to_json, e.response.body, dhis2_dataset.to_h.except(:client)].join("\n"))
+      dataset.update(last_error: e.class.name + " " + e.message + " " + e.response.body+" "+dhis2_dataset.to_h.except(:client).to_json)
     rescue StandardError => e
-      Rails.logger.error([e.class.name, e.message, e.backtrace.join("\n")].join("\n"))
+      Rails.logger.error([e.class.name, e.message, e.backtrace.join("\n"), dhis2_dataset.to_json].join("\n"))
       dataset.update(last_error: e.class.name + " " + e.message)
     ensure
       dataset.update(last_synched_at: DateTime.now)
@@ -67,7 +72,7 @@ class OutputDatasetWorker
 
   attr_reader :legacy_project, :payment_rule
 
-  def load_dhis2_dataset(payment_rule, frequency, dataset)
+  def load_dhis2_dataset(_payment_rule, _frequency, dataset)
     return nil if dataset.external_reference.blank?
 
     dhis2_connection.data_sets.find_by(code: @dataset_code)
@@ -79,13 +84,14 @@ class OutputDatasetWorker
     @dhis2_connection ||= payment_rule.project.dhis2_connection
   end
 
-  def create_dataset(dataset, frequency)
+  def create_dataset(dataset, _frequency)
     dataset_hash = Datasets::ToDhis2Datasets.new(dataset).call
     dataset_hash[:code] = @dataset_code
     dataset_hash[:name] = @dataset_name
     dataset_hash[:short_name] = @dataset_code
     dhis2_status = dhis2_connection.data_sets.create(dataset_hash)
-    Rails.logger.info dhis2_status.to_json
+    Rails.logger.info(dataset_hash.to_json)
+    Rails.logger.info(dhis2_status.to_json)
     dhis2_dataset = dhis2_connection.data_sets.find_by(code: dataset_hash[:code])
     dataset.external_reference = dhis2_dataset.id
     dataset.save!

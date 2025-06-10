@@ -28,7 +28,7 @@ class Formula < ApplicationRecord
   WHITELISTED_FIELDS = %i[id code short_name description expression
                           frequency _destroy exportable_formula_code].freeze
 
-  FREQUENCIES = %w[monthly quarterly yearly].freeze
+  FREQUENCIES = %w[monthly quarterly quarterly_nov yearly].freeze
   include PaperTrailed
   REGEXP_VALIDATION = /\A[a-z_0-9]+\z/
   delegate :project_id, to: :rule
