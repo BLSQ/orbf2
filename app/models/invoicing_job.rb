@@ -58,21 +58,24 @@ class InvoicingJob < ApplicationRecord
 
   class << self
     def execute(project_anchor, period, orgunit_ref)
-      invoicing_job = find_invoicing_job(project_anchor, period, orgunit_ref)
+
+      quarter_period = period.gsub("NovQ","Q")
+
+      invoicing_job = find_invoicing_job(project_anchor, quarter_period, orgunit_ref)
       start_time = time
 
       instrument :execute do |payload|
         begin
-          payload[:found] = "FOUND #{invoicing_job.inspect} vs #{period} #{orgunit_ref}"
+          payload[:found] = "FOUND #{invoicing_job.inspect} vs #{period} #{quarter_period} #{orgunit_ref}"
           yield(invoicing_job)
         ensure
           payload[:processed] = "mark_as_processed #{invoicing_job.inspect}"
-          find_invoicing_job(project_anchor, period, orgunit_ref)&.mark_as_processed(start_time, time)
+          find_invoicing_job(project_anchor, quarter_period, orgunit_ref)&.mark_as_processed(start_time, time)
         end
       end
     rescue StandardError => err
       warn "ERROR #{invoicing_job.inspect} #{err.message}"
-      find_invoicing_job(project_anchor, period, orgunit_ref)&.mark_as_error(start_time, time, err)
+      find_invoicing_job(project_anchor, quarter_period, orgunit_ref)&.mark_as_error(start_time, time, err)
       raise err
     end
 
