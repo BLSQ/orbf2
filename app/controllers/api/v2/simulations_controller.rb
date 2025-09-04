@@ -29,15 +29,11 @@ module Api::V2
       if valid_query_params?(params)
         org_unit = params[:orgUnit]
         period = params[:periods].split(",").first
-        separator = "Q"
-        if project.calendar_name == "ethiopian_v2"
-          separator = "NovQ"
-        end
         invoicing_request = InvoicingRequest.new(
           project:        project,
           entity:         org_unit,
-          year:           period.split(separator)[0],
-          quarter:        period.split(separator)[1],
+          year:           period[0..3],
+          quarter:        period.split("Q")[1],
           engine_version: project.engine_version
         )
         job = project_anchor.invoicing_simulation_jobs.where(
