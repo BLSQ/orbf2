@@ -47,7 +47,7 @@ which bundle >/dev/null 2>&1  || {
 
 # Install foreman if needed
 which foreman >/dev/null 2>&1 || {
-    gem install foreman
+    gem install foreman  -v 0.89.1
 }
 
 if [ -f "Gemfile" ]; then

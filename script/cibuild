@@ -15,15 +15,6 @@ hostname
 echo "[cibuild] Running tests ..."
 date "+%H:%M:%S"
 
-if [ -f "./cc-test-reporter" ]; then
-    echo "==> Using cached test reporter"
-    chmod +x ./cc-test-reporter
-else
-    echo "==> Fetching test reporter"
-    curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-    chmod +x ./cc-test-reporter
-fi
-./cc-test-reporter before-build
 
 # run tests.
 script/test
