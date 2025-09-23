@@ -105,8 +105,8 @@ class InvoicingJob < ApplicationRecord
   end
 
   def processed_after?(time_stamp: 10.minutes.ago)
-    return errored_at > time_stamp if errored?
-    return processed_at > time_stamp if processed?
+    return errored_at && errored_at > time_stamp if errored? && errored_at
+    return processed_at && processed_at > time_stamp if processed? && processed_at
 
     false
   end
