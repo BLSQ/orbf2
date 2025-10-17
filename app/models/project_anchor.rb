@@ -112,7 +112,7 @@ class ProjectAnchor < ApplicationRecord
   end
 
   def latest_candidates(snapshots)
-    sorted = snapshots.sort_by { |snap| [snap.kind, [snap.year, snap.month.to_s.ljust(2, "0")].join("-")] }
+    sorted = snapshots.sort_by { |snap| [snap.kind, [snap.year, snap.month.to_s.rjust(2, "0")].join("-")] }
     sorted[-1]
   end
 
