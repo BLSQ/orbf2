@@ -113,7 +113,7 @@ class ParallelDhis2
     end
 
     def import_options
-      rolled_up["import_options"].flatten
+      (rolled_up["import_options"] || []).flatten
     end
 
     def data_set_complete
