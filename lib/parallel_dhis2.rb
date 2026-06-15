@@ -290,6 +290,7 @@ class ParallelDhis2
   def check_for_errors!(responses)
     responses.each do |response|
       next if response.success?
+      next if response.code == 409
 
       if response.timed_out?
         message = "#{response.effective_url} timed out"

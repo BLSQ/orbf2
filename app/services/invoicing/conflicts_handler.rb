@@ -17,7 +17,7 @@ module Invoicing
 
     Conflict.new(message: "Value is zero and not significant, must match data element:", mode: :starts_with, blocking: false),
 
-    Conflict.new(message: "is after latest open future period", mode: :include, blocking: false),
+    Conflict.new(message: "is after latest open future period", mode: :include, blocking: true),
 
     Conflict.new(message: "Current date is past expiry days for period", mode: :include, blocking: true),
     Conflict.new(message: "Data is already approved for data set", mode: :include, blocking: true),

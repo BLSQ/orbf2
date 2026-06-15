@@ -19,14 +19,16 @@ describe Invoicing::ConflictsHandler do
     # future and past periods
     { "value" => "Current date is past expiry days for period 201707 and data set: cYmMsAQK6jw", "object" => "201707" },
     { "value" => "Period: 201807 is not open for this data set at this time: cYmMsAQK6jw", "object" => "uHDCjiYYWyv" },
+    { "value" => "Period: 201906 is after latest open future period: 201905 for data element: knwLdaOPObW", "object" => "201906" },
+    # v42+ message format (backticks around values)
+    { "value" => "Period: `202607` is after latest open future period: `202605` for data element: `fbfJHSPpUQD` and data set: `lyLU2wR22tC`", "object" => "202607" },
 
     # data approval
     { "value" => "Data is already approved for data set: TsLR0wQJknp period: 201901 organisation unit: iA3y8AyMTG2 attribute option combo: HllvX50cXC0" }
   ]
 
   non_blocking_conflicts = [
-    { "value" => "Value is zero and not significant, must match data element: gNPbU1ccQMz", "object" => "0" },
-    { "value" => "Period: 201906 is after latest open future period: 201905 for data element: knwLdaOPObW", "object" => "201906" }
+    { "value" => "Value is zero and not significant, must match data element: gNPbU1ccQMz", "object" => "0" }
   ]
 
   blocking_conflicts.each do |blocking|

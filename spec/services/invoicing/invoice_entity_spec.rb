@@ -25,6 +25,43 @@ describe Invoicing::InvoiceEntity do
       }
     }
 
+    # DHIS2 v42+ returns 409 with ImportSummary body (camelCase) instead of 200+WARNING
+    let(:v42_non_blocking_conflict_body) {
+      {
+        "status"      => "WARNING",
+        "description" => "Import process completed successfully",
+        "importCount" => { "imported" => 0, "updated" => 0, "ignored" => 1, "deleted" => 0 },
+        "conflicts"   => [
+          {
+            "object"    => "202607",
+            "objects"   => { "period" => "202607", "dataElement" => "fbfJHSPpUQD", "dataSet" => "lyLU2wR22tC" },
+            "value"     => "Period: `202607` is after latest open future period: `202605` for data element: `fbfJHSPpUQD` and data set: `lyLU2wR22tC`",
+            "errorCode" => "E7641",
+            "property"  => "period",
+            "indexes"   => [0]
+          }
+        ]
+      }
+    }
+
+    let(:v42_blocking_conflict_body) {
+      {
+        "status"      => "WARNING",
+        "description" => "Import process completed successfully",
+        "importCount" => { "imported" => 0, "updated" => 0, "ignored" => 1, "deleted" => 0 },
+        "conflicts"   => [
+          {
+            "object"    => "lyLU2wR22tC",
+            "objects"   => { "dataSet" => "lyLU2wR22tC" },
+            "value"     => "Data is already approved for data set: lyLU2wR22tC period: 202607 organisation unit: DiszpKrYNg8 attribute option combo: HllvX50cXC0",
+            "errorCode" => "E7607",
+            "property"  => "dataApproval",
+            "indexes"   => [0]
+          }
+        ]
+      }
+    }
+
     let(:conflicts_reponse) {
       {
         "status":            "WARNING",
@@ -102,6 +139,48 @@ describe Invoicing::InvoiceEntity do
 
       expect { entity.publish_to_dhis2 }.to change { Dhis2Log.count }.by(1)
       expect(a_request(:post, expected_url)).to have_been_made.times(2)
+    end
+
+    context "DHIS2 v42+ returns 409 with ImportSummary body" do
+      it "raises PublishingError on future period conflict (blocking in v42)" do
+        entity.instance_variable_set(:@dhis2_export_values, [{ value: 1234 }])
+        stub_request(:any, expected_url).to_return(
+          status: 409,
+          body:   v42_non_blocking_conflict_body.to_json
+        )
+
+        expect { entity.publish_to_dhis2 }.to raise_error(
+          Invoicing::PublishingError,
+          /is after latest open future period/
+        )
+      end
+
+      it "raises PublishingError on already approved conflict" do
+        entity.instance_variable_set(:@dhis2_export_values, [{ value: 1234 }])
+        stub_request(:any, expected_url).to_return(
+          status: 409,
+          body:   v42_blocking_conflict_body.to_json
+        )
+
+        expect { entity.publish_to_dhis2 }.to raise_error(
+          Invoicing::PublishingError,
+          /Data is already approved for data set/
+        )
+      end
+
+      it "raises PublishingError on future period conflict with parallel publishing" do
+        Flipper[:use_parallel_publishing].enable(project.project_anchor)
+        entity.instance_variable_set(:@dhis2_export_values, [{ value: 1234 }])
+        stub_request(:any, expected_url).to_return(
+          status: 409,
+          body:   v42_non_blocking_conflict_body.to_json
+        )
+
+        expect { entity.publish_to_dhis2 }.to raise_error(
+          Invoicing::PublishingError,
+          /is after latest open future period/
+        )
+      end
     end
   end
 
