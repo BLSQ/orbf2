@@ -109,7 +109,7 @@ class ParallelDhis2
 
     def response_type
       # Always ImportSummary
-      rolled_up["response_type"].uniq.first
+      (rolled_up["response_type"] || []).uniq.first
     end
 
     def import_options
