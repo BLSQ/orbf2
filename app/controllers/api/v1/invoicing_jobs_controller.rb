@@ -2,7 +2,7 @@
 
 module Api
   module V1
-    class InvoicingJobsController < ApplicationController
+    class InvoicingJobsController < Api::V1::ApplicationController
       rescue_from ActionController::ParameterMissing, with: :bad_request
       rescue_from ArgumentError, with: :bad_request
 
