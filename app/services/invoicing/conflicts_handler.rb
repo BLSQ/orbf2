@@ -6,7 +6,7 @@ module Invoicing
   CONFLICTS = [
     Conflict.new(message: "Category option combo is required but is not specified", mode: :equal, blocking: true),
     Conflict.new(message: "Data element not found or not acccessible", mode: :include, blocking: true),
-    Conflict.new(message: "Data element not found or not accessible", mode: :equal, blocking: true),
+    Conflict.new(message: "Data element not found or not accessible", mode: :include, blocking: true),
     Conflict.new(message: "must be assigned through data sets to organisation unit", mode: :include, blocking: true),
     Conflict.new(message: "Period type of period", mode: :include, blocking: true),
 

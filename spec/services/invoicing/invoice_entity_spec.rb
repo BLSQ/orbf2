@@ -62,6 +62,32 @@ describe Invoicing::InvoiceEntity do
       }
     }
 
+    # DHIS2 v42+ outer-wrapper format: ImportSummary nested under "response" key
+    let(:v42_wrapped_data_element_not_found_body) {
+      {
+        "httpStatus"     => "Conflict",
+        "httpStatusCode" => 409,
+        "status"         => "WARNING",
+        "message"        => "One more conflicts encountered, please check import summary.",
+        "response"       => {
+          "status"          => "WARNING",
+          "description"     => "Import process completed successfully",
+          "importCount"     => { "imported" => 0, "updated" => 0, "ignored" => 3, "deleted" => 0 },
+          "conflicts"       => [
+            {
+              "object"    => "ext-attributed_points",
+              "objects"   => { "dataElement" => "ext-attributed_points" },
+              "value"     => "Data element not found or not accessible: `ext-attributed_points`",
+              "errorCode" => "E7610",
+              "property"  => "dataElement",
+              "indexes"   => [0]
+            }
+          ],
+          "rejectedIndexes" => [0, 1, 2]
+        }
+      }
+    }
+
     let(:conflicts_reponse) {
       {
         "status":            "WARNING",
@@ -179,6 +205,33 @@ describe Invoicing::InvoiceEntity do
         expect { entity.publish_to_dhis2 }.to raise_error(
           Invoicing::PublishingError,
           /is after latest open future period/
+        )
+      end
+
+      it "raises PublishingError on data element not found (E7610) with outer-wrapper format" do
+        entity.instance_variable_set(:@dhis2_export_values, [{ value: 1234 }])
+        stub_request(:any, expected_url).to_return(
+          status: 409,
+          body:   v42_wrapped_data_element_not_found_body.to_json
+        )
+
+        expect { entity.publish_to_dhis2 }.to raise_error(
+          Invoicing::PublishingError,
+          /Data element not found or not accessible/
+        )
+      end
+
+      it "raises PublishingError on data element not found (E7610) with outer-wrapper format and parallel publishing" do
+        Flipper[:use_parallel_publishing].enable(project.project_anchor)
+        entity.instance_variable_set(:@dhis2_export_values, [{ value: 1234 }])
+        stub_request(:any, expected_url).to_return(
+          status: 409,
+          body:   v42_wrapped_data_element_not_found_body.to_json
+        )
+
+        expect { entity.publish_to_dhis2 }.to raise_error(
+          Invoicing::PublishingError,
+          /Data element not found or not accessible/
         )
       end
     end

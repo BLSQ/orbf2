@@ -56,8 +56,13 @@ class OutputDatasetWorker
       update(dhis2_dataset, dataset, modes)
       dataset.update(last_error: nil)
     rescue StandardError => e
-      Rails.logger.error([e.class.name, e.message, e.backtrace.join("\n")].join("\n"))
-      dataset.update(last_error: e.class.name + " " + e.message)
+      response_body = e.respond_to?(:response) ? e.response&.body : nil
+      error_parts = [e.class.name, e.message]
+      error_parts << "response body: #{response_body}" if response_body.present?
+      error_parts << e.backtrace.join("\n")
+      Rails.logger.error(error_parts.join("\n"))
+      last_error = [e.class.name, e.message, response_body].compact.join(" ")
+      dataset.update(last_error: last_error)
     ensure
       dataset.update(last_synched_at: DateTime.now)
     end

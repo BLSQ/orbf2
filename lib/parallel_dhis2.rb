@@ -282,6 +282,7 @@ class ParallelDhis2
       next if [nil, ""].include?(response.body)
 
       parsed_response = JSON.parse(response.body)
+      parsed_response = parsed_response["response"] || parsed_response if response.code == 409
       Dhis2::Case.deep_change(parsed_response, :underscore)
     end
     parsed.compact

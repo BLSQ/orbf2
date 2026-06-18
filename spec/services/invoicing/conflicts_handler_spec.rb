@@ -11,6 +11,7 @@ describe Invoicing::ConflictsHandler do
     { "value" => "Period type of period: 2018Q4 not valid for data element: FC3nR54yGUx", "object" => "2018Q4" },
     { "value" => "Data element: FC3nR54yGUx must be assigned through data sets to organisation unit: UkXuMDgeakb", "object" => "UkXuMDgeakb" },
     { "value" => "Data element not found or not accessible", "object" => "BCexM2Osa2h" },
+    { "value" => "Data element not found or not accessible: `ext-attributed_points`", "object" => "ext-attributed_points" },
     # incorrect value type
     { "value" => "Data value is not an integer, must match data element type: PBDIJktKaPs", "object" => "0.39" },
     { "value" => "Data value is not numeric, must match data element type: dlCWZolKtrN", "object" => "tarif" },

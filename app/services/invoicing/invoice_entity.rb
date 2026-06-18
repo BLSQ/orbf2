@@ -77,7 +77,8 @@ module Invoicing
                    project.dhis2_connection.data_value_sets.create(@dhis2_export_values)
                  rescue RestClient::Conflict => e
                    parsed = Dhis2::Case.deep_change(JSON.parse(e.response.body), :underscore)
-                   Dhis2::Status.new(parsed)
+                   import_summary = parsed["response"] || parsed
+                   Dhis2::Status.new(import_summary)
                  end
                end
 
