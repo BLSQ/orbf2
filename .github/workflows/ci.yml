@@ -41,15 +41,10 @@ jobs:
     - name: Install postgres client
       run: sudo apt-get install libpq-dev
     - name: Cache chromedriver
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
         path: "/usr/local/share/chromedriver"
         key: chromedriver-${{ runner.os }}-${{ hashFiles('/usr/local/share/chromedriver') }}
-    - name: Cache clode climate reporter
-      uses: actions/cache@v2
-      with:
-        path: "cc-test-reporter"
-        key: cc-${{ runner.os }}-${{ hashFiles('./cc-test-reporter') }}
     - name: script/cibuild
       run: |
         script/cibuild
@@ -62,4 +57,3 @@ jobs:
         DATA_TEST_S3_REGION: ${{ secrets.DATA_TEST_S3_REGION }}
         FETCHER_S3_ACCESS: ${{ secrets.FETCHER_S3_ACCESS }}
         FETCHER_S3_KEY: ${{ secrets.FETCHER_S3_KEY }}
-        CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}

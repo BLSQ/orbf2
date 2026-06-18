@@ -11,7 +11,7 @@ end
 
 if DataTest.has_artefacts?
   puts "Artefacts found (no new download)"
-else
+elsif DataTest::Fetcher.can_run?
   puts "Downloading artefacts"
   WebMock.allow_net_connect!
   fetcher = DataTest::Fetcher.new

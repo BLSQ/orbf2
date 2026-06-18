@@ -90,6 +90,49 @@ http://127.0.0.1:3000/setup/seeds
 
 This will generate a "typical" RBF project with quality, quantity & payment rules for you to explore and play with.
 
+## Triggering an invoice
+
+To enqueue an invoice calculation for an org unit and period:
+
+```bash
+curl 'http://localhost:3000/api/invoices' \
+  -X POST \
+  -H 'content-type: application/json' \
+  -H 'X-token: <your_token>' \
+  --data-raw '{"pe":"2026Q2","ou":"cDw53Ej8rju","dhis2UserId":"<dhis2_user_id>"}'
+```
+
+This creates an invoicing job in the background. Check its status via the invoicing jobs endpoint (see below).
+
+## Testing the API
+
+After seeding, the project anchor will have a token automatically generated. Retrieve it with:
+
+```bash
+rails runner "puts ProjectAnchor.first.token"
+```
+
+Then call the invoicing jobs API:
+
+```bash
+# List jobs for a period
+curl 'http://localhost:3000/api/invoicing_jobs?period=2026Q1' \
+  -H 'X-token: <your_token>'
+
+# Filter by org unit and status
+curl 'http://localhost:3000/api/invoicing_jobs?period=2026Q1&orgUnitIds=cDw53Ej8rju&status=errored' \
+  -H 'X-token: <your_token>'
+
+# POST (same as GET index)
+curl 'http://localhost:3000/api/invoicing_jobs' \
+  -X POST \
+  -H 'content-type: application/json' \
+  -H 'X-token: <your_token>' \
+  --data-raw '{"period":"2026Q1","orgUnitIds":"cDw53Ej8rju"}'
+```
+
+The period format follows DHIS2 conventions (e.g. `2026Q1`, `202601`). `cDw53Ej8rju` is the demo clinic org unit ref from the seeded project.
+
 ## Admin interface
 
 You can access any element in the application using the admin interface at

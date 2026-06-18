@@ -109,11 +109,11 @@ class ParallelDhis2
 
     def response_type
       # Always ImportSummary
-      rolled_up["response_type"].uniq.first
+      (rolled_up["response_type"] || []).uniq.first
     end
 
     def import_options
-      rolled_up["import_options"].flatten
+      (rolled_up["import_options"] || []).flatten
     end
 
     def data_set_complete
@@ -282,6 +282,7 @@ class ParallelDhis2
       next if [nil, ""].include?(response.body)
 
       parsed_response = JSON.parse(response.body)
+      parsed_response = parsed_response["response"] || parsed_response if response.code == 409
       Dhis2::Case.deep_change(parsed_response, :underscore)
     end
     parsed.compact
@@ -290,6 +291,7 @@ class ParallelDhis2
   def check_for_errors!(responses)
     responses.each do |response|
       next if response.success?
+      next if response.code == 409
 
       if response.timed_out?
         message = "#{response.effective_url} timed out"

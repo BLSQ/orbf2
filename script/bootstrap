@@ -45,9 +45,9 @@ which bundle >/dev/null 2>&1  || {
     gem install bundler
 }
 
-# Install foreman if needed
+# Install foreman if needed (pinned to 0.82.0 for Ruby 2.5 compatibility — newer foreman requires thor ~> 1.4 which needs Ruby >= 2.6)
 which foreman >/dev/null 2>&1 || {
-    gem install foreman
+    gem install foreman -v 0.82.0
 }
 
 if [ -f "Gemfile" ]; then

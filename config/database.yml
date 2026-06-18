@@ -8,6 +8,9 @@ default: &default
 development:
   <<: *default
   database: scorpio_development
+  username: <%= ENV.fetch("DB_USER", "hesabu-test-user") %>
+  password: <%= ENV.fetch("DB_PASSWORD", "hesabu-test-password") %>
+  host: <%= ENV.fetch("DB_HOST", "localhost") %>
 
 test:
   <<: *default

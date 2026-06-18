@@ -73,7 +73,13 @@ module Invoicing
       status = if Flipper[:use_parallel_publishing].enabled?(project.project_anchor)
                  parallel_publish_to_dhis2
                else
-                 project.dhis2_connection.data_value_sets.create(@dhis2_export_values)
+                 begin
+                   project.dhis2_connection.data_value_sets.create(@dhis2_export_values)
+                 rescue RestClient::Conflict => e
+                   parsed = Dhis2::Case.deep_change(JSON.parse(e.response.body), :underscore)
+                   import_summary = parsed["response"] || parsed
+                   Dhis2::Status.new(import_summary)
+                 end
                end
 
       # minimize memory usage, don't log exported values but only the status

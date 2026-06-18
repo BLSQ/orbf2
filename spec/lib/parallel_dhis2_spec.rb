@@ -26,6 +26,35 @@ def fake_response(status:, conflicts: nil, description: "", import_count: {})
   response
 end
 
+# Response shape returned by DHIS2 v42+ as HTTP 409 (camelCase, as DHIS2 sends it)
+def v42_conflict_response_camelized(blocking: false)
+  conflict = if blocking
+               {
+                 "object"    => "lyLU2wR22tC",
+                 "objects"   => { "dataSet" => "lyLU2wR22tC" },
+                 "value"     => "Data is already approved for data set: lyLU2wR22tC period: 202607 organisation unit: DiszpKrYNg8 attribute option combo: HllvX50cXC0",
+                 "errorCode" => "E7607",
+                 "property"  => "dataApproval",
+                 "indexes"   => [0]
+               }
+             else
+               {
+                 "object"    => "202607",
+                 "objects"   => { "period" => "202607", "dataElement" => "fbfJHSPpUQD", "dataSet" => "lyLU2wR22tC" },
+                 "value"     => "Period: `202607` is after latest open future period: `202605` for data element: `fbfJHSPpUQD` and data set: `lyLU2wR22tC`",
+                 "errorCode" => "E7641",
+                 "property"  => "period",
+                 "indexes"   => [0]
+               }
+             end
+  {
+    "status"      => "WARNING",
+    "description" => "Import process completed successfully",
+    "importCount" => { "imported" => 0, "updated" => 0, "ignored" => 1, "deleted" => 0 },
+    "conflicts"   => [conflict]
+  }
+end
+
 RSpec.describe ParallelDhis2 do
   it "#prepare_payload" do
     parallel_dhis2 = described_class.new(dhis2_client)
@@ -125,6 +154,27 @@ RSpec.describe ParallelDhis2 do
       status = client.post_data_value_sets(all_values)
       expect(status).to be_kind_of(Dhis2::Status)
       expect(status.success?).to eq(true)
+    end
+
+    it "handles 409 with v42 conflict payload by rolling up counts" do
+      stub_request(:any, expected_url).to_return(
+        status: 409,
+        body:   v42_conflict_response_camelized(blocking: false).to_json
+      )
+      all_values = [{ value: 1234 }]
+      status = client.post_data_value_sets(all_values)
+      expect(status).to be_kind_of(Dhis2::Status)
+      expect(status.raw_status["status"]).to eq("WARNING")
+      expect(status.raw_status["import_count"]["ignored"]).to eq(1)
+      expect(status.raw_status["conflicts"].count).to eq(1)
+    end
+
+    it "raises on 500 but not on 409" do
+      stub_request(:any, expected_url).to_return(status: [500, "Internal Server Error"])
+      all_values = [{ value: 1234 }]
+      expect {
+        client.post_data_value_sets(all_values)
+      }.to raise_error ParallelDhis2::HttpException
     end
   end
 
