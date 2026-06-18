@@ -21,6 +21,7 @@ class Setup::SeedsController < PrivateController
     project_anchor.projects.push project
 
     project.save!
+    project_anchor.update!(token: SecureRandom.hex(16)) if project_anchor.token.blank?
     current_user.save!
     SynchroniseDegDsWorker.new.perform(project_anchor.id)
     Dhis2SnapshotWorker.new.perform(project_anchor.id)
@@ -30,7 +31,7 @@ class Setup::SeedsController < PrivateController
 
   def dhis2_url
     if params[:version]
-      "https://play.dhis2.org/#{params[:version]}"
+      "https://play.im.dhis2.org/#{params[:version]}"
     elsif params[:local]
       "http://127.0.0.1:8085/"
     else
