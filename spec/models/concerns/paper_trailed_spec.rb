@@ -13,6 +13,8 @@ RSpec.describe PaperTrailed do
   EXCEPTIONS = [
     ActiveRecord::SchemaMigration,
     ActiveRecord::InternalMetadata,
+    ActiveStorage::Attachment,
+    ActiveStorage::Blob,
     PaperTrail::Version,
     PaperTrail::VersionAssociation,
     Version,
