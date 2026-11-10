@@ -9,13 +9,15 @@ GIT
 
 GIT
   remote: https://github.com/BLSQ/hesabu.git
-  revision: 0aa737cb94f57c27381bf4fcac7054a9437f1f2c
+  revision: fbbaff767a6b1b7b7291956cd8db794dd786e64c
+  branch: ruby_rails_upgrade
   specs:
     hesabu (0.1.14)
+      bigdecimal
 
 GIT
   remote: https://github.com/BLSQ/orbf-rules_engine.git
-  revision: b5bd73beb2113987a7840d24c2f9a5ca5455d6a1
+  revision: e75c3e538e6ad67c3183d094aef45842bd57f527
   branch: ruby_rails_upgrade
   specs:
     orbf-rules_engine (0.1.0)
@@ -277,7 +279,7 @@ GEM
       thor (>= 0.14, < 2.0)
     jquery-ui-rails (5.0.5)
       railties (>= 3.2.16)
-    json (2.21.2)
+    json (3.1.0)
     json-diff (0.4.1)
     jsonapi-serializer (2.2.0)
       activesupport (>= 4.2)
@@ -676,7 +678,6 @@ DEPENDENCIES
   jbuilder (~> 2.5)
   jquery-rails (~> 4.3.3)
   jquery-ui-rails (~> 5.0.5)
-  json (~> 2.7)
   json-diff (~> 0.4.1)
   jsonapi-serializer
   listen (~> 3.9)

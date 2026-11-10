@@ -69,7 +69,6 @@ gem "pretender", "~> 0.3.4"
 gem "aws-sdk-s3", "~> 1.48"
 gem "jsonapi-serializer"
 gem "jbuilder", "~> 2.5"
-gem "json", "~> 2.7" # hesabu uses JSON.fast_generate, removed in json 3
 
 ## Utilities
 
@@ -88,7 +87,7 @@ if ENV["ORBF_DEV_MODE"]
 else
   # We're using both of them against the latest master. We should set
   # them to versions when they become more stable
-  gem "hesabu", github: "BLSQ/hesabu"
+  gem "hesabu", github: "BLSQ/hesabu", branch: "ruby_rails_upgrade" # TODO: back to master once merged
   gem "orbf-rules_engine", github: "BLSQ/orbf-rules_engine", branch: "ruby_rails_upgrade" # TODO: back to master once merged
 end
 # Like a modern code version of the mythical beast with 100 serpent hea...
