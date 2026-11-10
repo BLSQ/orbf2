@@ -2,7 +2,7 @@
 ARG RUBY_VERSION=2.5.8
 FROM ruby:${RUBY_VERSION}
 # old debian releases (buster for ruby 2.5, bullseye for 2.7) moved to archive.debian.org
-RUN PKGS="nodejs libpq-dev cmake"; \
+RUN PKGS="nodejs libpq-dev cmake chromium chromium-driver"; \
     (apt-get update && apt-get install -y --no-install-recommends $PKGS) \
     || (sed -i -e 's|deb.debian.org|archive.debian.org|g' -e 's|security.debian.org|archive.debian.org|g' /etc/apt/sources.list \
         && sed -i -e '/-updates/d' /etc/apt/sources.list \
