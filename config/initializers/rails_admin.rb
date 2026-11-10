@@ -3,6 +3,7 @@ Kaminari.configure do |config|
 end
 
 RailsAdmin.config do |config|
+  config.asset_source = :sprockets
   EDITABLE_MODELS = %w[
     Program
     User
