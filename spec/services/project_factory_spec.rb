@@ -20,6 +20,7 @@ describe ProjectFactory do
 
   INFRA_AR = [
     ActiveRecord::SchemaMigration,
+    ActiveRecord::InternalMetadata,
     ActiveStorage::Attachment,
     ActiveStorage::Blob,
     PaperTrail::Version,

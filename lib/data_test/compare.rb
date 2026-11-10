@@ -94,7 +94,7 @@ module DataTest
       a = JSON.parse(File.open(file_a).read)
       b = JSON.parse(File.open(file_b).read)
       guard_timeout do
-        diff = HashDiff.diff(a, b, use_lcs: false)
+        diff = Hashdiff.diff(a, b, use_lcs: false)
         if diff.empty?
           Result.new(success: true)
         else

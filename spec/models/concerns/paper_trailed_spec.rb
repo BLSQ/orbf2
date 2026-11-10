@@ -12,7 +12,9 @@ end
 RSpec.describe PaperTrailed do
   EXCEPTIONS = [
     ActiveRecord::SchemaMigration,
+    ActiveRecord::InternalMetadata,
     PaperTrail::Version,
+    PaperTrail::VersionAssociation,
     Version,
     Dhis2Log,
     Dhis2Snapshot,

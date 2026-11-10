@@ -65,7 +65,7 @@ RSpec.describe "Data Test", data_test: true do
         it "exported_values" do
           original = artefact("#{name}-exported_values.json")
           new = result("#{name}-exported_values.json")
-          diff = HashDiff.diff(original, new, use_lcs: false)
+          diff = Hashdiff.diff(original, new, use_lcs: false)
           unless diff.empty?
             puts "  + original: #{original.count} vs new: #{new.count}"
             puts "  + diff (first 10): #{diff.sample(10)}"
