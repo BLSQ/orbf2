@@ -39,7 +39,7 @@ class InvoicingJob < ApplicationRecord
   validates :dhis2_period, presence: true
   validates :orgunit_ref, presence: true
 
-  enum status: {
+  enum :status, {
     enqueued:  "enqueued",
     processed: "processed",
     errored:   "errored"
