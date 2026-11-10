@@ -57,7 +57,7 @@ module Invoicing
             orbf_project,
             invoicing_request.entity,
             invoicing_request.invoicing_period,
-            solve_options
+            **solve_options
           )
           @pyramid = @fetch_and_solve.pyramid
           @dhis2_export_values = @fetch_and_solve.call

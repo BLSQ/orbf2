@@ -129,7 +129,7 @@ class MapProjectToOrbfProject
         formula.code,
         formula.expression,
         formula.description,
-        map_formula_mappings(formula)
+        **map_formula_mappings(formula)
       )
     end
   end
