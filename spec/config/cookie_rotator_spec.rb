@@ -9,7 +9,9 @@ RSpec.describe "cookies issued before the rails 7.0 defaults" do
       Rails.application.secret_key_base, iterations: 1000, hash_digest_class: OpenSSL::Digest::SHA1
     )
     secret = key_generator.generate_key(config.authenticated_encrypted_cookie_salt, ActiveSupport::MessageEncryptor.key_len)
-    ActiveSupport::MessageEncryptor.new(secret, cipher: "aes-256-gcm", serializer: JSON)
+    # as written by rails < 7.1 (load_defaults 6.0 here): SHA1 derived key, legacy metadata envelope
+    ActiveSupport::MessageEncryptor.new(secret, cipher: "aes-256-gcm", serializer: JSON,
+                                                force_legacy_metadata_serializer: true)
                                    .encrypt_and_sign(value, purpose: "cookie.#{name}")
   end
 
