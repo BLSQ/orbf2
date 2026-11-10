@@ -1,9 +1,12 @@
 # Test image used by docker-compose.test.yml
 ARG RUBY_VERSION=2.5.8
 FROM ruby:${RUBY_VERSION}
-# old debian releases (buster for ruby 2.5) moved to archive.debian.org
-RUN (apt-get update || (sed -i -e 's|deb.debian.org|archive.debian.org|g' -e '/security/d' -e '/updates/d' /etc/apt/sources.list && apt-get update)) \
-    && apt-get install -y --no-install-recommends nodejs libpq-dev cmake \
+# old debian releases (buster for ruby 2.5, bullseye for 2.7) moved to archive.debian.org
+RUN PKGS="nodejs libpq-dev cmake"; \
+    (apt-get update && apt-get install -y --no-install-recommends $PKGS) \
+    || (sed -i -e 's|deb.debian.org|archive.debian.org|g' -e 's|security.debian.org|archive.debian.org|g' /etc/apt/sources.list \
+        && sed -i -e '/-updates/d' /etc/apt/sources.list \
+        && apt-get update && apt-get install -y --no-install-recommends $PKGS) \
     && rm -rf /var/lib/apt/lists/*
 # rubygems < 3.2.3 ignores required_ruby_version when resolving (same as Dockerfile.build)
 RUN if ruby -e 'exit(Gem::Version.new(Gem::VERSION) < Gem::Version.new("3.2.3"))'; then gem update --system 3.2.3 -N; fi
