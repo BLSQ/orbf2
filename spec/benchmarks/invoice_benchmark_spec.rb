@@ -9,7 +9,6 @@
 # Appends one JSON line per run to bench/results.jsonl.
 
 require "rails_helper"
-require "benchmark"
 require "digest"
 require_relative "../workers/project_fixture"
 
@@ -69,6 +68,13 @@ RSpec.describe "Invoice calculation benchmark", benchmark: true do
     end
   end
 
+  # monotonic wall time of the block (benchmark is not a default gem since ruby 4.0)
+  def realtime
+    started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+    yield
+    Process.clock_gettime(Process::CLOCK_MONOTONIC) - started
+  end
+
   # BENCHMARK_ALLOCATIONS=1: top allocation sites of one calculation, by gem/app file
   def print_allocation_sites(perform)
     require "objspace"
@@ -109,7 +115,7 @@ RSpec.describe "Invoice calculation benchmark", benchmark: true do
 
     times = Array.new(ITERATIONS) do
       GC.start
-      Benchmark.realtime(&perform)
+      realtime(&perform)
     end
 
     exported = JSON.parse(payloads.last)["dataValues"]
