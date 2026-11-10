@@ -69,6 +69,27 @@ RSpec.describe "Invoice calculation benchmark", benchmark: true do
     end
   end
 
+  # BENCHMARK_ALLOCATIONS=1: top allocation sites of one calculation, by gem/app file
+  def print_allocation_sites(perform)
+    require "objspace"
+    GC.disable
+    ObjectSpace.trace_object_allocations_clear
+    ObjectSpace.trace_object_allocations { perform.call }
+    sites = Hash.new(0)
+    ObjectSpace.each_object do |obj|
+      file = ObjectSpace.allocation_sourcefile(obj)
+      next unless file
+
+      line = ObjectSpace.allocation_sourceline(obj)
+      sites["#{file.sub(%r{.*/gems/}, '').sub(Rails.root.to_s + '/', '')}:#{line}"] += 1
+    end
+    puts "Top allocation sites:"
+    sites.sort_by { |_, count| -count }.first(25).each { |site, count| puts format("%8d %s", count, site) }
+  ensure
+    ObjectSpace.trace_object_allocations_clear
+    GC.enable
+  end
+
   it "calculates the multi entities invoice (latest engine)" do
     stub_dhis2_values_for(project)
     payloads = []
@@ -83,6 +104,8 @@ RSpec.describe "Invoice calculation benchmark", benchmark: true do
     allocated_before = GC.stat(:total_allocated_objects)
     perform.call
     allocations = GC.stat(:total_allocated_objects) - allocated_before
+
+    print_allocation_sites(perform) if ENV["BENCHMARK_ALLOCATIONS"]
 
     times = Array.new(ITERATIONS) do
       GC.start
