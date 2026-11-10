@@ -79,6 +79,8 @@ gem "naturalsort"
 ## Formula calculation
 
 gem "dentaku"
+# numeric behaviour of formulas: bump deliberately (ruby 2.5 ships 1.3.4)
+gem "bigdecimal", "1.3.4"
 if ENV["ORBF_DEV_MODE"]
   gem "hesabu", path: "../hesabu"
   gem "orbf-rules_engine", path: "../orbf-rules_engine"
@@ -86,7 +88,7 @@ else
   # We're using both of them against the latest master. We should set
   # them to versions when they become more stable
   gem "hesabu", github: "BLSQ/hesabu"
-  gem "orbf-rules_engine", github: "BLSQ/orbf-rules_engine", branch: "master"
+  gem "orbf-rules_engine", github: "BLSQ/orbf-rules_engine", branch: "ruby_rails_upgrade" # TODO: back to master once merged
 end
 # Like a modern code version of the mythical beast with 100 serpent hea...
 # [typhoeus](https://github.com/typhoeus/typhoeus)

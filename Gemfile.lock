@@ -14,15 +14,15 @@ GIT
 
 GIT
   remote: https://github.com/BLSQ/orbf-rules_engine.git
-  revision: 2b678604545c0331e8f0346b18baa9afda4c840c
-  branch: master
+  revision: 3e7f98f58a22bd4431b98b5ac574c63b61d236f1
+  branch: ruby_rails_upgrade
   specs:
     orbf-rules_engine (0.1.0)
-      activesupport (= 5.2.6.2)
-      bigdecimal (= 1.3.4)
-      colorize (= 0.8.1)
+      activesupport (>= 5.2, < 9)
+      bigdecimal (>= 1.3.4)
+      colorize (>= 0.8.1)
       dentaku (= 3.1.0)
-      descriptive_statistics (= 2.5.1)
+      descriptive_statistics (~> 2.5)
       dhis2 (= 2.3.8)
       hesabu
 
@@ -533,6 +533,7 @@ DEPENDENCIES
   activerecord-nulldb-adapter
   annotate (~> 2.7.4)
   aws-sdk-s3 (~> 1.48)
+  bigdecimal (= 1.3.4)
   bootsnap (~> 1.3.2)
   bootstrap-datepicker-rails
   bootstrap-sass (~> 3.4.1)
