@@ -1,0 +1,65 @@
+# Run the test suite in containers, for a given ruby version:
+#
+#   RUBY_VERSION=2.5.8 docker compose -f docker-compose.test.yml run --rm test bundle exec rspec
+#
+# ORBF_RULES_ENGINE_PATH (optional): absolute path of a local orbf-rules_engine
+# checkout, used through `bundle config local.orbf-rules_engine` (its branch must
+# match the Gemfile one). ORBF_RULES_ENGINE_GIT_DIR: its main .git dir when the
+# checkout is a git worktree. APP_GIT_DIR: same for this repo.
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: hesabu-test-user
+      POSTGRES_PASSWORD: hesabu-test-password
+      POSTGRES_DB: scorpio_test
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hesabu-test-user"]
+      interval: 2s
+      retries: 30
+    tmpfs:
+      - /var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      retries: 30
+
+  test:
+    image: orbf2-test:${RUBY_VERSION:-2.5.8}
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+      args:
+        RUBY_VERSION: ${RUBY_VERSION:-2.5.8}
+    working_dir: /app
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      RAILS_ENV: test
+      RACK_ENV: test
+      DB_HOST: db
+      DB_NAME: scorpio_test
+      DB_USER: hesabu-test-user
+      DB_PASSWORD: hesabu-test-password
+      REDIS_URL: redis://redis:6379/0
+      BUNDLE_PATH: /bundle
+      BUNDLE_WITHOUT: development
+      SKIP_SIMPLECOV: "1"
+      # bundle config local.orbf-rules_engine
+      BUNDLE_LOCAL__ORBF___RULES_ENGINE: ${ORBF_RULES_ENGINE_PATH:-}
+    volumes:
+      - .:/app
+      - ${APP_GIT_DIR:-/dev/null}:${APP_GIT_DIR:-/dev/null}
+      # mounted at the same path as on the host so a git worktree checkout still resolves
+      - ${ORBF_RULES_ENGINE_PATH:-/dev/null}:${ORBF_RULES_ENGINE_PATH:-/dev/null}
+      - ${ORBF_RULES_ENGINE_GIT_DIR:-/dev/null}:${ORBF_RULES_ENGINE_GIT_DIR:-/dev/null}
+      - bundle:/bundle
+
+volumes:
+  bundle:

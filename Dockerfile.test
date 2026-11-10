@@ -1,0 +1,7 @@
+# Test image used by docker-compose.test.yml
+ARG RUBY_VERSION=2.5.8
+FROM ruby:${RUBY_VERSION}
+# old debian releases (buster for ruby 2.5) moved to archive.debian.org
+RUN (apt-get update || (sed -i -e 's|deb.debian.org|archive.debian.org|g' -e '/security/d' -e '/updates/d' /etc/apt/sources.list && apt-get update)) \
+    && apt-get install -y --no-install-recommends nodejs libpq-dev cmake \
+    && rm -rf /var/lib/apt/lists/*
