@@ -80,12 +80,15 @@ RSpec.describe InvoiceSimulationWorker do
 
     expect(request).to have_been_made.once
 
-    expected_message = "InvoiceSimulationWorker::Simulation::ErrorDuringSimulation: "\
-    "In equation quantity_pma_clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois_amount_for_vRC0stJ5y9Q_and_2015q1 "\
-    "Divide by zero quantity_pma_clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois_amount_for_vRC0stJ5y9Q_and_2015q1 "\
-    ":= quantity_pma_clients_sous_traitement_arv_suivi_pendant_les_6_premiers_mois_tarif_for_vRC0stJ5y9Q_and_2015q1 / 0"
+    # every activity divides by zero, the one reported first depends on the evaluation order
+    activity = "quantity_pma_(\\w+)"
+    expected_message = Regexp.new(
+      "\\AInvoiceSimulationWorker::Simulation::ErrorDuringSimulation: " \
+      "In equation (#{activity}_amount_for_vRC0stJ5y9Q_and_2015q1) " \
+      "Divide by zero \\1 := quantity_pma_\\2_tarif_for_vRC0stJ5y9Q_and_2015q1 / 0\\z"
+    )
 
-    expect(InvoicingSimulationJob.last.last_error).to eq(expected_message)
+    expect(InvoicingSimulationJob.last.last_error).to match(expected_message)
   end
 
   # double to mock s3 related calls
