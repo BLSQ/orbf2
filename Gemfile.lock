@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/BLSQ/dhis2.git
-  revision: ddb2ee96027529d1f1660d06de704f178f6ce124
-  branch: legacy-v2
+  revision: e3aac605e64159fbb8085a81acd22a91feb5220c
+  branch: ruby_rails_upgrade
   specs:
     dhis2 (2.3.8)
       rest-client
@@ -14,14 +14,14 @@ GIT
 
 GIT
   remote: https://github.com/BLSQ/orbf-rules_engine.git
-  revision: 70c99ea127fa4b6a89f4419794e9c13a7045c617
+  revision: 476c812a852e410fbe3b62017962e9e5ac80d27c
   branch: ruby_rails_upgrade
   specs:
     orbf-rules_engine (0.1.0)
       activesupport (>= 5.2, < 9)
       bigdecimal (>= 1.3.4)
       colorize (>= 0.8.1)
-      dentaku (= 3.1.0)
+      dentaku (= 3.4.2)
       descriptive_statistics (~> 2.5)
       dhis2 (= 2.3.8)
       hesabu
@@ -171,7 +171,8 @@ GEM
     date (3.6.0)
     deep_cloneable (3.2.2)
       activerecord (>= 3.1.0, < 9)
-    dentaku (3.1.0)
+    dentaku (3.4.2)
+      concurrent-ruby
     descriptive_statistics (2.5.1)
     devise (4.9.4)
       bcrypt (~> 3.0)
