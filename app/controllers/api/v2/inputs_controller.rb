@@ -17,7 +17,7 @@ module Api
           input.save!
         end
 
-        render json: serializer_class.new(input).serialized_json
+        render json: serializer_class.new(input).serializable_hash.to_json
       end
 
       private

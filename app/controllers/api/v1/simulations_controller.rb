@@ -13,7 +13,7 @@ module Api
       def index
         project_anchor = current_project_anchor
 
-        render json: InvoicingJobSerializer.new(project_anchor.invoicing_simulation_jobs).serialized_json
+        render json: InvoicingJobSerializer.new(project_anchor.invoicing_simulation_jobs).serializable_hash.to_json
       end
 
       def show
@@ -21,7 +21,7 @@ module Api
 
         job = project_anchor.invoicing_simulation_jobs.find(params[:id])
 
-        render json: InvoicingJobSerializer.new(job).serialized_json
+        render json: InvoicingJobSerializer.new(job).serializable_hash.to_json
       end
     end
   end

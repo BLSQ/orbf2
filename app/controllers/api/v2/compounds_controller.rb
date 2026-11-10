@@ -8,7 +8,7 @@ module Api
         options = {}
         options[:include] = default_relationships
 
-        render json: serializer_class.new(payment_rules, options).serialized_json
+        render json: serializer_class.new(payment_rules, options).serializable_hash.to_json
       end
 
       def show
@@ -16,7 +16,7 @@ module Api
         options = {}
         options[:include] = default_relationships + detailed_relationships
 
-        render json: serializer_class.new(payment_rule, options).serialized_json
+        render json: serializer_class.new(payment_rule, options).serializable_hash.to_json
       end
 
       def new
@@ -24,7 +24,7 @@ module Api
         payment_rule.rule.formulas.build
         options = {}
         options[:include] = default_relationships
-        render json: serializer_class.new(payment_rule, options).serialized_json
+        render json: serializer_class.new(payment_rule, options).serializable_hash.to_json
       end
 
       def create
@@ -38,7 +38,7 @@ module Api
         end
 
         options[:include] = default_relationships
-        render json: serializer_class.new(payment_rule, options).serialized_json
+        render json: serializer_class.new(payment_rule, options).serializable_hash.to_json
       end
 
       def update
@@ -48,7 +48,7 @@ module Api
         options = {}
         payment_rule.update(payment_rules_attributes)
         options[:include] = default_relationships
-        render json: serializer_class.new(payment_rule, options).serialized_json
+        render json: serializer_class.new(payment_rule, options).serializable_hash.to_json
       end
 
       private

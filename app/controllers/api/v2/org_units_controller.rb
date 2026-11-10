@@ -14,7 +14,7 @@ module Api
                     search_results("", "organisation_units", limit: MAX_LIMIT)
                   end
 
-        render json: serializer_class.new(results).serialized_json
+        render json: serializer_class.new(results).serializable_hash.to_json
       end
 
       private

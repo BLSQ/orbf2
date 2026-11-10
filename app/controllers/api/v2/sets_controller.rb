@@ -8,7 +8,7 @@ module Api
         options = {}
         options[:include] = default_relationships
 
-        render json: serializer_class.new(packages, options).serialized_json
+        render json: serializer_class.new(packages, options).serializable_hash.to_json
       end
 
       def show
@@ -19,7 +19,7 @@ module Api
         }
 
         options[:include] = default_relationships + detailed_relationships
-        render json: serializer_class.new(package, options).serialized_json
+        render json: serializer_class.new(package, options).serializable_hash.to_json
       end
 
       def update
@@ -42,7 +42,7 @@ module Api
         }
 
         options[:include] = default_relationships + detailed_relationships
-        render json: serializer_class.new(package, options).serialized_json
+        render json: serializer_class.new(package, options).serializable_hash.to_json
       end
 
       def create
@@ -68,7 +68,7 @@ module Api
         }
 
         options[:include] = default_relationships + detailed_relationships
-        render json: serializer_class.new(package, options).serialized_json
+        render json: serializer_class.new(package, options).serializable_hash.to_json
       end
 
       private

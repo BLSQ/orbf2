@@ -14,7 +14,7 @@ end
 gem "dhis2", github: "BLSQ/dhis2", branch: "legacy-v2"
 gem "paper_trail", "~> 10.1.0"
 gem "paper_trail-association_tracking", "~> 1.0.0"
-gem "pg", "~> 0.18"
+gem "pg", "~> 1.2"
 gem "puma", "~> 4.3"
 gem "rack", ">= 2.0.6"
 gem "rails", "~> 5.2", "< 5.3"
@@ -28,7 +28,9 @@ gem "sidekiq-throttled", "~> 0.9.0"
 gem "bootsnap", "~> 1.3.2"
 gem "figaro"
 gem "lograge", "~> 0.10.0"
-gem "sentry-raven", "~> 2.7.4"
+gem "sentry-rails"
+gem "sentry-ruby"
+gem "sentry-sidekiq"
 
 # Feature flipper is the act of enabling/disabling features in your app...
 # [flipper](https://github.com/jnunemaker/flipper)
@@ -41,7 +43,6 @@ gem "flipper-ui", "~> 0.16.1"
 gem "bootstrap-datepicker-rails"
 gem "bootstrap-sass", "~> 3.4.1"
 gem "cocoon"
-gem "coffee-rails", "~> 4.2"
 gem "jquery-rails", "~> 4.3.3"
 gem "jquery-ui-rails", "~> 5.0.5"
 gem "rails-jquery-autocomplete"
@@ -49,7 +50,7 @@ gem "sassc-rails", "~> 2.0.0"
 gem "simple_form"
 gem "sprockets", "~> 3.7.2"
 gem "turbolinks", "~> 5"
-gem "uglifier", ">= 1.3.0"
+gem "terser"
 
 ## Authentication
 
@@ -64,9 +65,9 @@ gem "pretender", "~> 0.3.4"
 ## API related
 
 gem "aws-sdk-s3", "~> 1.48"
-gem "fast_jsonapi"
+gem "jsonapi-serializer"
 gem "jbuilder", "~> 2.5"
-gem "json", "2.3.0"
+gem "json"
 
 ## Utilities
 

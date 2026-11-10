@@ -22,7 +22,7 @@ module Api::V2
 
     def index
       inputs = current_activity.activity_states
-      render json: serializer_class.new(inputs, include: default_relationships).serialized_json
+      render json: serializer_class.new(inputs, include: default_relationships).serializable_hash.to_json
     end
 
     def update
@@ -53,7 +53,7 @@ module Api::V2
         json: serializer_class.new(
           activity_state,
           include: default_relationships
-        ).serialized_json
+        ).serializable_hash.to_json
       )
     end
 

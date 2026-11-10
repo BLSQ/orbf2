@@ -3,7 +3,7 @@ module Api::V2
     def index
       users = current_project_anchor.program.users
       options = {}
-      render json: serializer_class.new(users, options).serialized_json
+      render json: serializer_class.new(users, options).serializable_hash.to_json
     end
 
     def create
@@ -15,7 +15,7 @@ module Api::V2
       end
 
       options = {}
-      render json: serializer_class.new(user, options).serialized_json
+      render json: serializer_class.new(user, options).serializable_hash.to_json
     end
 
     def update
@@ -25,7 +25,7 @@ module Api::V2
       end
 
       options = {}
-      render json: serializer_class.new(user, options).serialized_json
+      render json: serializer_class.new(user, options).serializable_hash.to_json
     end
 
     private

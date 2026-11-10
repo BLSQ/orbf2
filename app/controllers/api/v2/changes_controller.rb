@@ -16,7 +16,7 @@ module Api
         
         options = { params: { hesabu_objects: hesabu_objects }}
 
-        render json: serializer_class.new(changes, options).serialized_json
+        render json: serializer_class.new(changes, options).serializable_hash.to_json
       end
 
       private

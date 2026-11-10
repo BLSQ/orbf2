@@ -9,7 +9,7 @@ module Api
       def index
         project_anchor = current_project_anchor
 
-        render json: InvoicingJobSerializer.new(find_jobs(project_anchor), {}).serialized_json
+        render json: InvoicingJobSerializer.new(find_jobs(project_anchor), {}).serializable_hash.to_json
       end
 
       def create
