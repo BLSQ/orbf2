@@ -17,7 +17,7 @@ gem "paper_trail-association_tracking", "~> 2.2"
 gem "pg", "~> 1.2"
 gem "puma", "~> 4.3"
 gem "rack", ">= 2.0.6"
-gem "rails", "~> 6.0.6"
+gem "rails", "~> 6.1.7"
 gem "concurrent-ruby", "1.3.4" # 1.3.5 breaks rails < 7.1 (Logger not loaded)
 gem "activerecord-nulldb-adapter"
 gem "rails_admin", "~> 2.2"

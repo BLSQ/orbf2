@@ -44,8 +44,14 @@ RSpec.describe OutputDatasetWorker do
 
     def stub_create_dataset
       code = "hesabu-outputs-" + payment_rule.id.to_s + "-quarterly"
+      expected = JSON.parse("{\"dataSets\":[{\"name\":\"ORBF - Payment rule pma (#{payment_rule.id}) - Quarterly\",\"shortName\":\"#{code}\",\"code\":\"#{code}\",\"periodType\":\"Quarterly\",\"dataElements\":[{\"id\":\"ext-attributed_points\"},{\"id\":\"ext-max_points\"},{\"id\":\"ext-quality_technical_score_value\"}],\"organisationUnits\":[{\"id\":\"vRC0stJ5y9Q\"},{\"id\":\"bM4Ky73uMao\"},{\"id\":\"cgqkFdShPzg\"},{\"id\":\"kLNQT4KQ9hT\"},{\"id\":\"kMTHqMgenme\"},{\"id\":\"wNYYRm2c9EK\"},{\"id\":\"Bq5nb7UAEGd\"},{\"id\":\"T2Cn45nBY0u\"},{\"id\":\"roQ2l7TX0eZ\"},{\"id\":\"JNJIPX9DfaW\"},{\"id\":\"nCh5dBoJVNw\"},{\"id\":\"vv1QJFONsT6\"},{\"id\":\"jCnyQOKQBFX\"},{\"id\":\"OuwX8H2CcRO\"},{\"id\":\"uNEhNuBUr0i\"},{\"id\":\"IXJg79fclDm\"},{\"id\":\"mTNOoGXuC39\"},{\"id\":\"NnQpISrLYWZ\"},{\"id\":\"GQcsUZf81vP\"},{\"id\":\"xmZNDeO0qCR\"},{\"id\":\"jk1TtiBM5hz\"},{\"id\":\"uROAmk9ymNE\"},{\"id\":\"cdmkMyYv04T\"},{\"id\":\"taKiTcaf05H\"},{\"id\":\"ctN0WgIvfke\"},{\"id\":\"bqtZrXoryDF\"},{\"id\":\"Tht0fnjagHi\"},{\"id\":\"JCXEtUDYyp9\"}],\"categoryCombo\":{\"id\":\"p0KPaWEg3cf\",\"name\":\"default\"},\"openFuturePeriods\":3}]}")
+      # organisation units order depends on the database
+      sort_org_units = lambda do |json|
+        json["dataSets"].each { |ds| ds["organisationUnits"] = ds["organisationUnits"].sort_by { |ou| ou["id"] } }
+        json
+      end
       stub_request(:post, "http://play.dhis2.org/demo/api/metadata")
-        .with(body: "{\"dataSets\":[{\"name\":\"ORBF - Payment rule pma (#{payment_rule.id}) - Quarterly\",\"shortName\":\"#{code}\",\"code\":\"#{code}\",\"periodType\":\"Quarterly\",\"dataElements\":[{\"id\":\"ext-attributed_points\"},{\"id\":\"ext-max_points\"},{\"id\":\"ext-quality_technical_score_value\"}],\"organisationUnits\":[{\"id\":\"vRC0stJ5y9Q\"},{\"id\":\"bM4Ky73uMao\"},{\"id\":\"cgqkFdShPzg\"},{\"id\":\"kLNQT4KQ9hT\"},{\"id\":\"kMTHqMgenme\"},{\"id\":\"wNYYRm2c9EK\"},{\"id\":\"Bq5nb7UAEGd\"},{\"id\":\"T2Cn45nBY0u\"},{\"id\":\"roQ2l7TX0eZ\"},{\"id\":\"JNJIPX9DfaW\"},{\"id\":\"nCh5dBoJVNw\"},{\"id\":\"vv1QJFONsT6\"},{\"id\":\"jCnyQOKQBFX\"},{\"id\":\"OuwX8H2CcRO\"},{\"id\":\"uNEhNuBUr0i\"},{\"id\":\"IXJg79fclDm\"},{\"id\":\"mTNOoGXuC39\"},{\"id\":\"NnQpISrLYWZ\"},{\"id\":\"GQcsUZf81vP\"},{\"id\":\"xmZNDeO0qCR\"},{\"id\":\"jk1TtiBM5hz\"},{\"id\":\"uROAmk9ymNE\"},{\"id\":\"cdmkMyYv04T\"},{\"id\":\"taKiTcaf05H\"},{\"id\":\"ctN0WgIvfke\"},{\"id\":\"bqtZrXoryDF\"},{\"id\":\"Tht0fnjagHi\"},{\"id\":\"JCXEtUDYyp9\"}],\"categoryCombo\":{\"id\":\"p0KPaWEg3cf\",\"name\":\"default\"},\"openFuturePeriods\":3}]}")
+        .with { |request| sort_org_units.call(JSON.parse(request.body)) == sort_org_units.call(expected) }
         .to_return(status: 200, body: "")
     end
 

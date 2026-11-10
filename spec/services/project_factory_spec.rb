@@ -23,6 +23,7 @@ describe ProjectFactory do
     ActiveRecord::InternalMetadata,
     ActiveStorage::Attachment,
     ActiveStorage::Blob,
+    ActiveStorage::VariantRecord,
     PaperTrail::Version,
     PaperTrail::VersionAssociation,
     Flipper::Adapters::ActiveRecord::Feature,

@@ -15,6 +15,7 @@ RSpec.describe PaperTrailed do
     ActiveRecord::InternalMetadata,
     ActiveStorage::Attachment,
     ActiveStorage::Blob,
+    ActiveStorage::VariantRecord,
     PaperTrail::Version,
     PaperTrail::VersionAssociation,
     Version,

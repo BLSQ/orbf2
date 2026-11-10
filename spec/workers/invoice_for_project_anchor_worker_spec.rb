@@ -12,7 +12,7 @@ RSpec.describe InvoiceForProjectAnchorWorker do
   let!(:project) do
     project = full_project
     project.save!
-    project.update_attributes(read_through_deg: false)
+    project.update(read_through_deg: false)
     user.save!
     user.program = program
 

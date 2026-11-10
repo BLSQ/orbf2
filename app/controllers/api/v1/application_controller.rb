@@ -12,8 +12,10 @@ module Api
       private
 
       def bad_request(error)
-        Rails.logger.warn([error.message, error.backtrace.join("\n")].join("\n"))
-        render status: :bad_request, json: { status: "KO", message: error.message }
+        # rails 6.1+ appends "Did you mean?" suggestions to ParameterMissing#message
+        message = error.respond_to?(:original_message) ? error.original_message : error.message
+        Rails.logger.warn([message, error.backtrace.join("\n")].join("\n"))
+        render status: :bad_request, json: { status: "KO", message: message }
       end
 
       def current_project_anchor

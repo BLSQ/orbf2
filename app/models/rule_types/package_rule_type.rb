@@ -57,14 +57,14 @@ module RuleTypes
           next unless formula_by_codes[code]
 
           if non_uniq_formulas.size > 1
-            rule.errors[:formulas] << "Formula's code must be unique accross packages, you have #{non_uniq_formulas.size} formulas with '#{code}' in #{non_uniq_formulas.map(&:rule).map(&:package).map(&:name).join(' and ')}"
+            rule.errors.add(:formulas, "Formula's code must be unique accross packages, you have #{non_uniq_formulas.size} formulas with '#{code}' in #{non_uniq_formulas.map(&:rule).map(&:package).map(&:name).join(' and ')}")
           end
         end
       end
 
       formula_by_codes.each do |code, formulas|
         if formulas.size > 1
-          rule.errors[:formulas] << "Formula's code must be unique, you have #{formulas.size} formulas with '#{code}'"
+          rule.errors.add(:formulas, "Formula's code must be unique, you have #{formulas.size} formulas with '#{code}'")
         end
       end
     end
