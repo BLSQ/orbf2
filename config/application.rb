@@ -38,6 +38,8 @@ module Scorpio
     end
 
     config.active_job.queue_adapter = :sidekiq
+    # no image variants in this app (avoids requiring image_processing)
+    config.active_storage.variant_processor = :disabled
     config.assets.initialize_on_precompile = false
 
     # These are defined in `/lib/*.rb

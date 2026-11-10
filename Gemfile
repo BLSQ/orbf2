@@ -122,7 +122,7 @@ end
 group :development do
   gem "annotaterb", "~> 4.14"
   gem "flamegraph"
-  gem "listen", "~> 3.0.5"
+  gem "listen", "~> 3.9"
   gem "memory_profiler"
   gem "pronto"
   gem "pronto-flay", require: false
@@ -131,8 +131,8 @@ group :development do
   gem "rack-mini-profiler"
   gem "rubocop", require: false
   gem 'rubocop-rails', require: false
-  gem "spring"
-  gem "spring-watcher-listen", "~> 2.0.0"
+  gem "spring", "~> 4.2"
+  gem "spring-watcher-listen", "~> 2.1"
   gem "stackprof"
   gem "web-console"
 end
