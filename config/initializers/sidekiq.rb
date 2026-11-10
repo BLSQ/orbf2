@@ -1,5 +1,4 @@
 require "sidekiq/throttled"
-Sidekiq::Throttled.setup!
 
 # The app could be provisioned with Redis cloud or with Heroku Redis,
 # they use a different env variable, so check them both, and use the

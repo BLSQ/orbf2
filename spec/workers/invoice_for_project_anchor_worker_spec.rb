@@ -26,7 +26,7 @@ RSpec.describe InvoiceForProjectAnchorWorker do
 
   describe "throttled" do
     it "defaults to 3 concurrent" do
-      expect(Sidekiq::Throttled::Registry.get(InvoiceForProjectAnchorWorker).concurrency.limit).to eq(3)
+      expect(Sidekiq::Throttled::Registry.get(InvoiceForProjectAnchorWorker).concurrency.map(&:limit)).to eq([3])
     end
 
     it "can be overridden with env" do
@@ -35,7 +35,7 @@ RSpec.describe InvoiceForProjectAnchorWorker do
       ENV["SDKQ_MAX_CONCURRENT_INVOICE"] = "10"
       # Force a reload of the file to update throttled settings
       load File.join(Rails.root, "app/workers/invoice_for_project_anchor_worker.rb")
-      expect(Sidekiq::Throttled::Registry.get(InvoiceForProjectAnchorWorker).concurrency.limit).to eq(10)
+      expect(Sidekiq::Throttled::Registry.get(InvoiceForProjectAnchorWorker).concurrency.map(&:limit)).to eq([10])
       if current_env
         ENV["SDKQ_MAX_CONCURRENT_INVOICE"] = current_env
       else

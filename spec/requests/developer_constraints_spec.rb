@@ -35,4 +35,32 @@ RSpec.describe "DeveloperConstraints", type: :request do
       get '/flipper'
     }.to raise_error(ActionController::RoutingError)
   end
+
+  describe "developer tools pages" do
+    let(:user) { FactoryBot.create(:user) }
+
+    around do |example|
+      ENV["DEV_USER_IDS"] = user.id.to_s
+      example.run
+    ensure
+      ENV.delete("DEV_USER_IDS")
+    end
+
+    before { sign_in user }
+
+    it "renders the sidekiq dashboard" do
+      get "/sidekiq"
+      expect(response).to have_http_status(:ok), "GET /sidekiq : #{response.status}"
+      expect(response.body).to include("Sidekiq")
+    end
+
+    it "renders the sidekiq throttled tab with the throttled workers" do
+      # loading it registers its throttling (eager loaded in production); the tab
+      # only lists throttles without a dynamic key_suffix
+      Dhis2SnapshotWorker
+      get "/sidekiq/throttled"
+      expect(response).to have_http_status(:ok), "GET /sidekiq/throttled : #{response.status}"
+      expect(response.body).to include("Dhis2SnapshotWorker")
+    end
+  end
 end

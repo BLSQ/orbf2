@@ -20,9 +20,9 @@ gem "rack", ">= 2.0.6"
 gem "rails", "~> 7.2.2"
 gem "activerecord-nulldb-adapter"
 gem "rails_admin", "~> 3.2"
-gem "sidekiq", "< 6"
-gem "sidekiq-throttled", "~> 0.9.0"
-gem "redis-prescription", "~> 1.0" # sidekiq-throttled 0.9 does not cap it
+gem "sidekiq", "~> 7.3"
+gem "sidekiq-throttled", "~> 1.5"
+gem "connection_pool", "~> 2.5" # 3.0 breaks the sidekiq 7.3 scheduler (TimedStack#pop)
 
 ## Tooling
 

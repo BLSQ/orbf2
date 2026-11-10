@@ -9,7 +9,6 @@ Rails.application.routes.draw do
   constraints CanAccessDeveloperToolsConstraint do
     mount Sidekiq::Web => "/sidekiq"
     mount Flipper::UI.app(Flipper) => "/flipper"
-    Sidekiq::Throttled::Web.enhance_queues_tab!
 
     resources :users, only: [:index] do
       post :impersonate, on: :member
