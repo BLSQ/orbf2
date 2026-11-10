@@ -10,3 +10,5 @@ RUN PKGS="nodejs libpq-dev cmake"; \
     && rm -rf /var/lib/apt/lists/*
 # rubygems < 3.2.3 ignores required_ruby_version when resolving (same as Dockerfile.build)
 RUN if ruby -e 'exit(Gem::Version.new(Gem::VERSION) < Gem::Version.new("3.2.3"))'; then gem update --system 3.2.3 -N; fi
+# mounted checkouts are owned by the host user
+RUN git config --system --add safe.directory '*'

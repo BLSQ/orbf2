@@ -2,7 +2,7 @@
 
 source "https://rubygems.org"
 
-ruby "2.5.8"
+ruby "2.7.8"
 
 git_source(:github) do |repo_name|
   repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
@@ -25,7 +25,7 @@ gem "sidekiq-throttled", "~> 0.9.0"
 
 ## Tooling
 
-gem "bootsnap", "~> 1.3.2"
+gem "bootsnap", require: false
 gem "figaro"
 gem "lograge", "~> 0.10.0"
 gem "sentry-rails"
