@@ -39,7 +39,7 @@ module ApplicationHelper
     # Font awesome 4 only has 'fa', so while the views pretend to use version 5,
     # we're just using version 4.
     style = 'fa'
-    name.gsub!("trash-alt", "trash")
+    name = name.gsub("trash-alt", "trash")
     content_class = "#{style} fa-#{name}"
     content_class << " #{html_options[:class]}" if html_options.key?(:class)
     html_options[:class] = content_class

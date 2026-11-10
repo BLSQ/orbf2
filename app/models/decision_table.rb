@@ -60,7 +60,11 @@ class DecisionTable < ApplicationRecord
     available_codes = rule.package.activity_packages.map(&:activity).map(&:code).compact
     available_codes.push Decision::Rule::ANY
     invalid_rules = decision_table.rules.reject { |rule| available_codes.include?(rule[HEADER_IN_ACTIVITY_CODE]) }
-    invalid_rules.each { |invalid_rule| errors.add(:content, "#{invalid_rule.inspect} not in available package codes #{available_codes}!") }
+    invalid_rules.each do |invalid_rule|
+      # explicit format: Hash#inspect changed in ruby 3.4 ("k" => v)
+      rule_description = "{" + invalid_rule.to_h.map { |header, value| "#{header.inspect}=>#{value.inspect}" }.join(", ") + "}"
+      errors.add(:content, "#{rule_description} not in available package codes #{available_codes}!")
+    end
   end
 
   def period_start_before_end

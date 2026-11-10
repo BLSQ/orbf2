@@ -40,6 +40,10 @@ module Decision
       @row[key]
     end
 
+    def to_h
+      @row
+    end
+
     def to_s
       @row
     end
