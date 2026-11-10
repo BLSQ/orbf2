@@ -1,9 +1,10 @@
 GIT
   remote: https://github.com/BLSQ/dhis2.git
-  revision: e3aac605e64159fbb8085a81acd22a91feb5220c
+  revision: 278644eca2cd923df2938aff0cc7adea6b17f8e4
   branch: ruby_rails_upgrade
   specs:
     dhis2 (2.3.8)
+      ostruct
       rest-client
 
 GIT
@@ -132,7 +133,7 @@ GEM
       aws-eventstream (~> 1, >= 1.0.2)
     base64 (0.3.0)
     bcrypt (3.1.22)
-    bigdecimal (1.3.4)
+    bigdecimal (4.1.3)
     bindex (0.8.1)
     bootsnap (1.26.1)
       msgpack (~> 1.5)
@@ -600,7 +601,6 @@ DEPENDENCIES
   activerecord-nulldb-adapter
   annotate (~> 2.7.4)
   aws-sdk-s3 (~> 1.48)
-  bigdecimal (= 1.3.4)
   bootsnap
   bootstrap-datepicker-rails
   bootstrap-sass (~> 3.4.1)
@@ -686,7 +686,7 @@ DEPENDENCIES
   webmock
 
 RUBY VERSION
-   ruby 2.7.8p225
+   ruby 3.2.11p268
 
 BUNDLED WITH
    2.4.22

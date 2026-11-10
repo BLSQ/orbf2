@@ -2,7 +2,7 @@
 
 source "https://rubygems.org"
 
-ruby "2.7.8"
+ruby "3.2.11"
 
 git_source(:github) do |repo_name|
   repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
@@ -83,8 +83,6 @@ gem "naturalsort"
 ## Formula calculation
 
 gem "dentaku"
-# numeric behaviour of formulas: bump deliberately (ruby 2.5 ships 1.3.4)
-gem "bigdecimal", "1.3.4"
 if ENV["ORBF_DEV_MODE"]
   gem "hesabu", path: "../hesabu"
   gem "orbf-rules_engine", path: "../orbf-rules_engine"
