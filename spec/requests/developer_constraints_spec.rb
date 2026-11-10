@@ -48,6 +48,13 @@ RSpec.describe "DeveloperConstraints", type: :request do
 
     before { sign_in user }
 
+    it "renders the flipper features" do
+      Flipper.enable(:upgrade_smoke_test)
+      get "/flipper/features"
+      expect(response).to have_http_status(:ok), "GET /flipper/features : #{response.status}"
+      expect(response.body).to include("upgrade_smoke_test")
+    end
+
     it "renders the sidekiq dashboard" do
       get "/sidekiq"
       expect(response).to have_http_status(:ok), "GET /sidekiq : #{response.status}"

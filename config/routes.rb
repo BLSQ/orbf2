@@ -99,7 +99,7 @@ Rails.application.routes.draw do
           end
         end
         resources :changes, only: [:index]
-        resources :activities, only: %i[new create edit update mass_creation] do
+        resources :activities, only: %i[new create edit update] do
           collection do
             get :mass_creation
             post :confirm_mass_creation

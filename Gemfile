@@ -12,12 +12,12 @@ end
 ## Infrastructure
 
 gem "dhis2", github: "BLSQ/dhis2", branch: "ruby_rails_upgrade" # legacy-v2 + ruby 3 fix
-gem "paper_trail", "~> 15.2"
+gem "paper_trail", "~> 16.0"
 gem "paper_trail-association_tracking", "~> 2.2"
 gem "pg", "~> 1.2"
 gem "puma", "~> 4.3"
 gem "rack", ">= 2.0.6"
-gem "rails", "~> 7.2.2"
+gem "rails", "~> 8.0.4"
 gem "activerecord-nulldb-adapter"
 gem "rails_admin", "~> 3.2"
 gem "sidekiq", "~> 7.3"
@@ -35,9 +35,9 @@ gem "sentry-sidekiq"
 
 # Feature flipper is the act of enabling/disabling features in your app...
 # [flipper](https://github.com/jnunemaker/flipper)
-gem "flipper", "~> 0.28.3"
-gem "flipper-active_record", "~> 0.28.3"
-gem "flipper-ui", "~> 0.28.3"
+gem "flipper", "~> 1.3"
+gem "flipper-active_record", "~> 1.3"
+gem "flipper-ui", "~> 1.3"
 
 ## Frontend and asset related
 
@@ -120,7 +120,7 @@ group :development, :test do
 end
 
 group :development do
-  gem "annotate", "~> 3.2"
+  gem "annotaterb", "~> 4.14"
   gem "flamegraph"
   gem "listen", "~> 3.0.5"
   gem "memory_profiler"

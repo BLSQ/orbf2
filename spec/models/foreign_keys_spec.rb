@@ -8,7 +8,9 @@ describe "Immigrant check" do
 
     Immigrant.ignore_keys = [
       { from_table: "version_associations", column: "version_id" },
-      { from_table: "versions", column: "whodunnit" }
+      { from_table: "versions", column: "whodunnit" },
+      # flipper 1.x declares gates belongs_to feature (by key), flipper's schema has no FK
+      { from_table: "flipper_gates", column: "feature_key" }
     ]
 
     keys, warnings = Immigrant::KeyFinder.new.infer_keys
