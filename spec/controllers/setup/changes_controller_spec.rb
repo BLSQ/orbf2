@@ -34,6 +34,10 @@ RSpec.describe Setup::ChangesController, type: :controller do
         get :index, params: { project_id: project.id }
         versions = assigns(:versions)
         expect(versions).not_to be_empty
+        project_version = PaperTrail::Version.where(item_type: "Project", item_id: project.id, event: "update").last
+        expect(project_version).to be_present, "the project update should be versioned as Project-#{project.id}"
+        expect(project_version.project_id).to eq(project.id)
+        expect(project_version.program_id).to eq(project.program_id)
       end
     end
   end

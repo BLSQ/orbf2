@@ -45,9 +45,7 @@ class Project < ApplicationRecord
 
   has_paper_trail meta: {
     project_id: :id,
-    program_id: :program_id,
-    item_type:  "Project",
-    item_id:    :id
+    program_id: :program_id
   }
 
   delegate :program_id, to: :project_anchor

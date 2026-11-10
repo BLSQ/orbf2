@@ -12,13 +12,12 @@ end
 ## Infrastructure
 
 gem "dhis2", github: "BLSQ/dhis2", branch: "ruby_rails_upgrade" # legacy-v2 + ruby 3 fix
-gem "paper_trail", "~> 12.3"
+gem "paper_trail", "~> 15.2"
 gem "paper_trail-association_tracking", "~> 2.2"
 gem "pg", "~> 1.2"
 gem "puma", "~> 4.3"
 gem "rack", ">= 2.0.6"
-gem "rails", "~> 7.0.8"
-gem "concurrent-ruby", "1.3.4" # 1.3.5 breaks rails < 7.1 (Logger not loaded)
+gem "rails", "~> 7.1.5"
 gem "activerecord-nulldb-adapter"
 gem "rails_admin", "~> 3.2"
 gem "sidekiq", "< 6"
@@ -70,7 +69,7 @@ gem "pretender", "~> 0.3.4"
 gem "aws-sdk-s3", "~> 1.48"
 gem "jsonapi-serializer"
 gem "jbuilder", "~> 2.5"
-gem "json", "~> 2.7" # json 3 breaks activesupport < 7.1 (quirks_mode)
+gem "json", "~> 2.7" # hesabu uses JSON.fast_generate, removed in json 3
 
 ## Utilities
 
@@ -110,7 +109,7 @@ group :development, :test do
   gem "rails-controller-testing"
   gem "rest-client-logger", github: "uswitch/rest-client-logger"
   gem "rspec-its", "~> 1.3"
-  gem "rspec-rails", "~> 5.1"
+  gem "rspec-rails", "~> 7.1"
   gem "ruby-prof"
   gem "shoulda-matchers", require: false
 
