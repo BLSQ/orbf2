@@ -5,6 +5,7 @@
 #
 # App on http://localhost:3000 (admin@example.com / 12345678 from db/seeds.rb),
 # then /setup/seeds creates a demo project against the DHIS2 play server.
+# Simulation results go to minio (console http://localhost:9001, minio / minio123).
 # own project name: docker-compose.test.yml (same folder) also has a `db` service
 name: orbf2-dev
 
@@ -28,6 +29,37 @@ services:
       interval: 2s
       retries: 30
 
+  # S3 for simulation results. The `minio.localhost` alias makes the presigned
+  # result urls work both from the containers and from the browser
+  # (browsers resolve *.localhost to 127.0.0.1, port 9000 is published).
+  minio:
+    image: blsq/minio:release-2025-09-07_18-42-37Z
+    command: server /data --console-address :9001
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio123
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 2s
+      retries: 30
+    networks:
+      default:
+        aliases: [minio.localhost]
+    volumes:
+      - miniodata:/data
+
+  minio-bucket:
+    image: blsq/minio-mc:latest
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >-
+      sh -c "mc alias set local http://minio:9000 minio minio123 &&
+             mc mb --ignore-existing local/simulations"
+
   web: &app
     image: orbf2-test:${RUBY_VERSION:-4.0.9}
     build:
@@ -44,11 +76,18 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      minio-bucket:
+        condition: service_completed_successfully
     environment: &env
       RAILS_ENV: development
       DATABASE_URL: postgres://scorpio:scorpio@db:5432/scorpio_development
       REDIS_URL: redis://redis:6379/0
-      RAILS_ACTIVE_STORAGE: local # disk storage (storage/) instead of S3, for simulation results
+      RAILS_ACTIVE_STORAGE: minio
+      S3_SIMULATION_ENDPOINT: http://minio.localhost:9000
+      S3_SIMULATION_ACCESS: minio
+      S3_SIMULATION_SECRET: minio123
+      S3_SIMULATION_REGION: us-east-1
+      S3_SIMULATION_BUCKET: simulations
       BUNDLE_PATH: /bundle
       BUNDLE_WITHOUT: ""
     volumes:
@@ -58,7 +97,7 @@ services:
 
   sidekiq:
     <<: *app
-    command: bash -c "until bundle check >/dev/null; do sleep 5; done; bundle exec sidekiq"
+    command: bash -c "until bundle check >/dev/null; do sleep 5; done; bundle exec sidekiq -q dhis2-safe -q default"
     ports: []
     depends_on:
       web:
@@ -67,3 +106,4 @@ services:
 volumes:
   pgdata:
   bundle:
+  miniodata:
