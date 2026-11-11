@@ -43,3 +43,6 @@ yarn-debug.log*
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+
+# local ActiveStorage files (RAILS_ACTIVE_STORAGE=local)
+/storage/*
