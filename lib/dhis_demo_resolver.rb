@@ -29,10 +29,11 @@ class DhisDemoResolver
     when Net::HTTPSuccess then
       res["location"]
     when Net::HTTPRedirection then
-      new_location = res["location"]
-      if new_location.end_with?("action") || new_location.match?(%r{/login/?\z})
+      # relative redirects (e.g. "/stable-2-41-11/") resolve against the current url
+      new_location = URI.join(location, res["location"]).to_s
+      if URI(new_location).path.match?(%r{(action|login/?)\z})
         # We've gone too far and are being redirected to the login page
-        # (dhis-web-commons-about/redirect.action before 2.41, /login/ since).
+        # (dhis-web-commons-about/redirect.action, dhis-web-login or /login/).
         location
       else
         @limit -= 1

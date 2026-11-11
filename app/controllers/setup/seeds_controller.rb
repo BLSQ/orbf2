@@ -30,7 +30,8 @@ class Setup::SeedsController < PrivateController
 
   def dhis2_url
     if params[:version]
-      "https://play.dhis2.org/#{params[:version]}"
+      # play.dhis2.org/<version> redirects to the current play instance of that version
+      DhisDemoResolver.new("https://play.dhis2.org/#{params[:version]}").call
     elsif params[:local]
       "http://127.0.0.1:8085/"
     else
