@@ -156,6 +156,29 @@ RSpec.describe InvoicingJob, type: :model do
     end
   end
 
+  describe "result_url" do
+    let(:job) { FactoryBot.create(:invoicing_simulation_job, :processed) }
+
+    it "is nil without simulation result" do
+      expect(job.result_url).to be_nil
+    end
+
+    it "serves the gzipped simulation result inline as json" do
+      gzipped = ActiveSupport::Gzip.compress("{}")
+      job.result.attach(io: StringIO.new(gzipped), filename: "3-ou-2016_q4.json")
+      expect(job.result.blob.content_type).to eq("application/gzip")
+      service = instance_double(ActiveStorage::Service)
+      allow(job.result).to receive(:service).and_return(service)
+      allow(service).to receive(:url).and_return("https://s3/result")
+
+      expect(job.result_url).to eq("https://s3/result")
+      expect(service).to have_received(:url).with(
+        job.result.key,
+        hash_including(content_type: "application/json", disposition: :inline, filename: job.result.filename)
+      )
+    end
+  end
+
   describe "status" do
     it 'adds scopes' do
       processed_job = FactoryBot.create(:invoicing_simulation_job, :processed)

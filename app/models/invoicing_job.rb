@@ -120,7 +120,18 @@ class InvoicingJob < ApplicationRecord
   end
 
   def result_url
-    result&.service_url(content_type: "application/json") if result.attached?
+    return unless result.attached?
+
+    # Same url as the former `service_url(content_type: "application/json")`: the result
+    # is gzipped json (see InvoiceSimulationWorker#uploaded_blob) and is identified as
+    # application/gzip, which `result.url` would serve as an attachment.
+    result.service.url(
+      result.key,
+      expires_in:   ActiveStorage.service_urls_expire_in,
+      filename:     result.filename,
+      content_type: "application/json",
+      disposition:  :inline
+    )
   end
 
   def mark_as_processed(start_time, end_time)
