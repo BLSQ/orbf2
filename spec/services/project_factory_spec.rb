@@ -12,6 +12,29 @@ describe ProjectFactory do
     expect(project.errors.full_messages).to eq []
   end
 
+  it "seed maps the pushed quality outputs to real data elements of the dhis2 demo" do
+    project_factory = ProjectFactory.new
+    project = project_factory.build(
+      dhis2_url:      "http://play.dhis2.org/demo",
+      user:           "admin",
+      password:       "district",
+      bypass_ssl:     false,
+      project_anchor: program.build_project_anchor
+    )
+    project_factory.update_links(project)
+    output_mappings = lambda do
+      project.packages.flat_map(&:rules).flat_map(&:formulas)
+             .flat_map { |formula| formula.formula_mappings.map { |m| [formula.code, m.external_reference] } }
+    end
+    expect(output_mappings.call).to all(satisfy { |_code, ref| ref.start_with?("ext-") })
+
+    project_factory.additional_seed_actions(project)
+
+    expect(output_mappings.call).to match_array(
+      [%w[attributed_points g9Tso8plX88], %w[max_points ijIsjbvXFJL], %w[quality_technical_score_value Q8lOv2CAUjf]]
+    )
+  end
+
   it "should be able to destroy" do
     project = full_project
     project.save!
