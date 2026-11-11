@@ -1,0 +1,66 @@
+# Development stack: rails server + sidekiq + postgres + redis.
+#
+#   docker compose -f docker-compose.dev.yml up -d
+#   docker compose -f docker-compose.dev.yml exec web bin/rails db:prepare db:seed
+#
+# App on http://localhost:3000 (admin@example.com / 12345678 from db/seeds.rb),
+# then /setup/seeds creates a demo project against the DHIS2 play server.
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: scorpio
+      POSTGRES_PASSWORD: scorpio
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U scorpio"]
+      interval: 2s
+      retries: 30
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      retries: 30
+
+  web: &app
+    image: orbf2-test:${RUBY_VERSION:-4.0.9}
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+      args:
+        RUBY_VERSION: ${RUBY_VERSION:-4.0.9}
+    working_dir: /app
+    command: bash -c "bundle check || bundle install -j8; rm -f tmp/pids/server.pid; bin/rails server -b 0.0.0.0 -p 3000"
+    ports:
+      - "${WEB_PORT:-3000}:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment: &env
+      RAILS_ENV: development
+      DATABASE_URL: postgres://scorpio:scorpio@db:5432/scorpio_development
+      REDIS_URL: redis://redis:6379/0
+      RAILS_ACTIVE_STORAGE: local # disk storage (storage/) instead of S3, for simulation results
+      BUNDLE_PATH: /bundle
+      BUNDLE_WITHOUT: ""
+    volumes:
+      - .:/app
+      - ${APP_GIT_DIR:-/dev/null}:${APP_GIT_DIR:-/dev/null}
+      - bundle:/bundle
+
+  sidekiq:
+    <<: *app
+    command: bash -c "until bundle check >/dev/null; do sleep 5; done; bundle exec sidekiq"
+    ports: []
+    depends_on:
+      web:
+        condition: service_started
+
+volumes:
+  pgdata:
+  bundle:
