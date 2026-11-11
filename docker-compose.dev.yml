@@ -5,6 +5,9 @@
 #
 # App on http://localhost:3000 (admin@example.com / 12345678 from db/seeds.rb),
 # then /setup/seeds creates a demo project against the DHIS2 play server.
+# own project name: docker-compose.test.yml (same folder) also has a `db` service
+name: orbf2-dev
+
 services:
   db:
     image: postgres:16
