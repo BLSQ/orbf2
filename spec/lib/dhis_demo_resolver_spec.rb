@@ -16,4 +16,14 @@ RSpec.describe DhisDemoResolver, type: :model do
     )
     expect(DhisDemoResolver.new.call).to eq("https://play.dhis2.org/2.32.0")
   end
+
+  it "stops before the /login/ redirect of recent versions" do
+    stub_request(:get, "https://play.dhis2.org/demo").to_return(
+      status: 302, headers: { location: "https://play.im.dhis2.org/stable-2-43-2-1" }
+    )
+    stub_request(:get, "https://play.im.dhis2.org/stable-2-43-2-1").to_return(
+      status: 302, headers: { location: "http://play.im.dhis2.org/stable-2-43-2-1/login/" }
+    )
+    expect(DhisDemoResolver.new.call).to eq("https://play.im.dhis2.org/stable-2-43-2-1")
+  end
 end

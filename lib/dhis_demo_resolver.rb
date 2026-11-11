@@ -30,8 +30,9 @@ class DhisDemoResolver
       res["location"]
     when Net::HTTPRedirection then
       new_location = res["location"]
-      if new_location.end_with?("action")
-        # We've gone too far and are being redirected to the login page.
+      if new_location.end_with?("action") || new_location.match?(%r{/login/?\z})
+        # We've gone too far and are being redirected to the login page
+        # (dhis-web-commons-about/redirect.action before 2.41, /login/ since).
         location
       else
         @limit -= 1
