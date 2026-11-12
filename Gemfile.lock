@@ -352,8 +352,8 @@ GEM
       sawyer (~> 0.9)
     orm_adapter (0.5.0)
     ostruct (0.6.3)
-    paper_trail (16.0.0)
-      activerecord (>= 6.1)
+    paper_trail (17.0.0)
+      activerecord (>= 7.1)
       request_store (~> 1.4)
     paper_trail-association_tracking (2.4.1)
       paper_trail (>= 12.0)
@@ -686,7 +686,7 @@ DEPENDENCIES
   memory_profiler
   naturalsort
   orbf-rules_engine!
-  paper_trail (~> 16.0)
+  paper_trail (~> 17.0)
   paper_trail-association_tracking (~> 2.2)
   pg (~> 1.2)
   pretender (~> 0.3.4)

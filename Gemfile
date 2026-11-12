@@ -12,7 +12,7 @@ end
 ## Infrastructure
 
 gem "dhis2", github: "BLSQ/dhis2", branch: "ruby_rails_upgrade" # legacy-v2 + ruby 3 fix
-gem "paper_trail", "~> 16.0"
+gem "paper_trail", "~> 17.0"
 gem "paper_trail-association_tracking", "~> 2.2"
 gem "pg", "~> 1.2"
 gem "puma", "~> 4.3"
