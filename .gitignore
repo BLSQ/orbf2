@@ -46,3 +46,6 @@ yarn-debug.log*
 
 # local ActiveStorage files (RAILS_ACTIVE_STORAGE=local)
 /storage/*
+
+# hesabu-manager build, see rake hesabu_manager:install
+/public/hesabu-manager

@@ -1,5 +1,5 @@
 <% if project.draft? %>
-<h1>Let's setup your Project</h1>
+<h1>Let's setup your Project <%= link_to "Open in Hesabu manager", setup_hesabu_manager_path, class: "btn btn-default pull-right", target: "_blank" if project.persisted? %></h1>
 <%if params[:readonly]%>
 <%= render "readonly" %>
 <%else%>

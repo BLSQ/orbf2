@@ -26,6 +26,9 @@ RUN bundle install \
     && find vendor/bundle/ruby/4.0.0/gems/ -name "*.o" -delete
 COPY . .
 RUN DATABASE_URL=nulldb:://null SECRET_KEY_BASE=1 RAILS_ENV=production bundle exec rake assets:precompile --trace
+# hesabu-manager build served at /setup/manager (zip url, defaults to the latest s3 build)
+ARG HESABU_MANAGER_BUILD
+RUN DATABASE_URL=nulldb:://null SECRET_KEY_BASE=1 RAILS_ENV=production HESABU_MANAGER_BUILD=$HESABU_MANAGER_BUILD bundle exec rake hesabu_manager:install
 # Remove folders not needed in resulting image
 RUN rm -rf node_modules tmp/cache app/assets vendor/assets spec
 
