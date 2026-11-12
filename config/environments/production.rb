@@ -22,6 +22,10 @@ Rails.application.configure do
   # Apache or NGINX already handles this.
   config.public_file_server.enabled = ENV["RAILS_SERVE_STATIC_FILES"].present?
 
+  # gzip dynamic responses (html, json). Precompiled assets are served from their .gz
+  # by ActionDispatch::Static, Rack::Deflater skips responses already encoded.
+  config.middleware.use Rack::Deflater
+
   # Compress JavaScripts and CSS.
   config.assets.js_compressor = :terser
   # config.assets.css_compressor = :sass
