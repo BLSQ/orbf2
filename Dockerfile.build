@@ -30,7 +30,9 @@ RUN DATABASE_URL=nulldb:://null SECRET_KEY_BASE=1 RAILS_ENV=production bundle ex
 ARG HESABU_MANAGER_BUILD
 RUN DATABASE_URL=nulldb:://null SECRET_KEY_BASE=1 RAILS_ENV=production HESABU_MANAGER_BUILD=$HESABU_MANAGER_BUILD bundle exec rake hesabu_manager:install
 # Remove folders not needed in resulting image
-RUN rm -rf node_modules tmp/cache app/assets vendor/assets spec
+# (keep app/assets/config/manifest.js: sprockets 4 refuses to boot without it)
+RUN rm -rf node_modules tmp/cache vendor/assets spec \
+    && find app/assets -mindepth 1 -maxdepth 1 ! -name config -exec rm -rf {} +
 
 
 FROM ruby:4.0.9-alpine
