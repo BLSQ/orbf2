@@ -123,10 +123,6 @@ group :development do
   gem "flamegraph"
   gem "listen", "~> 3.9"
   gem "memory_profiler"
-  gem "pronto"
-  gem "pronto-flay", require: false
-  gem "pronto-rubocop", require: false
-  gem "pronto-simplecov", require: false
   gem "rack-mini-profiler"
   gem "rubocop", require: false
   gem 'rubocop-rails', require: false
