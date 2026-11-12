@@ -50,6 +50,12 @@ jobs:
       with:
         path: "cc-test-reporter"
         key: cc-${{ runner.os }}-${{ hashFiles('./cc-test-reporter') }}
+    # S3 api for spec/workers/simulation_result_storage_spec.rb (a service container can't run `server /data`)
+    - name: Start MinIO
+      run: |
+        docker run -d --name minio -p 9000:9000 -e MINIO_ROOT_USER=minio -e MINIO_ROOT_PASSWORD=minio123 \
+          blsq/minio:release-2025-09-07_18-42-37Z server /data
+        timeout 60 sh -c 'until curl -sf http://localhost:9000/minio/health/ready; do sleep 1; done'
     - name: script/cibuild
       run: |
         script/cibuild
@@ -58,6 +64,11 @@ jobs:
         DB_NAME: ${{ env.POSTGRES_DB }}
         DB_USER: ${{ env.POSTGRES_USER }}
         REDIS_URL: redis://localhost:6379/0
+        S3_SIMULATION_ENDPOINT: http://localhost:9000
+        S3_SIMULATION_ACCESS: minio
+        S3_SIMULATION_SECRET: minio123
+        S3_SIMULATION_REGION: us-east-1
+        S3_SIMULATION_BUCKET: simulations-test
         DATA_TEST_S3_BUCKET: ${{ secrets.DATA_TEST_S3_BUCKET }}
         DATA_TEST_S3_REGION: ${{ secrets.DATA_TEST_S3_REGION }}
         FETCHER_S3_ACCESS: ${{ secrets.FETCHER_S3_ACCESS }}
