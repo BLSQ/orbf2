@@ -94,7 +94,7 @@ class InvoiceSimulationWorker
       json = InvoiceEntityToJson.new(invoicing_entity).call
       json
     rescue StandardError => e
-      exception = ErrorDuringSimulation.new(e.message)
+      exception = ErrorDuringSimulation.new(Dhis2ErrorMessage.call(e))
       exception.set_backtrace(e.backtrace)
       raise exception
     end

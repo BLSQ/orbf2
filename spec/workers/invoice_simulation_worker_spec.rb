@@ -64,6 +64,25 @@ RSpec.describe InvoiceSimulationWorker do
     expect(InvoicingSimulationJob.last.last_error).to eq("InvoiceSimulationWorker::Simulation::ErrorDuringSimulation: 503 Service Unavailable")
   end
 
+  it "stores what dhis2 answered when it refuses the request" do
+    project.packages.first.package_states.first.update(ds_external_reference: "dataset")
+    stub_request(:get, "http://play.dhis2.org/demo/api/dataValueSets?children=false&dataSet=dataset&orgUnit=#{ORG_UNIT_ID}&period=2015Q1")
+      .to_return(status: 409, body: { status: "ERROR", errorCode: "E2001",
+                                      message: "At least one data element, data set or data element group must be specified" }.to_json)
+
+    with_mocked_s3 do
+      begin
+        worker.perform(ORG_UNIT_ID, "2015Q1", project.id, true, 3, nil, true)
+      rescue InvoiceSimulationWorker::Simulation::ErrorDuringSimulation => _ignored
+      end
+    end
+
+    expect(InvoicingSimulationJob.last.last_error).to eq(
+      "InvoiceSimulationWorker::Simulation::ErrorDuringSimulation: 409 Conflict: " \
+      "At least one data element, data set or data element group must be specified (E2001)"
+    )
+  end
+
   it "stores exception message when there's problem with formula evaluation" do
     project.packages.first.activity_rule.formula("amount").update(expression: "tarif / 0")
     project.packages.first.package_states.first.update(ds_external_reference: "dataset")

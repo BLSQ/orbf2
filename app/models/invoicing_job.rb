@@ -152,7 +152,7 @@ class InvoicingJob < ApplicationRecord
       self.processed_at = nil
       self.errored_at = Time.now
       self.status = InvoicingJob.statuses[:errored]
-      self.last_error = "#{err&.class&.name}: #{err&.message}"
+      self.last_error = "#{err&.class&.name}: #{err && Dhis2ErrorMessage.call(err)}"
       save!
     end
   end

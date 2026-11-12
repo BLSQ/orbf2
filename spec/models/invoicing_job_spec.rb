@@ -179,6 +179,26 @@ RSpec.describe InvoicingJob, type: :model do
     end
   end
 
+  describe "mark_as_error" do
+    it "stores what dhis2 answered with the error" do
+      job = FactoryBot.create(:invoicing_job)
+      stub_request(:post, "http://dhis2.test/api/dataValueSets")
+        .to_return(status: 409, body: { message: "Data element not found or not accessible", errorCode: "E7610" }.to_json)
+      error = begin
+        RestClient.post("http://dhis2.test/api/dataValueSets", "{}")
+      rescue RestClient::Conflict => e
+        e
+      end
+
+      job.mark_as_error(0, 1, error)
+
+      expect(job.reload).to have_attributes(
+        status:     "errored",
+        last_error: "RestClient::Conflict: 409 Conflict: Data element not found or not accessible (E7610)"
+      )
+    end
+  end
+
   describe "status" do
     it 'adds scopes' do
       processed_job = FactoryBot.create(:invoicing_simulation_job, :processed)

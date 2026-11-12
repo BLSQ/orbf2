@@ -113,6 +113,19 @@ RSpec.describe ParallelDhis2 do
       }.to raise_error ParallelDhis2::HttpException
     end
 
+    it "raises with what dhis2 answered" do
+      stub_request(:any, expected_url).to_return(
+        status: [409, "Conflict"],
+        body:   { status: "ERROR", message: "Path `$.value` does not contain an STRING but a(n) NUMBER: 5" }.to_json
+      )
+      expect {
+        client.post_data_value_sets([{ value: 5 }])
+      }.to raise_error(
+        ParallelDhis2::HttpException,
+        "#{expected_url} returned 409: Path `$.value` does not contain an STRING but a(n) NUMBER: 5"
+      )
+    end
+
     it "returns a Dhis2::Status" do
       payload = fake_response(
         status:       "SUCCESS",
