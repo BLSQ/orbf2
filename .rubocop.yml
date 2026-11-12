@@ -1,10 +1,11 @@
-require: rubocop-rails
+plugins: rubocop-rails
 AllCops:
   NewCops: disable
+  SuggestExtensions: false
+  # TargetRubyVersion: from .ruby-version
   # The serializers go wrong with relationships, rubocop interprets
   # them a `has_many` from ActiveRecord and autocorrects it to a
   # proc. Which is not how the JSONApi serializer works
-  TargetRubyVersion: 2.5 
   Exclude:
     - db/schema.rb
     - app/serializers/**/*
