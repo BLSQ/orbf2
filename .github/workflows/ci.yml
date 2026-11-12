@@ -33,7 +33,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     - name: Set up Ruby (uses .ruby-version)
       uses: ruby/setup-ruby@v1
       with:
@@ -41,15 +41,10 @@ jobs:
     - name: Install postgres client
       run: sudo apt-get install libpq-dev
     - name: Cache chromedriver
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: "/usr/local/share/chromedriver"
         key: chromedriver-${{ runner.os }}-${{ hashFiles('/usr/local/share/chromedriver') }}
-    - name: Cache clode climate reporter
-      uses: actions/cache@v4
-      with:
-        path: "cc-test-reporter"
-        key: cc-${{ runner.os }}-${{ hashFiles('./cc-test-reporter') }}
     # S3 api for spec/workers/simulation_result_storage_spec.rb (a service container can't run `server /data`)
     - name: Start MinIO
       run: |
@@ -73,4 +68,3 @@ jobs:
         DATA_TEST_S3_REGION: ${{ secrets.DATA_TEST_S3_REGION }}
         FETCHER_S3_ACCESS: ${{ secrets.FETCHER_S3_ACCESS }}
         FETCHER_S3_KEY: ${{ secrets.FETCHER_S3_KEY }}
-        CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
