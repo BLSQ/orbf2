@@ -11,7 +11,7 @@ end
 
 ## Infrastructure
 
-gem "dhis2", github: "BLSQ/dhis2", branch: "ruby_rails_upgrade" # legacy-v2 + ruby 3 fix
+gem "dhis2", github: "BLSQ/dhis2", branch: "legacy-v2" # 2.3.8 api client, ruby 3/4 fixes merged
 gem "paper_trail", "~> 17.0"
 gem "paper_trail-association_tracking", "~> 2.2"
 gem "pg", "~> 1.2"
@@ -87,8 +87,8 @@ if ENV["ORBF_DEV_MODE"]
 else
   # We're using both of them against the latest master. We should set
   # them to versions when they become more stable
-  gem "hesabu", github: "BLSQ/hesabu", branch: "ruby_rails_upgrade" # TODO: back to master once merged
-  gem "orbf-rules_engine", github: "BLSQ/orbf-rules_engine", branch: "ruby_rails_upgrade" # TODO: back to master once merged
+  gem "hesabu", github: "BLSQ/hesabu"
+  gem "orbf-rules_engine", github: "BLSQ/orbf-rules_engine", branch: "master"
 end
 # Like a modern code version of the mythical beast with 100 serpent hea...
 # [typhoeus](https://github.com/typhoeus/typhoeus)

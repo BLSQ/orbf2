@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/BLSQ/dhis2.git
-  revision: 278644eca2cd923df2938aff0cc7adea6b17f8e4
-  branch: ruby_rails_upgrade
+  revision: 134bcc05ace3d799da7f37a1fe6e717dbb6177a7
+  branch: legacy-v2
   specs:
     dhis2 (2.3.8)
       ostruct
@@ -9,21 +9,21 @@ GIT
 
 GIT
   remote: https://github.com/BLSQ/hesabu.git
-  revision: fbbaff767a6b1b7b7291956cd8db794dd786e64c
-  branch: ruby_rails_upgrade
+  revision: 99e341ba86036d27001a13fe41f09c727b9c8eb5
   specs:
     hesabu (0.1.14)
       bigdecimal
 
 GIT
   remote: https://github.com/BLSQ/orbf-rules_engine.git
-  revision: e75c3e538e6ad67c3183d094aef45842bd57f527
-  branch: ruby_rails_upgrade
+  revision: b81a9c702d4f77fe0ec0bfb95658c828534ece61
+  branch: master
   specs:
     orbf-rules_engine (0.1.0)
       activesupport (>= 5.2, < 9)
       bigdecimal (>= 1.3.4)
       colorize (>= 0.8.1)
+      csv
       dentaku (= 3.4.2)
       descriptive_statistics (~> 2.5)
       dhis2 (= 2.3.8)
