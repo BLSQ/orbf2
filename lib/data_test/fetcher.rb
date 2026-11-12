@@ -5,10 +5,10 @@ module DataTest
     attr_accessor :s3
 
     def initialize
+      # own client credentials: Aws.config.update would sign every other S3 client of the
+      # process with them too (eg ActiveStorage's minio service in the specs)
       credentials = Aws::Credentials.new(access_key, secret)
-      Aws.config.update(region:      S3_REGION,
-                        credentials: credentials)
-      @s3 = Aws::S3::Resource.new(region: S3_REGION)
+      @s3 = Aws::S3::Resource.new(region: S3_REGION, credentials: credentials)
     end
 
     def access_key
