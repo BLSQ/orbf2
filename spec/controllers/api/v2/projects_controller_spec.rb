@@ -36,6 +36,18 @@ RSpec.describe Api::V2::ProjectsController, type: :controller do
       expect(resp["data"]["attributes"]["periods"]).to include("2016Q1")
     end
 
+    it "returns the simulations as relationships" do
+      simulation = project.project_anchor.invoicing_simulation_jobs.create!(dhis2_period: "2016Q1", orgunit_ref: "ou1")
+      with_correct_headers
+      get(:show, params: {})
+
+      expect(response).to have_http_status(:ok)
+      resp = JSON.parse(response.body)
+      expect(resp["data"]["relationships"]["simulations"]).to eq(
+        "data" => [{ "id" => simulation.id.to_s, "type" => "simulation" }]
+      )
+    end
+
     it "returns project fully" do
       with_correct_headers
       get(:show, params: { profile: "full" })

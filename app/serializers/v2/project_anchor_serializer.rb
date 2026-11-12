@@ -45,7 +45,8 @@ class V2::ProjectAnchorSerializer < V2::BaseSerializer
     project.project_anchor.project&.payment_rules
   end
 
-  has_many :simulations do |project|
+  # explicit serializer: jsonapi-serializer can't infer one for InvoicingSimulationJob
+  has_many :simulations, serializer: V2::InvoicingJobSerializer, record_type: :simulation do |project|
     project.project_anchor.invoicing_simulation_jobs
   end
 end
