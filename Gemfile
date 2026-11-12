@@ -15,7 +15,7 @@ gem "dhis2", github: "BLSQ/dhis2", branch: "ruby_rails_upgrade" # legacy-v2 + ru
 gem "paper_trail", "~> 17.0"
 gem "paper_trail-association_tracking", "~> 2.2"
 gem "pg", "~> 1.2"
-gem "puma", "~> 4.3"
+gem "puma", "~> 8.0"
 gem "rack", ">= 2.0.6"
 gem "rails", "~> 8.1.1"
 gem "activerecord-nulldb-adapter"

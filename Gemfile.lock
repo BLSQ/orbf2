@@ -393,7 +393,7 @@ GEM
     pry-rails (0.3.11)
       pry (>= 0.13.0)
     public_suffix (5.1.1)
-    puma (4.3.12)
+    puma (8.0.2)
       nio4r (~> 2.0)
     racc (1.8.1)
     rack (2.2.25)
@@ -696,7 +696,7 @@ DEPENDENCIES
   pronto-simplecov
   pry (~> 0.14.2)
   pry-rails (~> 0.3.9)
-  puma (~> 4.3)
+  puma (~> 8.0)
   rack (>= 2.0.6)
   rack-mini-profiler
   rails (~> 8.1.1)
