@@ -64,7 +64,7 @@ class InvoiceSimulationWorker
   end
 
   def gzip(string)
-    wio = StringIO.new("w")
+    wio = StringIO.new(+"")
     w_gz = Zlib::GzipWriter.new(wio)
     w_gz.write(string)
     w_gz.close
@@ -94,7 +94,7 @@ class InvoiceSimulationWorker
       json = InvoiceEntityToJson.new(invoicing_entity).call
       json
     rescue StandardError => e
-      exception = ErrorDuringSimulation.new(e.message)
+      exception = ErrorDuringSimulation.new(Dhis2ErrorMessage.call(e))
       exception.set_backtrace(e.backtrace)
       raise exception
     end

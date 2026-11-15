@@ -18,7 +18,7 @@ module Api::V2
 
       topic.save!
 
-      render json: serializer_class.new(topic).serialized_json
+      render json: serializer_class.new(topic).serializable_hash.to_json
     end
 
     def update
@@ -27,12 +27,12 @@ module Api::V2
 
       synchronize_relationships(topic)
 
-      render json: serializer_class.new(topic).serialized_json
+      render json: serializer_class.new(topic).serializable_hash.to_json
     end
 
     def index
       topics = current_project.activities
-      render json: serializer_class.new(topics).serialized_json
+      render json: serializer_class.new(topics).serializable_hash.to_json
     end
 
     private

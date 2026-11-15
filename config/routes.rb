@@ -9,7 +9,6 @@ Rails.application.routes.draw do
   constraints CanAccessDeveloperToolsConstraint do
     mount Sidekiq::Web => "/sidekiq"
     mount Flipper::UI.app(Flipper) => "/flipper"
-    Sidekiq::Throttled::Web.enhance_queues_tab!
 
     resources :users, only: [:index] do
       post :impersonate, on: :member
@@ -88,6 +87,8 @@ Rails.application.routes.draw do
       get "/projects/", to: "setup#index", as: "project_anchor"
       get "/projects/:project_id", to: "setup#index", as: "project"
       resources :seeds, only: [:index] if Scorpio.is_dev?
+      get "/manager", to: "hesabu_manager#show", as: "hesabu_manager"
+      get "/manager/dhis2/api/*path", to: "hesabu_manager#dhis2", format: false, as: "hesabu_manager_dhis2"
       resources :projects, only: %i[create update] do
         resources :oauth, only: [:create]
         resources :metadatas, only: %i[index update]
@@ -100,7 +101,7 @@ Rails.application.routes.draw do
           end
         end
         resources :changes, only: [:index]
-        resources :activities, only: %i[new create edit update mass_creation] do
+        resources :activities, only: %i[new create edit update] do
           collection do
             get :mass_creation
             post :confirm_mass_creation

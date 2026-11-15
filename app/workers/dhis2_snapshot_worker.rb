@@ -12,8 +12,11 @@ class Dhis2SnapshotWorker
     threshold:   { limit: 3, period: 2.minutes }
   )
 
-  def perform(project_anchor_id, filter: nil, now: Time.now.utc, disable_tracking: true)
+  # now_iso8601: the snapshot date when enqueued through sidekiq (json args only, no keywords)
+  def perform(project_anchor_id, now_iso8601 = nil,
+              filter: nil, now: Time.now.utc, disable_tracking: true)
     @disable_tracking = disable_tracking
+    now = Time.iso8601(now_iso8601) if now_iso8601
     project_anchor = ProjectAnchor.find(project_anchor_id)
 
     now = project_anchor.projects.first.calendar.from_iso(now.to_date)

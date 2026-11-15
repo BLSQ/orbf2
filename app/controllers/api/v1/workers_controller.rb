@@ -12,7 +12,7 @@ module Api
         render(
           json:   {
             timestamps: {
-              requested: Time.zone.now.to_s(:db)
+              requested: Time.zone.now.to_formatted_s(:db)
             },
             sidekiq:    sidekiq_infos,
             invoicing:  invoicing_infos

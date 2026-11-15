@@ -7,7 +7,7 @@ module Api::V2
       project_anchor = current_project_anchor
       jobs = project_anchor.invoicing_simulation_jobs.order(updated_at: :desc)
 
-      render json: serializer_class.new(jobs).serialized_json
+      render json: serializer_class.new(jobs).serializable_hash.to_json
     end
 
     # Single simulation based on `:id`
@@ -15,7 +15,7 @@ module Api::V2
       project_anchor = current_project_anchor
       job = project_anchor.invoicing_simulation_jobs.find(params[:id])
 
-      render json: serializer_class.new(job).serialized_json
+      render json: serializer_class.new(job).serializable_hash.to_json
     end
 
     # Single simulation based on supplying:
@@ -56,7 +56,7 @@ module Api::V2
           was_enqueued:            should_enqueue,
           reason_for_not_enqueing: reason
         }
-        render json: serializer_class.new(job, options).serialized_json
+        render json: serializer_class.new(job, options).serializable_hash.to_json
       else
         return bad_request("Missing required parameters: orgUnit and periods")
       end

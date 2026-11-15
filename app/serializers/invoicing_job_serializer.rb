@@ -30,7 +30,7 @@
 #
 
 class InvoicingJobSerializer
-  include FastJsonapi::ObjectSerializer
+  include JSONAPI::Serializer
   set_key_transform :camel_lower
   attribute :org_unit, &:orgunit_ref
   attribute :dhis2_period

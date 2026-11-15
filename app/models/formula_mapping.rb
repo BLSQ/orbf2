@@ -55,7 +55,7 @@ class FormulaMapping < ApplicationRecord
       short: format(naming_patterns[:short], substitutions).strip,
       code:  format(naming_patterns[:code], substitutions).strip
     }
-    Dhis2Name.new(dhis2_name)
+    Dhis2Name.new(**dhis2_name)
   end
 
   def data_element_ext_ref

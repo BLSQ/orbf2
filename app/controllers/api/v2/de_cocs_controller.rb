@@ -37,7 +37,7 @@ module Api
           results = search_results(nil, "data_elements", limit: 20_000)
         end
 
-        render json: serializer_class.new(results).serialized_json
+        render json: serializer_class.new(results).serializable_hash.to_json
       end
 
       def serializer_class

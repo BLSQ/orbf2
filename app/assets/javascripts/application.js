@@ -143,7 +143,9 @@ $(document).ready(function() {
   $("#entity_group_kind").on("change", function(event){
     toggleEntityGroupSections(event.target)
   });
-  toggleEntityGroupSections($("#entity_group_kind")[0])
+  // only the entity group form has the select (TypeError on every other page)
+  const entityGroupKind = $("#entity_group_kind")[0];
+  if (entityGroupKind) toggleEntityGroupSections(entityGroupKind);
 });
 
 

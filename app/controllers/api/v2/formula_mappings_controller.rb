@@ -13,7 +13,7 @@ module Api::V2
 
       OutputDatasetWorker.trigger_sync_for_project(current_project)
 
-      render json: serializer_class.new(formula_mapping).serialized_json
+      render json: serializer_class.new(formula_mapping).serializable_hash.to_json
     end
 
     def update
@@ -23,18 +23,18 @@ module Api::V2
 
       OutputDatasetWorker.trigger_sync_for_project(current_project)
       
-      render json: serializer_class.new(formula_mapping).serialized_json
+      render json: serializer_class.new(formula_mapping).serializable_hash.to_json
     end
 
     def index
       formula_mappings = current_project.packages.flat_map(&:rules).flat_map(&:formulas).flat_map(&:formula_mappings)
-      render json: serializer_class.new(formula_mappings).serialized_json
+      render json: serializer_class.new(formula_mappings).serializable_hash.to_json
     end
 
     def destroy
       formula_mapping = current_mapping
       formula_mapping.destroy!
-      render json: serializer_class.new(formula_mapping).serialized_json
+      render json: serializer_class.new(formula_mapping).serializable_hash.to_json
     end
 
     private

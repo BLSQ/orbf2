@@ -352,6 +352,28 @@ class ProjectFactory
     # all the values to DHIS when running a simulation
     decision_table = project.packages[0].activity_rule.decision_tables.first
     decision_table.content << "*,*,*,*,12"
+
+    map_quality_outputs_to_demo_data_elements(project)
+  end
+
+  # The quality package outputs are pushed to dhis2 ("Push to dhis2"): `build`
+  # maps them to placeholder "ext-<code>" data elements, rejected by dhis2.
+  # Use real quarterly INTEGER data elements of the "MNCH Quarterly Report"
+  # data set (EKWVBc5C0ms) of the Sierra Leone demo, assigned to the clinics.
+  SEED_QUALITY_OUTPUT_DATA_ELEMENTS = {
+    "attributed_points"             => "g9Tso8plX88", # MNCH vacuum/forceps delivery
+    "max_points"                    => "ijIsjbvXFJL", # MNCH Breech/shoulder delivery
+    "quality_technical_score_value" => "Q8lOv2CAUjf"  # MNCH Destructive operations delivery
+  }.freeze
+
+  def map_quality_outputs_to_demo_data_elements(project)
+    project.packages.flat_map { |package| package.rules.to_a }.flat_map { |rule| rule.formulas.to_a }
+           .flat_map { |formula| formula.formula_mappings.to_a }.each do |mapping|
+      code = mapping.external_reference.to_s.delete_prefix("ext-")
+      next unless mapping.external_reference.to_s.start_with?("ext-") && SEED_QUALITY_OUTPUT_DATA_ELEMENTS.key?(code)
+
+      mapping.external_reference = SEED_QUALITY_OUTPUT_DATA_ELEMENTS.fetch(code)
+    end
   end
 
   def normalized_suffix

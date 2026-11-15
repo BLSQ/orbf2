@@ -39,7 +39,7 @@ class InvoicingJob < ApplicationRecord
   validates :dhis2_period, presence: true
   validates :orgunit_ref, presence: true
 
-  enum status: {
+  enum :status, {
     enqueued:  "enqueued",
     processed: "processed",
     errored:   "errored"
@@ -120,7 +120,18 @@ class InvoicingJob < ApplicationRecord
   end
 
   def result_url
-    result&.service_url(content_type: "application/json") if result.attached?
+    return unless result.attached?
+
+    # Same url as the former `service_url(content_type: "application/json")`: the result
+    # is gzipped json (see InvoiceSimulationWorker#uploaded_blob) and is identified as
+    # application/gzip, which `result.url` would serve as an attachment.
+    result.service.url(
+      result.key,
+      expires_in:   ActiveStorage.service_urls_expire_in,
+      filename:     result.filename,
+      content_type: "application/json",
+      disposition:  :inline
+    )
   end
 
   def mark_as_processed(start_time, end_time)
@@ -141,7 +152,7 @@ class InvoicingJob < ApplicationRecord
       self.processed_at = nil
       self.errored_at = Time.now
       self.status = InvoicingJob.statuses[:errored]
-      self.last_error = "#{err&.class&.name}: #{err&.message}"
+      self.last_error = "#{err&.class&.name}: #{err && Dhis2ErrorMessage.call(err)}"
       save!
     end
   end

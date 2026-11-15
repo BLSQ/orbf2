@@ -23,7 +23,8 @@ class Oauth::OauthController < Devise::OmniauthCallbacksController
 
     url_redirect = program.project_anchor.project.dhis2_url + "/uaa/oauth/authorize?client_id=#{oauth_client_id}&response_type=code"
 
-    redirect_to(url_redirect)
+    # dhis2_url is configured by admins, not user input
+    redirect_to(url_redirect, allow_other_host: true)
   end
 
   def callback

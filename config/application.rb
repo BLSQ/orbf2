@@ -20,7 +20,7 @@ Bundler.require(*Rails.groups)
 module Scorpio
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 5.1
+    config.load_defaults 8.1
 
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
@@ -38,6 +38,8 @@ module Scorpio
     end
 
     config.active_job.queue_adapter = :sidekiq
+    # no image variants in this app (avoids requiring image_processing)
+    config.active_storage.variant_processor = :disabled
     config.assets.initialize_on_precompile = false
 
     # These are defined in `/lib/*.rb

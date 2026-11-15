@@ -295,7 +295,9 @@ class ParallelDhis2
         message = "#{response.effective_url} timed out"
         raise TimedOut, message
       else
-        message = "#{response.effective_url} returned #{response.code}: #{response.return_message}"
+        # what dhis2 answered, else curl's message
+        details = Dhis2ErrorMessage.body_details(response.body) || response.return_message
+        message = "#{response.effective_url} returned #{response.code}: #{details}"
         raise HttpException, message
       end
     end

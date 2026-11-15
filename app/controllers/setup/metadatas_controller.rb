@@ -6,11 +6,12 @@ class Setup::MetadatasController < PrivateController
   end
 
   def update
+    # sidekiq job args must be native JSON (string keys)
     @dhis2_update_params = {
-      dhis2_id:   params[:id],
-      name:       params[:name],
-      short_name: params[:short_name],
-      code:       params[:code]
+      "dhis2_id"   => params[:id],
+      "name"       => params[:name],
+      "short_name" => params[:short_name],
+      "code"       => params[:code]
     }
     UpdateMetadataWorker.perform_async(current_project.id, @dhis2_update_params)
     render partial: "update_data_element"

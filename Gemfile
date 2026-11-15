@@ -2,7 +2,7 @@
 
 source "https://rubygems.org"
 
-ruby "2.5.8"
+ruby "4.0.9"
 
 git_source(:github) do |repo_name|
   repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
@@ -11,51 +11,54 @@ end
 
 ## Infrastructure
 
-gem "dhis2", github: "BLSQ/dhis2", branch: "legacy-v2"
-gem "paper_trail", "~> 10.1.0"
-gem "paper_trail-association_tracking", "~> 1.0.0"
-gem "pg", "~> 0.18"
-gem "puma", "~> 4.3"
+gem "dhis2", github: "BLSQ/dhis2", branch: "legacy-v2" # 2.3.8 api client, ruby 3/4 fixes merged
+gem "paper_trail", "~> 17.0"
+gem "paper_trail-association_tracking", "~> 2.2"
+gem "pg", "~> 1.2"
+gem "puma", "~> 8.0"
 gem "rack", ">= 2.0.6"
-gem "rails", "~> 5.2", "< 5.3"
+gem "rails", "~> 8.1.1"
 gem "activerecord-nulldb-adapter"
-gem "rails_admin", "~> 1.4.2"
-gem "sidekiq", "< 6"
-gem "sidekiq-throttled", "~> 0.9.0"
+gem "rails_admin", "~> 3.2"
+gem "sidekiq", "~> 7.3"
+gem "sidekiq-throttled", "~> 1.5"
+gem "connection_pool", "~> 2.5" # 3.0 breaks the sidekiq 7.3 scheduler (TimedStack#pop)
 
 ## Tooling
 
-gem "bootsnap", "~> 1.3.2"
+gem "bootsnap", require: false
 gem "figaro"
 gem "lograge", "~> 0.10.0"
-gem "sentry-raven", "~> 2.7.4"
+gem "sentry-rails"
+gem "sentry-ruby"
+gem "sentry-sidekiq"
 
 # Feature flipper is the act of enabling/disabling features in your app...
 # [flipper](https://github.com/jnunemaker/flipper)
-gem "flipper", "~> 0.16.1"
-gem "flipper-active_record", "~> 0.16.1"
-gem "flipper-ui", "~> 0.16.1"
+gem "flipper", "~> 1.3"
+gem "flipper-active_record", "~> 1.3"
+gem "flipper-ui", "~> 1.3"
 
 ## Frontend and asset related
 
 gem "bootstrap-datepicker-rails"
 gem "bootstrap-sass", "~> 3.4.1"
 gem "cocoon"
-gem "coffee-rails", "~> 4.2"
+gem "font-awesome-rails"
 gem "jquery-rails", "~> 4.3.3"
 gem "jquery-ui-rails", "~> 5.0.5"
 gem "rails-jquery-autocomplete"
-gem "sassc-rails", "~> 2.0.0"
+gem "sassc-rails", "~> 2.1"
 gem "simple_form"
-gem "sprockets", "~> 3.7.2"
+gem "sprockets", "~> 4.2"
 gem "turbolinks", "~> 5"
-gem "uglifier", ">= 1.3.0"
+gem "terser"
 
 ## Authentication
 
 # Flexible authentication solution for Rails with Warden
 # [devise](https://github.com/plataformatec/devise)
-gem "devise", "~> 4.7.1"
+gem "devise", "~> 4.9"
 
 # Log in as another user in Rails
 # [pretender](https://github.com/ankane/pretender)
@@ -64,9 +67,8 @@ gem "pretender", "~> 0.3.4"
 ## API related
 
 gem "aws-sdk-s3", "~> 1.48"
-gem "fast_jsonapi"
+gem "jsonapi-serializer"
 gem "jbuilder", "~> 2.5"
-gem "json", "2.3.0"
 
 ## Utilities
 
@@ -96,17 +98,17 @@ group :development, :test do
   gem "byebug", platform: :mri
 
   # Use pry instead of irb: http://pryrepl.org
-  gem "pry", "~> 0.12.2"
+  gem "pry", "~> 0.14.2"
   gem "pry-rails", "~> 0.3.9"
 
   gem "database_cleaner"
-  gem "factory_bot_rails", "~> 4.11.1"
+  gem "factory_bot_rails", "~> 6.2"
   gem "faker"
   gem "immigrant"
   gem "rails-controller-testing"
   gem "rest-client-logger", github: "uswitch/rest-client-logger"
-  gem "rspec-its"
-  gem "rspec-rails", "~> 3.0"
+  gem "rspec-its", "~> 1.3"
+  gem "rspec-rails", "~> 7.1"
   gem "ruby-prof"
   gem "shoulda-matchers", require: false
 
@@ -117,19 +119,15 @@ group :development, :test do
 end
 
 group :development do
-  gem "annotate", "~> 2.7.4"
+  gem "annotaterb", "~> 4.14"
   gem "flamegraph"
-  gem "listen", "~> 3.0.5"
+  gem "listen", "~> 3.9"
   gem "memory_profiler"
-  gem "pronto"
-  gem "pronto-flay", require: false
-  gem "pronto-rubocop", require: false
-  gem "pronto-simplecov", require: false
   gem "rack-mini-profiler"
   gem "rubocop", require: false
   gem 'rubocop-rails', require: false
-  gem "spring"
-  gem "spring-watcher-listen", "~> 2.0.0"
+  gem "spring", "~> 4.2"
+  gem "spring-watcher-listen", "~> 2.1"
   gem "stackprof"
   gem "web-console"
 end
@@ -140,9 +138,5 @@ group :test do
   gem "webmock"
 end
 
-group :production do
-  gem "heroku-deflater"
-end
-
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem "tzinfo-data", platforms: %i[mingw mswin x64_mingw jruby]
+gem "tzinfo-data", platforms: %i[windows jruby]

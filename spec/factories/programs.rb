@@ -16,7 +16,8 @@
 
 FactoryBot.define do
   factory :program do
-    code { Faker::Address.country }
+    # unique: two random countries can collide on index_programs_on_code (flaky specs)
+    sequence(:code) { |n| "#{Faker::Address.country} #{n}" }
   end
 
   factory :program_with_project_anchor, parent: :program do

@@ -12,8 +12,15 @@ module Api
       private
 
       def bad_request(error)
-        Rails.logger.warn([error.message, error.backtrace.join("\n")].join("\n"))
-        render status: :bad_request, json: { status: "KO", message: error.message }
+        # keep the v1 message stable: rails 6.1+ appends "Did you mean?" suggestions,
+        # rails 8 says "empty or invalid"
+        message = if error.is_a?(ActionController::ParameterMissing)
+                    "param is missing or the value is empty: #{error.param}"
+                  else
+                    error.message
+                  end
+        Rails.logger.warn([message, error.backtrace.join("\n")].join("\n"))
+        render status: :bad_request, json: { status: "KO", message: message }
       end
 
       def current_project_anchor

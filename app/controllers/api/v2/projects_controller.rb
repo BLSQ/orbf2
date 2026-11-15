@@ -12,7 +12,7 @@ module Api
         else
           project = current_project_anchor.project
         end
-        render json: serializer_class.new(project, options).serialized_json
+        render json: serializer_class.new(project, options).serializable_hash.to_json
       end
 
       private

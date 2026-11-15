@@ -7,7 +7,7 @@ module Api
         package = current_project_anchor.project.packages.find(params[:set_id])
         decision_tables = package.activity_rule.decision_tables
         options = {}
-        render json: serializer_class.new(decision_tables, options).serialized_json
+        render json: serializer_class.new(decision_tables, options).serializable_hash.to_json
       end
       
       def update
@@ -15,14 +15,14 @@ module Api
         decision_table = package.activity_rule.decision_tables.find(params[:id])
         decision_table.update!(decision_table_attributes)
         options = {}
-        render json: serializer_class.new(decision_table, options).serialized_json
+        render json: serializer_class.new(decision_table, options).serializable_hash.to_json
       end
 
       def create
         package = current_project_anchor.project.packages.find(params[:set_id])
         decision_table = package.activity_rule.decision_tables.create!(decision_table_attributes)
         options = {}
-        render json: serializer_class.new(decision_table, options).serialized_json
+        render json: serializer_class.new(decision_table, options).serializable_hash.to_json
       end
 
       def destroy

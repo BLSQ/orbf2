@@ -12,7 +12,7 @@ module Api
         }
 
         options[:include] = default_relationships + detailed_relationships
-        render json: serializer_class.new(formula, options).serialized_json
+        render json: serializer_class.new(formula, options).serializable_hash.to_json
       end
 
       def update
@@ -37,7 +37,7 @@ module Api
         end
 
         options[:include] = default_relationships + detailed_relationships
-        render json: serializer_class.new(formula, options).serialized_json
+        render json: serializer_class.new(formula, options).serializable_hash.to_json
       end
 
       def create
@@ -53,7 +53,7 @@ module Api
         options = {
           params: { with_edition_details: true }
         }
-        render json: serializer_class.new(formula, options).serialized_json
+        render json: serializer_class.new(formula, options).serializable_hash.to_json
       end
 
       def destroy
@@ -64,7 +64,7 @@ module Api
 
         formula.destroy! unless formula.used_by_formulas.any?
 
-        render json: serializer_class.new(formula, options).serialized_json
+        render json: serializer_class.new(formula, options).serializable_hash.to_json
       end
 
       private

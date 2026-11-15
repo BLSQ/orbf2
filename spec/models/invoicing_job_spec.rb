@@ -156,6 +156,49 @@ RSpec.describe InvoicingJob, type: :model do
     end
   end
 
+  describe "result_url" do
+    let(:job) { FactoryBot.create(:invoicing_simulation_job, :processed) }
+
+    it "is nil without simulation result" do
+      expect(job.result_url).to be_nil
+    end
+
+    it "serves the gzipped simulation result inline as json" do
+      gzipped = ActiveSupport::Gzip.compress("{}")
+      job.result.attach(io: StringIO.new(gzipped), filename: "3-ou-2016_q4.json")
+      expect(job.result.blob.content_type).to eq("application/gzip")
+      service = instance_double(ActiveStorage::Service)
+      allow(job.result).to receive(:service).and_return(service)
+      allow(service).to receive(:url).and_return("https://s3/result")
+
+      expect(job.result_url).to eq("https://s3/result")
+      expect(service).to have_received(:url).with(
+        job.result.key,
+        hash_including(content_type: "application/json", disposition: :inline, filename: job.result.filename)
+      )
+    end
+  end
+
+  describe "mark_as_error" do
+    it "stores what dhis2 answered with the error" do
+      job = FactoryBot.create(:invoicing_job)
+      stub_request(:post, "http://dhis2.test/api/dataValueSets")
+        .to_return(status: 409, body: { message: "Data element not found or not accessible", errorCode: "E7610" }.to_json)
+      error = begin
+        RestClient.post("http://dhis2.test/api/dataValueSets", "{}")
+      rescue RestClient::Conflict => e
+        e
+      end
+
+      job.mark_as_error(0, 1, error)
+
+      expect(job.reload).to have_attributes(
+        status:     "errored",
+        last_error: "RestClient::Conflict: 409 Conflict: Data element not found or not accessible (E7610)"
+      )
+    end
+  end
+
   describe "status" do
     it 'adds scopes' do
       processed_job = FactoryBot.create(:invoicing_simulation_job, :processed)

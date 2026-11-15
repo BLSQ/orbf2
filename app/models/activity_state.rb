@@ -32,12 +32,12 @@ class ActivityStateValidator
   def self.validate(activity_state)
     if activity_state.kind_data_element_coc? && activity_state.external_reference.presence
       if !activity_state.external_reference.include?(".")
-        activity_state.errors[:external_reference] << "should contains a dot like DATAELEMENTID.COCID"
+        activity_state.errors.add(:external_reference, "should contains a dot like DATAELEMENTID.COCID")
       end
     end
     if (activity_state.kind_indicator? || activity_state.kind_data_element?) && activity_state.external_reference.presence
       if activity_state.external_reference.include?(".")
-        activity_state.errors[:external_reference] << "should NOT contains a dot like DATAELEMENTID.COCID"
+        activity_state.errors.add(:external_reference, "should NOT contains a dot like DATAELEMENTID.COCID")
       end
     end
   end

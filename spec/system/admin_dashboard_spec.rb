@@ -8,7 +8,7 @@ describe "Rails Admin" do
   end
 
   it "can load the dashboard" do
-    visit rails_admin.dashboard_url
+    visit rails_admin.dashboard_path
     expect(page).to have_content "Scorpio Admin"
   end
 end
