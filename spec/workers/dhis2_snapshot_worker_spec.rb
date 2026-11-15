@@ -65,6 +65,19 @@ RSpec.describe Dhis2SnapshotWorker do
     expect(data_compound.data_element_groups.size).to eq 93
   end
 
+  it "snapshots for the date passed as an iso8601 string (sidekiq json args)" do
+    project
+    stub_organisation_units(project)
+    stub_system_info(project)
+    # a month that can't be the current one, after the project publish date
+    snapshot_date = Time.now.utc.next_year.change(month: 3, day: 15)
+
+    Dhis2SnapshotWorker.new.perform(project_anchor.id, snapshot_date.iso8601, filter: ["organisation_units"])
+
+    snapshot = Dhis2Snapshot.sole
+    expect([snapshot.kind, snapshot.year, snapshot.month]).to eq(["organisation_units", snapshot_date.year, 3])
+  end
+
   describe "active regions" do
     FIELDS = "?fields=:all,!coordinates,!ancestors,!access,!attributeValues,"\
                 "!users,!geometry,!dataSets,!userGroupAccesses,!dimensionItemType,!externalAccess"
