@@ -3,6 +3,10 @@
 module Api
   module V1
     class ApplicationController < ::ActionController::Base
+      # token api called cross-origin (dhis2 apps, no cookies): no csrf. load_defaults >= 5.2
+      # turns protect_from_forgery on in ActionController::Base, which rejected the OPTIONS
+      # preflight and the POSTs with a 422 without cors headers
+      skip_forgery_protection
       before_action :set_permissive_cors_headers
 
       def options
