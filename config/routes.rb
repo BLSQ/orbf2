@@ -6,6 +6,10 @@ require "sidekiq/web"
 require "sidekiq/throttled/web"
 
 Rails.application.routes.draw do
+  # ALB health check, bluesquare beanstalk convention (rails default controller:
+  # 200 once the app booted, no db or redis query)
+  get "_health" => "rails/health#show", as: :rails_health_check
+
   constraints CanAccessDeveloperToolsConstraint do
     mount Sidekiq::Web => "/sidekiq"
     mount Flipper::UI.app(Flipper) => "/flipper"

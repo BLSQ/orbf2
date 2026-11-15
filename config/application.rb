@@ -37,6 +37,11 @@ module Scorpio
       }
     end
 
+    # ALB health check: plain http on /_health (bluesquare beanstalk convention), so no
+    # force_ssl redirect (a 301 fails the target health) and no log line every few seconds
+    config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/_health" } } }
+    config.silence_healthcheck_path = "/_health"
+
     config.active_job.queue_adapter = :sidekiq
     # no image variants in this app (avoids requiring image_processing)
     config.active_storage.variant_processor = :disabled
