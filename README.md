@@ -108,38 +108,40 @@ Run the tests after any change:
 
 # Deploying
 
-## Hosting provider
+orbf2 runs as a docker image on AWS Elastic Beanstalk (infra in [terraform-orbf2-eb](https://github.com/BLSQ/terraform-orbf2-eb)), with 2 environments per stage: web and sidekiq.
 
-We recommand Heroku to host the application, but any hosting should work as long as it support Rails & Postgresql. On heroku, deploy should be as simple as:
+| stage   | web                   | sidekiq                 | url                                   |
+| ------- | --------------------- | ----------------------- | ------------------------------------- |
+| prod    | `orbf2-prod-20230114` | `orbf2-prod-sidekiq`    | https://orbf2.bluesquare.org          |
+| staging | `orbf2-staging`       | `orbf2-staging-sidekiq` | https://orbf2-staging.bluesquare.org  |
 
-    git push heroku master
-    heroku run rake db:create db:migrate db:seed
+1. build and push the image: run the [publish](./.github/workflows/publish.yml) workflow on the branch to deploy, with the version tag `git describe --tags --always` gives on its head commit, dashes replaced by dots (e.g. `1.0-399-g678fbb5c` → `1.0.399.g678fbb5c`)
 
-Or you can use this button to get up and running immediately:
+   ```
+   gh workflow run publish.yml --ref master -f version=1.0.399.g678fbb5c
+   ```
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+   it builds [Dockerfile.build](./Dockerfile.build) and pushes `blsq/hesabu:<version>` to Docker Hub
 
-## Deploying the dhis2 app 'hesabu manager'
+2. point the [Dockerfile](./Dockerfile) to that image (`FROM blsq/hesabu:<version>`), commit ("prepare deploy") and push
 
-A dhis2 app called [hesabu-manager](https://github.com/BLSQ/hesabu-manager/) is available but not yet on par with the web application.
+3. deploy with the [eb cli](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/eb-cli3.html) (needs AWS credentials and the `.elasticbeanstalk/config.yml` of `eb init`, application `orbf2`, region `eu-central-1`); it deploys the committed HEAD of the checkout, then prints the `/status` of both environments
+
+   ```
+   ./script/deploy_prod      # or ./script/deploy_staging
+   ```
+
+## Hesabu manager
+
+The [hesabu-manager](https://github.com/BLSQ/hesabu-manager/) react app is bundled in the image and served at `/setup/manager`. The image build (`rake hesabu_manager:install`) downloads the latest build from https://hesabu-manager-build.s3.amazonaws.com/Hesabu.zip, published by each push on the hesabu-manager `develop` branch. To ship a hesabu-manager change: merge it on `develop`, wait for its "Build and publish to s3 bucket" workflow, then build and deploy orbf2 as above.
+
+A specific build can be installed with the `HESABU_MANAGER_BUILD` build arg (zip url, zip file or build dir), see [hesabu_manager.rake](./lib/tasks/hesabu_manager.rake).
+
+It can also be deployed as a dhis2 app in the dhis2 of the projects, from a running container (e.g. `eb ssh`):
 
 ```
-heroku run rake ui:setup_all -a yourappname
-heroku run rake ui:deploy_all -a yourappname
-```
-
-## Restoring a testing or production Environment
-
-get a fresh copy using Heroku
-
-```
-heroku pg:pull DATABASE_URL orbf2 --app yourappname
-```
-
-to speed up things you can a copy without the dhis2_logs table
-
-```
-bundle exec rake db:fetch APP_NAME=yourappname
+bundle exec rake ui:setup_all
+bundle exec rake ui:deploy_all
 ```
 
 # Sub modules & related projects
