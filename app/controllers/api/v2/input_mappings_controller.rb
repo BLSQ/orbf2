@@ -122,18 +122,6 @@ module Api::V2
       ).reload
     end
 
-    def data_element_params
-      attributes = params.require(:data).require(:attributes).require(:dataElement)
-                         .permit(:name, :shortName, :code, :valueType, :aggregationType)
-      {
-        name:             attributes[:name],
-        short_name:       attributes[:shortName],
-        code:             attributes[:code],
-        value_type:       attributes[:valueType],
-        aggregation_type: attributes[:aggregationType]
-      }
-    end
-
     def input_attributes
       att = input_params[:attributes]
       {

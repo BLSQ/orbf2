@@ -54,6 +54,21 @@ module Api
         raise UnauthorizedAccess, "Unauthorized"
       end
 
+      # data element to create in dhis2 (DataElementCreator), from a mapping creation
+      #   data: { attributes: { dataElement: { name, shortName, code,
+      #                                        valueType, aggregationType } } }
+      def data_element_params
+        attributes = params.require(:data).require(:attributes).require(:dataElement)
+                           .permit(:name, :shortName, :code, :valueType, :aggregationType)
+        {
+          name:             attributes[:name],
+          short_name:       attributes[:shortName],
+          code:             attributes[:code],
+          value_type:       attributes[:valueType],
+          aggregation_type: attributes[:aggregationType]
+        }
+      end
+
       def bad_request(message, source = nil)
         Rails.logger.warn([message, Array.wrap(source).join("\n")].join("\n"))
         error_data = {
