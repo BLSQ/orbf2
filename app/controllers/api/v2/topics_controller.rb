@@ -23,7 +23,7 @@ module Api::V2
 
     def update
       topic = current_project.activities.find(params[:id])
-      topic.update!(topic_attributes)
+      topic.update!(sent_topic_attributes)
 
       synchronize_relationships(topic)
 
@@ -85,6 +85,13 @@ module Api::V2
         short_name: att[:shortName],
         code:       att[:code]
       }
+    end
+
+    # only the attributes sent: a missing code would be regenerated from the name
+    # and a missing short name cleared
+    def sent_topic_attributes
+      sent = topic_params[:attributes] || {}
+      topic_attributes.select { |attribute, _value| sent.key?(attribute.to_s.camelize(:lower)) }
     end
 
     def package_id

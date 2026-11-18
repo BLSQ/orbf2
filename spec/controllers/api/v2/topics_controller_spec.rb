@@ -169,6 +169,45 @@ RSpec.describe Api::V2::TopicsController, type: :controller do
       end
     end
 
+    describe "partial update" do
+      before { activity.update!(short_name: "Demo short", code: "demo_code") }
+
+      it "keeps the code when it isn't sent" do
+        payload["data"]["attributes"].delete("code")
+
+        put(:update, params: payload)
+
+        expect(response).to have_http_status(:ok)
+        expect(activity.reload).to have_attributes(name: "Topic very long name new", short_name: "Topic new",
+                                                   code: "demo_code")
+      end
+
+      it "keeps the short name when it isn't sent" do
+        payload["data"]["attributes"] = { "name" => "Renamed" }
+
+        put(:update, params: payload)
+
+        expect(response).to have_http_status(:ok)
+        expect(activity.reload).to have_attributes(name: "Renamed", short_name: "Demo short", code: "demo_code")
+      end
+
+      it "still clears the short name sent empty" do
+        payload["data"]["attributes"]["shortName"] = ""
+
+        put(:update, params: payload)
+
+        expect(activity.reload.short_name).to eq("")
+      end
+
+      it "keeps the sets when no relationship is sent" do
+        package.activities << activity
+
+        put(:update, params: payload)
+
+        expect(sets_of(activity)).to eq([package.id])
+      end
+    end
+
     it "update a topic handles validation errors" do
       payload["data"]["attributes"]["shortName"] = "super very veryveryveryveryveryveryveryveryveryveryveryveryvery long"
       put(:update, params: payload)
