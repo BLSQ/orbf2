@@ -124,4 +124,84 @@ RSpec.describe Api::V2::InputMappingsController, type: :controller do
       )
     end
   end
+
+  describe "#create_data_element" do
+    before do
+      authenticated
+      allow(SynchroniseDegDsWorker).to receive(:perform_async)
+    end
+
+    let(:data_element) do
+      {
+        name:            "Topic 1 - declared",
+        shortName:       "Topic 1 - declared",
+        code:            "topic_01_declared",
+        valueType:       "NUMBER",
+        aggregationType: "SUM"
+      }
+    end
+    let(:payload) { { topic_id: activity.id, data: { attributes: { code: state.code, dataElement: data_element } } } }
+
+    def errors
+      JSON.parse(response.body)["errors"].map { |error| error["detail"] }
+    end
+
+    it "creates the data element in dhis2 and maps it to the state" do
+      stub_default_category_combo(project)
+      stub_metadata_import(project)
+      stub_data_element_by_code(project, "topic_01_declared", "newDeId0001")
+
+      post(:create_data_element, params: payload)
+
+      expect(response).to have_http_status(:ok)
+      attributes = JSON.parse(response.body)["data"]["attributes"]
+      expect(attributes).to include(
+        "name"              => "Topic 1 - declared",
+        "kind"              => "data_element",
+        "origin"            => "dataValueSets",
+        "externalReference" => "newDeId0001"
+      )
+      mapping = activity.activity_states.find_by!(state: state)
+      expect(mapping.external_reference).to eq("newDeId0001")
+      expect(SynchroniseDegDsWorker).to have_received(:perform_async).with(project.project_anchor.id)
+    end
+
+    it "refuses an already mapped state without creating the data element" do
+      activity.activity_states.create!(state: state, name: "existing", kind: "data_element",
+                                       origin: "dataValueSets", external_reference: "existingDe1")
+
+      post(:create_data_element, params: payload)
+
+      expect(response).to have_http_status(:bad_request)
+      expect(errors).to eq(["#{state.code} is already mapped for topic_01"])
+      expect(a_request(:post, /metadata/)).not_to have_been_made
+    end
+
+    it "refuses an unknown state" do
+      post(:create_data_element, params: payload.deep_merge(data: { attributes: { code: "nope" } }))
+
+      expect(response).to have_http_status(:bad_request)
+      expect(errors).to eq(["unknown state nope"])
+    end
+
+    it "gives the dhis2 refusal and maps nothing" do
+      stub_default_category_combo(project)
+      stub_metadata_import(project, body: refused_import_report("code already exists"))
+
+      post(:create_data_element, params: payload)
+
+      expect(response).to have_http_status(:bad_request)
+      expect(errors).to eq(["dhis2 refused the data element: code already exists"])
+      expect(activity.activity_states).to be_empty
+      expect(SynchroniseDegDsWorker).not_to have_received(:perform_async)
+    end
+
+    it "requires the dhis2 user for the audit trail" do
+      request.headers["X-Dhis2UserId"] = nil
+
+      post(:create_data_element, params: payload)
+
+      expect(response).to have_http_status(:unauthorized)
+    end
+  end
 end
