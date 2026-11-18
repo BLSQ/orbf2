@@ -52,7 +52,7 @@ module Api::V2
           # puts "adding #{topic} to package #{package}"
           package.activities << topic
         end
-        if activity_package && !package_ids.include?(package.id)
+        if activity_package && !package_ids.include?(package.id.to_s)
           # puts "removing #{topic} from package #{package}"
           activity_package.destroy
         end

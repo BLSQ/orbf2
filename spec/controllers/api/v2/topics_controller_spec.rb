@@ -13,6 +13,10 @@ RSpec.describe Api::V2::TopicsController, type: :controller do
   let(:project) { create :project, project_anchor: project_anchor }
   let(:package) { project.packages.create!(name: "HF quantity", kind: "single", frequency: "monthly", data_element_group_ext_ref: "healthfacilities") }
 
+  def sets_of(activity)
+    ActivityPackage.where(activity_id: activity.id).pluck(:package_id)
+  end
+
   def authenticated
     request.headers["Accept"] = "application/vnd.api+json;version=2"
     request.headers["X-Token"] = project.project_anchor.token
@@ -145,8 +149,23 @@ RSpec.describe Api::V2::TopicsController, type: :controller do
 
         expect(attributes["stableId"]).to eq(activity.stable_id)
 
-        package2.reload
-        expect(package.activities.map(&:code)).not_to include(activity.code)
+        expect(sets_of(activity)).to eq([package.id])
+      end
+
+      it "keeps the topic in the sets listed, removes it from the others" do
+        package.activities << activity
+        package2.activities << activity
+        package3 = project.packages.create!(name: "HF other", kind: "single", frequency: "monthly",
+                                            data_element_group_ext_ref: "healthfacilities")
+        package3.activities << activity
+        payload["data"]["relationships"] = { "sets" => [
+          { "type" => "set", "id" => package.id.to_s }, { "type" => "set", "id" => package3.id.to_s }
+        ] }
+
+        put(:update, params: payload)
+
+        expect(response).to have_http_status(:ok)
+        expect(sets_of(activity)).to match_array([package.id, package3.id])
       end
     end
 
