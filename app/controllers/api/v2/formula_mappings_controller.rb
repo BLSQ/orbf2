@@ -2,7 +2,23 @@
 
 module Api::V2
   class FormulaMappingsController < BaseController
-    before_action :check_whodunnit!, only: %i[create update delete]
+    before_action :check_whodunnit!, only: %i[create create_data_element update delete]
+
+    # creates the data element in dhis2 then maps the formula (of the topic) to it
+    #   data: { attributes: { formulaId, topicId (activity formulas),
+    #           dataElement: { name, shortName, code, valueType, aggregationType } } }
+    def create_data_element
+      formula = current_formula
+      activity = mapped_activity
+      refusal = mapping_refusal(formula, activity)
+      return bad_request(refusal) if refusal
+
+      formula_mapping = map_new_data_element(formula, activity, data_element_params)
+      OutputDatasetWorker.trigger_sync_for_project(current_project)
+      render json: serializer_class.new(formula_mapping).serializable_hash.to_json
+    rescue DataElementCreator::Error => e
+      bad_request(e.message)
+    end
 
     def create
       formula = current_formula
@@ -38,6 +54,27 @@ module Api::V2
     end
 
     private
+
+    def mapped_activity
+      activity_id = formula_mapping_attributes[:activity_id]
+      current_project.activities.find(activity_id) if activity_id.present?
+    end
+
+    # checked before creating the data element: it would stay unmapped in dhis2
+    def mapping_refusal(formula, activity)
+      return unless formula.formula_mappings.exists?(activity_id: activity&.id)
+
+      "#{formula.code} is already mapped#{" for #{activity.code}" if activity}"
+    end
+
+    def map_new_data_element(formula, activity, element)
+      element_id = DataElementCreator.new(current_project).call(element)
+      formula.formula_mappings.create!(
+        activity:           activity,
+        kind:               formula.rule.kind,
+        external_reference: element_id
+      ).reload
+    end
 
     def current_mapping
       formula_mapping = FormulaMapping.find(params[:id])

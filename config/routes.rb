@@ -49,7 +49,9 @@ Rails.application.routes.draw do
       resource :project, only: [:show]
       resources :org_units, only: [:index]
       resources :de_cocs, only: [:index]
-      resources :formula_mappings
+      resources :formula_mappings do
+        post :create_data_element, on: :collection
+      end
       resource :calculations, only: %i[show create]
       resources :sets, only: %i[index show create update] do
         resources :inputs, only: [:create]
