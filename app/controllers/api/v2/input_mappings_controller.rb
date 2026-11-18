@@ -2,7 +2,24 @@
 
 module Api::V2
   class InputMappingsController < BaseController
-    before_action :check_whodunnit!, only: %i[create update delete]
+    before_action :check_whodunnit!, only: %i[create create_data_element update delete]
+
+    # creates the data element in dhis2 then maps it to the state of the topic
+    #   data: { attributes: { code: <state code>,
+    #           dataElement: { name, shortName, code, valueType, aggregationType } } }
+    def create_data_element
+      activity = current_activity
+      state_code = params.dig(:data, :attributes, :code)
+      state = activity.project.state(state_code)
+      refusal = mapping_refusal(activity, state, state_code)
+      return bad_request(refusal) if refusal
+
+      activity_state = map_new_data_element(activity, state, data_element_params)
+      SynchroniseDegDsWorker.perform_async(current_project.project_anchor.id)
+      render_activity_state(activity_state)
+    rescue DataElementCreator::Error => e
+      bad_request(e.message)
+    end
 
     def create
       activity = current_activity
@@ -84,6 +101,37 @@ module Api::V2
                       kind
                       externalReference
                     ])
+    end
+
+    # checked before creating the data element: it would stay unmapped in dhis2
+    def mapping_refusal(activity, state, state_code)
+      return "unknown state #{state_code}" unless state
+
+      already_mapped = activity.activity_states.exists?(state_id: state.id)
+      "#{state.code} is already mapped for #{activity.code}" if already_mapped
+    end
+
+    def map_new_data_element(activity, state, element)
+      element_id = DataElementCreator.new(activity.project).call(element)
+      activity.activity_states.create!(
+        state:              state,
+        name:               element[:name],
+        kind:               ActivityState::KIND_DATA_ELEMENT,
+        origin:             ActivityState::ORIGIN_DATAVALUESETS,
+        external_reference: element_id
+      ).reload
+    end
+
+    def data_element_params
+      attributes = params.require(:data).require(:attributes).require(:dataElement)
+                         .permit(:name, :shortName, :code, :valueType, :aggregationType)
+      {
+        name:             attributes[:name],
+        short_name:       attributes[:shortName],
+        code:             attributes[:code],
+        value_type:       attributes[:valueType],
+        aggregation_type: attributes[:aggregationType]
+      }
     end
 
     def input_attributes
