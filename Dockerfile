@@ -1,4 +1,4 @@
-FROM blsq/hesabu:1.0.414.g4d259843
+FROM blsq/hesabu:1.0.415.gc66a3db7
 
 ADD ./bin/eb/every_ten.sh /bin/eb/every_ten.sh
 ADD ./bin/eb/every_day.sh /bin/eb/every_day.sh
