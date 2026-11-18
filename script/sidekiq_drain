@@ -1,0 +1,84 @@
+#!/bin/bash
+# Drain the sidekiq worker of an Elastic Beanstalk environment before deploying it,
+# so running jobs (invoices, simulations, syncs,...) aren't killed by the deploy.
+#
+#   ./script/sidekiq_drain quiet orbf2-prod-sidekiq   # stop fetching new jobs (they wait in redis)
+#   ./script/sidekiq_drain wait orbf2-prod-sidekiq    # wait for the running jobs to finish
+#   ./script/sidekiq_drain busy orbf2-prod-sidekiq    # show the running jobs
+#
+# Uses `eb ssh` (key of the environment in ~/.ssh, port 22 opened temporarily to your ip)
+# and `rails runner` in the app container.
+# A quiet worker stays quiet until its container is replaced (deploy) or restarted (`eb restart`).
+#
+# env:
+#   DRAIN_TIMEOUT   seconds to wait before asking what to do (default 900)
+#   DRAIN_INTERVAL  seconds between checks (default 30)
+set -euo pipefail
+
+ACTION=${1:?usage: $0 quiet|wait|busy <eb environment>}
+ENVIRONMENT=${2:?usage: $0 quiet|wait|busy <eb environment>}
+DRAIN_TIMEOUT=${DRAIN_TIMEOUT:-900}
+DRAIN_INTERVAL=${DRAIN_INTERVAL:-30}
+
+# runs ruby (one line: eb ssh joins lines, no single quotes, no $) in the app container of the environment
+rails_runner() {
+  eb ssh "$ENVIRONMENT" --command "sudo docker exec \$(sudo docker ps -q | head -n 1) bundle exec rails runner '$1'" 2>&1 \
+    | grep -vE "^(WARNING: Git is in a detached head state|INFO: (Running|Attempting|SSH port|Closed port))| INFO: Sidekiq .* connecting to Redis"
+}
+
+BUSY_RUBY="works = Sidekiq::Workers.new.to_a; processes = Sidekiq::ProcessSet.new.to_a; puts %(PROCESSES=#{processes.size} QUIET=#{processes.count(&:stopping?)}); works.each { |_process, _thread, work| job = work.job; puts %(  #{job.display_class} #{job.display_args.inspect[0, 120]} running since #{work.run_at.utc}) }; puts %(BUSY=#{works.size})"
+
+QUIET_RUBY="Sidekiq::ProcessSet.new.each(&:quiet!); puts %(quiet sent to #{Sidekiq::ProcessSet.new.size} sidekiq process(es))"
+
+busy_count() {
+  local output
+  output=$(rails_runner "$BUSY_RUBY")
+  echo "$output" | grep -v "^BUSY=" >&2
+  echo "$output" | sed -n "s/^BUSY=//p" | tail -n 1
+}
+
+case "$ACTION" in
+  quiet)
+    echo "********** quiet sidekiq on $ENVIRONMENT (no new jobs fetched)"
+    rails_runner "$QUIET_RUBY"
+    ;;
+
+  busy)
+    rails_runner "$BUSY_RUBY"
+    ;;
+
+  wait)
+    echo "********** waiting for the running jobs on $ENVIRONMENT (timeout ${DRAIN_TIMEOUT}s)"
+    deadline=$((SECONDS + DRAIN_TIMEOUT))
+    while true; do
+      busy=$(busy_count)
+      if [[ ! "$busy" =~ ^[0-9]+$ ]]; then
+        echo "can't get the number of running jobs, aborting" >&2
+        exit 1
+      fi
+      if [[ "$busy" == "0" ]]; then
+        echo "no running jobs, ready to deploy"
+        exit 0
+      fi
+      echo "$(date +%H:%M:%S) $busy running job(s)"
+      if ((SECONDS >= deadline)); then
+        if [[ ! -t 0 ]]; then
+          echo "still $busy running job(s) after ${DRAIN_TIMEOUT}s, aborting (not interactive)" >&2
+          exit 1
+        fi
+        read -r -p "still $busy running job(s): [w]ait ${DRAIN_TIMEOUT}s more, [d]eploy anyway (running jobs are lost), [a]bort ? " answer
+        case "$answer" in
+          w*) deadline=$((SECONDS + DRAIN_TIMEOUT)) ;;
+          d*) echo "deploying with $busy running job(s)"; exit 0 ;;
+          *) echo "aborted, the worker stays quiet until restarted: eb restart $ENVIRONMENT" >&2; exit 1 ;;
+        esac
+      fi
+      sleep "$DRAIN_INTERVAL"
+    done
+    ;;
+
+  *)
+    echo "unknown action $ACTION, expected quiet, wait or busy" >&2
+    exit 1
+    ;;
+esac

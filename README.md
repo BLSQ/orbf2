@@ -131,6 +131,12 @@ orbf2 runs as a docker image on AWS Elastic Beanstalk (infra in [terraform-orbf2
    ./script/deploy_prod      # or ./script/deploy_staging
    ```
 
+   to not kill running jobs, the sidekiq worker is drained first ([script/sidekiq_drain](./script/sidekiq_drain), through `eb ssh`, needs the environment key in `~/.ssh`): it's quieted (stops fetching jobs, new ones wait in redis), web is deployed while the running jobs finish, then sidekiq is deployed once no job runs. After `DRAIN_TIMEOUT` (default 900s) it asks to wait more, deploy anyway or abort (an aborted worker stays quiet until `eb restart <env>`).
+
+   ```
+   ./script/sidekiq_drain busy orbf2-prod-sidekiq   # see the running jobs
+   ```
+
 ## Hesabu manager
 
 The [hesabu-manager](https://github.com/BLSQ/hesabu-manager/) react app is bundled in the image and served at `/setup/manager`. The image build (`rake hesabu_manager:install`) downloads the latest build from https://hesabu-manager-build.s3.amazonaws.com/Hesabu.zip, published by each push on the hesabu-manager `develop` branch. To ship a hesabu-manager change: merge it on `develop`, wait for its "Build and publish to s3 bucket" workflow, then build and deploy orbf2 as above.

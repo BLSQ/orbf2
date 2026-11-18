@@ -1,14 +1,27 @@
 #!/bin/bash
+# deploys the committed HEAD on prod, without killing the running sidekiq jobs:
+# the worker is quieted (no new jobs, they wait in redis), web is deployed while
+# the running jobs finish, then the worker is deployed. See script/sidekiq_drain
+set -euo pipefail
+
+WEB=orbf2-prod-20230114
+SIDEKIQ=orbf2-prod-sidekiq
+SCRIPT_DIR=$(dirname "$0")
+
+"$SCRIPT_DIR/sidekiq_drain" quiet $SIDEKIQ
 
 echo "********** Deploy "
-echo "  web" 
-eb use orbf2-prod-20230114
-eb deploy
-echo "  sidekiq" 
-eb use orbf2-prod-sidekiq
-eb deploy
+echo "  web"
+eb deploy $WEB
+
+"$SCRIPT_DIR/sidekiq_drain" wait $SIDEKIQ
+
+echo "  sidekiq"
+eb deploy $SIDEKIQ
+
 echo "********** Deploy complete let's check the versions"
-echo "  web" 
-curl https://orbf2.bluesquare.org/status
+echo "  web"
+curl -s https://orbf2.bluesquare.org/status
 echo -e "\n  sidekiq"
-curl https://sidekiq-orbf2-prod.bluesquare.org
+curl -s https://sidekiq-orbf2-prod.bluesquare.org
+echo
