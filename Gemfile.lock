@@ -16,7 +16,7 @@ GIT
 
 GIT
   remote: https://github.com/BLSQ/orbf-rules_engine.git
-  revision: b81a9c702d4f77fe0ec0bfb95658c828534ece61
+  revision: f507177ec180e3c0a865dcd2333714c33f932b86
   branch: master
   specs:
     orbf-rules_engine (0.1.0)
@@ -679,7 +679,7 @@ DEPENDENCIES
   webmock
 
 RUBY VERSION
-  ruby 4.0.9
+  ruby 4.0.10
 
 BUNDLED WITH
   4.0.20
