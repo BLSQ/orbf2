@@ -1,4 +1,4 @@
-FROM ruby:4.0.9-alpine AS build-env
+FROM ruby:4.0.10-alpine AS build-env
 
 ARG RAILS_ROOT=/app
 ARG BUILD_PACKAGES="build-base curl-dev git"
@@ -35,7 +35,7 @@ RUN rm -rf node_modules tmp/cache vendor/assets spec \
     && find app/assets -mindepth 1 -maxdepth 1 ! -name config -exec rm -rf {} +
 
 
-FROM ruby:4.0.9-alpine
+FROM ruby:4.0.10-alpine
 ARG RAILS_ROOT=/app
 ARG PACKAGES="tzdata postgresql-client nodejs bash curl-dev"
 ARG DOCKER_TAG
