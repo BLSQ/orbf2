@@ -2,6 +2,12 @@
 #
 #   docker compose -f docker-compose.test.yml run --rm test bundle exec rspec
 #
+# first run (or after a Gemfile change): install the gems in the bundle volume
+# and create the db
+#
+#   docker compose -f docker-compose.test.yml run --rm test sh -c \
+#     'bundle install && bundle exec rails db:create db:schema:load'
+#
 # ORBF_RULES_ENGINE_PATH (optional): absolute path of a local orbf-rules_engine
 # checkout, used through `bundle config local.orbf-rules_engine` (its branch must
 # match the Gemfile one). ORBF_RULES_ENGINE_GIT_DIR: its main .git dir when the
@@ -72,8 +78,14 @@ services:
       S3_SIMULATION_SECRET: minio123
       S3_SIMULATION_REGION: us-east-1
       S3_SIMULATION_BUCKET: simulations-test
-      # bundle config local.orbf-rules_engine
-      BUNDLE_LOCAL__ORBF___RULES_ENGINE: ${ORBF_RULES_ENGINE_PATH:-}
+      ORBF_RULES_ENGINE_PATH: ${ORBF_RULES_ENGINE_PATH:-}
+    # bundle config local.orbf-rules_engine, only when a path is given: bundler
+    # fails on an empty override
+    entrypoint:
+      - sh
+      - -c
+      - '[ -z "$$ORBF_RULES_ENGINE_PATH" ] || export BUNDLE_LOCAL__ORBF___RULES_ENGINE="$$ORBF_RULES_ENGINE_PATH"; exec "$$@"'
+      - --
     volumes:
       - .:/app
       - ${APP_GIT_DIR:-/dev/null}:${APP_GIT_DIR:-/dev/null}
